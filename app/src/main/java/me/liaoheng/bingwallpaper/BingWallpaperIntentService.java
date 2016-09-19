@@ -73,11 +73,9 @@ public class BingWallpaperIntentService extends IntentService {
                                 return;
                             }
 
-                            int screenWidth = ScreenUtils.getScreenWidth(getApplicationContext());
-                            int screenHeight = ScreenUtils.getScreenHeight(getApplicationContext());
                             String url = bingWallpaperImage.getUrl();
                             Glide.with(getApplicationContext()).load(url).downloadOnly(
-                                    new SimpleTarget<File>(screenWidth, screenHeight) {
+                                    new SimpleTarget<File>() {
                                         @Override public void onResourceReady(File wallpaper,
                                                                               GlideAnimation<? super File> glideAnimation) {
                                             String absolutePath = wallpaper.getAbsolutePath();
