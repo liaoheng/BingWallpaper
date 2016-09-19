@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <ImageView
+            android:id="@+id/bing_wallpaper_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    <Button
+            android:textSize="27dp"
+            android:text="&#169;"
+            android:textColor="@android:color/white"
+            android:layout_marginBottom="30dp"
+            android:layout_gravity="end|bottom"
+            android:textAllCaps="false"
+            android:background="?selectableItemBackground"
+            android:id="@+id/bing_wallpaper_copyright"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    <ProgressBar
+            android:id="@+id/bing_wallpaper_progress"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+</FrameLayout>

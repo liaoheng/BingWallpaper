@@ -1,0 +1,79 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+
+android {
+  compileSdkVersion rootProject.ext.compileSdkVersion
+  buildToolsVersion rootProject.ext.buildToolsVersion
+
+  defaultConfig {
+    minSdkVersion rootProject.ext.minSdkVersion
+    targetSdkVersion rootProject.ext.targetSdkVersion
+    applicationId "me.liaoheng.bingwallpaper"
+    versionCode 1
+    versionName "1.0"
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+  packagingOptions {
+    exclude 'META-INF/LICENSE.txt'
+    exclude 'META-INF/NOTICE.txt'
+    exclude 'META-INF/LICENSE'
+    exclude 'META-INF/NOTICE'
+  }
+}
+
+def JacksonVersion = '2.5.1'
+dependencies {
+  compile fileTree(dir: 'libs', include: ['*.jar'])
+  testCompile 'junit:junit:4.12'
+  //android system
+  compile deps.supportv4
+  compile deps.appcompatv7
+  compile deps.cardviewv7
+  compile deps.design
+
+  //View "injection" library:https://github.com/JakeWharton/butterknife
+  compile 'com.jakewharton:butterknife:8.0.1'
+  apt 'com.jakewharton:butterknife-compiler:8.0.1'
+
+  //https://github.com/FasterXML/jackson-annotations
+  provided "com.fasterxml.jackson.core:jackson-annotations:$JacksonVersion"
+  //https://github.com/FasterXML/jackson-databind
+  provided "com.fasterxml.jackson.core:jackson-databind:$JacksonVersion"
+  //https://github.com/FasterXML/jackson-core
+  provided "com.fasterxml.jackson.core:jackson-core:$JacksonVersion"
+
+  //https://github.com/bumptech/glide
+  compile 'com.github.bumptech.glide:glide:3.7.0'
+  compile 'com.github.bumptech.glide:okhttp3-integration:1.4.0@aar'
+
+  //https://github.com/square/okhttp
+  compile 'com.squareup.okhttp3:okhttp:3.3.1'
+  //https://github.com/square/retrofit
+  compile 'com.squareup.retrofit2:retrofit:2.1.0'
+  compile 'com.squareup.retrofit2:converter-jackson:2.1.0'
+  compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
+  //日志:https://github.com/orhanobut/logger
+  compile 'com.orhanobut:logger:1.8'
+  //函数响应式编程:https://github.com/ReactiveX/RxAndroid
+  compile 'io.reactivex:rxandroid:1.2.1'
+  compile 'io.reactivex:rxjava:1.1.6'
+
+  //io utils:https://github.com/apache/commons-io
+  compile 'commons-io:commons-io:2.4'
+
+  //time:https://github.com/dlew/joda-time-android
+  compile 'net.danlew:android.joda:2.9.4.1'
+
+  //https://github.com/jonfinerty/Once
+  compile 'com.jonathanfinerty.once:once:1.2.1'
+
+  //https://github.com/DreaminginCodeZH/SystemUiHelper
+  compile 'me.zhanghai.android.systemuihelper:library:1.0.0'
+
+  compile 'com.github.liaoheng:common-core:0.0.4-SNAPSHOT'
+}
