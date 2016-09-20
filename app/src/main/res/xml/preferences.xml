@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="自动更新">
+        <CheckBoxPreference
+                android:key="pref_set_wallpaper_day_auto_update_only_wifi"
+                android:widgetLayout="@layout/mp_preference_switch"
+                android:title="仅在WIFI下更新壁纸"
+                android:defaultValue="true"/>
+
+        <CheckBoxPreference
+                android:key="pref_set_wallpaper_day_auto_update"
+                android:widgetLayout="@layout/mp_preference_switch"
+                android:title="每天自动更新壁纸"
+                android:defaultValue="true"/>
+
+        <me.liaoheng.bingwallpaper.TimePreference
+                android:defaultValue="00:00:00.000"
+                android:key="pref_set_wallpaper_day_auto_update_time"
+                android:title="每天自动更新时间"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="其它">
+
+        <ListPreference
+                android:key="pref_set_wallpaper_url"
+                android:defaultValue="0"
+                android:entries="@array/pref_set_wallpaper_url_name"
+                android:entryValues="@array/pref_set_wallpaper_url_value"
+                android:title="bing壁纸源"/>
+
+        <ListPreference
+                android:key="pref_set_wallpaper_resolution"
+                android:defaultValue="0"
+                android:title="选择壁纸分辨率"
+                android:entries="@array/pref_set_wallpaper_resolution_name"
+                android:entryValues="@array/pref_set_wallpaper_resolution_value"/>
+    </PreferenceCategory>
+</PreferenceScreen>

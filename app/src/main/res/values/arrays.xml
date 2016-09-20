@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="pref_set_wallpaper_resolution_name">
+        <item>1920x1200</item>
+        <item>1080x1920</item>
+        <item>480x800</item>
+        <item>800x480</item>
+        <item>720x1280</item>
+        <item>1280x720</item>
+        <item>768x1024</item>
+        <item>1204x768</item>
+        <item>768x1280</item>
+        <item>1280x768</item>
+        <item>768x1366</item>
+        <item>1366x768</item>
+    </string-array>
+
+    <string-array  name="pref_set_wallpaper_resolution_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+    </string-array>
+
+    <string-array name="pref_set_wallpaper_url_name">
+        <item>中国</item>
+        <item>国际</item>
+    </string-array>
+
+    <string-array name="pref_set_wallpaper_url_value">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+</resources>

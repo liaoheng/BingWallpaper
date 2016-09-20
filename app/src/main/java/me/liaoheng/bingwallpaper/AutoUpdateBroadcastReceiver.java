@@ -13,11 +13,19 @@ import com.github.liaoheng.common.util.NetworkUtils;
 public class AutoUpdateBroadcastReceiver extends BroadcastReceiver {
 
     @Override public void onReceive(Context context, Intent intent) {
+        boolean enableDayUpdate = SettingsUtils.isEnableDayUpdate(context);
+        if (!enableDayUpdate) {
+            BingWallpaperAlarmManager.clear(context);
+            return;
+        }
         L.Log.i("AutoUpdateBroadcastReceiver", "AutoUpdateBroadcastReceiver");
-        if (NetworkUtils.isConnected(context) && NetworkUtils.isWifiConnected(context)){
-            Intent intent1 = new Intent(context, BingWallpaperIntentService.class);
-            intent1.putExtra(BingWallpaperIntentService.AUTO, true);
-            context.startService(intent1);
+        if (NetworkUtils.isConnected(context)) {
+            if (SettingsUtils.getOnlyWifi(context)) {
+                if (!NetworkUtils.isWifiAvailable(context)) {
+                    return;
+                }
+            }
+            context.startService(new Intent(context, BingWallpaperIntentService.class));
         }
     }
 }

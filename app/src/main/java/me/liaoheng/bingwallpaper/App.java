@@ -26,15 +26,27 @@ public class App extends Application {
         return mInstance;
     }
 
+    private String mCurResolution;
+
+    public String getCurResolution() {
+        return mCurResolution;
+    }
+
+    public void setCurResolution(String resolution) {
+        mCurResolution = resolution;
+    }
+
     @Override public void onCreate() {
         super.onCreate();
-        Common.init(this,"BingWallpaper",BuildConfig.DEBUG);
+        Common.init(this, Constants.PROJECT_NAME, BuildConfig.DEBUG);
         Once.initialise(this);
         JodaTimeAndroid.init(this);
         OkHttpClient client = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)
                 .build();
-        mRetrofit = new Retrofit.Builder().baseUrl("http://www.bing.com").addConverterFactory(JacksonConverterFactory.create())
+        mRetrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL)
+                .addConverterFactory(JacksonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create()).client(client).build();
         mInstance = this;
     }
+
 }

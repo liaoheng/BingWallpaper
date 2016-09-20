@@ -1,31 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<android.support.v4.widget.DrawerLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:openDrawer="start"
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <ImageView
-            android:id="@+id/bing_wallpaper_view"
+    <android.support.design.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent">
 
-    <Button
-            android:textSize="27dp"
-            android:text="&#169;"
-            android:textColor="@android:color/white"
-            android:layout_marginBottom="30dp"
-            android:layout_gravity="end|bottom"
-            android:textAllCaps="false"
-            android:background="?selectableItemBackground"
-            android:id="@+id/bing_wallpaper_copyright"
+        <ImageView
+                android:id="@+id/bing_wallpaper_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="壁纸"/>
+
+        <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:background="#00FFFFFF"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+        <ProgressBar
+                android:id="@+id/bing_wallpaper_progress"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <android.support.design.widget.FloatingActionButton
+                android:id="@+id/bing_wallpaper_set"
+                android:src="@mipmap/ic_wallpaper_white_24dp"
+                app:layout_anchor="@+id/bing_wallpaper_view"
+                app:layout_anchorGravity="bottom|end"
+                android:layout_marginBottom="55dp"
+                android:layout_marginRight="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+    </android.support.design.widget.CoordinatorLayout>
+
+    <android.support.design.widget.NavigationView
+            android:id="@+id/navigation_drawer"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            app:menu="@menu/main_drawer"/>
 
-    <ProgressBar
-            android:id="@+id/bing_wallpaper_progress"
-            android:layout_gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-</FrameLayout>
+</android.support.v4.widget.DrawerLayout>

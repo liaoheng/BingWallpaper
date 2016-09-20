@@ -117,4 +117,21 @@ import java.io.Serializable;
     public void setBot(int bot) {
         this.bot = bot;
     }
+
+    @Override public String toString() {
+        return "BingWallpaperImage{" +
+               "startdate='" + startdate + '\'' +
+               ", fullstartdate='" + fullstartdate + '\'' +
+               ", enddate='" + enddate + '\'' +
+               ", url='" + url + '\'' +
+               ", urlbase='" + urlbase + '\'' +
+               ", copyright='" + copyright + '\'' +
+               ", copyrightlink='" + copyrightlink + '\'' +
+               ", wp=" + wp +
+               ", hsh='" + hsh + '\'' +
+               ", drk=" + drk +
+               ", top=" + top +
+               ", bot=" + bot +
+               '}';
+    }
 }

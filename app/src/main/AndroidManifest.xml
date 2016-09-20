@@ -24,14 +24,16 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".SettingsActivity" android:theme="@style/AppTheme.Settings"/>
 
         <service
+                android:process=":auto"
                 android:name=".BingWallpaperIntentService"
-                android:exported="false">
-        </service>
+                android:exported="false" />
 
-        <receiver android:name=".AutoUpdateBroadcastReceiver">
-        </receiver>
+        <receiver
+                android:process=":auto"
+                android:name=".AutoUpdateBroadcastReceiver" />
 
     </application>
 
