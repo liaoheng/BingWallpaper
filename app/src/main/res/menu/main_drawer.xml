@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-  <item android:id="@+id/menu_main_drawer_settings" android:title="设置"/>
+  <item android:id="@+id/menu_main_drawer_wallpaper_refresh" android:title="刷新壁纸"/>
   <item android:id="@+id/menu_main_drawer_wallpaper_info" android:title="壁纸信息"/>
+  <item android:id="@+id/menu_main_drawer_settings" android:title="设置"/>
+  <item android:id="@+id/menu_main_drawer_about" android:title="关于" />
 </menu>

@@ -1,4 +1,4 @@
-package me.liaoheng.bingwallpaper;
+package me.liaoheng.bingwallpaper.service;
 
 import android.app.IntentService;
 import android.app.WallpaperManager;
@@ -11,8 +11,12 @@ import com.bumptech.glide.Glide;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
 import java.io.File;
+import me.liaoheng.bingwallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.bingwallpaper.model.BingWallpaperImage;
 import me.liaoheng.bingwallpaper.model.BingWallpaperState;
+import me.liaoheng.bingwallpaper.util.Constants;
+import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
+import me.liaoheng.bingwallpaper.util.SettingsUtils;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -26,7 +30,7 @@ public class BingWallpaperIntentService extends IntentService {
 
     private final       String TAG                        = BingWallpaperIntentService.class
             .getSimpleName();
-    public final static String ACTION_GET_WALLPAPER_STATE = "BING_WALLPAPER_STATE";
+    public final static String ACTION_GET_WALLPAPER_STATE = "me.liaoheng.bingwallpaper.BING_WALLPAPER_STATE";
     public final static String EXTRA_WALLPAPER_STATE      = "STATE";
 
     public BingWallpaperIntentService() {
@@ -34,6 +38,8 @@ public class BingWallpaperIntentService extends IntentService {
     }
 
     @Override protected void onHandleIntent(final Intent intent) {
+        LogDebugFileUtils.get().i(TAG,"Run BingWallpaperIntentService");
+
         if (NetworkUtils.isConnected(getApplicationContext())) {
 
             if (SettingsUtils.getOnlyWifi(getApplicationContext())) {
@@ -84,7 +90,8 @@ public class BingWallpaperIntentService extends IntentService {
                 }
             }, new Action1<Throwable>() {
                 @Override public void call(Throwable throwable) {
-                    L.Log.e(TAG, "getBingWallpaper error", throwable);
+                    L.Log.e(TAG, throwable, "getBingWallpaper error");
+                    LogDebugFileUtils.get().e(TAG,throwable,"Run BingWallpaperIntentService");
                     Intent intent1 = new Intent(
                             BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE);
                     intent1.putExtra(EXTRA_WALLPAPER_STATE, BingWallpaperState.FAIL);

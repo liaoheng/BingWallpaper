@@ -1,10 +1,14 @@
-package me.liaoheng.bingwallpaper;
+package me.liaoheng.bingwallpaper.service;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
+import me.liaoheng.bingwallpaper.util.BingWallpaperAlarmManager;
+import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
+import me.liaoheng.bingwallpaper.util.SettingsUtils;
+import org.joda.time.LocalTime;
 
 /**
  * @author liaoheng
@@ -18,7 +22,16 @@ public class AutoUpdateBroadcastReceiver extends BroadcastReceiver {
             BingWallpaperAlarmManager.clear(context);
             return;
         }
-        L.Log.i("AutoUpdateBroadcastReceiver", "AutoUpdateBroadcastReceiver");
+        L.Log.i("AutoUpdateBroadcastReceiver", "action : %s",intent.getAction());
+        LogDebugFileUtils.get().i("AutoUpdateBroadcastReceiver", "action " + intent.getAction());
+
+        if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
+            LocalTime dayUpdateTime = SettingsUtils.getDayUpdateTime(context);
+            BingWallpaperAlarmManager.clear(context);
+            BingWallpaperAlarmManager.add(context,dayUpdateTime);
+            return;
+        }
+
         if (NetworkUtils.isConnected(context)) {
             if (SettingsUtils.getOnlyWifi(context)) {
                 if (!NetworkUtils.isWifiAvailable(context)) {

@@ -1,11 +1,13 @@
-package me.liaoheng.bingwallpaper;
+package me.liaoheng.bingwallpaper.util;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import com.github.liaoheng.common.util.L;
+import me.liaoheng.bingwallpaper.service.AutoUpdateBroadcastReceiver;
 import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 
 /**
  * @author liaoheng
@@ -13,14 +15,16 @@ import org.joda.time.DateTime;
  */
 public class BingWallpaperAlarmManager {
 
-    private static final String TAG = BingWallpaperAlarmManager.class.getSimpleName();
+    private static final String TAG    = BingWallpaperAlarmManager.class.getSimpleName();
+    public static final  String ACTION = "me.liaoheng.bingwallpaper.alarm.taskschedule";
 
     public static final int REQUEST_CODE = 0x123;
 
     private static PendingIntent getPendingIntent(Context context) {
         Intent intent = new Intent(context, AutoUpdateBroadcastReceiver.class);
+        intent.setAction(ACTION);
         return PendingIntent
-                .getBroadcast(context, REQUEST_CODE, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                .getBroadcast(context, REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     public static void clear(Context context) {
@@ -33,17 +37,24 @@ public class BingWallpaperAlarmManager {
         L.i(TAG, "cancel alarm");
     }
 
-    public static void add(Context context, int hour, int minute) {
+    public static void add(Context context, DateTime time) {
         PendingIntent pendingIntent = getPendingIntent(context);
-        DateTime now = DateTime.now();
-        DateTime dateTime = new DateTime(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth(),
-                hour, minute);
-
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         // 设定每天在指定的时间运行alert
-        alarmManager.setRepeating(AlarmManager.RTC, dateTime.getMillis(), AlarmManager.INTERVAL_DAY,
+        alarmManager
+                .setRepeating(AlarmManager.RTC_WAKEUP, time.getMillis(), AlarmManager.INTERVAL_DAY,
                 pendingIntent);
 
-        L.i(TAG, "set alarm Repeating time : %s", dateTime.toString("HH:mm"));
+        L.i(TAG, "set alarm Repeating time : %s", time.toString("yyyy-MM-dd HH:mm"));
+    }
+
+    public static void add(Context context, int hour, int minute) {
+        LocalTime localTime = new LocalTime(hour, minute);
+        add(context, localTime);
+    }
+
+    public static void add(Context context, LocalTime localTime) {
+        DateTime dateTime = SettingsUtils.checkTime(localTime);
+        add(context, dateTime);
     }
 }

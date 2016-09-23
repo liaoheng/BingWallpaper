@@ -1,9 +1,13 @@
-package me.liaoheng.bingwallpaper;
+package me.liaoheng.bingwallpaper.ui;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
+import me.liaoheng.bingwallpaper.util.BingWallpaperAlarmManager;
+import me.liaoheng.bingwallpaper.R;
+import me.liaoheng.bingwallpaper.util.SettingsUtils;
+import me.liaoheng.bingwallpaper.view.TimePreference;
 import org.joda.time.LocalTime;
 
 /**
@@ -45,9 +49,8 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             urlListPreference = (ListPreference) findPreference(PREF_SET_WALLPAPER_URL);
             urlListPreference.setSummary(SettingsUtils.getUrlValue(getActivity()));
 
-            String time = getPreferenceManager().getSharedPreferences()
-                    .getString(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME, "00:00:00.000");
-            LocalTime localTime = LocalTime.parse(time);
+            LocalTime localTime = SettingsUtils.getDayUpdateTime(getActivity());
+
             timePreference = (TimePreference) findPreference(
                     PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME);
             timePreference.setSummary(localTime.toString("HH:mm"));
@@ -62,8 +65,6 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             switch (key) {
                 case PREF_SET_WALLPAPER_RESOLUTION:
                     resolutionListPreference.setSummary(resolutionListPreference.getEntry());
-                    App.getInstance()
-                            .setCurResolution(resolutionListPreference.getEntry().toString());
                     break;
                 case PREF_SET_WALLPAPER_DAY_AUTO_UPDATE:
                     timePreference.setEnabled(dayUpdatePreference.isChecked());

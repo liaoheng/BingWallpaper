@@ -1,4 +1,4 @@
-package me.liaoheng.bingwallpaper;
+package me.liaoheng.bingwallpaper.data;
 
 import me.liaoheng.bingwallpaper.model.BingWallpaper;
 import retrofit2.http.GET;

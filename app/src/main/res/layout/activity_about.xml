@@ -1,0 +1,66 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+  <LinearLayout
+      android:padding="10dp"
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+    <ImageButton
+        android:scaleType="centerCrop"
+        android:background="?selectableItemBackgroundBorderless"
+        android:id="@+id/about_icon"
+        android:src="@mipmap/ic_launcher"
+        android:layout_width="100dp"
+        android:layout_height="100dp"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+      <TextView
+          android:id="@+id/about_version"
+          android:layout_marginTop="10dp"
+          android:textSize="20sp"
+          android:text="version"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"/>
+
+      <TextView
+          android:textSize="16sp"
+          android:layout_marginTop="10dp"
+          android:text="\ &#064; 2016 liaoheng"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"/>
+
+      <TextView
+          android:textSize="16sp"
+          android:layout_marginTop="10dp"
+          android:text="Apache License Version 2.0"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+
+  </LinearLayout>
+
+  <TextView
+      android:textStyle="bold"
+      android:padding="10dp"
+      android:textSize="16sp"
+      android:text="Thanks"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"/>
+
+  <android.support.v7.widget.RecyclerView
+      android:id="@+id/about_recycler_view"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"/>
+
+</LinearLayout>

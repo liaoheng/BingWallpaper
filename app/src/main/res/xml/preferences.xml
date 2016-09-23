@@ -13,7 +13,7 @@
                 android:title="每天自动更新壁纸"
                 android:defaultValue="true"/>
 
-        <me.liaoheng.bingwallpaper.TimePreference
+        <me.liaoheng.bingwallpaper.view.TimePreference
                 android:defaultValue="00:00:00.000"
                 android:key="pref_set_wallpaper_day_auto_update_time"
                 android:title="每天自动更新时间"/>

@@ -1,4 +1,4 @@
-package me.liaoheng.bingwallpaper;
+package me.liaoheng.bingwallpaper.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -10,6 +10,7 @@ import android.widget.TimePicker;
 import org.joda.time.LocalTime;
 
 /**
+ * 设置时间选择框
  * @author liaoheng
  * @version 2016-09-20 14:15
  */

@@ -1,8 +1,12 @@
-package me.liaoheng.bingwallpaper;
+package me.liaoheng.bingwallpaper.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import me.liaoheng.bingwallpaper.R;
+import me.liaoheng.bingwallpaper.ui.SettingsActivity;
+import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 
 /**
  * @author liaoheng
@@ -60,6 +64,24 @@ public class SettingsUtils {
         } else {
             return Constants.GLOBAL_URL;
         }
+    }
+
+    public static LocalTime getDayUpdateTime(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        String time = sharedPreferences
+                .getString(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME,
+                        "00:00:00.000");
+        return LocalTime.parse(time);
+    }
+
+    public static DateTime checkTime(LocalTime time) {
+        DateTime now = DateTime.now();
+        if (time.isBefore(now.toLocalTime())) {
+            now = now.plusDays(1);
+        }
+        return new DateTime(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth(),
+                time.getHourOfDay(), time.getMinuteOfHour());
     }
 
 }

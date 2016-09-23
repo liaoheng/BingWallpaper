@@ -18,6 +18,9 @@ android {
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
   }
+  lintOptions {
+    abortOnError false
+  }
   packagingOptions {
     exclude 'META-INF/LICENSE.txt'
     exclude 'META-INF/NOTICE.txt'
@@ -78,6 +81,9 @@ dependencies {
 
   //https://github.com/DreaminginCodeZH/SystemUiHelper
   compile 'me.zhanghai.android.systemuihelper:library:1.0.0'
+
+  //https://github.com/yshrsmz/LicenseAdapter
+  compile 'net.yslibrary.licenseadapter:licenseadapter:1.2.4'
 
   compile 'com.github.liaoheng:common-core:0.0.4-SNAPSHOT'
 }

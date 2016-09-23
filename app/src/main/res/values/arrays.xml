@@ -2,7 +2,7 @@
 <resources>
 
     <string-array name="pref_set_wallpaper_resolution_name">
-        <item>1920x1200</item>
+        <item>1920x1080</item>
         <item>1080x1920</item>
         <item>480x800</item>
         <item>800x480</item>

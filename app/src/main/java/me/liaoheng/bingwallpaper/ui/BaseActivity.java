@@ -1,4 +1,4 @@
-package me.liaoheng.bingwallpaper;
+package me.liaoheng.bingwallpaper.ui;
 
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
@@ -17,7 +17,7 @@ import rx.subjects.BehaviorSubject;
  * 基础通用 RxJava Lifecycle Activity
  * @author liaoheng
  */
-public class CPRxBaseActivity extends AppCompatActivity implements ActivityLifecycleProvider {
+public class BaseActivity extends AppCompatActivity implements ActivityLifecycleProvider {
 
     private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
 
