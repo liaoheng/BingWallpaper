@@ -3,7 +3,6 @@ package me.liaoheng.bingwallpaper.util;
 import android.os.Environment;
 import android.support.annotation.StringDef;
 import android.text.TextUtils;
-import com.github.liaoheng.common.Common;
 import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.SystemException;
@@ -11,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import org.apache.commons.io.IOUtils;
@@ -97,7 +95,7 @@ public class LogDebugFileUtils {
 
     public synchronized void open() {
         try {
-            mFileOutputStream = FileUtils.openOutputStream(mLogFile);
+            mFileOutputStream = FileUtils.openOutputStream(mLogFile, true);
         } catch (IOException ignored) {
         }
     }
