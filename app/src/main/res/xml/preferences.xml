@@ -35,5 +35,12 @@
                 android:title="选择壁纸分辨率"
                 android:entries="@array/pref_set_wallpaper_resolution_name"
                 android:entryValues="@array/pref_set_wallpaper_resolution_value"/>
+
+        <CheckBoxPreference
+                android:key="pref_set_wallpaper_log"
+                android:widgetLayout="@layout/mp_preference_switch"
+                android:title="打开DEBUG日志"
+                android:defaultValue="false"/>
+
     </PreferenceCategory>
 </PreferenceScreen>

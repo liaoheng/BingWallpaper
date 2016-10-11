@@ -35,9 +35,9 @@
                 android:exported="false" />
 
         <receiver
-                android:name=".service.AutoUpdateBroadcastReceiver">
+                android:name=".service.AutoSetWallpaperBroadcastReceiver">
             <intent-filter>
-                <action android:name="me.liaoheng.bingwallpaper.alarm.taskschedule"/>
+                <action android:name="me.liaoheng.bingwallpaper.alarm.task_schedule"/>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>

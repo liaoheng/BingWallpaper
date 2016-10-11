@@ -5,7 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import com.github.liaoheng.common.util.L;
-import me.liaoheng.bingwallpaper.service.AutoUpdateBroadcastReceiver;
+import me.liaoheng.bingwallpaper.service.AutoSetWallpaperBroadcastReceiver;
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
@@ -16,12 +16,12 @@ import org.joda.time.LocalTime;
 public class BingWallpaperAlarmManager {
 
     private static final String TAG    = BingWallpaperAlarmManager.class.getSimpleName();
-    public static final  String ACTION = "me.liaoheng.bingwallpaper.alarm.taskschedule";
+    public static final  String ACTION = "me.liaoheng.bingwallpaper.alarm.task_schedule";
 
     public static final int REQUEST_CODE = 0x123;
 
     private static PendingIntent getPendingIntent(Context context) {
-        Intent intent = new Intent(context, AutoUpdateBroadcastReceiver.class);
+        Intent intent = new Intent(context, AutoSetWallpaperBroadcastReceiver.class);
         intent.setAction(ACTION);
         return PendingIntent
                 .getBroadcast(context, REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -34,7 +34,7 @@ public class BingWallpaperAlarmManager {
         // 取消以前同类型的提醒
         alarmManager.cancel(pendingIntent);
 
-        L.i(TAG, "cancel alarm");
+        L.Log.i(TAG, "cancel alarm");
     }
 
     public static void add(Context context, DateTime time) {
@@ -45,7 +45,10 @@ public class BingWallpaperAlarmManager {
                 .setRepeating(AlarmManager.RTC_WAKEUP, time.getMillis(), AlarmManager.INTERVAL_DAY,
                 pendingIntent);
 
-        L.i(TAG, "set alarm Repeating time : %s", time.toString("yyyy-MM-dd HH:mm"));
+        if (Utils.isEnableLog(context)) {
+            LogDebugFileUtils.get().i(TAG,"Set Alarm Repeating Time : %s", time.toString("yyyy-MM-dd HH:mm"));
+        }
+        L.Log.i(TAG, "Set Alarm Repeating Time : %s", time.toString("yyyy-MM-dd HH:mm"));
     }
 
     public static void add(Context context, int hour, int minute) {
@@ -54,7 +57,7 @@ public class BingWallpaperAlarmManager {
     }
 
     public static void add(Context context, LocalTime localTime) {
-        DateTime dateTime = SettingsUtils.checkTime(localTime);
+        DateTime dateTime = Utils.checkTime(localTime);
         add(context, dateTime);
     }
 }

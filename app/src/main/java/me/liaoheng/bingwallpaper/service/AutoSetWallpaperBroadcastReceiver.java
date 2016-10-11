@@ -7,33 +7,35 @@ import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
 import me.liaoheng.bingwallpaper.util.BingWallpaperAlarmManager;
 import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
-import me.liaoheng.bingwallpaper.util.SettingsUtils;
+import me.liaoheng.bingwallpaper.util.Utils;
 import org.joda.time.LocalTime;
 
 /**
  * @author liaoheng
  * @version 2016-09-19 15:49
  */
-public class AutoUpdateBroadcastReceiver extends BroadcastReceiver {
+public class AutoSetWallpaperBroadcastReceiver extends BroadcastReceiver {
 
     @Override public void onReceive(Context context, Intent intent) {
-        boolean enableDayUpdate = SettingsUtils.isEnableDayUpdate(context);
+        boolean enableDayUpdate = Utils.isEnableDayUpdate(context);
         if (!enableDayUpdate) {
             BingWallpaperAlarmManager.clear(context);
             return;
         }
-        L.Log.i("AutoUpdateBroadcastReceiver", "action : %s",intent.getAction());
-        LogDebugFileUtils.get().i("AutoUpdateBroadcastReceiver", "action " + intent.getAction());
-
+        L.Log.i("AutoSetWallpaperBroadcastReceiver", "action : %s", intent.getAction());
+        if (Utils.isEnableLog(context)) {
+            LogDebugFileUtils.get()
+                    .i("AutoSetWallpaperBroadcastReceiver", "action  : %s", intent.getAction());
+        }
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
-            LocalTime dayUpdateTime = SettingsUtils.getDayUpdateTime(context);
+            LocalTime dayUpdateTime = Utils.getDayUpdateTime(context);
             BingWallpaperAlarmManager.clear(context);
             BingWallpaperAlarmManager.add(context,dayUpdateTime);
             return;
         }
 
         if (NetworkUtils.isConnected(context)) {
-            if (SettingsUtils.getOnlyWifi(context)) {
+            if (Utils.getOnlyWifi(context)) {
                 if (!NetworkUtils.isWifiAvailable(context)) {
                     return;
                 }

@@ -4,9 +4,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
-import me.liaoheng.bingwallpaper.util.BingWallpaperAlarmManager;
+import com.github.liaoheng.common.util.UIUtils;
 import me.liaoheng.bingwallpaper.R;
-import me.liaoheng.bingwallpaper.util.SettingsUtils;
+import me.liaoheng.bingwallpaper.util.BingWallpaperAlarmManager;
+import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
+import me.liaoheng.bingwallpaper.util.Utils;
 import me.liaoheng.bingwallpaper.view.TimePreference;
 import org.joda.time.LocalTime;
 
@@ -26,6 +28,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
     public static final String PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME      = "pref_set_wallpaper_day_auto_update_time";
     public static final String PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI = "pref_set_wallpaper_day_auto_update_only_wifi";
     public static final String PREF_SET_WALLPAPER_URL                       = "pref_set_wallpaper_url";
+    public static final String PREF_SET_WALLPAPER_LOG                       = "pref_set_wallpaper_log";
 
     public static class MyPreferenceFragment extends com.fnp.materialpreferences.PreferenceFragment
             implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -44,12 +47,12 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
 
             resolutionListPreference = (ListPreference) findPreference(
                     PREF_SET_WALLPAPER_RESOLUTION);
-            resolutionListPreference.setSummary(SettingsUtils.getResolution(getActivity()));
+            resolutionListPreference.setSummary(Utils.getResolution(getActivity()));
 
             urlListPreference = (ListPreference) findPreference(PREF_SET_WALLPAPER_URL);
-            urlListPreference.setSummary(SettingsUtils.getUrlValue(getActivity()));
+            urlListPreference.setSummary(Utils.getUrlValue(getActivity()));
 
-            LocalTime localTime = SettingsUtils.getDayUpdateTime(getActivity());
+            LocalTime localTime = Utils.getDayUpdateTime(getActivity());
 
             timePreference = (TimePreference) findPreference(
                     PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME);
@@ -77,6 +80,16 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     break;
                 case PREF_SET_WALLPAPER_URL:
                     urlListPreference.setSummary(urlListPreference.getEntry());
+                    break;
+                case PREF_SET_WALLPAPER_LOG:
+                    CheckBoxPreference preference = (CheckBoxPreference) findPreference(
+                            PREF_SET_WALLPAPER_LOG);
+                    if (!preference.isChecked()) {
+                        LogDebugFileUtils.get().clearFile();
+                    } else {
+                        LogDebugFileUtils.get().init("log.txt");
+                        LogDebugFileUtils.get().open();
+                    }
                     break;
             }
         }

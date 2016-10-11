@@ -104,6 +104,11 @@ public class LogDebugFileUtils {
         IOUtils.closeQuietly(mFileOutputStream);
     }
 
+    public void clearFile() {
+        close();
+        FileUtils.delete(mLogFile);
+    }
+
     public synchronized void w(String tag, String logEntry, Object... o) {
         log(LEVEL_WARN, tag, getLog(logEntry, o));
     }

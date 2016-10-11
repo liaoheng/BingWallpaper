@@ -6,7 +6,7 @@ import com.github.liaoheng.common.util.L;
 import me.liaoheng.bingwallpaper.MApplication;
 import me.liaoheng.bingwallpaper.model.BingWallpaper;
 import me.liaoheng.bingwallpaper.model.BingWallpaperImage;
-import me.liaoheng.bingwallpaper.util.SettingsUtils;
+import me.liaoheng.bingwallpaper.util.Utils;
 import rx.Observable;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -20,7 +20,7 @@ public class BingWallpaperNetworkClient {
     private static final String TAG = BingWallpaperNetworkClient.class.getSimpleName();
 
     public static Observable<BingWallpaperImage> getBingWallpaper(Context context) {
-        String url = SettingsUtils.getUrl(context);
+        String url = Utils.getUrl(context);
         L.Log.i(TAG, "getBingWallpaper url :%s", url);
         return MApplication.getInstance().getRetrofit().create(BingWallpaperNetworkService.class)
                 .getBingWallpaper(url).subscribeOn(Schedulers.io())

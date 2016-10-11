@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import jonathanfinerty.once.Once;
 import me.liaoheng.bingwallpaper.util.Constants;
 import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
+import me.liaoheng.bingwallpaper.util.Utils;
 import net.danlew.android.joda.JodaTimeAndroid;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -37,8 +38,11 @@ public class MApplication extends Application {
         Common.init(this, Constants.PROJECT_NAME, BuildConfig.DEBUG);
         Once.initialise(this);
         JodaTimeAndroid.init(this);
-        LogDebugFileUtils.get().init("day_update_log.txt");
-        LogDebugFileUtils.get().open();
+        if (Utils.isEnableLog(this)) {
+            LogDebugFileUtils.get().init("log.txt");
+            LogDebugFileUtils.get().open();
+        }
+
 
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .connectTimeout(30, TimeUnit.SECONDS);
@@ -52,10 +56,5 @@ public class MApplication extends Application {
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create()).client(builder.build())
                 .build();
         mInstance = this;
-    }
-
-    @Override public void onTerminate() {
-        LogDebugFileUtils.get().close();
-        super.onTerminate();
     }
 }

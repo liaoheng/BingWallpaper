@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import me.liaoheng.bingwallpaper.R;
+import me.liaoheng.bingwallpaper.model.BingWallpaperImage;
 import me.liaoheng.bingwallpaper.ui.SettingsActivity;
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
@@ -12,7 +13,13 @@ import org.joda.time.LocalTime;
  * @author liaoheng
  * @version 2016-09-20 17:17
  */
-public class SettingsUtils {
+public class Utils {
+
+    public static String getUrl(Context context, BingWallpaperImage image) {
+        String baseUrl = image.getUrlbase();
+        String resolution = Utils.getResolution(context);
+        return Constants.BASE_URL + baseUrl + "_" + resolution + ".jpg";
+    }
 
     public static boolean getOnlyWifi(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager
@@ -82,6 +89,13 @@ public class SettingsUtils {
         }
         return new DateTime(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth(),
                 time.getHourOfDay(), time.getMinuteOfHour());
+    }
+
+    public static boolean isEnableLog(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        return sharedPreferences
+                .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_LOG, false);
     }
 
 }

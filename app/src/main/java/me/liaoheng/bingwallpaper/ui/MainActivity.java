@@ -33,8 +33,7 @@ import me.liaoheng.bingwallpaper.model.BingWallpaperImage;
 import me.liaoheng.bingwallpaper.model.BingWallpaperState;
 import me.liaoheng.bingwallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.bingwallpaper.util.BingWallpaperAlarmManager;
-import me.liaoheng.bingwallpaper.util.Constants;
-import me.liaoheng.bingwallpaper.util.SettingsUtils;
+import me.liaoheng.bingwallpaper.util.Utils;
 import me.zhanghai.android.systemuihelper.SystemUiHelper;
 import org.joda.time.LocalTime;
 import rx.android.schedulers.AndroidSchedulers;
@@ -76,7 +75,7 @@ public class MainActivity extends BaseActivity
 
         //第一次安装打开app，设置自动更新闹钟，默认使用00:00
         if (!Once.beenDone(Once.THIS_APP_INSTALL, "zzz")) {
-            LocalTime localTime = SettingsUtils.getDayUpdateTime(this);
+            LocalTime localTime = Utils.getDayUpdateTime(this);
             BingWallpaperAlarmManager.clear(this);
             BingWallpaperAlarmManager.add(this, localTime);
             Once.markDone("zzz");
@@ -192,11 +191,7 @@ public class MainActivity extends BaseActivity
             wm.getDefaultDisplay().getMetrics(dm);
         }
 
-        String urlbase = bingWallpaperImage.getUrlbase();
-
-        final String resolution = SettingsUtils.getResolution(getApplicationContext());
-
-        String url = Constants.BASE_URL + urlbase + "_" + resolution + ".jpg";
+        String url = Utils.getUrl(getApplicationContext(),bingWallpaperImage);
 
         Glide.with(MainActivity.this).load(url).override(dm.widthPixels, dm.heightPixels)
                 .centerCrop().crossFade().into(new ImageViewTarget<GlideDrawable>(wallpaperView) {
