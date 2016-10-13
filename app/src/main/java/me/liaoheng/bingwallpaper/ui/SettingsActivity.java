@@ -4,8 +4,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
-import com.github.liaoheng.common.util.UIUtils;
 import me.liaoheng.bingwallpaper.R;
+import me.liaoheng.bingwallpaper.service.AutoSetWallpaperBroadcastReceiver;
+import me.liaoheng.bingwallpaper.service.ConnectionChangeReceiver;
 import me.liaoheng.bingwallpaper.util.BingWallpaperAlarmManager;
 import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
 import me.liaoheng.bingwallpaper.util.Utils;
@@ -29,6 +30,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
     public static final String PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI = "pref_set_wallpaper_day_auto_update_only_wifi";
     public static final String PREF_SET_WALLPAPER_URL                       = "pref_set_wallpaper_url";
     public static final String PREF_SET_WALLPAPER_LOG                       = "pref_set_wallpaper_log";
+    public static final String PREF_SET_WALLPAPER_CHECK_NET                 = "pref_set_wallpaper_check_net";
 
     public static class MyPreferenceFragment extends com.fnp.materialpreferences.PreferenceFragment
             implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -70,7 +72,25 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     resolutionListPreference.setSummary(resolutionListPreference.getEntry());
                     break;
                 case PREF_SET_WALLPAPER_DAY_AUTO_UPDATE:
+                    if (dayUpdatePreference.isChecked()) {
+                        Utils.enabledReceiver(getActivity(),
+                                AutoSetWallpaperBroadcastReceiver.class.getName());
+                    } else {
+                        Utils.disabledReceiver(getActivity(),
+                                AutoSetWallpaperBroadcastReceiver.class.getName());
+                    }
                     timePreference.setEnabled(dayUpdatePreference.isChecked());
+                    break;
+                case PREF_SET_WALLPAPER_CHECK_NET:
+                    CheckBoxPreference netPreference = (CheckBoxPreference) findPreference(
+                            PREF_SET_WALLPAPER_CHECK_NET);
+                    if (netPreference.isChecked()) {
+                        Utils.enabledReceiver(getActivity(),
+                                ConnectionChangeReceiver.class.getName());
+                    } else {
+                        Utils.disabledReceiver(getActivity(),
+                                ConnectionChangeReceiver.class.getName());
+                    }
                     break;
                 case PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME:
                     BingWallpaperAlarmManager.clear(getActivity());
@@ -82,13 +102,13 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     urlListPreference.setSummary(urlListPreference.getEntry());
                     break;
                 case PREF_SET_WALLPAPER_LOG:
-                    CheckBoxPreference preference = (CheckBoxPreference) findPreference(
+                    CheckBoxPreference logPreference = (CheckBoxPreference) findPreference(
                             PREF_SET_WALLPAPER_LOG);
-                    if (!preference.isChecked()) {
-                        LogDebugFileUtils.get().clearFile();
-                    } else {
+                    if (logPreference.isChecked()) {
                         LogDebugFileUtils.get().init("log.txt");
                         LogDebugFileUtils.get().open();
+                    } else {
+                        LogDebugFileUtils.get().clearFile();
                     }
                     break;
             }

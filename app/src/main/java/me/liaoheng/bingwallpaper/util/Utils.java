@@ -1,7 +1,9 @@
 package me.liaoheng.bingwallpaper.util;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import me.liaoheng.bingwallpaper.R;
 import me.liaoheng.bingwallpaper.model.BingWallpaperImage;
@@ -96,6 +98,20 @@ public class Utils {
                 .getDefaultSharedPreferences(context);
         return sharedPreferences
                 .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_LOG, false);
+    }
+
+    public static void disabledReceiver(Context context, String receiver) {
+        settingReceiver(context, receiver, PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
+    }
+
+    public static void enabledReceiver(Context context, String receiver) {
+        settingReceiver(context, receiver, PackageManager.COMPONENT_ENABLED_STATE_ENABLED);
+    }
+
+    public static void settingReceiver(Context context, String receiver, int newState) {
+        ComponentName componentName = new ComponentName(context, receiver);
+        PackageManager pm = context.getPackageManager();
+        pm.setComponentEnabledSetting(componentName, newState, PackageManager.DONT_KILL_APP);
     }
 
 }

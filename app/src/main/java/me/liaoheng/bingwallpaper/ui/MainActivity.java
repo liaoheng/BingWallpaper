@@ -32,6 +32,7 @@ import me.liaoheng.bingwallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.bingwallpaper.model.BingWallpaperImage;
 import me.liaoheng.bingwallpaper.model.BingWallpaperState;
 import me.liaoheng.bingwallpaper.service.BingWallpaperIntentService;
+import me.liaoheng.bingwallpaper.service.ConnectionChangeReceiver;
 import me.liaoheng.bingwallpaper.util.BingWallpaperAlarmManager;
 import me.liaoheng.bingwallpaper.util.Utils;
 import me.zhanghai.android.systemuihelper.SystemUiHelper;
@@ -78,6 +79,10 @@ public class MainActivity extends BaseActivity
             LocalTime localTime = Utils.getDayUpdateTime(this);
             BingWallpaperAlarmManager.clear(this);
             BingWallpaperAlarmManager.add(this, localTime);
+
+            //默认不开启
+            Utils.disabledReceiver(this, ConnectionChangeReceiver.class.getName());
+
             Once.markDone("zzz");
         }
         getBingWallpaper();
@@ -161,7 +166,8 @@ public class MainActivity extends BaseActivity
 
         @Override public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE)) {
-                BingWallpaperState state = (BingWallpaperState) intent.getSerializableExtra(BingWallpaperIntentService.EXTRA_WALLPAPER_STATE);
+                BingWallpaperState state = (BingWallpaperState) intent
+                        .getSerializableExtra(BingWallpaperIntentService.EXTRA_GET_WALLPAPER_STATE);
 
                 if (BingWallpaperState.BEGIN.equals(state)) {
                     UIUtils.viewVisible(progressBar);

@@ -10,13 +10,20 @@
         <CheckBoxPreference
                 android:key="pref_set_wallpaper_day_auto_update"
                 android:widgetLayout="@layout/mp_preference_switch"
-                android:title="每天自动更新壁纸"
+                android:title="每天定时更新壁纸"
                 android:defaultValue="true"/>
 
         <me.liaoheng.bingwallpaper.view.TimePreference
                 android:defaultValue="00:00:00.000"
                 android:key="pref_set_wallpaper_day_auto_update_time"
-                android:title="每天自动更新时间"/>
+                android:title="每天定时更新壁纸时间"/>
+
+        <CheckBoxPreference
+                android:key="pref_set_wallpaper_check_net"
+                android:widgetLayout="@layout/mp_preference_switch"
+                android:title="是否在网络改变后加载壁纸"
+                android:summary="每天只会执行一次"
+                android:defaultValue="false"/>
 
     </PreferenceCategory>
 
@@ -39,7 +46,7 @@
         <CheckBoxPreference
                 android:key="pref_set_wallpaper_log"
                 android:widgetLayout="@layout/mp_preference_switch"
-                android:title="打开DEBUG日志"
+                android:title="是否打开日志文件"
                 android:defaultValue="false"/>
 
     </PreferenceCategory>

@@ -17,11 +17,6 @@ import org.joda.time.LocalTime;
 public class AutoSetWallpaperBroadcastReceiver extends BroadcastReceiver {
 
     @Override public void onReceive(Context context, Intent intent) {
-        boolean enableDayUpdate = Utils.isEnableDayUpdate(context);
-        if (!enableDayUpdate) {
-            BingWallpaperAlarmManager.clear(context);
-            return;
-        }
         L.Log.i("AutoSetWallpaperBroadcastReceiver", "action : %s", intent.getAction());
         if (Utils.isEnableLog(context)) {
             LogDebugFileUtils.get()

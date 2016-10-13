@@ -11,6 +11,8 @@ import com.bumptech.glide.Glide;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
 import java.io.File;
+import java.util.concurrent.TimeUnit;
+import jonathanfinerty.once.Once;
 import me.liaoheng.bingwallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.bingwallpaper.model.BingWallpaperImage;
 import me.liaoheng.bingwallpaper.model.BingWallpaperState;
@@ -30,7 +32,8 @@ public class BingWallpaperIntentService extends IntentService {
     private final       String TAG                        = BingWallpaperIntentService.class
             .getSimpleName();
     public final static String ACTION_GET_WALLPAPER_STATE = "me.liaoheng.bingwallpaper.BING_WALLPAPER_STATE";
-    public final static String EXTRA_WALLPAPER_STATE      = "STATE";
+    public final static String EXTRA_GET_WALLPAPER_STATE  = "GET_WALLPAPER_STATE";
+    public final static String FLAG_SET_WALLPAPER_STATE   = "SET_WALLPAPER_STATE";
 
     public BingWallpaperIntentService() {
         super("BingWallpaperIntentService");
@@ -50,7 +53,7 @@ public class BingWallpaperIntentService extends IntentService {
             }
 
             Intent intent1 = new Intent(BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE);
-            intent1.putExtra(EXTRA_WALLPAPER_STATE, BingWallpaperState.BEGIN);
+            intent1.putExtra(EXTRA_GET_WALLPAPER_STATE, BingWallpaperState.BEGIN);
             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent1);
             L.Log.i(TAG, "getBingWallpaper start");
             if (Utils.isEnableLog(getApplicationContext())) {
@@ -83,9 +86,13 @@ public class BingWallpaperIntentService extends IntentService {
                     L.Log.i(TAG, "getBingWallpaper Success");
                     Intent intent1 = new Intent(
                             BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE);
-                    intent1.putExtra(EXTRA_WALLPAPER_STATE, BingWallpaperState.SUCCESS);
+                    intent1.putExtra(EXTRA_GET_WALLPAPER_STATE, BingWallpaperState.SUCCESS);
                     LocalBroadcastManager.getInstance(getApplicationContext())
                             .sendBroadcast(intent1);
+                    //每天执行一次
+                    if (!Once.beenDone(TimeUnit.DAYS, 1, FLAG_SET_WALLPAPER_STATE)) {
+                        Once.markDone(FLAG_SET_WALLPAPER_STATE);
+                    }
                 }
             }, new Action1<Throwable>() {
                 @Override public void call(Throwable throwable) {
@@ -95,7 +102,7 @@ public class BingWallpaperIntentService extends IntentService {
                     }
                     Intent intent1 = new Intent(
                             BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE);
-                    intent1.putExtra(EXTRA_WALLPAPER_STATE, BingWallpaperState.FAIL);
+                    intent1.putExtra(EXTRA_GET_WALLPAPER_STATE, BingWallpaperState.FAIL);
                     LocalBroadcastManager.getInstance(getApplicationContext())
                             .sendBroadcast(intent1);
                 }

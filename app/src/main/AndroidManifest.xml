@@ -42,6 +42,13 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+                android:name=".service.ConnectionChangeReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+            </intent-filter>
+        </receiver>
+
         <meta-data
                 android:name="me.liaoheng.bingwallpaper.util.GlideModule"
                 android:value="GlideModule"/>
