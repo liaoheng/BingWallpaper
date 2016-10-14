@@ -4,13 +4,22 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
@@ -43,7 +52,7 @@ import rx.functions.Action1;
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private  final String TAG = MainActivity.class.getSimpleName();
+    private final String TAG = MainActivity.class.getSimpleName();
 
     @BindView(R.id.bing_wallpaper_view) ImageView wallpaperView;
 
@@ -115,6 +124,8 @@ public class MainActivity extends BaseActivity
                 });
     }
 
+    @BindView(R.id.bing_wallpaper_set) FloatingActionButton setWallpaperBtn;
+
     @OnClick(R.id.bing_wallpaper_set) void setWallpaper() {
         if (isRun) {
             UIUtils.showSnack(this, "正在设置壁纸，请稍候！");
@@ -139,9 +150,9 @@ public class MainActivity extends BaseActivity
             if (mCurBingWallpaperImage == null) {
                 return false;
             }
-            Intent intent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse(mCurBingWallpaperImage.getCopyrightlink()));
-            startActivity(intent);
+            new CustomTabsIntent.Builder()
+                    .setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary)).build()
+                    .launchUrl(this, Uri.parse(mCurBingWallpaperImage.getCopyrightlink()));
         } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_refresh) {
             if (isRun) {
                 UIUtils.showSnack(this, "正在设置壁纸，请稍候！");
@@ -172,11 +183,11 @@ public class MainActivity extends BaseActivity
                 if (BingWallpaperState.BEGIN.equals(state)) {
                     UIUtils.viewVisible(progressBar);
                     isRun = true;
-                }else if (BingWallpaperState.SUCCESS.equals(state)){
+                } else if (BingWallpaperState.SUCCESS.equals(state)) {
                     isRun = false;
                     UIUtils.viewGone(progressBar);
                     UIUtils.showSnack(MainActivity.this, "壁纸设置成功！");
-                }else if (BingWallpaperState.FAIL.equals(state)){
+                } else if (BingWallpaperState.FAIL.equals(state)) {
                     isRun = false;
                     UIUtils.viewGone(progressBar);
                     UIUtils.showSnack(MainActivity.this, "bing 壁纸无法设置！");
@@ -197,15 +208,47 @@ public class MainActivity extends BaseActivity
             wm.getDefaultDisplay().getMetrics(dm);
         }
 
-        String url = Utils.getUrl(getApplicationContext(),bingWallpaperImage);
+        String url = Utils.getUrl(getApplicationContext(), bingWallpaperImage);
 
         Glide.with(MainActivity.this).load(url).override(dm.widthPixels, dm.heightPixels)
                 .centerCrop().crossFade().into(new ImageViewTarget<GlideDrawable>(wallpaperView) {
             @Override protected void setResource(GlideDrawable resource) {
                 wallpaperView.setImageDrawable(resource);
                 UIUtils.viewGone(progressBar);
+
+                Palette.from(drawableToBitmap(resource))
+                        .generate(new Palette.PaletteAsyncListener() {
+                            @Override public void onGenerated(Palette palette) {
+
+                                int lightMutedSwatch = palette.getMutedColor(ContextCompat
+                                        .getColor(MainActivity.this, R.color.colorPrimaryDark));
+
+                                int lightVibrantSwatch = palette.getVibrantColor(ContextCompat
+                                        .getColor(MainActivity.this, R.color.colorAccent));
+
+                                setWallpaperBtn.setBackgroundTintList(
+                                        ColorStateList.valueOf(lightMutedSwatch));
+                                setWallpaperBtn.setRippleColor(lightVibrantSwatch);
+                            }
+                        });
             }
         });
+
+    }
+
+    public Bitmap drawableToBitmap(Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+
+        Bitmap bitmap = Bitmap
+                .createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(),
+                        Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
     }
 
     @Override protected void onStart() {

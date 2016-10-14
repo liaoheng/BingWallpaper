@@ -38,6 +38,8 @@ dependencies {
   compile deps.appcompatv7
   compile deps.cardviewv7
   compile deps.design
+  compile "com.android.support:palette-v7:23.4.0"
+  compile "com.android.support:customtabs:23.4.0"
 
   //View "injection" library:https://github.com/JakeWharton/butterknife
   compile 'com.jakewharton:butterknife:8.0.1'
