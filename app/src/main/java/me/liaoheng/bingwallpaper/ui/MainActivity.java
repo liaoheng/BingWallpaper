@@ -41,7 +41,6 @@ import me.liaoheng.bingwallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.bingwallpaper.model.BingWallpaperImage;
 import me.liaoheng.bingwallpaper.model.BingWallpaperState;
 import me.liaoheng.bingwallpaper.service.BingWallpaperIntentService;
-import me.liaoheng.bingwallpaper.service.ConnectionChangeReceiver;
 import me.liaoheng.bingwallpaper.util.BingWallpaperAlarmManager;
 import me.liaoheng.bingwallpaper.util.Utils;
 import me.zhanghai.android.systemuihelper.SystemUiHelper;
@@ -88,9 +87,6 @@ public class MainActivity extends BaseActivity
             LocalTime localTime = Utils.getDayUpdateTime(this);
             BingWallpaperAlarmManager.clear(this);
             BingWallpaperAlarmManager.add(this, localTime);
-
-            //默认不开启
-            Utils.disabledReceiver(this, ConnectionChangeReceiver.class.getName());
 
             Once.markDone("zzz");
         }
