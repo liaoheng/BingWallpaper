@@ -4,6 +4,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
+import android.support.v4.content.ContextCompat;
+import com.flyco.systembar.SystemBarHelper;
 import me.liaoheng.bingwallpaper.R;
 import me.liaoheng.bingwallpaper.service.AutoSetWallpaperBroadcastReceiver;
 import me.liaoheng.bingwallpaper.service.ConnectionChangeReceiver;
@@ -21,6 +23,8 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
 
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SystemBarHelper
+                .tintStatusBar(this, ContextCompat.getColor(this, R.color.colorPrimaryDark), 0);
         setPreferenceFragment(new MyPreferenceFragment());
     }
 

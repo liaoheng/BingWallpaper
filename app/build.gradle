@@ -9,13 +9,30 @@ android {
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
     applicationId "me.liaoheng.bingwallpaper"
-    versionCode 1
-    versionName "1.0"
+    versionCode 100
+    versionName "1.0.0"
   }
+
+  def isSigning = true;
+  signingConfigs {
+    config {
+      try {
+        keyAlias KEY_ALIAS
+        keyPassword KEY_PASSWORD
+        storeFile file(STORE_FILE)
+        storePassword STORE_PASSWORD
+      } catch (Exception ignored) {
+        isSigning = false
+        printf("not signingConfigs")
+      }
+    }
+  }
+
   buildTypes {
     release {
       minifyEnabled false
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+      if (isSigning) signingConfig signingConfigs.config
     }
   }
   lintOptions {
@@ -26,6 +43,12 @@ android {
     exclude 'META-INF/NOTICE.txt'
     exclude 'META-INF/LICENSE'
     exclude 'META-INF/NOTICE'
+  }
+  applicationVariants.all { variant ->
+    variant.outputs.each { output ->
+      output.outputFile = new File(output.outputFile.parent,
+              output.outputFile.name.replace(".apk", "-" + defaultConfig.versionName + ".apk"))
+    }
   }
 }
 
@@ -76,7 +99,9 @@ dependencies {
   compile 'net.danlew:android.joda:2.9.4.1'
 
   //https://github.com/jonfinerty/Once
-  compile 'com.jonathanfinerty.once:once:1.2.1'
+  compile ('com.jonathanfinerty.once:once:1.2.1'){
+    exclude module: 'support-annotations'
+  }
 
   //https://github.com/ferrannp/material-preferences
   compile 'com.fnp:material-preferences:0.1.4'
@@ -86,6 +111,9 @@ dependencies {
 
   //https://github.com/yshrsmz/LicenseAdapter
   compile 'net.yslibrary.licenseadapter:licenseadapter:1.2.4'
+
+  //https://github.com/H07000223/FlycoSystemBar
+  compile "com.flyco.systembar:FlycoSystemBar_Lib:1.0.0"
 
   compile 'com.github.liaoheng:common-core:0.0.4-SNAPSHOT'
 }

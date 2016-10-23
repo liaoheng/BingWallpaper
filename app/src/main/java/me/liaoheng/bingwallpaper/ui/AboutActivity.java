@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.flyco.systembar.SystemBarHelper;
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.SystemException;
@@ -42,7 +44,8 @@ public class AboutActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
         ButterKnife.bind(this);
-
+        SystemBarHelper
+                .tintStatusBar(this, ContextCompat.getColor(this, R.color.colorPrimaryDark), 0);
         try {
             version.setText(AppUtils.getVersionInfo(getApplication()).versionName);
         } catch (SystemException e) {
@@ -71,7 +74,8 @@ public class AboutActivity extends BaseActivity {
         licenses.add(
                 Licenses.fromGitHub("ferrannp/material-preferences", Licenses.FILE_NO_EXTENSION));
         licenses.add(Licenses.fromGitHub("yshrsmz/LicenseAdapter", Licenses.FILE_NO_EXTENSION));
-
+        licenses.add(Licenses.fromGitHub("H07000223/FlycoSystemBar", Licenses.NAME_MIT,
+                Licenses.FILE_NO_EXTENSION));
         licenses.add(Licenses.fromGitHub("FasterXML/jackson", Licenses.LICENSE_APACHE_V2));
         licenses.add(Licenses.fromGitHub("apache/commons-io", Licenses.FILE_TXT));
         licenses.add(Licenses.fromGitHub("dlew/joda-time-android", Licenses.FILE_NO_EXTENSION));
