@@ -7,16 +7,16 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.AndroidRuntimeException;
+import android.util.DisplayMetrics;
 import com.bumptech.glide.Glide;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
 import java.io.File;
-import java.util.concurrent.TimeUnit;
-import jonathanfinerty.once.Once;
 import me.liaoheng.bingwallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.bingwallpaper.model.BingWallpaperImage;
 import me.liaoheng.bingwallpaper.model.BingWallpaperState;
 import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
+import me.liaoheng.bingwallpaper.util.TasksUtils;
 import me.liaoheng.bingwallpaper.util.Utils;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -72,7 +72,11 @@ public class BingWallpaperIntentService extends IntentService {
                                 String absolutePath = wallpaper.getAbsolutePath();
                                 L.Log.i(TAG, "wallpaper file : " + absolutePath);
 
-                                Bitmap bitmap = BitmapFactory.decodeFile(absolutePath);
+                                DisplayMetrics dm = Utils.getDisplayMetrics(getApplicationContext());
+                                BitmapFactory.Options options=new BitmapFactory.Options();
+                                options.outWidth  = dm.widthPixels;
+                                options.outHeight = dm.heightPixels;
+                                Bitmap bitmap = BitmapFactory.decodeFile(absolutePath,options);
                                 WallpaperManager.getInstance(getApplicationContext())
                                         .setBitmap(bitmap);
 
@@ -90,8 +94,8 @@ public class BingWallpaperIntentService extends IntentService {
                     LocalBroadcastManager.getInstance(getApplicationContext())
                             .sendBroadcast(intent1);
                     //每天执行一次
-                    if (!Once.beenDone(TimeUnit.DAYS, 1, FLAG_SET_WALLPAPER_STATE)) {
-                        Once.markDone(FLAG_SET_WALLPAPER_STATE);
+                    if (TasksUtils.isToDaysDo(1, FLAG_SET_WALLPAPER_STATE)) {
+                        TasksUtils.markDone(FLAG_SET_WALLPAPER_STATE);
                     }
                 }
             }, new Action1<Throwable>() {

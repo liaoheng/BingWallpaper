@@ -4,7 +4,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
+import android.view.WindowManager;
 import me.liaoheng.bingwallpaper.R;
 import me.liaoheng.bingwallpaper.model.BingWallpaperImage;
 import me.liaoheng.bingwallpaper.ui.SettingsActivity;
@@ -16,6 +19,17 @@ import org.joda.time.LocalTime;
  * @version 2016-09-20 17:17
  */
 public class Utils {
+
+    public static DisplayMetrics getDisplayMetrics(Context context) {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics dm = new DisplayMetrics();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            wm.getDefaultDisplay().getRealMetrics(dm);
+        } else {
+            wm.getDefaultDisplay().getMetrics(dm);
+        }
+        return dm;
+    }
 
     public static String getUrl(Context context, BingWallpaperImage image) {
         String baseUrl = image.getUrlbase();

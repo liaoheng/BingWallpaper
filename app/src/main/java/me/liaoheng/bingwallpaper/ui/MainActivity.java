@@ -196,13 +196,7 @@ public class MainActivity extends BaseActivity
         L.i(TAG, "加载壁纸: %s", bingWallpaperImage);
         setTitle(bingWallpaperImage.getCopyright());
 
-        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics dm = new DisplayMetrics();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            wm.getDefaultDisplay().getRealMetrics(dm);
-        } else {
-            wm.getDefaultDisplay().getMetrics(dm);
-        }
+        DisplayMetrics dm = Utils.getDisplayMetrics(this);
 
         String url = Utils.getUrl(getApplicationContext(), bingWallpaperImage);
 

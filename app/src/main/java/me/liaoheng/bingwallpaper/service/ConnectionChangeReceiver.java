@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import com.github.liaoheng.common.util.NetworkUtils;
 import java.util.concurrent.TimeUnit;
+import jonathanfinerty.once.CountChecker;
 import jonathanfinerty.once.Once;
 import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
+import me.liaoheng.bingwallpaper.util.TasksUtils;
 import me.liaoheng.bingwallpaper.util.Utils;
 
 /**
@@ -27,8 +29,12 @@ public class ConnectionChangeReceiver extends BroadcastReceiver {
                     return;
                 }
             }
-            if (!Once.beenDone(TimeUnit.DAYS, 1,
-                    BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
+
+            if (TasksUtils.isToDaysDo(1,BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)){
+                if (Utils.isEnableLog(context)) {
+                    LogDebugFileUtils.get()
+                            .i("ConnectionChangeReceiver", "Today for the first time");
+                }
                 context.startService(new Intent(context, BingWallpaperIntentService.class));
             }
         }
