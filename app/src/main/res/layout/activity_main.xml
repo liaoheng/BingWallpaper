@@ -13,23 +13,37 @@
         <ImageView
                 android:id="@+id/bing_wallpaper_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="壁纸"/>
+                android:layout_height="match_parent"/>
 
-        <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
+        <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
-                android:background="#30000000"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+                android:layout_height="match_parent">
 
-        <ProgressBar
-                android:id="@+id/bing_wallpaper_progress"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+            <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?actionBarSize"
+                    android:background="#30000000"
+                    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                    app:layout_scrollFlags="scroll|enterAlways"
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+            <android.support.v4.widget.SwipeRefreshLayout
+                    android:id="@+id/bing_wallpaper_swipe_refresh"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                <android.support.v4.widget.NestedScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                    <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"/>
+                </android.support.v4.widget.NestedScrollView>
+            </android.support.v4.widget.SwipeRefreshLayout>
+        </LinearLayout>
 
         <android.support.design.widget.FloatingActionButton
                 android:id="@+id/bing_wallpaper_set"

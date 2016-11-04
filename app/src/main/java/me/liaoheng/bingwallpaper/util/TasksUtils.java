@@ -12,41 +12,26 @@ import org.joda.time.Days;
  */
 public class TasksUtils {
     private static PreferencesUtils mTaskPreferencesUtils;
-    private static PreferencesUtils mDoPreferencesUtils;
 
     public static void init(Context context) {
         PreferencesUtils.init(context);
         mTaskPreferencesUtils = PreferencesUtils.from(TASK_FILE_NAME);
-        mDoPreferencesUtils = PreferencesUtils.from(DO_FILE_NAME);
     }
 
     private final static String TASK_FILE_NAME = "COM_GITHUB_LIAOHENG_COMMON_TASKS";
-    private final static String DO_FILE_NAME   = "COM_GITHUB_LIAOHENG_COMMON_TASKS_DO";
-
-    public static void toDo(String tag) {
-        mDoPreferencesUtils.put(tag, 0);
-        mTaskPreferencesUtils.put(tag, DateTime.now(DateTimeZone.UTC).getMillis()).apply();
-    }
 
     public static boolean isToDaysDo(int day, String tag) {
-        int tagDo = mDoPreferencesUtils.getInt(tag, -1);
-        if (tagDo == -1) {
-            toDo(tag);
-            return true;
-        }
-
-        if (tagDo == 0) {
-            return true;
-        }
-
         long data = mTaskPreferencesUtils.getLong(tag, -1);
+        if (data == -1){
+            return true;
+        }
+
         DateTime dateTime = new DateTime(data, DateTimeZone.UTC);
         int days = Days.daysBetween(dateTime.toLocalDate(), DateTime.now().toLocalDate()).getDays();
         return days >= day;
     }
 
     public static void markDone(String tag) {
-        mDoPreferencesUtils.put(tag, 1);
-        mTaskPreferencesUtils.remove(tag);
+        mTaskPreferencesUtils.put(tag, DateTime.now(DateTimeZone.UTC).getMillis()).apply();
     }
 }

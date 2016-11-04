@@ -10,7 +10,6 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.FloatingActionButton;
@@ -19,13 +18,12 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
-import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -55,7 +53,7 @@ public class MainActivity extends BaseActivity
 
     @BindView(R.id.bing_wallpaper_view) ImageView wallpaperView;
 
-    @BindView(R.id.bing_wallpaper_progress) ProgressBar progressBar;
+    @BindView(R.id.bing_wallpaper_swipe_refresh) SwipeRefreshLayout mSwipeRefreshLayout;
 
     @BindView(R.id.drawer_layout)     DrawerLayout   mDrawerLayout;
     @BindView(R.id.navigation_drawer) NavigationView mNavigationView;
@@ -82,6 +80,16 @@ public class MainActivity extends BaseActivity
 
         mWallpaperBroadcastReceiver = new WallpaperBroadcastReceiver();
 
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override public void onRefresh() {
+                if (isRun) {
+                    UIUtils.showSnack(MainActivity.this, "正在设置壁纸，请稍候！");
+                } else {
+                    getBingWallpaper();
+                }
+            }
+        });
+
         //第一次安装打开app，设置自动更新闹钟，默认使用00:00
         if (!Once.beenDone(Once.THIS_APP_INSTALL, "zzz")) {
             LocalTime localTime = Utils.getDayUpdateTime(this);
@@ -96,21 +104,20 @@ public class MainActivity extends BaseActivity
     BingWallpaperImage mCurBingWallpaperImage;
 
     private void getBingWallpaper() {
-        UIUtils.viewVisible(progressBar);
         isRun = true;
+        showSwipeRefreshLayout();
         BingWallpaperNetworkClient.getBingWallpaper(this)
                 .compose(this.<BingWallpaperImage>bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<BingWallpaperImage>() {
                     @Override public void call(BingWallpaperImage bingWallpaperImage) {
-                        isRun = false;
                         mCurBingWallpaperImage = bingWallpaperImage;
                         setImage(bingWallpaperImage);
                     }
                 }, new Action1<Throwable>() {
                     @Override public void call(Throwable throwable) {
                         isRun = false;
-                        UIUtils.viewGone(progressBar);
+                        dismissSwipeRefreshLayout();
                         if (throwable instanceof SocketTimeoutException) {
                             L.getSnack().e(TAG, MainActivity.this, "time out");
                             return;
@@ -139,6 +146,22 @@ public class MainActivity extends BaseActivity
         return super.onOptionsItemSelected(item);
     }
 
+    private void dismissSwipeRefreshLayout() {
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override public void run() {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
+    }
+
+    private void showSwipeRefreshLayout() {
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override public void run() {
+                mSwipeRefreshLayout.setRefreshing(true);
+            }
+        });
+    }
+
     @Override public boolean onNavigationItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_main_drawer_settings) {
             UIUtils.startActivity(MainActivity.this, SettingsActivity.class);
@@ -149,12 +172,6 @@ public class MainActivity extends BaseActivity
             new CustomTabsIntent.Builder()
                     .setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary)).build()
                     .launchUrl(this, Uri.parse(mCurBingWallpaperImage.getCopyrightlink()));
-        } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_refresh) {
-            if (isRun) {
-                UIUtils.showSnack(this, "正在设置壁纸，请稍候！");
-            } else {
-                getBingWallpaper();
-            }
         } else if (item.getItemId() == R.id.menu_main_drawer_about) {
             AboutActivity.start(this);
         }
@@ -177,15 +194,15 @@ public class MainActivity extends BaseActivity
                         .getSerializableExtra(BingWallpaperIntentService.EXTRA_GET_WALLPAPER_STATE);
 
                 if (BingWallpaperState.BEGIN.equals(state)) {
-                    UIUtils.viewVisible(progressBar);
+                    showSwipeRefreshLayout();
                     isRun = true;
                 } else if (BingWallpaperState.SUCCESS.equals(state)) {
                     isRun = false;
-                    UIUtils.viewGone(progressBar);
+                    dismissSwipeRefreshLayout();
                     UIUtils.showSnack(MainActivity.this, "壁纸设置成功！");
                 } else if (BingWallpaperState.FAIL.equals(state)) {
                     isRun = false;
-                    UIUtils.viewGone(progressBar);
+                    dismissSwipeRefreshLayout();
                     UIUtils.showSnack(MainActivity.this, "bing 壁纸无法设置！");
                 }
             }
@@ -204,7 +221,6 @@ public class MainActivity extends BaseActivity
                 .centerCrop().crossFade().into(new ImageViewTarget<GlideDrawable>(wallpaperView) {
             @Override protected void setResource(GlideDrawable resource) {
                 wallpaperView.setImageDrawable(resource);
-                UIUtils.viewGone(progressBar);
 
                 Palette.from(drawableToBitmap(resource))
                         .generate(new Palette.PaletteAsyncListener() {
@@ -221,6 +237,9 @@ public class MainActivity extends BaseActivity
                                 setWallpaperBtn.setRippleColor(lightVibrantSwatch);
                             }
                         });
+
+                isRun = false;
+                dismissSwipeRefreshLayout();
             }
         });
 

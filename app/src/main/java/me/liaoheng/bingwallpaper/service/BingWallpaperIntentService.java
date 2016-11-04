@@ -57,7 +57,7 @@ public class BingWallpaperIntentService extends IntentService {
             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent1);
             L.Log.i(TAG, "getBingWallpaper start");
             if (Utils.isEnableLog(getApplicationContext())) {
-                LogDebugFileUtils.get().i(TAG, "is ok , Start getBingWallpaper");
+                LogDebugFileUtils.get().i(TAG, "Start getBingWallpaper");
             }
 
             BingWallpaperNetworkClient.getBingWallpaper(getApplicationContext())
