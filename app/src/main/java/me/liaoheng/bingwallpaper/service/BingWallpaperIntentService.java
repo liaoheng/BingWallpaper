@@ -48,6 +48,10 @@ public class BingWallpaperIntentService extends IntentService {
 
             if (Utils.getOnlyWifi(getApplicationContext())) {
                 if (!NetworkUtils.isWifiAvailable(getApplicationContext())) {
+                    if (Utils.isEnableLog(getApplicationContext())) {
+                        LogDebugFileUtils.get()
+                                .i(TAG, "is wifi not available");
+                    }
                     return;
                 }
             }
@@ -88,6 +92,9 @@ public class BingWallpaperIntentService extends IntentService {
                     }).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<File>() {
                 @Override public void call(File file) {
                     L.Log.i(TAG, "getBingWallpaper Success");
+                    if (Utils.isEnableLog(getApplicationContext())) {
+                        LogDebugFileUtils.get().i(TAG,"getBingWallpaper Success");
+                    }
                     Intent intent1 = new Intent(
                             BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE);
                     intent1.putExtra(EXTRA_GET_WALLPAPER_STATE, BingWallpaperState.SUCCESS);
