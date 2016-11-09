@@ -44,7 +44,7 @@ public class BingWallpaperIntentService extends IntentService {
             LogDebugFileUtils.get().i(TAG, "Run BingWallpaperIntentService");
         }
 
-        if (NetworkUtils.isConnected(getApplicationContext())) {
+        if (NetworkUtils.isAvailable(getApplicationContext())) {
 
             if (Utils.getOnlyWifi(getApplicationContext())) {
                 if (!NetworkUtils.isWifiAvailable(getApplicationContext())) {

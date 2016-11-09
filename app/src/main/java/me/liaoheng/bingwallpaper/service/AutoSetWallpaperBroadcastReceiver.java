@@ -29,7 +29,7 @@ public class AutoSetWallpaperBroadcastReceiver extends BroadcastReceiver {
             return;
         }
 
-        if (NetworkUtils.isConnected(context)) {
+        if (NetworkUtils.isAvailable(context)) {
             if (Utils.getOnlyWifi(context)) {
                 if (!NetworkUtils.isWifiAvailable(context)) {
                     if (Utils.isEnableLog(context)) {
