@@ -5,6 +5,7 @@ import android.app.WallpaperManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.AndroidRuntimeException;
 import android.util.DisplayMetrics;
@@ -45,7 +46,9 @@ public class BingWallpaperIntentService extends IntentService {
         }
 
         if (NetworkUtils.isAvailable(getApplicationContext())) {
-
+            if (Utils.isEnableLog(getApplicationContext())) {
+                LogDebugFileUtils.get().i(TAG, "network available");
+            }
             if (Utils.getOnlyWifi(getApplicationContext())) {
                 if (!NetworkUtils.isWifiAvailable(getApplicationContext())) {
                     if (Utils.isEnableLog(getApplicationContext())) {
@@ -76,14 +79,19 @@ public class BingWallpaperIntentService extends IntentService {
                                 String absolutePath = wallpaper.getAbsolutePath();
                                 L.Log.i(TAG, "wallpaper file : " + absolutePath);
 
-                                DisplayMetrics dm = Utils.getDisplayMetrics(getApplicationContext());
-                                BitmapFactory.Options options=new BitmapFactory.Options();
-                                options.outWidth  = dm.widthPixels;
-                                options.outHeight = dm.heightPixels;
-                                Bitmap bitmap = BitmapFactory.decodeFile(absolutePath,options);
+                                Bitmap bitmap;
+                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                                    DisplayMetrics dm = Utils
+                                            .getDisplayMetrics(getApplicationContext());
+                                    BitmapFactory.Options options = new BitmapFactory.Options();
+                                    options.outWidth = dm.widthPixels;
+                                    options.outHeight = dm.heightPixels;
+                                    bitmap = BitmapFactory.decodeFile(absolutePath, options);
+                                } else {
+                                    bitmap = BitmapFactory.decodeFile(absolutePath);
+                                }
                                 WallpaperManager.getInstance(getApplicationContext())
                                         .setBitmap(bitmap);
-
                                 return Observable.just(wallpaper);
                             } catch (Exception e) {
                                 throw new AndroidRuntimeException(e);
@@ -102,6 +110,9 @@ public class BingWallpaperIntentService extends IntentService {
                             .sendBroadcast(intent1);
                     //每天执行一次
                     if (TasksUtils.isToDaysDo(1, FLAG_SET_WALLPAPER_STATE)) {
+                        if (Utils.isEnableLog(getApplicationContext())) {
+                            LogDebugFileUtils.get().i(TAG, "Today markDone");
+                        }
                         TasksUtils.markDone(FLAG_SET_WALLPAPER_STATE);
                     }
                 }

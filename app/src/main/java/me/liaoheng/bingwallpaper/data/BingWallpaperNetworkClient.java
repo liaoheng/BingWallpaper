@@ -3,9 +3,10 @@ package me.liaoheng.bingwallpaper.data;
 import android.content.Context;
 import android.util.AndroidRuntimeException;
 import com.github.liaoheng.common.util.L;
-import me.liaoheng.bingwallpaper.MApplication;
 import me.liaoheng.bingwallpaper.model.BingWallpaper;
 import me.liaoheng.bingwallpaper.model.BingWallpaperImage;
+import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
+import me.liaoheng.bingwallpaper.util.NetUtils;
 import me.liaoheng.bingwallpaper.util.Utils;
 import rx.Observable;
 import rx.functions.Func1;
@@ -22,7 +23,11 @@ public class BingWallpaperNetworkClient {
     public static Observable<BingWallpaperImage> getBingWallpaper(Context context) {
         String url = Utils.getUrl(context);
         L.Log.i(TAG, "getBingWallpaper url :%s", url);
-        return MApplication.getInstance().getRetrofit().create(BingWallpaperNetworkService.class)
+        if (Utils.isEnableLog(context)) {
+            LogDebugFileUtils.get()
+                    .i("BingWallpaperNetworkClient", "getBingWallpaper url :%s", url);
+        }
+        return NetUtils.get().getBingWallpaperNetworkService()
                 .getBingWallpaper(url).subscribeOn(Schedulers.io())
                 .map(new Func1<BingWallpaper, BingWallpaperImage>() {
                     @Override public BingWallpaperImage call(BingWallpaper bingWallpaper) {

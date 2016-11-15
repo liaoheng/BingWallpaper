@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.preference.DialogPreference;
 import android.support.annotation.NonNull;
+import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TimePicker;
@@ -20,14 +21,13 @@ public class TimePreference extends DialogPreference {
 
     public TimePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        setPositiveButtonText("Set");
-        setNegativeButtonText("Cancel");
+        setPositiveButtonText(context.getString(android.R.string.ok));
+        setNegativeButtonText(context.getString(android.R.string.cancel));
     }
 
     @Override protected View onCreateDialogView() {
         picker = new TimePicker(getContext());
-
+        picker.setIs24HourView(DateFormat.is24HourFormat(getContext()));
         return (picker);
     }
 
@@ -53,7 +53,7 @@ public class TimePreference extends DialogPreference {
     }
 
     @Override protected Object onGetDefaultValue(TypedArray a, int index) {
-        return (a.getString(index));
+        return a.getString(index);
     }
 
     @Override protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {

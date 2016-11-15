@@ -24,6 +24,9 @@ public class ConnectionChangeReceiver extends BroadcastReceiver {
                     .i("ConnectionChangeReceiver", "action  : %s", intent.getAction());
         }
         if (NetworkUtils.isAvailable(context)) {
+            if (Utils.isEnableLog(context)) {
+                LogDebugFileUtils.get().i("ConnectionChangeReceiver", "network available");
+            }
             if (Utils.getOnlyWifi(context)) {
                 if (!NetworkUtils.isWifiAvailable(context)) {
                     if (Utils.isEnableLog(context)) {
