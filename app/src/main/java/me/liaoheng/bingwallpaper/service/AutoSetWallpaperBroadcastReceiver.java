@@ -29,17 +29,9 @@ public class AutoSetWallpaperBroadcastReceiver extends BroadcastReceiver {
             return;
         }
 
-        if (NetworkUtils.isAvailable(context)) {
-            if (Utils.isEnableLog(context)) {
-                LogDebugFileUtils.get()
-                        .i("AutoSetWallpaperBroadcastReceiver", "network available");
-            }
+        if (NetworkUtils.isConnected(context)) {
             if (Utils.getOnlyWifi(context)) {
-                if (!NetworkUtils.isWifiAvailable(context)) {
-                    if (Utils.isEnableLog(context)) {
-                        LogDebugFileUtils.get()
-                                .i("AutoSetWallpaperBroadcastReceiver", "is wifi not available");
-                    }
+                if (!NetworkUtils.isWifiConnected(context)) {
                     return;
                 }
             }

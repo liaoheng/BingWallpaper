@@ -4,9 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import com.github.liaoheng.common.util.NetworkUtils;
-import java.util.concurrent.TimeUnit;
-import jonathanfinerty.once.CountChecker;
-import jonathanfinerty.once.Once;
 import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
 import me.liaoheng.bingwallpaper.util.TasksUtils;
 import me.liaoheng.bingwallpaper.util.Utils;
@@ -23,16 +20,9 @@ public class ConnectionChangeReceiver extends BroadcastReceiver {
             LogDebugFileUtils.get()
                     .i("ConnectionChangeReceiver", "action  : %s", intent.getAction());
         }
-        if (NetworkUtils.isAvailable(context)) {
-            if (Utils.isEnableLog(context)) {
-                LogDebugFileUtils.get().i("ConnectionChangeReceiver", "network available");
-            }
+        if (NetworkUtils.isConnected(context)) {
             if (Utils.getOnlyWifi(context)) {
-                if (!NetworkUtils.isWifiAvailable(context)) {
-                    if (Utils.isEnableLog(context)) {
-                        LogDebugFileUtils.get()
-                                .i("AutoSetWallpaperBroadcastReceiver", "is wifi not available");
-                    }
+                if (!NetworkUtils.isWifiConnected(context)) {
                     return;
                 }
             }

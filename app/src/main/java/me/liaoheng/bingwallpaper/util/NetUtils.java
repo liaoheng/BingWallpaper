@@ -9,7 +9,7 @@ import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.jackson.JacksonConverterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * @author liaoheng
@@ -40,7 +40,7 @@ public class NetUtils {
         } catch (SystemException ignored) {
         }
         mRetrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL)
-                .addConverterFactory(JacksonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create()).client(builder.build())
                 .build();
     }

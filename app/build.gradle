@@ -68,12 +68,7 @@ dependencies {
   compile 'com.jakewharton:butterknife:8.0.1'
   apt 'com.jakewharton:butterknife-compiler:8.0.1'
 
-  //https://github.com/FasterXML/jackson-annotations
-  provided "com.fasterxml.jackson.core:jackson-annotations:$JacksonVersion"
-  //https://github.com/FasterXML/jackson-databind
-  provided "com.fasterxml.jackson.core:jackson-databind:$JacksonVersion"
-  //https://github.com/FasterXML/jackson-core
-  provided "com.fasterxml.jackson.core:jackson-core:$JacksonVersion"
+  compile 'com.google.code.gson:gson:2.8.0'
 
   //https://github.com/bumptech/glide
   compile 'com.github.bumptech.glide:glide:3.7.0'
@@ -83,7 +78,7 @@ dependencies {
   compile 'com.squareup.okhttp3:okhttp:3.3.1'
   //https://github.com/square/retrofit
   compile 'com.squareup.retrofit2:retrofit:2.1.0'
-  compile 'com.squareup.retrofit2:converter-jackson:2.1.0'
+  compile 'com.squareup.retrofit2:converter-gson:2.1.0'
   compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
   //日志:https://github.com/orhanobut/logger
   compile 'com.orhanobut:logger:1.8'
