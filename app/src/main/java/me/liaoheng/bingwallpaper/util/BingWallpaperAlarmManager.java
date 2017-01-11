@@ -15,10 +15,12 @@ import org.joda.time.LocalTime;
  */
 public class BingWallpaperAlarmManager {
 
-    private static final String TAG    = BingWallpaperAlarmManager.class.getSimpleName();
-    public static final  String ACTION = "me.liaoheng.bingwallpaper.alarm.task_schedule";
+    private static final String TAG            = BingWallpaperAlarmManager.class.getSimpleName();
+    public static final  String ACTION         = "me.liaoheng.bingwallpaper.alarm.task_schedule";
+    public static final  String ACTION_LIMITED = "me.liaoheng.bingwallpaper.alarm.task_schedule_limited";
 
-    public static final int REQUEST_CODE = 0x123;
+    public static final int REQUEST_CODE         = 0x12;
+    public static final int REQUEST_CODE_LIMITED = 0x32;
 
     private static PendingIntent getPendingIntent(Context context) {
         Intent intent = new Intent(context, AutoSetWallpaperBroadcastReceiver.class);
@@ -59,5 +61,24 @@ public class BingWallpaperAlarmManager {
     public static void add(Context context, LocalTime localTime) {
         DateTime dateTime = Utils.checkTime(localTime);
         add(context, dateTime);
+    }
+
+    private static PendingIntent getPendingIntentLimited(Context context) {
+        Intent intent = new Intent(context, AutoSetWallpaperBroadcastReceiver.class);
+        intent.setAction(ACTION_LIMITED);
+        return PendingIntent.getBroadcast(context, REQUEST_CODE_LIMITED, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    public static void addLimited(Context context, DateTime time) {
+        PendingIntent pendingIntent = getPendingIntentLimited(context);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, time.getMillis(), pendingIntent);
+    }
+
+    public static void clearLimited(Context context) {
+        PendingIntent pendingIntent = getPendingIntentLimited(context);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
     }
 }

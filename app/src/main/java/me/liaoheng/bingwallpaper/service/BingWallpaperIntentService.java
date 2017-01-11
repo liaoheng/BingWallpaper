@@ -3,12 +3,9 @@ package me.liaoheng.bingwallpaper.service;
 import android.app.IntentService;
 import android.app.WallpaperManager;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.AndroidRuntimeException;
-import android.util.DisplayMetrics;
 import com.bumptech.glide.Glide;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
@@ -72,19 +69,19 @@ public class BingWallpaperIntentService extends IntentService {
                                 String absolutePath = wallpaper.getAbsolutePath();
                                 L.Log.i(TAG, "wallpaper file : " + absolutePath);
 
-                                Bitmap bitmap;
-                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                                    DisplayMetrics dm = Utils
-                                            .getDisplayMetrics(getApplicationContext());
-                                    BitmapFactory.Options options = new BitmapFactory.Options();
-                                    options.outWidth = dm.widthPixels;
-                                    options.outHeight = dm.heightPixels;
-                                    bitmap = BitmapFactory.decodeFile(absolutePath, options);
-                                } else {
-                                    bitmap = BitmapFactory.decodeFile(absolutePath);
-                                }
+                                //Bitmap bitmap;
+                                //if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                                //    DisplayMetrics dm = Utils
+                                //            .getDisplayMetrics(getApplicationContext());
+                                //    BitmapFactory.Options options = new BitmapFactory.Options();
+                                //    options.outWidth = dm.widthPixels;
+                                //    options.outHeight = dm.heightPixels;
+                                //    bitmap = BitmapFactory.decodeFile(absolutePath, options);
+                                //} else {
+                                //    bitmap = BitmapFactory.decodeFile(absolutePath);
+                                //}
                                 WallpaperManager.getInstance(getApplicationContext())
-                                        .setBitmap(bitmap);
+                                        .setBitmap(BitmapFactory.decodeFile(absolutePath));
                                 return Observable.just(wallpaper);
                             } catch (Exception e) {
                                 throw new AndroidRuntimeException(e);
