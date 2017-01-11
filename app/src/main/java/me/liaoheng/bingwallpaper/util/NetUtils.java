@@ -32,8 +32,8 @@ public class NetUtils {
     private Retrofit mRetrofit;
 
     public void init() {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                .connectTimeout(30, TimeUnit.SECONDS);
+        OkHttpClient.Builder builder = new OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(60, TimeUnit.SECONDS);
         try {
             File cacheFile = FileUtils.createCacheSDAndroidDirectory(Constants.HTTP_CACHE_DIR);
             builder.cache(new Cache(cacheFile, Constants.HTTP_DISK_CACHE_SIZE));
