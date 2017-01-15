@@ -60,6 +60,9 @@ public class AboutActivity extends BaseActivity {
         licenses.add(Licenses.noContent("Android SDK", "Google Inc.",
                 "https://developer.android.com/sdk/terms.html"));
 
+        licenses.add(Licenses.fromGitHub("FasterXML/jackson", Licenses.LICENSE_APACHE_V2));
+        licenses.add(Licenses.fromGitHub("apache/commons-io", Licenses.FILE_TXT));
+        licenses.add(Licenses.fromGitHub("dlew/joda-time-android", Licenses.FILE_NO_EXTENSION));
         licenses.add(Licenses.fromGitHub("square/okhttp", Licenses.FILE_TXT));
         licenses.add(Licenses.fromGitHub("square/retrofit", Licenses.FILE_TXT));
         licenses.add(Licenses.fromGitHub("bumptech/glide", Licenses.FILE_NO_EXTENSION));
@@ -76,9 +79,7 @@ public class AboutActivity extends BaseActivity {
         licenses.add(Licenses.fromGitHub("yshrsmz/LicenseAdapter", Licenses.FILE_NO_EXTENSION));
         licenses.add(Licenses.fromGitHub("H07000223/FlycoSystemBar", Licenses.NAME_MIT,
                 Licenses.FILE_NO_EXTENSION));
-        licenses.add(Licenses.fromGitHub("FasterXML/jackson", Licenses.LICENSE_APACHE_V2));
-        licenses.add(Licenses.fromGitHub("apache/commons-io", Licenses.FILE_TXT));
-        licenses.add(Licenses.fromGitHub("dlew/joda-time-android", Licenses.FILE_NO_EXTENSION));
+        licenses.add(Licenses.fromGitHub("tbruyelle/RxPermissions", Licenses.FILE_NO_EXTENSION));
 
         LicenseAdapter adapter = new LicenseAdapter(licenses);
         mRecyclerView.setAdapter(adapter);
