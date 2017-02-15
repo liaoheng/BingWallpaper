@@ -3,10 +3,12 @@ package me.liaoheng.bingwallpaper.service;
 import android.app.IntentService;
 import android.app.WallpaperManager;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.AndroidRuntimeException;
 import com.bumptech.glide.Glide;
+import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
 import java.io.File;
@@ -43,11 +45,6 @@ public class BingWallpaperIntentService extends IntentService {
         }
 
         if (NetworkUtils.isConnected(getApplicationContext())) {
-            if (Utils.getOnlyWifi(getApplicationContext())) {
-                if (!NetworkUtils.isWifiConnected(getApplicationContext())) {
-                    return;
-                }
-            }
 
             Intent intent1 = new Intent(BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE);
             intent1.putExtra(EXTRA_GET_WALLPAPER_STATE, BingWallpaperState.BEGIN);
@@ -69,19 +66,16 @@ public class BingWallpaperIntentService extends IntentService {
                                 String absolutePath = wallpaper.getAbsolutePath();
                                 L.Log.i(TAG, "wallpaper file : " + absolutePath);
 
-                                //Bitmap bitmap;
-                                //if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                                //    DisplayMetrics dm = Utils
-                                //            .getDisplayMetrics(getApplicationContext());
-                                //    BitmapFactory.Options options = new BitmapFactory.Options();
-                                //    options.outWidth = dm.widthPixels;
-                                //    options.outHeight = dm.heightPixels;
-                                //    bitmap = BitmapFactory.decodeFile(absolutePath, options);
-                                //} else {
-                                //    bitmap = BitmapFactory.decodeFile(absolutePath);
-                                //}
+                                //切割壁纸
+                                BitmapFactory.Options options = new BitmapFactory.Options();
+                                options.outWidth = DisplayUtils
+                                        .getScreenWidthRealMetrics(getApplicationContext());
+                                options.outHeight = DisplayUtils
+                                        .getScreenHeightRealMetrics(getApplicationContext());
+                                Bitmap bitmap = BitmapFactory.decodeFile(absolutePath, options);
+
                                 WallpaperManager.getInstance(getApplicationContext())
-                                        .setBitmap(BitmapFactory.decodeFile(absolutePath));
+                                        .setBitmap(bitmap);
                                 return Observable.just(wallpaper);
                             } catch (Exception e) {
                                 throw new AndroidRuntimeException(e);

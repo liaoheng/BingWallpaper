@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
@@ -31,6 +32,16 @@ public class Utils {
         return dm;
     }
 
+    /**
+     * 判断是否平板设备
+     * @param context
+     * @return true:平板,false:手机
+     */
+    public static boolean isTabletDevice(Context context) {
+        return (context.getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
+
     public static String getUrl(Context context, BingWallpaperImage image) {
         String baseUrl = image.getUrlbase();
         String resolution = Utils.getResolution(context);
@@ -42,13 +53,6 @@ public class Utils {
                 .getDefaultSharedPreferences(context);
         return sharedPreferences
                 .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI, true);
-    }
-
-    public static boolean isEnableDayUpdate(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        return sharedPreferences
-                .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE, true);
     }
 
     public static String getResolution(Context context) {

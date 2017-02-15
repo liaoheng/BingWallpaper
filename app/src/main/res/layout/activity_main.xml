@@ -47,7 +47,7 @@
 
         <android.support.design.widget.FloatingActionButton
                 android:id="@+id/bing_wallpaper_set"
-                android:src="@mipmap/ic_wallpaper_white_24dp"
+                android:src="@drawable/ic_wallpaper_white_24dp"
                 app:layout_anchor="@+id/bing_wallpaper_view"
                 app:layout_anchorGravity="bottom|end"
                 android:layout_marginBottom="55dp"

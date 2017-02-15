@@ -16,8 +16,8 @@ import org.joda.time.LocalTime;
 public class BingWallpaperAlarmManager {
 
     private static final String TAG            = BingWallpaperAlarmManager.class.getSimpleName();
-    public static final  String ACTION         = "me.liaoheng.bingwallpaper.alarm.task_schedule";
-    public static final  String ACTION_LIMITED = "me.liaoheng.bingwallpaper.alarm.task_schedule_limited";
+    public static final  String ACTION         = "me.liaoheng.bingwallpaper.ALARM_TASK_SCHEDULE";
+    public static final  String ACTION_LIMITED = "me.liaoheng.bingwallpaper.ALARM_TASK_SCHEDULE_LIMITED";
 
     public static final int REQUEST_CODE         = 0x12;
     public static final int REQUEST_CODE_LIMITED = 0x32;

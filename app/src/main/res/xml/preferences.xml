@@ -34,7 +34,7 @@
                 android:defaultValue="0"
                 android:entries="@array/pref_set_wallpaper_url_name"
                 android:entryValues="@array/pref_set_wallpaper_url_value"
-                android:title="bing壁纸源"/>
+                android:title="Bing壁纸源"/>
 
         <ListPreference
                 android:key="pref_set_wallpaper_resolution"
@@ -47,6 +47,7 @@
                 android:key="pref_set_wallpaper_log"
                 android:widgetLayout="@layout/mp_preference_switch"
                 android:title="是否打开日志文件"
+                android:summary="sdcard/Android/data/me.liaoheng.bingwallpaper/Log/log.txt"
                 android:defaultValue="false"/>
 
     </PreferenceCategory>

@@ -92,11 +92,6 @@ dependencies {
   //time:https://github.com/dlew/joda-time-android
   compile 'net.danlew:android.joda:2.9.4.1'
 
-  //https://github.com/jonfinerty/Once
-  compile ('com.jonathanfinerty.once:once:1.2.1'){
-    exclude module: 'support-annotations'
-  }
-
   //https://github.com/ferrannp/material-preferences
   compile 'com.fnp:material-preferences:0.1.4'
 
