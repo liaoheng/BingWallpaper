@@ -47,6 +47,11 @@ import org.joda.time.LocalTime;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
+/**
+ * 壁纸主界面
+ * @author liaoheng
+ * @version 2017-2-15
+ */
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 

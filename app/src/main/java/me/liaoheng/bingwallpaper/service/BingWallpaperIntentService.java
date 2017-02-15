@@ -24,6 +24,7 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 
 /**
+ * 设置壁纸操作IntentService
  * @author liaoheng
  * @version 2016-9-19 12:48
  */
@@ -44,15 +45,14 @@ public class BingWallpaperIntentService extends IntentService {
             LogDebugFileUtils.get().i(TAG, "Run BingWallpaperIntentService");
         }
 
-        if (NetworkUtils.isConnected(getApplicationContext())) {
+        if (!NetworkUtils.isConnected(getApplicationContext())) {
+            LogDebugFileUtils.get().i(TAG, "Network is not connect");
+            return;
+        }
 
             Intent intent1 = new Intent(BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE);
             intent1.putExtra(EXTRA_GET_WALLPAPER_STATE, BingWallpaperState.BEGIN);
             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent1);
-            L.Log.i(TAG, "getBingWallpaper start");
-            if (Utils.isEnableLog(getApplicationContext())) {
-                LogDebugFileUtils.get().i(TAG, "Start getBingWallpaper");
-            }
 
             BingWallpaperNetworkClient.getBingWallpaper(getApplicationContext())
                     .flatMap(new Func1<BingWallpaperImage, Observable<File>>() {
@@ -113,7 +113,6 @@ public class BingWallpaperIntentService extends IntentService {
                             .sendBroadcast(intent1);
                 }
             });
-        }
 
     }
 }
