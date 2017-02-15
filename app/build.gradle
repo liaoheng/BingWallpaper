@@ -6,7 +6,7 @@ android {
   buildToolsVersion rootProject.ext.buildToolsVersion
 
   defaultConfig {
-    minSdkVersion rootProject.ext.minSdkVersion
+    minSdkVersion 16
     targetSdkVersion rootProject.ext.targetSdkVersion
     applicationId "me.liaoheng.bingwallpaper"
     versionCode 100
@@ -91,6 +91,12 @@ dependencies {
 
   //time:https://github.com/dlew/joda-time-android
   compile 'net.danlew:android.joda:2.9.4.1'
+
+  //https://github.com/tbruyelle/RxPermissions
+  compile ('com.tbruyelle.rxpermissions:rxpermissions:0.9.1'){
+    exclude module: 'support-annotations'
+    exclude module: 'rxjava'
+  }
 
   //https://github.com/ferrannp/material-preferences
   compile 'com.fnp:material-preferences:0.1.4'

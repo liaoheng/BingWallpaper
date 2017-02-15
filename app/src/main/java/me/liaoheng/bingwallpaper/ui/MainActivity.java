@@ -1,5 +1,6 @@
 package me.liaoheng.bingwallpaper.ui;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -30,6 +32,7 @@ import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.UIUtils;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import java.net.SocketTimeoutException;
 import me.liaoheng.bingwallpaper.R;
 import me.liaoheng.bingwallpaper.data.BingWallpaperNetworkClient;
@@ -88,6 +91,21 @@ public class MainActivity extends BaseActivity
             }
         });
 
+        RxPermissions rxPermissions = new RxPermissions(this);
+        rxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(new Action1<Boolean>() {
+            @Override public void call(Boolean granted) {
+                if (granted) {
+                    initView();
+                } else {
+                    Toast.makeText(getApplicationContext(), "必要权限，无法运行！", Toast.LENGTH_LONG).show();
+                    finish();
+                }
+            }
+        });
+    }
+
+    private void initView() {
         //第一次安装打开app，设置自动更新闹钟，默认使用00:00
         if (TasksUtils.isOne()) {
             LocalTime localTime = Utils.getDayUpdateTime(this);
