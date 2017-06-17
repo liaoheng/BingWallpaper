@@ -34,19 +34,24 @@ import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.UIUtils;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import java.net.SocketTimeoutException;
-import jonathanfinerty.once.Once;
 import me.liaoheng.bingwallpaper.R;
 import me.liaoheng.bingwallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.bingwallpaper.model.BingWallpaperImage;
 import me.liaoheng.bingwallpaper.model.BingWallpaperState;
 import me.liaoheng.bingwallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.bingwallpaper.util.BingWallpaperAlarmManager;
+import me.liaoheng.bingwallpaper.util.TasksUtils;
 import me.liaoheng.bingwallpaper.util.Utils;
 import me.zhanghai.android.systemuihelper.SystemUiHelper;
 import org.joda.time.LocalTime;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
+/**
+ * 壁纸主界面
+ * @author liaoheng
+ * @version 2017-2-15
+ */
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -107,12 +112,12 @@ public class MainActivity extends BaseActivity
 
     private void initView() {
         //第一次安装打开app，设置自动更新闹钟，默认使用00:00
-        if (!Once.beenDone(Once.THIS_APP_INSTALL, "zzz")) {
+        if (TasksUtils.isOne()) {
             LocalTime localTime = Utils.getDayUpdateTime(this);
             BingWallpaperAlarmManager.clear(this);
             BingWallpaperAlarmManager.add(this, localTime);
 
-            Once.markDone("zzz");
+            TasksUtils.markOne();
         }
         getBingWallpaper();
     }

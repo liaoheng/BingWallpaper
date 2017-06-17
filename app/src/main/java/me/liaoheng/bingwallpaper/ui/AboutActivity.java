@@ -57,9 +57,6 @@ public class AboutActivity extends BaseActivity {
 
         List<LicenseEntry> licenses = new ArrayList<>();
 
-        licenses.add(Licenses.noContent("Android SDK", "Google Inc.",
-                "https://developer.android.com/sdk/terms.html"));
-
         licenses.add(Licenses.fromGitHub("FasterXML/jackson", Licenses.LICENSE_APACHE_V2));
         licenses.add(Licenses.fromGitHub("apache/commons-io", Licenses.FILE_TXT));
         licenses.add(Licenses.fromGitHub("dlew/joda-time-android", Licenses.FILE_NO_EXTENSION));

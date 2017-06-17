@@ -21,6 +21,15 @@ public class TasksUtils {
     }
 
     private final static String TASK_FILE_NAME = "COM_GITHUB_LIAOHENG_COMMON_TASKS";
+    private final static String TASK_ONE       = "TASK_ONE";
+
+    public static boolean isOne() {
+        return mTaskPreferencesUtils.getBoolean(TASK_ONE, true);
+    }
+
+    public static void markOne() {
+        mTaskPreferencesUtils.putApply(TASK_ONE, false);
+    }
 
     public static int taskCount(int count, String tag) {
         if (count < 1) {
