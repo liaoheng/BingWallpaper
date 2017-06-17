@@ -2,6 +2,7 @@ package me.liaoheng.bingwallpaper.util;
 
 import android.content.Context;
 import com.github.liaoheng.common.util.PreferencesUtils;
+import com.github.liaoheng.common.util.SystemDataException;
 import com.github.liaoheng.common.util.SystemRuntimeException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -23,7 +24,7 @@ public class TasksUtils {
 
     public static int taskCount(int count, String tag) {
         if (count < 1) {
-            throw new SystemRuntimeException("count < 1 ");
+            throw new SystemRuntimeException(new SystemDataException("count < 1 "));
         }
         int c = mTaskPreferencesUtils.getInt(tag, -1);
         if (c != -1) {
@@ -32,10 +33,10 @@ public class TasksUtils {
                 return c;
             }
             c--;
-            mTaskPreferencesUtils.put(tag, c).apply();
+            mTaskPreferencesUtils.putInt(tag, c).apply();
             return c;
         }
-        mTaskPreferencesUtils.put(tag, count).apply();
+        mTaskPreferencesUtils.putInt(tag, count).apply();
         return -1;
     }
 
@@ -55,6 +56,6 @@ public class TasksUtils {
     }
 
     public static void markDone(String tag) {
-        mTaskPreferencesUtils.put(tag, DateTime.now(DateTimeZone.UTC).getMillis()).apply();
+        mTaskPreferencesUtils.putLong(tag, DateTime.now(DateTimeZone.UTC).getMillis()).apply();
     }
 }

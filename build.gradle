@@ -8,8 +8,7 @@ buildscript {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:2.2.2'
-    classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+    classpath 'com.android.tools.build:gradle:2.3.3'
   }
 }
 
@@ -25,4 +24,4 @@ allprojects {
 task clean(type: Delete) {
   delete rootProject.buildDir
 }
-apply from: 'https://raw.github.com/liaoheng/Common/master/dependencies.gradle'
+apply from: rootProject.file('dependencies.gradle')

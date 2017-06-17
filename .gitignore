@@ -4,9 +4,6 @@ build/
 /*/build/
 
 .gradle/
-gradle/
-gradlew
-gradlew.bat
 local.properties
 
 ### Windows template
