@@ -28,7 +28,7 @@ public class TasksUtils {
     }
 
     public static void markOne() {
-        mTaskPreferencesUtils.putApply(TASK_ONE, false);
+        mTaskPreferencesUtils.putBoolean(TASK_ONE, false).apply();
     }
 
     public static int taskCount(int count, String tag) {
