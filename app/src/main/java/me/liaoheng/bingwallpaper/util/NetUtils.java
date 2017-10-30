@@ -1,12 +1,18 @@
 package me.liaoheng.bingwallpaper.util;
 
+import android.util.Log;
+
 import com.github.liaoheng.common.util.FileUtils;
+import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.SystemException;
+
 import java.io.File;
 import java.util.concurrent.TimeUnit;
+
 import me.liaoheng.bingwallpaper.data.BingWallpaperNetworkService;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -32,8 +38,17 @@ public class NetUtils {
     private Retrofit mRetrofit;
 
     public void init() {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+            @Override
+            public void log(String message) {
+                if (L.isPrint()) {
+                    Log.d("NetUtils", message);
+                }
+            }
+        });
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder builder = new OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS)
-                .connectTimeout(60, TimeUnit.SECONDS);
+                .connectTimeout(60, TimeUnit.SECONDS).addInterceptor(logging);
         try {
             File cacheFile = FileUtils.createCacheSDAndroidDirectory(Constants.HTTP_CACHE_DIR);
             builder.cache(new Cache(cacheFile, Constants.HTTP_DISK_CACHE_SIZE));
