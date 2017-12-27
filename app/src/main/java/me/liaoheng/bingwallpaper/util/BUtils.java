@@ -4,47 +4,40 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
+
+import com.github.liaoheng.common.util.Utils;
+
+import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
+
+import java.util.Locale;
+
+import me.liaoheng.bingwallpaper.BuildConfig;
 import me.liaoheng.bingwallpaper.R;
 import me.liaoheng.bingwallpaper.model.BingWallpaperImage;
 import me.liaoheng.bingwallpaper.ui.SettingsActivity;
-import org.joda.time.DateTime;
-import org.joda.time.LocalTime;
 
 /**
  * @author liaoheng
  * @version 2016-09-20 17:17
  */
-public class Utils {
+public class BUtils {
 
     public static DisplayMetrics getDisplayMetrics(Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics dm = new DisplayMetrics();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            wm.getDefaultDisplay().getRealMetrics(dm);
-        } else {
-            wm.getDefaultDisplay().getMetrics(dm);
-        }
+        wm.getDefaultDisplay().getRealMetrics(dm);
         return dm;
-    }
-
-    /**
-     * 判断是否平板设备
-     * @param context
-     * @return true:平板,false:手机
-     */
-    public static boolean isTabletDevice(Context context) {
-        return (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 
     public static String getUrl(Context context, BingWallpaperImage image) {
         String baseUrl = image.getUrlbase();
-        String resolution = Utils.getResolution(context);
+        String resolution = BUtils.getResolution(context);
         return Constants.BASE_URL + baseUrl + "_" + resolution + ".jpg";
     }
 
@@ -68,38 +61,32 @@ public class Utils {
         return names[Integer.parseInt(resolution)];
     }
 
-    public static String getUrlValue(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-
-        String value = sharedPreferences.getString(SettingsActivity.PREF_SET_WALLPAPER_URL, "0");
-
-        String[] names = context.getResources()
-                .getStringArray(R.array.pref_set_wallpaper_url_name);
-
-        return names[Integer.parseInt(value)];
-    }
-
-    public static String getUrl(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-
-        String value = sharedPreferences.getString(SettingsActivity.PREF_SET_WALLPAPER_URL, "0");
-
-        if (value.equals("0")) {
+    public static String getUrl() {
+        String language = Locale.getDefault().getLanguage();
+        String country = Locale.getDefault().getCountry();
+        if (country.equalsIgnoreCase("cn")) {
             return Constants.CHINA_URL;
         } else {
-            return Constants.GLOBAL_URL;
+            return Utils.appendUrlParameter(Constants.GLOBAL_URL, "setmkt", language + "-" + country);
         }
     }
 
+    @Nullable
     public static LocalTime getDayUpdateTime(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
         String time = sharedPreferences
-                .getString(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME,
-                        "00:00:00.000");
+                .getString(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME, null);
+        if (TextUtils.isEmpty(time)) {
+            return null;
+        }
         return LocalTime.parse(time);
+    }
+
+    public static void clearDayUpdateTime(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        sharedPreferences.edit().putString(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME,
+                null).apply();
     }
 
     public static DateTime checkTime(LocalTime time) {
@@ -112,6 +99,9 @@ public class Utils {
     }
 
     public static boolean isEnableLog(Context context) {
+        if (!BuildConfig.DEBUG) {
+            return false;
+        }
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
         return sharedPreferences

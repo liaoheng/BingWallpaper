@@ -1,62 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="me.liaoheng.bingwallpaper">
+    package="me.liaoheng.bingwallpaper">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.SET_WALLPAPER"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
-            android:name=".MApplication"
-            android:allowBackup="true"
-            android:icon="@mipmap/ic_launcher"
-            android:label="@string/app_name"
-            android:supportsRtl="true"
-            android:theme="@style/AppTheme">
+        android:name=".MApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
         <activity
-                android:name=".ui.MainActivity"
-                android:theme="@style/AppTheme.Fullscreen">
+            android:name=".ui.MainActivity"
+            android:theme="@style/AppTheme.Fullscreen">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.SettingsActivity" android:theme="@style/AppTheme.Settings"/>
         <activity
-                android:name=".ui.AboutActivity"
-                android:label="关于"/>
+            android:name=".ui.SettingsActivity"
+            android:label="@string/setting"
+            android:theme="@style/AppTheme.Settings" />
+        <activity
+            android:name=".ui.LicenseActivity"
+            android:label="@string/open_source_license" />
+
+        <receiver android:name=".service.AutoSetWallpaperBroadcastReceiver">
+            <intent-filter>
+                <action android:name="me.liaoheng.bingwallpaper.alarm.task_schedule" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
         <service
-                android:name=".service.BingWallpaperIntentService"
-                android:exported="false" />
+            android:name=".service.BingWallpaperIntentService"
+            android:exported="false" />
 
-        <receiver
-                android:name=".service.AutoSetWallpaperBroadcastReceiver">
-            <intent-filter>
-                <action android:name="me.liaoheng.bingwallpaper.alarm.task_schedule"/>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-            </intent-filter>
-        </receiver>
-
-        <receiver
-                android:enabled="false"
-                android:name=".service.ConnectionChangeReceiver">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
-            </intent-filter>
-        </receiver>
-
-        <service android:name="me.liaoheng.bingwallpaper.service.JobSchedulerService"
-                 android:exported="true"
-                 android:permission="android.permission.BIND_JOB_SERVICE" />
-
-        <meta-data
-                android:name="me.liaoheng.bingwallpaper.util.GlideModule"
-                android:value="GlideModule"/>
+        <service
+            android:name=".service.JobSchedulerService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 
 </manifest>

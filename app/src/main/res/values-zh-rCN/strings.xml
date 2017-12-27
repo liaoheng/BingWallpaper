@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">必应壁纸</string>
+    <string name="set_wallpaper_running">正在设置壁纸，请稍候</string>
+    <string name="set_wallpaper_success">壁纸设置成功</string>
+    <string name="set_wallpaper_failure">壁纸设置失败</string>
+    <string name="network_unavailable">没有可用网络</string>
+    <string name="connection_timed_out">连接超时</string>
+    <string name="network_request_error">网络请求错误</string>
+    <string name="pref_not_set_time">还没设置时间</string>
+    <string name="pref_auto_update_wallpaper">自动更新壁纸</string>
+    <string name="pref_update_only_on_wifi">只在WIFI时</string>
+    <string name="pref_auto_update_everyday">每天自动</string>
+    <string name="pref_auto_update_check_every_hour">一个小时检查一次</string>
+    <string name="pref_alarm_update_wallpaper_everyday">每天定时</string>
+    <string name="pref_alarm_update_wallpaper_time">每天定时时间</string>
+    <string name="pref_other">其它</string>
+    <string name="choose_resolution">选择壁纸分辨率</string>
+    <string name="pref_log_file">日志文件</string>
+    <string name="pref_about">关于</string>
+    <string name="pref_version">版本</string>
+    <string name="open_source_license">Open source license</string>
+    <string name="menu_main_drawer_wallpaper_info">壁纸信息</string>
+    <string name="setting">设置</string>
+</resources>

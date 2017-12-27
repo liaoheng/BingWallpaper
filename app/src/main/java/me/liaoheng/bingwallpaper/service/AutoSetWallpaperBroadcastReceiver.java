@@ -3,12 +3,15 @@ package me.liaoheng.bingwallpaper.service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
+
+import org.joda.time.LocalTime;
+
 import me.liaoheng.bingwallpaper.util.BingWallpaperAlarmManager;
 import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
-import me.liaoheng.bingwallpaper.util.Utils;
-import org.joda.time.LocalTime;
+import me.liaoheng.bingwallpaper.util.BUtils;
 
 /**
  * @author liaoheng
@@ -16,21 +19,24 @@ import org.joda.time.LocalTime;
  */
 public class AutoSetWallpaperBroadcastReceiver extends BroadcastReceiver {
 
-    @Override public void onReceive(Context context, Intent intent) {
+    @Override
+    public void onReceive(Context context, Intent intent) {
         L.Log.i("AutoSetWallpaperBroadcastReceiver", "action : %s", intent.getAction());
-        if (Utils.isEnableLog(context)) {
+        if (BUtils.isEnableLog(context)) {
             LogDebugFileUtils.get()
                     .i("AutoSetWallpaperBroadcastReceiver", "action  : %s", intent.getAction());
         }
-        if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
-            LocalTime dayUpdateTime = Utils.getDayUpdateTime(context);
-            BingWallpaperAlarmManager.clear(context);
-            BingWallpaperAlarmManager.add(context,dayUpdateTime);
+        if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
+            LocalTime dayUpdateTime = BUtils.getDayUpdateTime(context);
+            if (dayUpdateTime == null) {
+                return;
+            }
+            BingWallpaperAlarmManager.add(context, dayUpdateTime);
             return;
         }
 
-        if (NetworkUtils.isConnected(context)) {
-            if (Utils.getOnlyWifi(context)) {
+        if (NetworkUtils.isConnectedOrConnecting(context)) {
+            if (BUtils.getOnlyWifi(context)) {
                 if (!NetworkUtils.isWifiConnected(context)) {
                     return;
                 }

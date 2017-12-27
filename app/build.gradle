@@ -1,107 +1,109 @@
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 
 android {
-  compileSdkVersion rootProject.ext.compileSdkVersion
-  buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
-  defaultConfig {
-    minSdkVersion rootProject.ext.minSdkVersion
-    targetSdkVersion rootProject.ext.targetSdkVersion
-    applicationId "me.liaoheng.bingwallpaper"
-    versionCode 100
-    versionName "1.0.0"
-  }
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        applicationId "me.liaoheng.bingwallpaper"
+        versionCode 100
+        versionName "1.0.0"
+    }
 
-  def isSigning = true;
-  signingConfigs {
-    config {
-      try {
-        keyAlias KEY_ALIAS
-        keyPassword KEY_PASSWORD
-        storeFile file(STORE_FILE)
-        storePassword STORE_PASSWORD
-      } catch (Exception ignored) {
-        isSigning = false
-        printf("not signingConfigs")
-      }
+    def isSigning = true;
+    signingConfigs {
+        config {
+            try {
+                keyAlias KEY_ALIAS
+                keyPassword KEY_PASSWORD
+                storeFile file(STORE_FILE)
+                storePassword STORE_PASSWORD
+            } catch (Exception ignored) {
+                isSigning = false
+                printf("not signingConfigs")
+            }
+        }
     }
-  }
 
-  buildTypes {
-    release {
-      minifyEnabled false
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-      if (isSigning) signingConfig signingConfigs.config
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (isSigning) signingConfig signingConfigs.config
+        }
     }
-  }
-  lintOptions {
-    abortOnError false
-  }
-  packagingOptions {
-    exclude 'META-INF/LICENSE.txt'
-    exclude 'META-INF/NOTICE.txt'
-    exclude 'META-INF/LICENSE'
-    exclude 'META-INF/NOTICE'
-  }
-  applicationVariants.all { variant ->
-    variant.outputs.each { output ->
-      output.outputFile = new File(output.outputFile.parent,
-              output.outputFile.name.replace(".apk", "-" + defaultConfig.versionName + ".apk"))
+    lintOptions {
+        abortOnError false
     }
-  }
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+    }
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${variant.name}-${variant.versionName}.apk"
+        }
+    }
 }
 
 dependencies {
-  compile fileTree(dir: 'libs', include: ['*.jar'])
-  testCompile 'junit:junit:4.12'
-  //android system
-  compile deps.supportv4
-  compile deps.appcompatv7
-  compile deps.cardviewv7
-  compile deps.design
-  compile "com.android.support:palette-v7:25.3.1"
-  compile "com.android.support:customtabs:25.3.1"
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    //android system
+    implementation deps.supportv4
+    implementation deps.appcompatv7
+    implementation deps.cardviewv7
+    implementation deps.design
+    implementation "com.android.support:palette-v7:25.3.1"
+    implementation "com.android.support:customtabs:25.3.1"
 
-  //View "injection" library:https://github.com/JakeWharton/butterknife
-  compile 'com.jakewharton:butterknife:8.6.0'
-  annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
+    implementation('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+        transitive = true
+    }
+    implementation 'com.google.firebase:firebase-core:11.8.0'
 
-  compile 'com.google.code.gson:gson:2.8.0'
+    //View "injection" library:https://github.com/JakeWharton/butterknife
+    compile 'com.jakewharton:butterknife:8.6.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
 
-  //https://github.com/bumptech/glide
-  compile 'com.github.bumptech.glide:glide:3.8.0'
-  compile 'com.github.bumptech.glide:okhttp3-integration:1.5.0@aar'
+    compile 'com.google.code.gson:gson:2.8.0'
 
-  //https://github.com/square/okhttp
-  compile 'com.squareup.okhttp3:okhttp:3.8.0'
-  compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
-  //https://github.com/square/retrofit
-  compile 'com.squareup.retrofit2:retrofit:2.3.0'
-  compile 'com.squareup.retrofit2:converter-gson:2.3.0'
-  compile 'com.squareup.retrofit2:adapter-rxjava:2.3.0'
-  //https://github.com/orhanobut/logger
-  compile 'com.orhanobut:logger:1.8'
-  //https://github.com/ReactiveX/RxAndroid
-  compile 'io.reactivex:rxandroid:1.2.1'
-  compile 'io.reactivex:rxjava:1.1.6'
-  compile 'com.trello:rxlifecycle:0.6.1'
+    compile deps.glide
+    compile deps.glide_okhttp3_integration
 
-  //https://github.com/jonfinerty/Once
-  compile 'com.jonathanfinerty.once:once:1.2.1'
-  //https://github.com/tbruyelle/RxPermissions
-  compile 'com.tbruyelle.rxpermissions:rxpermissions:0.9.1'
+    compile deps.okhttp
+    compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
 
-  //https://github.com/ferrannp/material-preferences
-  compile 'com.fnp:material-preferences:0.1.4'
+    compile deps.retrofit
+    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    compile deps.retrofit_adapter_rxjava
 
-  //https://github.com/DreaminginCodeZH/SystemUiHelper
-  compile 'me.zhanghai.android.systemuihelper:library:1.0.0'
+    compile deps.logger
+    compile deps.rxandroid
+    compile deps.rxjava
+    compile deps.rxlifecycle
+    compile deps.rxlifecycle_android
 
-  //https://github.com/yshrsmz/LicenseAdapter
-  compile 'net.yslibrary.licenseadapter:licenseadapter:1.2.4'
+    //https://github.com/tbruyelle/RxPermissions
+    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.9.4'
 
-  //https://github.com/H07000223/FlycoSystemBar
-  compile "com.flyco.systembar:FlycoSystemBar_Lib:1.0.0"
+    //https://github.com/ferrannp/material-preferences
+    compile 'com.fnp:material-preferences:0.1.4'
 
-  compile 'com.github.liaoheng:common-core:0.0.5-SNAPSHOT'
+    //https://github.com/DreaminginCodeZH/SystemUiHelper
+    compile 'me.zhanghai.android.systemuihelper:library:1.0.0'
+
+    //https://github.com/yshrsmz/LicenseAdapter
+    compile 'net.yslibrary.licenseadapter:licenseadapter:1.4.0'
+
+    //https://github.com/H07000223/FlycoSystemBar
+    compile "com.flyco.systembar:FlycoSystemBar_Lib:1.0.0"
+
+    compile 'com.github.liaoheng:common-core:0.0.5-SNAPSHOT'
 }
+apply plugin: 'com.google.gms.google-services'

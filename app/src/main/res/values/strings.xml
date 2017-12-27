@@ -1,3 +1,24 @@
 <resources>
-    <string name="app_name">必应壁纸</string>
+    <string name="app_name">BingWallpaper</string>
+    <string name="set_wallpaper_running">Setting wallpaper, please wait</string>
+    <string name="set_wallpaper_success">Set wallpaper success</string>
+    <string name="set_wallpaper_failure">Setting wallpaper failed</string>
+    <string name="network_unavailable">No network available</string>
+    <string name="connection_timed_out">Connection timed out</string>
+    <string name="network_request_error">Network request error</string>
+    <string name="pref_not_set_time">No time</string>
+    <string name="pref_auto_update_wallpaper">Automatically update wallpaper</string>
+    <string name="pref_update_only_on_wifi">Only at WIFI</string>
+    <string name="pref_auto_update_everyday">Automatic every day</string>
+    <string name="pref_auto_update_check_every_hour">Check once an hour</string>
+    <string name="pref_alarm_update_wallpaper_everyday">Timing every day</string>
+    <string name="pref_alarm_update_wallpaper_time">Timing</string>
+    <string name="pref_other">Other</string>
+    <string name="choose_resolution">Choose wallpaper resolution</string>
+    <string name="pref_log_file">Log file</string>
+    <string name="pref_about">About</string>
+    <string name="pref_version">Version</string>
+    <string name="open_source_license">Open source license</string>
+    <string name="menu_main_drawer_wallpaper_info">Wallpaper information</string>
+    <string name="setting">Setting</string>
 </resources>

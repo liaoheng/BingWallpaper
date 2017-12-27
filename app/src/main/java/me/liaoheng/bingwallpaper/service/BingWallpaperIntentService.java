@@ -22,7 +22,7 @@ import me.liaoheng.bingwallpaper.model.BingWallpaperImage;
 import me.liaoheng.bingwallpaper.model.BingWallpaperState;
 import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
 import me.liaoheng.bingwallpaper.util.TasksUtils;
-import me.liaoheng.bingwallpaper.util.Utils;
+import me.liaoheng.bingwallpaper.util.BUtils;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -48,11 +48,11 @@ public class BingWallpaperIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(final Intent intent) {
-        if (Utils.isEnableLog(getApplicationContext())) {
+        if (BUtils.isEnableLog(getApplicationContext())) {
             LogDebugFileUtils.get().i(TAG, "Run BingWallpaperIntentService");
         }
 
-        if (!NetworkUtils.isConnected(getApplicationContext())) {
+        if (!NetworkUtils.isConnectedOrConnecting(getApplicationContext())) {
             LogDebugFileUtils.get().i(TAG, "Network is not connect");
             return;
         }
@@ -66,7 +66,7 @@ public class BingWallpaperIntentService extends IntentService {
                     @Override
                     public Observable<File> call(
                             BingWallpaperImage bingWallpaperImage) {
-                        String url = Utils.getUrl(getApplicationContext(), bingWallpaperImage);
+                        String url = BUtils.getUrl(getApplicationContext(), bingWallpaperImage);
                         L.Log.i(TAG, "wallpaper url : %s", url);
                         File wallpaper = null;
                         try {
@@ -98,7 +98,7 @@ public class BingWallpaperIntentService extends IntentService {
             @Override
             public void call(File file) {
                 L.Log.i(TAG, "getBingWallpaper Success");
-                if (Utils.isEnableLog(getApplicationContext())) {
+                if (BUtils.isEnableLog(getApplicationContext())) {
                     LogDebugFileUtils.get().i(TAG, "getBingWallpaper Success");
                 }
                 Intent intent1 = new Intent(
@@ -108,7 +108,8 @@ public class BingWallpaperIntentService extends IntentService {
                         .sendBroadcast(intent1);
                 //每天执行一次
                 if (TasksUtils.isToDaysDo(1, FLAG_SET_WALLPAPER_STATE)) {
-                    if (Utils.isEnableLog(getApplicationContext())) {
+                    if (BUtils.isEnableLog(getApplicationContext())) {
+                        L.Log.i(TAG, "Today markDone");
                         LogDebugFileUtils.get().i(TAG, "Today markDone");
                     }
                     TasksUtils.markDone(FLAG_SET_WALLPAPER_STATE);
@@ -118,7 +119,7 @@ public class BingWallpaperIntentService extends IntentService {
             @Override
             public void call(Throwable throwable) {
                 L.Log.e(TAG, throwable, "getBingWallpaper Error");
-                if (Utils.isEnableLog(getApplicationContext())) {
+                if (BUtils.isEnableLog(getApplicationContext())) {
                     LogDebugFileUtils.get().e(TAG, throwable, "getBingWallpaper Error");
                 }
                 Intent intent1 = new Intent(

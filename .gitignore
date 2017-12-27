@@ -1,10 +1,10 @@
 *.iml
 .idea/
 build/
-/*/build/
 
 .gradle/
 local.properties
+google-services.json
 
 ### Windows template
 # Windows image file caches

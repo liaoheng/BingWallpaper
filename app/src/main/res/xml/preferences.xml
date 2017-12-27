@@ -1,54 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="自动更新">
+    <PreferenceCategory android:title="@string/pref_auto_update_wallpaper">
         <CheckBoxPreference
-                android:key="pref_set_wallpaper_day_auto_update_only_wifi"
-                android:widgetLayout="@layout/mp_preference_switch"
-                android:title="仅在WIFI下更新壁纸"
-                android:defaultValue="true"/>
+            android:defaultValue="true"
+            android:key="pref_set_wallpaper_day_auto_update_only_wifi"
+            android:title="@string/pref_update_only_on_wifi"
+            android:widgetLayout="@layout/mp_preference_switch" />
 
         <CheckBoxPreference
-                android:key="pref_set_wallpaper_day_auto_update"
-                android:widgetLayout="@layout/mp_preference_switch"
-                android:title="每天定时更新壁纸"
-                android:defaultValue="true"/>
+            android:defaultValue="false"
+            android:key="pref_set_wallpaper_day_fully_automatic_update"
+            android:summary="@string/pref_auto_update_check_every_hour"
+            android:title="@string/pref_auto_update_everyday"
+            android:widgetLayout="@layout/mp_preference_switch" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_set_wallpaper_day_auto_update"
+            android:title="@string/pref_alarm_update_wallpaper_everyday"
+            android:widgetLayout="@layout/mp_preference_switch" />
 
         <me.liaoheng.bingwallpaper.view.TimePreference
-                android:defaultValue="00:00:00.000"
-                android:key="pref_set_wallpaper_day_auto_update_time"
-                android:title="每天定时更新壁纸时间"/>
-
-        <CheckBoxPreference
-                android:key="pref_set_wallpaper_check_net"
-                android:widgetLayout="@layout/mp_preference_switch"
-                android:title="是否在网络改变后加载壁纸"
-                android:summary="每天只会执行一次"
-                android:defaultValue="false"/>
+            android:defaultValue="00:00:00.000"
+            android:enabled="false"
+            android:key="pref_set_wallpaper_day_auto_update_time"
+            android:negativeButtonText="@android:string/no"
+            android:positiveButtonText="@android:string/ok"
+            android:title="@string/pref_alarm_update_wallpaper_time" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="其它">
+    <PreferenceCategory
+        android:key="pref_other_group"
+        android:persistent="false"
+        android:title="@string/pref_other">
 
         <ListPreference
-                android:key="pref_set_wallpaper_url"
-                android:defaultValue="0"
-                android:entries="@array/pref_set_wallpaper_url_name"
-                android:entryValues="@array/pref_set_wallpaper_url_value"
-                android:title="Bing壁纸源"/>
-
-        <ListPreference
-                android:key="pref_set_wallpaper_resolution"
-                android:defaultValue="0"
-                android:title="选择壁纸分辨率"
-                android:entries="@array/pref_set_wallpaper_resolution_name"
-                android:entryValues="@array/pref_set_wallpaper_resolution_value"/>
+            android:defaultValue="0"
+            android:entries="@array/pref_set_wallpaper_resolution_name"
+            android:entryValues="@array/pref_set_wallpaper_resolution_value"
+            android:key="pref_set_wallpaper_resolution"
+            android:title="@string/choose_resolution" />
 
         <CheckBoxPreference
-                android:key="pref_set_wallpaper_log"
-                android:widgetLayout="@layout/mp_preference_switch"
-                android:title="是否打开日志文件"
-                android:summary="sdcard/Android/data/me.liaoheng.bingwallpaper/Log/log.txt"
-                android:defaultValue="false"/>
+            android:defaultValue="false"
+            android:key="pref_set_wallpaper_log"
+            android:title="@string/pref_log_file"
+            android:widgetLayout="@layout/mp_preference_switch" />
 
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_about">
+        <me.liaoheng.bingwallpaper.view.VersionPreference
+            android:key="pref_version"
+            android:persistent="false"
+            android:title="@string/pref_version">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/liaoheng/BingWallpaper" />
+        </me.liaoheng.bingwallpaper.view.VersionPreference>
+        <Preference
+            android:key="pref_license"
+            android:persistent="false"
+            android:title="@string/open_source_license" />
     </PreferenceCategory>
 </PreferenceScreen>
