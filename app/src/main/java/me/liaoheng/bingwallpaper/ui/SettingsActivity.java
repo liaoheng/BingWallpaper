@@ -18,9 +18,9 @@ import org.joda.time.LocalTime;
 
 import me.liaoheng.bingwallpaper.R;
 import me.liaoheng.bingwallpaper.service.AutoSetWallpaperBroadcastReceiver;
-import me.liaoheng.bingwallpaper.util.BUtils;
+import me.liaoheng.bingwallpaper.util.BingWallpaperUtils;
 import me.liaoheng.bingwallpaper.util.BingWallpaperAlarmManager;
-import me.liaoheng.bingwallpaper.util.JobManager;
+import me.liaoheng.bingwallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
 import me.liaoheng.bingwallpaper.view.TimePreference;
 import me.liaoheng.bingwallpaper.view.VersionPreference;
@@ -56,10 +56,10 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             return R.xml.preferences;
         }
 
-        ListPreference resolutionListPreference;
-        TimePreference timePreference;
-        CheckBoxPreference dayUpdatePreference;
-        CheckBoxPreference autoUpdatePreference;
+        ListPreference mResolutionListPreference;
+        TimePreference mTimePreference;
+        CheckBoxPreference mDayUpdatePreference;
+        CheckBoxPreference mAutoUpdatePreference;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -81,27 +81,27 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             });
             ((PreferenceCategory) findPreference("pref_other_group")).removePreference(findPreference(PREF_SET_WALLPAPER_LOG));
 
-            resolutionListPreference = (ListPreference) findPreference(
+            mResolutionListPreference = (ListPreference) findPreference(
                     PREF_SET_WALLPAPER_RESOLUTION);
-            dayUpdatePreference = (CheckBoxPreference) findPreference(
+            mDayUpdatePreference = (CheckBoxPreference) findPreference(
                     PREF_SET_WALLPAPER_DAY_AUTO_UPDATE);
-            timePreference = (TimePreference) findPreference(
+            mTimePreference = (TimePreference) findPreference(
                     PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME);
-            autoUpdatePreference = (CheckBoxPreference) findPreference(PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE);
+            mAutoUpdatePreference = (CheckBoxPreference) findPreference(PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE);
 
-            resolutionListPreference.setSummary(BUtils.getResolution(getActivity()));
+            mResolutionListPreference.setSummary(BingWallpaperUtils.getResolution(getActivity()));
 
-            LocalTime localTime = BUtils.getDayUpdateTime(getActivity());
+            LocalTime localTime = BingWallpaperUtils.getDayUpdateTime(getActivity());
 
             if (localTime != null) {
-                timePreference.setSummary(localTime.toString("HH:mm"));
+                mTimePreference.setSummary(localTime.toString("HH:mm"));
             } else {
-                timePreference.setSummary(R.string.pref_not_set_time);
+                mTimePreference.setSummary(R.string.pref_not_set_time);
             }
-            if (autoUpdatePreference.isChecked()) {
-                dayUpdatePreference.setChecked(false);
+            if (mAutoUpdatePreference.isChecked()) {
+                mDayUpdatePreference.setChecked(false);
             }
-            timePreference.setEnabled(dayUpdatePreference.isChecked());
+            mTimePreference.setEnabled(mDayUpdatePreference.isChecked());
         }
 
         @Override
@@ -109,35 +109,35 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                                               String key) {
             switch (key) {
                 case PREF_SET_WALLPAPER_RESOLUTION:
-                    resolutionListPreference.setSummary(resolutionListPreference.getEntry());
+                    mResolutionListPreference.setSummary(mResolutionListPreference.getEntry());
                     break;
                 case PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE:
-                    if (autoUpdatePreference.isChecked()) {
-                        timePreference.setSummary(R.string.pref_not_set_time);
-                        dayUpdatePreference.setChecked(false);
-                        BUtils.clearDayUpdateTime(getActivity());
+                    if (mAutoUpdatePreference.isChecked()) {
+                        mTimePreference.setSummary(R.string.pref_not_set_time);
+                        mDayUpdatePreference.setChecked(false);
+                        BingWallpaperUtils.clearDayUpdateTime(getActivity());
                         BingWallpaperAlarmManager.clear(getActivity());
-                        JobManager.enabled(getActivity());
+                        BingWallpaperJobManager.enabled(getActivity());
                     } else {
-                        JobManager.disabled(getActivity());
+                        BingWallpaperJobManager.disabled(getActivity());
                     }
                     break;
                 case PREF_SET_WALLPAPER_DAY_AUTO_UPDATE:
-                    if (dayUpdatePreference.isChecked()) {
-                        autoUpdatePreference.setChecked(false);
-                        BUtils.enabledReceiver(getActivity(),
+                    if (mDayUpdatePreference.isChecked()) {
+                        mAutoUpdatePreference.setChecked(false);
+                        BingWallpaperUtils.enabledReceiver(getActivity(),
                                 AutoSetWallpaperBroadcastReceiver.class.getName());
                     } else {
-                        BUtils.disabledReceiver(getActivity(),
+                        BingWallpaperUtils.disabledReceiver(getActivity(),
                                 AutoSetWallpaperBroadcastReceiver.class.getName());
                     }
-                    timePreference.setEnabled(dayUpdatePreference.isChecked());
+                    mTimePreference.setEnabled(mDayUpdatePreference.isChecked());
                     break;
                 case PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME:
-                    if (timePreference.isEnabled()) {
+                    if (mTimePreference.isEnabled()) {
                         BingWallpaperAlarmManager
-                                .add(getActivity(), timePreference.getLocalTime().getHourOfDay(),
-                                        timePreference.getLocalTime().getMinuteOfHour());
+                                .add(getActivity(), mTimePreference.getLocalTime().getHourOfDay(),
+                                        mTimePreference.getLocalTime().getMinuteOfHour());
                     }
                     break;
                 case PREF_SET_WALLPAPER_LOG:

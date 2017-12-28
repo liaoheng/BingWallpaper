@@ -12,22 +12,23 @@ import com.github.liaoheng.common.util.NetworkUtils;
 
 import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
 import me.liaoheng.bingwallpaper.util.TasksUtils;
-import me.liaoheng.bingwallpaper.util.BUtils;
+import me.liaoheng.bingwallpaper.util.BingWallpaperUtils;
 
 
 /**
+ * 自动更新壁纸守护服务
  * @author liaoheng
  * @version 2017-10-16 11:55
  */
-public class JobSchedulerService extends JobService {
+public class JobSchedulerDaemonService extends JobService {
 
-    private final String TAG = JobSchedulerService.class.getSimpleName();
+    private final String TAG = JobSchedulerDaemonService.class.getSimpleName();
 
     Handler mHandler = new Handler(Looper.myLooper()) {
         @Override
         public void handleMessage(Message msg) {
             if (NetworkUtils.isConnectedOrConnecting(getApplicationContext())) {
-                if (BUtils.getOnlyWifi(getApplicationContext())) {
+                if (BingWallpaperUtils.getOnlyWifi(getApplicationContext())) {
                     if (!NetworkUtils.isWifiConnected(getApplicationContext())) {
                         L.Log.i(TAG, "isWifiConnected :false");
                         return;
@@ -50,7 +51,7 @@ public class JobSchedulerService extends JobService {
     @Override
     public boolean onStartJob(JobParameters params) {
         L.Log.i(TAG, "action job id : %s", params.getJobId());
-        if (BUtils.isEnableLog(getApplicationContext())) {
+        if (BingWallpaperUtils.isEnableLog(getApplicationContext())) {
             LogDebugFileUtils.get()
                     .i(TAG, "action job id : %s", params.getJobId());
         }

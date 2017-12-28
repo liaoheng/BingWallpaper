@@ -26,7 +26,7 @@ import me.liaoheng.bingwallpaper.ui.SettingsActivity;
  * @author liaoheng
  * @version 2016-09-20 17:17
  */
-public class BUtils {
+public class BingWallpaperUtils {
 
     public static DisplayMetrics getDisplayMetrics(Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -37,7 +37,7 @@ public class BUtils {
 
     public static String getUrl(Context context, BingWallpaperImage image) {
         String baseUrl = image.getUrlbase();
-        String resolution = BUtils.getResolution(context);
+        String resolution = BingWallpaperUtils.getResolution(context);
         return Constants.BASE_URL + baseUrl + "_" + resolution + ".jpg";
     }
 

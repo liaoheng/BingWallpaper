@@ -5,10 +5,10 @@ buildscript {
         mavenLocal()
         google()
         mavenCentral()
-        jcenter()
         maven {
             url 'https://maven.fabric.io/public'
         }
+        jcenter()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
     dependencies {

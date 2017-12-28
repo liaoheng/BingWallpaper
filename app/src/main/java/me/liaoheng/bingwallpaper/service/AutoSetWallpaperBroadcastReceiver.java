@@ -11,9 +11,10 @@ import org.joda.time.LocalTime;
 
 import me.liaoheng.bingwallpaper.util.BingWallpaperAlarmManager;
 import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
-import me.liaoheng.bingwallpaper.util.BUtils;
+import me.liaoheng.bingwallpaper.util.BingWallpaperUtils;
 
 /**
+ * 接收定时闹钟与开机自启事件
  * @author liaoheng
  * @version 2016-09-19 15:49
  */
@@ -22,12 +23,12 @@ public class AutoSetWallpaperBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         L.Log.i("AutoSetWallpaperBroadcastReceiver", "action : %s", intent.getAction());
-        if (BUtils.isEnableLog(context)) {
+        if (BingWallpaperUtils.isEnableLog(context)) {
             LogDebugFileUtils.get()
                     .i("AutoSetWallpaperBroadcastReceiver", "action  : %s", intent.getAction());
         }
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-            LocalTime dayUpdateTime = BUtils.getDayUpdateTime(context);
+            LocalTime dayUpdateTime = BingWallpaperUtils.getDayUpdateTime(context);
             if (dayUpdateTime == null) {
                 return;
             }
@@ -36,7 +37,7 @@ public class AutoSetWallpaperBroadcastReceiver extends BroadcastReceiver {
         }
 
         if (NetworkUtils.isConnectedOrConnecting(context)) {
-            if (BUtils.getOnlyWifi(context)) {
+            if (BingWallpaperUtils.getOnlyWifi(context)) {
                 if (!NetworkUtils.isWifiConnected(context)) {
                     return;
                 }

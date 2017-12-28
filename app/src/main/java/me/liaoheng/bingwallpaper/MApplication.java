@@ -6,10 +6,10 @@ import com.crashlytics.android.Crashlytics;
 import com.github.liaoheng.common.Common;
 
 import io.fabric.sdk.android.Fabric;
-import me.liaoheng.bingwallpaper.util.BUtils;
+import me.liaoheng.bingwallpaper.util.BingWallpaperUtils;
 import me.liaoheng.bingwallpaper.util.BingWallpaperAlarmManager;
 import me.liaoheng.bingwallpaper.util.Constants;
-import me.liaoheng.bingwallpaper.util.JobManager;
+import me.liaoheng.bingwallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
 import me.liaoheng.bingwallpaper.util.NetUtils;
 import me.liaoheng.bingwallpaper.util.TasksUtils;
@@ -25,7 +25,7 @@ public class MApplication extends Application {
         super.onCreate();
         Common.init(this, Constants.PROJECT_NAME, BuildConfig.DEBUG);
         TasksUtils.init(this);
-        if (BUtils.isEnableLog(this)) {
+        if (BingWallpaperUtils.isEnableLog(this)) {
             LogDebugFileUtils.get().init("log.txt");
             LogDebugFileUtils.get().open();
         }
@@ -35,7 +35,7 @@ public class MApplication extends Application {
 
         if (TasksUtils.isOne()) {
             BingWallpaperAlarmManager.clear(this);
-            JobManager.disabled(this);
+            BingWallpaperJobManager.disabled(this);
         }
     }
 }

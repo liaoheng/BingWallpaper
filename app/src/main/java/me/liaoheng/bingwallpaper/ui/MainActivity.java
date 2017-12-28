@@ -25,7 +25,6 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.ImageViewTarget;
-import com.crashlytics.android.Crashlytics;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
@@ -41,8 +40,8 @@ import me.liaoheng.bingwallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.bingwallpaper.model.BingWallpaperImage;
 import me.liaoheng.bingwallpaper.model.BingWallpaperState;
 import me.liaoheng.bingwallpaper.service.BingWallpaperIntentService;
+import me.liaoheng.bingwallpaper.util.BingWallpaperUtils;
 import me.liaoheng.bingwallpaper.util.TasksUtils;
-import me.liaoheng.bingwallpaper.util.BUtils;
 import me.zhanghai.android.systemuihelper.SystemUiHelper;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -58,8 +57,6 @@ public class MainActivity extends BaseActivity
 
     private final String TAG = MainActivity.class.getSimpleName();
 
-    private boolean isRun;
-
     @BindView(R.id.bing_wallpaper_view)
     ImageView wallpaperView;
 
@@ -71,9 +68,10 @@ public class MainActivity extends BaseActivity
     @BindView(R.id.navigation_drawer)
     NavigationView mNavigationView;
 
-    WallpaperBroadcastReceiver mWallpaperBroadcastReceiver;
-
-    SystemUiHelper mSystemUiHelper;
+    private WallpaperBroadcastReceiver mWallpaperBroadcastReceiver;
+    private SystemUiHelper mSystemUiHelper;
+    private BingWallpaperImage mCurBingWallpaperImage;
+    private boolean isRun;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,12 +108,6 @@ public class MainActivity extends BaseActivity
         getBingWallpaper();
     }
 
-    private void initView() {
-
-    }
-
-    BingWallpaperImage mCurBingWallpaperImage;
-
     private void getBingWallpaper() {
         if (!NetworkUtils.isConnectedOrConnecting(getApplicationContext())) {
             UIUtils.showToast(getApplicationContext(), getString(R.string.network_unavailable));
@@ -123,7 +115,7 @@ public class MainActivity extends BaseActivity
         }
         isRun = true;
         showSwipeRefreshLayout();
-        BingWallpaperNetworkClient.getBingWallpaper(this)
+        BingWallpaperNetworkClient.getBingWallpaper()
                 .compose(this.<BingWallpaperImage>bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<BingWallpaperImage>() {
@@ -233,12 +225,11 @@ public class MainActivity extends BaseActivity
     }
 
     private void setImage(BingWallpaperImage bingWallpaperImage) {
-        L.i(TAG, "load wallpaper: %s", bingWallpaperImage);
         setTitle(bingWallpaperImage.getCopyright());
 
-        DisplayMetrics dm = BUtils.getDisplayMetrics(this);
+        DisplayMetrics dm = BingWallpaperUtils.getDisplayMetrics(this);
 
-        String url = BUtils.getUrl(getApplicationContext(), bingWallpaperImage);
+        String url = BingWallpaperUtils.getUrl(getApplicationContext(), bingWallpaperImage);
 
         Glide.with(MainActivity.this).load(url).override(dm.widthPixels, dm.heightPixels)
                 .centerCrop().crossFade().into(new ImageViewTarget<GlideDrawable>(wallpaperView) {

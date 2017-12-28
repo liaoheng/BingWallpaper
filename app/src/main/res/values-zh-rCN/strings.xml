@@ -19,7 +19,7 @@
     <string name="pref_log_file">日志文件</string>
     <string name="pref_about">关于</string>
     <string name="pref_version">版本</string>
-    <string name="open_source_license">Open source license</string>
+    <string name="open_source_license">开源协议</string>
     <string name="menu_main_drawer_wallpaper_info">壁纸信息</string>
     <string name="setting">设置</string>
 </resources>

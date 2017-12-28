@@ -1,14 +1,11 @@
 package me.liaoheng.bingwallpaper.data;
 
-import android.content.Context;
-
 import com.github.liaoheng.common.util.SystemDataException;
 import com.github.liaoheng.common.util.SystemRuntimeException;
 
 import me.liaoheng.bingwallpaper.model.BingWallpaper;
 import me.liaoheng.bingwallpaper.model.BingWallpaperImage;
-import me.liaoheng.bingwallpaper.util.BUtils;
-import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
+import me.liaoheng.bingwallpaper.util.BingWallpaperUtils;
 import me.liaoheng.bingwallpaper.util.NetUtils;
 import rx.Observable;
 import rx.functions.Func1;
@@ -20,12 +17,8 @@ import rx.schedulers.Schedulers;
  */
 public class BingWallpaperNetworkClient {
 
-    public static Observable<BingWallpaperImage> getBingWallpaper(Context context) {
-        String url = BUtils.getUrl();
-        if (BUtils.isEnableLog(context)) {
-            LogDebugFileUtils.get()
-                    .i("BingWallpaperNetworkClient", "getBingWallpaper url :%s", url);
-        }
+    public static Observable<BingWallpaperImage> getBingWallpaper() {
+        String url = BingWallpaperUtils.getUrl();
         return NetUtils.get().getBingWallpaperNetworkService()
                 .getBingWallpaper(url).subscribeOn(Schedulers.io())
                 .map(new Func1<BingWallpaper, BingWallpaperImage>() {

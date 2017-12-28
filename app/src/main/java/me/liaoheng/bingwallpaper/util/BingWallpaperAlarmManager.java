@@ -47,7 +47,7 @@ public class BingWallpaperAlarmManager {
                 .setRepeating(AlarmManager.RTC_WAKEUP, time.getMillis(), AlarmManager.INTERVAL_DAY,
                 pendingIntent);
 
-        if (BUtils.isEnableLog(context)) {
+        if (BingWallpaperUtils.isEnableLog(context)) {
             LogDebugFileUtils.get().i(TAG,"Set Alarm Repeating Time : %s", time.toString("yyyy-MM-dd HH:mm"));
         }
         L.Log.i(TAG, "Set Alarm Repeating Time : %s", time.toString("yyyy-MM-dd HH:mm"));
@@ -59,7 +59,7 @@ public class BingWallpaperAlarmManager {
     }
 
     public static void add(Context context,@NonNull LocalTime localTime) {
-        DateTime dateTime = BUtils.checkTime(localTime);
+        DateTime dateTime = BingWallpaperUtils.checkTime(localTime);
         add(context, dateTime);
     }
 }
