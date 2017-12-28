@@ -7,7 +7,7 @@
     <string name="network_unavailable">没有可用网络</string>
     <string name="connection_timed_out">连接超时</string>
     <string name="network_request_error">网络请求错误</string>
-    <string name="pref_not_set_time">还没设置时间</string>
+    <string name="pref_not_set_time">没有设置时间</string>
     <string name="pref_auto_update_wallpaper">自动更新壁纸</string>
     <string name="pref_update_only_on_wifi">只在WIFI时</string>
     <string name="pref_auto_update_everyday">每天自动</string>
