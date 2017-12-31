@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.crashlytics.android.Crashlytics;
 import com.github.liaoheng.common.Common;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import io.fabric.sdk.android.Fabric;
 import me.liaoheng.bingwallpaper.util.BingWallpaperUtils;
@@ -32,6 +33,7 @@ public class MApplication extends Application {
         NetUtils.get().init();
 
         Fabric.with(this, new Crashlytics());
+        FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(BuildConfig.DEBUG);
 
         if (TasksUtils.isOne()) {
             BingWallpaperAlarmManager.clear(this);

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">BingWallpaper</string>
     <string name="set_wallpaper_running">Setting wallpaper, please wait</string>
-    <string name="set_wallpaper_success">Set wallpaper success</string>
+    <string name="set_wallpaper_success">Setting wallpaper success</string>
     <string name="set_wallpaper_failure">Setting wallpaper failed</string>
     <string name="network_unavailable">No network available</string>
     <string name="connection_timed_out">Connection timed out</string>

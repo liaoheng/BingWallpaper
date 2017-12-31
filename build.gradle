@@ -23,6 +23,9 @@ allprojects {
         mavenLocal()
         google()
         mavenCentral()
+        maven {
+            url 'https://maven.fabric.io/public'
+        }
         jcenter()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }

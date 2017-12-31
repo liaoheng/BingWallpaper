@@ -3,12 +3,15 @@ package me.liaoheng.bingwallpaper.service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
 
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
 
 import org.joda.time.LocalTime;
 
+import me.liaoheng.bingwallpaper.BuildConfig;
 import me.liaoheng.bingwallpaper.util.BingWallpaperAlarmManager;
 import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
 import me.liaoheng.bingwallpaper.util.BingWallpaperUtils;
@@ -42,7 +45,12 @@ public class AutoSetWallpaperBroadcastReceiver extends BroadcastReceiver {
                     return;
                 }
             }
-            context.startService(new Intent(context, BingWallpaperIntentService.class));
+            Intent intent1 = new Intent(context, BingWallpaperIntentService.class);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                context.startForegroundService(intent1);
+            }else{
+                context.startService(intent1);
+            }
         }
     }
 }
