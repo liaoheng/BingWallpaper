@@ -33,6 +33,7 @@ public class LicenseActivity extends BaseActivity {
         ButterKnife.bind(this);
         SystemBarHelper
                 .tintStatusBar(this, ContextCompat.getColor(this, R.color.colorPrimaryDark), 0);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setHasFixedSize(true);
 

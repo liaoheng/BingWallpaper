@@ -7,10 +7,10 @@ import com.github.liaoheng.common.Common;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import io.fabric.sdk.android.Fabric;
-import me.liaoheng.bingwallpaper.util.BingWallpaperUtils;
 import me.liaoheng.bingwallpaper.util.BingWallpaperAlarmManager;
-import me.liaoheng.bingwallpaper.util.Constants;
 import me.liaoheng.bingwallpaper.util.BingWallpaperJobManager;
+import me.liaoheng.bingwallpaper.util.BingWallpaperUtils;
+import me.liaoheng.bingwallpaper.util.Constants;
 import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
 import me.liaoheng.bingwallpaper.util.NetUtils;
 import me.liaoheng.bingwallpaper.util.TasksUtils;
@@ -32,8 +32,11 @@ public class MApplication extends Application {
         }
         NetUtils.get().init();
 
-        Fabric.with(this, new Crashlytics());
-        FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(BuildConfig.DEBUG);
+        //debug firebase not work
+        if (!BuildConfig.DEBUG){
+            Fabric.with(this,new Crashlytics());
+        }
+        FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(!BuildConfig.DEBUG);
 
         if (TasksUtils.isOne()) {
             BingWallpaperAlarmManager.clear(this);

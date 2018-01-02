@@ -18,6 +18,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
+import android.util.AndroidException;
+import android.util.AndroidRuntimeException;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -29,6 +31,7 @@ import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.UIUtils;
+import com.github.liaoheng.common.util.ValidateUtils;
 
 import java.net.SocketTimeoutException;
 
@@ -183,12 +186,20 @@ public class MainActivity extends BaseActivity
         if (item.getItemId() == R.id.menu_main_drawer_settings) {
             UIUtils.startActivity(MainActivity.this, SettingsActivity.class);
         } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_info) {
-            if (mCurBingWallpaperImage == null) {
-                return false;
+            if (mCurBingWallpaperImage != null) {
+                try {
+                    String url = mCurBingWallpaperImage.getCopyrightlink();
+                    if (!ValidateUtils.isWebUrl(url)) {// ru
+                        url = "https://www.bing.com";
+                    }
+                    new CustomTabsIntent.Builder()
+                            .setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary)).build()
+                            .launchUrl(this, Uri.parse(url));
+                } catch (AndroidRuntimeException e) {
+                    UIUtils.showToast(getActivity(), getString(R.string.unable_open_url));
+                }
             }
-            new CustomTabsIntent.Builder()
-                    .setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary)).build()
-                    .launchUrl(this, Uri.parse(mCurBingWallpaperImage.getCopyrightlink()));
+
         }
         mDrawerLayout.closeDrawers();
         return true;
