@@ -21,7 +21,6 @@
             android:widgetLayout="@layout/mp_preference_switch" />
 
         <me.liaoheng.bingwallpaper.view.TimePreference
-            android:defaultValue="00:00:00.000"
             android:enabled="false"
             android:key="pref_set_wallpaper_day_auto_update_time"
             android:negativeButtonText="@android:string/no"
@@ -44,20 +43,24 @@
 
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="pref_set_wallpaper_log"
+            android:key="pref_set_wallpaper_debug_log"
             android:title="@string/pref_log_file"
             android:widgetLayout="@layout/mp_preference_switch" />
 
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_about">
-        <me.liaoheng.bingwallpaper.view.VersionPreference
+        <Preference
             android:key="pref_version"
             android:persistent="false"
-            android:title="@string/pref_version">
+            android:title="@string/pref_version" />
+        <Preference
+            android:key="pref_issues"
+            android:persistent="false"
+            android:title="Issues">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://github.com/liaoheng/BingWallpaper" />
-        </me.liaoheng.bingwallpaper.view.VersionPreference>
+                android:data="https://github.com/liaoheng/BingWallpaper/issues" />
+        </Preference>
         <Preference
             android:key="pref_license"
             android:persistent="false"

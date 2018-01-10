@@ -39,7 +39,7 @@ public class AutoSetWallpaperBroadcastReceiver extends BroadcastReceiver {
             return;
         }
 
-        if (NetworkUtils.isConnectedOrConnecting(context)) {
+        if (BingWallpaperUtils.isConnectedOrConnecting(context)) {
             if (BingWallpaperUtils.getOnlyWifi(context)) {
                 if (!NetworkUtils.isWifiConnected(context)) {
                     return;

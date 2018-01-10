@@ -27,14 +27,14 @@ public class MApplication extends Application {
         Common.init(this, Constants.PROJECT_NAME, BuildConfig.DEBUG);
         TasksUtils.init(this);
         if (BingWallpaperUtils.isEnableLog(this)) {
-            LogDebugFileUtils.get().init("log.txt");
+            LogDebugFileUtils.get().init();
             LogDebugFileUtils.get().open();
         }
         NetUtils.get().init();
 
         //debug firebase not work
-        if (!BuildConfig.DEBUG){
-            Fabric.with(this,new Crashlytics());
+        if (!BuildConfig.DEBUG) {
+            Fabric.with(this, new Crashlytics());
         }
         FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(!BuildConfig.DEBUG);
 

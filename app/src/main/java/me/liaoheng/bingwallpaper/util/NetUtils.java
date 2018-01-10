@@ -49,11 +49,11 @@ public class NetUtils {
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder builder = new OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS)
                 .connectTimeout(60, TimeUnit.SECONDS).addInterceptor(logging);
-        try {
-            File cacheFile = FileUtils.createCacheSDAndroidDirectory(Constants.HTTP_CACHE_DIR);
-            builder.cache(new Cache(cacheFile, Constants.HTTP_DISK_CACHE_SIZE));
-        } catch (SystemException ignored) {
-        }
+//        try {
+//            File cacheFile = FileUtils.createCacheSDAndroidDirectory(Constants.HTTP_CACHE_DIR);
+//            builder.cache(new Cache(cacheFile, Constants.HTTP_DISK_CACHE_SIZE));
+//        } catch (SystemException ignored) {
+//        }
         mRetrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create()).client(builder.build())

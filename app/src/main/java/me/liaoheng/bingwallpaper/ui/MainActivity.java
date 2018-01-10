@@ -18,7 +18,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
-import android.util.AndroidException;
 import android.util.AndroidRuntimeException;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
@@ -29,7 +28,6 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.ImageViewTarget;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.L;
-import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.ValidateUtils;
 
@@ -44,6 +42,7 @@ import me.liaoheng.bingwallpaper.model.BingWallpaperImage;
 import me.liaoheng.bingwallpaper.model.BingWallpaperState;
 import me.liaoheng.bingwallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.bingwallpaper.util.BingWallpaperUtils;
+import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
 import me.liaoheng.bingwallpaper.util.TasksUtils;
 import me.zhanghai.android.systemuihelper.SystemUiHelper;
 import rx.android.schedulers.AndroidSchedulers;
@@ -112,7 +111,7 @@ public class MainActivity extends BaseActivity
     }
 
     private void getBingWallpaper() {
-        if (!NetworkUtils.isConnectedOrConnecting(getApplicationContext())) {
+        if (!BingWallpaperUtils.isConnectedOrConnecting(getApplicationContext())) {
             UIUtils.showToast(getApplicationContext(), getString(R.string.network_unavailable));
             return;
         }
@@ -148,6 +147,13 @@ public class MainActivity extends BaseActivity
     void setWallpaper() {
         if (isRun) {
             UIUtils.showSnack(this, R.string.set_wallpaper_running);
+            return;
+        }
+        if (!BingWallpaperUtils.isConnectedOrConnecting(this)) {
+            UIUtils.showSnack(this, R.string.network_unavailable);
+            if (BingWallpaperUtils.isEnableLog(getApplicationContext())) {
+                LogDebugFileUtils.get().i(TAG, getString(R.string.network_unavailable));
+            }
             return;
         }
         startService(new Intent(this, BingWallpaperIntentService.class));
@@ -189,7 +195,7 @@ public class MainActivity extends BaseActivity
             if (mCurBingWallpaperImage != null) {
                 try {
                     String url = mCurBingWallpaperImage.getCopyrightlink();
-                    if (!ValidateUtils.isWebUrl(url)) {// ru
+                    if (!ValidateUtils.isWebUrl(url)) {
                         url = "https://www.bing.com";
                     }
                     new CustomTabsIntent.Builder()

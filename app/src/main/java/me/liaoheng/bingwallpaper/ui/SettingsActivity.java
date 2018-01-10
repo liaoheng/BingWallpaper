@@ -18,12 +18,11 @@ import org.joda.time.LocalTime;
 
 import me.liaoheng.bingwallpaper.R;
 import me.liaoheng.bingwallpaper.service.AutoSetWallpaperBroadcastReceiver;
-import me.liaoheng.bingwallpaper.util.BingWallpaperUtils;
 import me.liaoheng.bingwallpaper.util.BingWallpaperAlarmManager;
 import me.liaoheng.bingwallpaper.util.BingWallpaperJobManager;
+import me.liaoheng.bingwallpaper.util.BingWallpaperUtils;
 import me.liaoheng.bingwallpaper.util.LogDebugFileUtils;
 import me.liaoheng.bingwallpaper.view.TimePreference;
-import me.liaoheng.bingwallpaper.view.VersionPreference;
 
 /**
  * @author liaoheng
@@ -45,7 +44,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
     public static final String PREF_SET_WALLPAPER_DAY_AUTO_UPDATE = "pref_set_wallpaper_day_auto_update";
     public static final String PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME = "pref_set_wallpaper_day_auto_update_time";
     public static final String PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI = "pref_set_wallpaper_day_auto_update_only_wifi";
-    public static final String PREF_SET_WALLPAPER_LOG = "pref_set_wallpaper_log";
+    public static final String PREF_SET_WALLPAPER_LOG = "pref_set_wallpaper_debug_log";
 
     public static class MyPreferenceFragment extends com.fnp.materialpreferences.PreferenceFragment
             implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -60,17 +59,32 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
         TimePreference mTimePreference;
         CheckBoxPreference mDayUpdatePreference;
         CheckBoxPreference mAutoUpdatePreference;
+        Preference mLogPreference;
+        private int openLogCount;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            VersionPreference version = (VersionPreference) findPreference("pref_version");
+            Preference version = findPreference("pref_version");
+            mLogPreference = findPreference(PREF_SET_WALLPAPER_LOG);
             try {
                 String versionName = AppUtils.getVersionInfo(getActivity()).versionName;
-                version.setVersion(versionName);
+                version.setSummary(versionName);
             } catch (SystemException e) {
                 L.Log.w(TAG, e);
             }
+
+            version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    openLogCount++;
+                    if (openLogCount >= 5) {
+                        openLogCount = 0;
+                        ((PreferenceCategory) findPreference("pref_other_group")).addPreference(mLogPreference);
+                    }
+                    return true;
+                }
+            });
             Preference licenses = findPreference("pref_license");
             licenses.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
@@ -79,7 +93,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     return false;
                 }
             });
-            ((PreferenceCategory) findPreference("pref_other_group")).removePreference(findPreference(PREF_SET_WALLPAPER_LOG));
+            ((PreferenceCategory) findPreference("pref_other_group")).removePreference(mLogPreference);
 
             mResolutionListPreference = (ListPreference) findPreference(
                     PREF_SET_WALLPAPER_RESOLUTION);
@@ -144,7 +158,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     CheckBoxPreference logPreference = (CheckBoxPreference) findPreference(
                             PREF_SET_WALLPAPER_LOG);
                     if (logPreference.isChecked()) {
-                        LogDebugFileUtils.get().init("log.txt");
+                        LogDebugFileUtils.get().init();
                         LogDebugFileUtils.get().open();
                     } else {
                         LogDebugFileUtils.get().clearFile();

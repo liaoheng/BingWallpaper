@@ -16,10 +16,9 @@
     <string name="pref_alarm_update_wallpaper_time">每天定时时间</string>
     <string name="pref_other">其它</string>
     <string name="choose_resolution">选择壁纸分辨率</string>
-    <string name="pref_log_file">日志文件</string>
     <string name="pref_about">关于</string>
     <string name="pref_version">版本</string>
-    <string name="open_source_license">开源协议</string>
+    <string name="open_source_license">开放源代码许可</string>
     <string name="menu_main_drawer_wallpaper_info">壁纸信息</string>
     <string name="setting">设置</string>
     <string name="unable_open_url">无法打开网址</string>

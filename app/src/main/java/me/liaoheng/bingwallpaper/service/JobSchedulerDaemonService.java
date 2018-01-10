@@ -29,7 +29,7 @@ public class JobSchedulerDaemonService extends JobService {
     Handler mHandler = new Handler(Looper.myLooper()) {
         @Override
         public void handleMessage(Message msg) {
-            if (NetworkUtils.isConnectedOrConnecting(getApplicationContext())) {
+            if (BingWallpaperUtils.isConnectedOrConnecting(getApplicationContext())) {
                 if (BingWallpaperUtils.getOnlyWifi(getApplicationContext())) {
                     if (!NetworkUtils.isWifiConnected(getApplicationContext())) {
                         L.Log.i(TAG, "isWifiConnected :false");

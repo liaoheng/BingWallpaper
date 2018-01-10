@@ -4,12 +4,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
+import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.Utils;
 
 import org.joda.time.DateTime;
@@ -99,9 +101,6 @@ public class BingWallpaperUtils {
     }
 
     public static boolean isEnableLog(Context context) {
-        if (!BuildConfig.DEBUG) {
-            return false;
-        }
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
         return sharedPreferences
@@ -121,5 +120,21 @@ public class BingWallpaperUtils {
         PackageManager pm = context.getPackageManager();
         pm.setComponentEnabledSetting(componentName, newState, PackageManager.DONT_KILL_APP);
     }
-
+    /**
+     * 判断有无网络正在连接中（查找网络、校验、获取IP等）。
+     * @return boolean 不管wifi，还是mobile net，只有当前在连接状态（可有效传输数据）才返回true,反之false。
+     */
+    public static boolean isConnectedOrConnecting(Context context) {
+        if (NetworkUtils.isConnected(context)) {
+            NetworkInfo[] nets = NetworkUtils.getConnManager(context).getAllNetworkInfo();
+            if (nets != null) {
+                for (NetworkInfo net : nets) {
+                    if (net.isConnectedOrConnecting()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }

@@ -9,7 +9,7 @@
     <string name="network_request_error">網絡請求錯誤</string>
     <string name="pref_not_set_time">沒有設置時間</string>
     <string name="pref_auto_update_wallpaper">自動更新壁紙</string>
-    <string name="pref_update_only_on_wifi">只在WIFI時</string>
+    <string name="pref_update_only_on_wifi">僅在WIFI時</string>
     <string name="pref_auto_update_everyday">每天自動</string>
     <string name="pref_auto_update_check_every_hour">一個小時檢查一次</string>
     <string name="pref_alarm_update_wallpaper_everyday">每天定時</string>
@@ -18,8 +18,8 @@
     <string name="choose_resolution">選擇壁紙分辨率</string>
     <string name="pref_about">關於</string>
     <string name="pref_version">版本</string>
-    <string name="open_source_license">開源協議</string>
+    <string name="open_source_license">開放原始碼授權</string>
     <string name="menu_main_drawer_wallpaper_info">壁紙信息</string>
-    <string name="setting">設置</string>
+    <string name="setting">設定</string>
     <string name="unable_open_url">無法打開網址</string>
 </resources>

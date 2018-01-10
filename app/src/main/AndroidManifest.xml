@@ -46,6 +46,11 @@
             android:name=".service.JobSchedulerDaemonService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <meta-data
+            android:name="me.liaoheng.bingwallpaper.util.GlideModule"
+            android:value="GlideModule"/>
+        <meta-data android:name="firebase_crashlytics_collection_enabled" android:value="false" />
     </application>
 
 </manifest>

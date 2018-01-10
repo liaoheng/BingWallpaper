@@ -4,10 +4,13 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.preference.DialogPreference;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TimePicker;
+
+import com.github.liaoheng.common.util.ValidateUtils;
 
 import org.joda.time.LocalTime;
 
@@ -47,8 +50,8 @@ public class TimePreference extends DialogPreference {
     @Override
     protected void onBindDialogView(@NonNull View v) {
         super.onBindDialogView(v);
-        picker.setCurrentHour(localTime.getHourOfDay());
-        picker.setCurrentMinute(localTime.getMinuteOfHour());
+        picker.setCurrentHour(getLocalTime().getHourOfDay());
+        picker.setCurrentMinute(getLocalTime().getMinuteOfHour());
     }
 
     @Override
@@ -68,20 +71,21 @@ public class TimePreference extends DialogPreference {
     }
 
     @Override
-    protected Object onGetDefaultValue(TypedArray a, int index) {
+    protected String onGetDefaultValue(TypedArray a, int index) {
         return a.getString(index);
     }
 
     @Override
     protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
         if (defaultValue != null) {
-            localTime = LocalTime.parse(getPersistedString(defaultValue.toString()));
+            localTime = LocalTime.parse(getPersistedString(String.valueOf(defaultValue)));
         }
-
-        localTime = LocalTime.parse(getPersistedString("00:00:00.000"));
     }
 
     public LocalTime getLocalTime() {
+        if (localTime == null) {
+            localTime = LocalTime.parse("00:00:00.000");
+        }
         return localTime;
     }
 
