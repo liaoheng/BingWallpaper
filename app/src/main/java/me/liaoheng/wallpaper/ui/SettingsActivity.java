@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.PreferenceCategory;
 import android.support.v4.content.ContextCompat;
 
 import com.flyco.systembar.SystemBarHelper;
@@ -40,6 +39,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
     }
 
     public static final String PREF_SET_WALLPAPER_RESOLUTION = "pref_set_wallpaper_resolution";
+    public static final String PREF_SET_WALLPAPER_AUTO_MODE = "pref_set_wallpaper_auto_mode";
     public static final String PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE = "pref_set_wallpaper_day_fully_automatic_update";
     public static final String PREF_SET_WALLPAPER_DAY_AUTO_UPDATE = "pref_set_wallpaper_day_auto_update";
     public static final String PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME = "pref_set_wallpaper_day_auto_update_time";
@@ -56,11 +56,12 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
         }
 
         ListPreference mResolutionListPreference;
+        ListPreference mModeTypeListPreference;
         TimePreference mTimePreference;
         CheckBoxPreference mDayUpdatePreference;
         CheckBoxPreference mAutoUpdatePreference;
         Preference mLogPreference;
-        private int openLogCount;
+//        private int openLogCount;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -74,17 +75,17 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                 L.Log.w(TAG, e);
             }
 
-            version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    openLogCount++;
-                    if (openLogCount >= 5) {
-                        openLogCount = 0;
-                        ((PreferenceCategory) findPreference("pref_other_group")).addPreference(mLogPreference);
-                    }
-                    return true;
-                }
-            });
+//            version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+//                @Override
+//                public boolean onPreferenceClick(Preference preference) {
+//                    openLogCount++;
+//                    if (openLogCount >= 5) {
+//                        openLogCount = 0;
+//                        ((PreferenceCategory) findPreference("pref_other_group")).addPreference(mLogPreference);
+//                    }
+//                    return true;
+//                }
+//            });
             Preference licenses = findPreference("pref_license");
             licenses.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
@@ -93,10 +94,12 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     return false;
                 }
             });
-            ((PreferenceCategory) findPreference("pref_other_group")).removePreference(mLogPreference);
+//            ((PreferenceCategory) findPreference("pref_other_group")).removePreference(mLogPreference);
 
             mResolutionListPreference = (ListPreference) findPreference(
                     PREF_SET_WALLPAPER_RESOLUTION);
+            mModeTypeListPreference = (ListPreference) findPreference(
+                    PREF_SET_WALLPAPER_AUTO_MODE);
             mDayUpdatePreference = (CheckBoxPreference) findPreference(
                     PREF_SET_WALLPAPER_DAY_AUTO_UPDATE);
             mTimePreference = (TimePreference) findPreference(
@@ -104,6 +107,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             mAutoUpdatePreference = (CheckBoxPreference) findPreference(PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE);
 
             mResolutionListPreference.setSummary(BingWallpaperUtils.getResolution(getActivity()));
+            mModeTypeListPreference.setSummary(BingWallpaperUtils.getAutoMode(getActivity()));
 
             LocalTime localTime = BingWallpaperUtils.getDayUpdateTime(getActivity());
 
@@ -124,6 +128,9 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             switch (key) {
                 case PREF_SET_WALLPAPER_RESOLUTION:
                     mResolutionListPreference.setSummary(mResolutionListPreference.getEntry());
+                    break;
+                case PREF_SET_WALLPAPER_AUTO_MODE:
+                    mModeTypeListPreference.setSummary(mModeTypeListPreference.getEntry());
                     break;
                 case PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE:
                     if (mAutoUpdatePreference.isChecked()) {

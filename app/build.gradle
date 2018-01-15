@@ -99,6 +99,9 @@ dependencies {
     //https://github.com/H07000223/FlycoSystemBar
     compile "com.flyco.systembar:FlycoSystemBar_Lib:1.0.0"
 
+    //https://github.com/Clans/FloatingActionButton
+    compile 'com.github.clans:fab:1.6.4'
+
     compile 'com.github.liaoheng:common-core:0.0.5-SNAPSHOT'
 }
 apply plugin: 'com.google.gms.google-services'

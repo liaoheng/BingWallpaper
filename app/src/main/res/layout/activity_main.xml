@@ -1,69 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/drawer_layout"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <android.support.design.widget.CoordinatorLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
         <ImageView
-                android:id="@+id/bing_wallpaper_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+            android:id="@+id/bing_wallpaper_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <LinearLayout
-                android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:background="#30000000"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/bing_wallpaper_swipe_refresh"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-            <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?actionBarSize"
-                    android:background="#30000000"
-                    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                    app:layout_scrollFlags="scroll|enterAlways"
-                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-
-            <android.support.v4.widget.SwipeRefreshLayout
-                    android:id="@+id/bing_wallpaper_swipe_refresh"
+                <android.support.v4.widget.NestedScrollView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                <android.support.v4.widget.NestedScrollView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
                     <FrameLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"/>
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
                 </android.support.v4.widget.NestedScrollView>
             </android.support.v4.widget.SwipeRefreshLayout>
         </LinearLayout>
 
-        <android.support.design.widget.FloatingActionButton
-                android:id="@+id/bing_wallpaper_set"
-                android:src="@drawable/ic_wallpaper_white_24dp"
-                app:layout_anchor="@+id/bing_wallpaper_view"
-                app:layout_anchorGravity="bottom|end"
-                android:layout_marginBottom="55dp"
-                android:layout_marginRight="16dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+        <com.github.clans.fab.FloatingActionMenu
+            android:id="@+id/bing_wallpaper_set_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:visibility="invisible"
+            app:layout_anchor="@+id/bing_wallpaper_view"
+            app:layout_anchorGravity="bottom|end"
+            app:menu_fab_show_animation="@anim/fab_slide_in_from_right"
+            app:menu_icon="@drawable/ic_wallpaper_white_24dp" />
 
     </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView
-            android:id="@+id/navigation_drawer"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:background="@android:color/white"
-            app:headerLayout="@layout/navigation_header"
-            app:menu="@menu/main_drawer"/>
+        android:id="@+id/navigation_drawer"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@android:color/white"
+        app:headerLayout="@layout/navigation_header"
+        app:menu="@menu/main_drawer" />
 
 </android.support.v4.widget.DrawerLayout>

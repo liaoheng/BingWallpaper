@@ -2,8 +2,6 @@ package me.liaoheng.wallpaper.service;
 
 import android.app.job.JobParameters;
 import android.app.job.JobService;
-import android.content.Intent;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -39,12 +37,7 @@ public class JobSchedulerDaemonService extends JobService {
                 //每天成功执行一次
                 if (TasksUtils.isToDaysDo(1, BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
                     L.Log.i(TAG, "isToDaysDo :true");
-                    Intent intent1 = new Intent(getApplicationContext(), BingWallpaperIntentService.class);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        startForegroundService(intent1);
-                    } else {
-                        startService(intent1);
-                    }
+                    BingWallpaperIntentService.start(getApplicationContext(), BingWallpaperUtils.getAutoModeValue(getApplicationContext()));
                 } else {
                     L.Log.i(TAG, "isToDaysDo :false");
                 }

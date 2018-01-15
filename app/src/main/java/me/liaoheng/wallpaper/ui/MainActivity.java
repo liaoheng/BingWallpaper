@@ -4,12 +4,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.ColorStateList;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.customtabs.CustomTabsIntent;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -21,11 +22,14 @@ import android.support.v7.widget.Toolbar;
 import android.util.AndroidRuntimeException;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.ImageViewTarget;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.UIUtils;
@@ -35,7 +39,6 @@ import java.net.SocketTimeoutException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
@@ -69,6 +72,8 @@ public class MainActivity extends BaseActivity
     DrawerLayout mDrawerLayout;
     @BindView(R.id.navigation_drawer)
     NavigationView mNavigationView;
+    @BindView(R.id.bing_wallpaper_set_menu)
+    FloatingActionMenu mSetWallpaperActionMenu;
 
     private WallpaperBroadcastReceiver mWallpaperBroadcastReceiver;
     private SystemUiHelper mSystemUiHelper;
@@ -140,11 +145,10 @@ public class MainActivity extends BaseActivity
                 });
     }
 
-    @BindView(R.id.bing_wallpaper_set)
-    FloatingActionButton setWallpaperBtn;
-
-    @OnClick(R.id.bing_wallpaper_set)
-    void setWallpaper() {
+    /**
+     * @param type 0. both , 1. home , 2. lock
+     */
+    private void setWallpaper(int type) {
         if (isRun) {
             UIUtils.showSnack(this, R.string.set_wallpaper_running);
             return;
@@ -156,7 +160,7 @@ public class MainActivity extends BaseActivity
             }
             return;
         }
-        startService(new Intent(this, BingWallpaperIntentService.class));
+        BingWallpaperIntentService.start(this, type);
     }
 
     @Override
@@ -231,11 +235,11 @@ public class MainActivity extends BaseActivity
                 } else if (BingWallpaperState.SUCCESS.equals(state)) {
                     isRun = false;
                     dismissSwipeRefreshLayout();
-                    UIUtils.showSnack(MainActivity.this, R.string.set_wallpaper_success);
+                    UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_success));
                 } else if (BingWallpaperState.FAIL.equals(state)) {
                     isRun = false;
                     dismissSwipeRefreshLayout();
-                    UIUtils.showSnack(MainActivity.this, R.string.set_wallpaper_failure);
+                    UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_failure));
                 }
             }
         }
@@ -260,14 +264,52 @@ public class MainActivity extends BaseActivity
                             public void onGenerated(Palette palette) {
 
                                 int lightMutedSwatch = palette.getMutedColor(ContextCompat
-                                        .getColor(MainActivity.this, R.color.colorPrimaryDark));
+                                        .getColor(getActivity(), R.color.colorPrimaryDark));
 
                                 int lightVibrantSwatch = palette.getVibrantColor(ContextCompat
-                                        .getColor(MainActivity.this, R.color.colorAccent));
+                                        .getColor(getActivity(), R.color.colorAccent));
 
-                                setWallpaperBtn.setBackgroundTintList(
-                                        ColorStateList.valueOf(lightMutedSwatch));
-                                setWallpaperBtn.setRippleColor(lightVibrantSwatch);
+                                mSetWallpaperActionMenu.removeAllMenuButtons();
+
+                                mSetWallpaperActionMenu.setMenuButtonColorNormal(lightMutedSwatch);
+                                mSetWallpaperActionMenu.setMenuButtonColorPressed(lightMutedSwatch);
+                                mSetWallpaperActionMenu.setMenuButtonColorRipple(lightVibrantSwatch);
+
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                    addActionButton(lightMutedSwatch, lightVibrantSwatch, getString(R.string.set_wallpaper_auto_mode_home), R.drawable.ic_home_white_24dp, new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            setWallpaper(1);
+                                            mSetWallpaperActionMenu.close(true);
+                                        }
+                                    });
+
+                                    addActionButton(lightMutedSwatch, lightVibrantSwatch, getString(R.string.set_wallpaper_auto_mode_lock), R.drawable.ic_lock_white_24dp, new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            setWallpaper(2);
+                                            mSetWallpaperActionMenu.close(true);
+                                        }
+                                    });
+
+                                    addActionButton(lightMutedSwatch, lightVibrantSwatch, getString(R.string.set_wallpaper_auto_mode_both), R.drawable.ic_smartphone_white_24dp, new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            setWallpaper(0);
+                                            mSetWallpaperActionMenu.close(true);
+                                        }
+                                    });
+                                } else {
+                                    mSetWallpaperActionMenu.setOnMenuButtonClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            setWallpaper(0);
+                                        }
+                                    });
+                                }
+
+
+                                mSetWallpaperActionMenu.showMenu(true);
                             }
                         });
 
@@ -276,6 +318,19 @@ public class MainActivity extends BaseActivity
             }
         });
 
+    }
+
+    private void addActionButton(@ColorInt int lightMutedSwatch, @ColorInt int lightVibrantSwatch, String text, @DrawableRes int resId, View.OnClickListener listener) {
+        FloatingActionButton actionButton = new FloatingActionButton(getActivity());
+        actionButton.setLabelText(text);
+        actionButton.setColorNormal(lightMutedSwatch);
+        actionButton.setColorPressed(lightMutedSwatch);
+        actionButton.setColorRipple(lightVibrantSwatch);
+        actionButton.setImageResource(resId);
+        actionButton.setButtonSize(com.github.clans.fab.FloatingActionButton.SIZE_MINI);
+        mSetWallpaperActionMenu.addMenuButton(actionButton);
+        actionButton.setLabelColors(lightMutedSwatch, lightMutedSwatch, lightVibrantSwatch);
+        actionButton.setOnClickListener(listener);
     }
 
     @Override

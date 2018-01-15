@@ -6,7 +6,7 @@ package me.liaoheng.wallpaper.util;
  */
 public interface Constants {
 
-    String PROJECT_NAME          = "Wallpaper";
+    String PROJECT_NAME          = "BingWallpaper";
 
     String DISK_CACHE_DIR        = "imgCache";
     String HTTP_CACHE_DIR        = "httpCache";

@@ -62,6 +62,23 @@ public class BingWallpaperUtils {
         return names[Integer.parseInt(resolution)];
     }
 
+    public static int getAutoModeValue(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
+
+        return Integer.parseInt(sharedPreferences
+                .getString(SettingsActivity.PREF_SET_WALLPAPER_AUTO_MODE, "0"));
+    }
+
+    public static String getAutoMode(Context context) {
+        String[] names = context.getResources()
+                .getStringArray(R.array.pref_set_wallpaper_auto_mode_name);
+
+        int value = getAutoModeValue(context);
+
+        return names[value];
+    }
+
     public static String getUrl() {
         String language = Locale.getDefault().getLanguage();
         String country = Locale.getDefault().getCountry();
@@ -119,8 +136,10 @@ public class BingWallpaperUtils {
         PackageManager pm = context.getPackageManager();
         pm.setComponentEnabledSetting(componentName, newState, PackageManager.DONT_KILL_APP);
     }
+
     /**
      * 判断有无网络正在连接中（查找网络、校验、获取IP等）。
+     *
      * @return boolean 不管wifi，还是mobile net，只有当前在连接状态（可有效传输数据）才返回true,反之false。
      */
     public static boolean isConnectedOrConnecting(Context context) {

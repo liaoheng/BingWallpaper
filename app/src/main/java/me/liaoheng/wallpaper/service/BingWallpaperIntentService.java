@@ -45,15 +45,34 @@ public class BingWallpaperIntentService extends IntentService {
 
     private final String TAG = BingWallpaperIntentService.class
             .getSimpleName();
-    public final static String ACTION_GET_WALLPAPER_STATE = "me.liaoheng.bingwallpaper.BING_WALLPAPER_STATE";
+    public final static String ACTION_GET_WALLPAPER_STATE = "me.liaoheng.wallpaper.BING_WALLPAPER_STATE";
     public final static String EXTRA_GET_WALLPAPER_STATE = "GET_WALLPAPER_STATE";
     public final static String FLAG_SET_WALLPAPER_STATE = "SET_WALLPAPER_STATE";
-//    private FirebaseAnalytics mFirebaseAnalytics;
+    //    private FirebaseAnalytics mFirebaseAnalytics;
+    /**
+     * <p>0. both</p>
+     * <p>1. home</p>
+     * <p>2. lock</p>
+     */
+    public final static String EXTRA_SET_WALLPAPER_TYPE = "SET_WALLPAPER_TYPE";
+
 
     public BingWallpaperIntentService() {
         super("BingWallpaperIntentService");
     }
 
+    /**
+     * @param type 0. both , 1. home , 2. lock
+     */
+    public static void start(Context context, int type) {
+        Intent intent = new Intent(context, BingWallpaperIntentService.class);
+        intent.putExtra(EXTRA_SET_WALLPAPER_TYPE, type);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent);
+        } else {
+            context.startService(intent);
+        }
+    }
 
     private void clearNotification() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -68,6 +87,8 @@ public class BingWallpaperIntentService extends IntentService {
     @Override
     protected void onHandleIntent(final Intent intent) {
 //        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        final int setWallpaperType = intent.getIntExtra(EXTRA_SET_WALLPAPER_TYPE, 0);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("bing_wallpaper_intent_service_notification_channel_id", "AutoSetWallpaperIntentService", NotificationManager.IMPORTANCE_LOW);
 
@@ -122,6 +143,9 @@ public class BingWallpaperIntentService extends IntentService {
                             BingWallpaperImage bingWallpaperImage) {
                         String url = BingWallpaperUtils.getUrl(getApplicationContext(), bingWallpaperImage);
                         L.Log.i(TAG, "wallpaper url : %s", url);
+                        if (BingWallpaperUtils.isEnableLog(getApplicationContext())) {
+                            LogDebugFileUtils.get().i(TAG, "wallpaper url : %s", url);
+                        }
                         File wallpaper = null;
                         try {
                             wallpaper = Glide.with(getApplicationContext()).load(url)
@@ -137,8 +161,21 @@ public class BingWallpaperIntentService extends IntentService {
                                     .getScreenHeightRealMetrics(getApplicationContext());
                             Bitmap bitmap = BitmapFactory.decodeFile(absolutePath, options);
 
-                            WallpaperManager.getInstance(getApplicationContext())
-                                    .setBitmap(bitmap);
+                            if (setWallpaperType == 1) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                    WallpaperManager.getInstance(getApplicationContext())
+                                            .setBitmap(bitmap, null, false, WallpaperManager.FLAG_SYSTEM);
+                                }
+                            } else if (setWallpaperType == 2) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                    WallpaperManager.getInstance(getApplicationContext())
+                                            .setBitmap(bitmap, null, false, WallpaperManager.FLAG_LOCK);
+                                }
+                            } else {
+                                WallpaperManager.getInstance(getApplicationContext())
+                                        .setBitmap(bitmap);
+                            }
+
                             if (bitmap != null) {
                                 if (!bitmap.isRecycled()) {
                                     bitmap.recycle();
