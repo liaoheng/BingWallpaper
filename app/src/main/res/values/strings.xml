@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Wallpaper</string>
+    <string name="app_name">Daily Bing Wallpaper</string>
     <string name="set_wallpaper_running">Setting wallpaper, please wait</string>
     <string name="set_wallpaper_success">Setting wallpaper success</string>
     <string name="set_wallpaper_failure">Setting wallpaper failed</string>

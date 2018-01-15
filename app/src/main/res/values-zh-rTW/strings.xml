@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">壁紙</string>
+    <string name="app_name">每日必應壁紙</string>
     <string name="set_wallpaper_running">正在設置壁紙，請稍候</string>
     <string name="set_wallpaper_success">壁紙設置成功</string>
     <string name="set_wallpaper_failure">壁紙設置失敗</string>
