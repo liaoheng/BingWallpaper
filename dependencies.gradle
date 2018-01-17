@@ -1,3 +1,10 @@
+ext {
+    minSdkVersion = 21
+    targetSdkVersion = 27
+    compileSdkVersion = 27
+    buildToolsVersion = '27.0.3'
+}
+
 //共用的依赖库
 def support = '25.3.1'
 def retrofit = '2.3.0'

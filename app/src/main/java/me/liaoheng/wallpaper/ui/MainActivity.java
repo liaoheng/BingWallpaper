@@ -1,9 +1,12 @@
 package me.liaoheng.wallpaper.ui;
 
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,7 +16,6 @@ import android.support.annotation.NonNull;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -24,10 +26,12 @@ import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.ImageViewTarget;
+import com.crashlytics.android.Crashlytics;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.liaoheng.common.util.BitmapUtils;
@@ -64,6 +68,8 @@ public class MainActivity extends BaseActivity
 
     @BindView(R.id.bing_wallpaper_view)
     ImageView wallpaperView;
+    @BindView(R.id.bing_wallpaper_error)
+    TextView mErrorTextView;
 
     @BindView(R.id.bing_wallpaper_swipe_refresh)
     SwipeRefreshLayout mSwipeRefreshLayout;
@@ -120,7 +126,6 @@ public class MainActivity extends BaseActivity
             UIUtils.showToast(getApplicationContext(), getString(R.string.network_unavailable));
             return;
         }
-        isRun = true;
         showSwipeRefreshLayout();
         BingWallpaperNetworkClient.getBingWallpaper()
                 .compose(this.<BingWallpaperImage>bindToLifecycle())
@@ -134,15 +139,28 @@ public class MainActivity extends BaseActivity
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        isRun = false;
-                        dismissSwipeRefreshLayout();
-                        if (throwable instanceof SocketTimeoutException) {
-                            L.getSnack().e(TAG, getActivity(), R.string.connection_timed_out);
-                            return;
-                        }
-                        L.getSnack().e(TAG, getActivity(), getActivity().getString(R.string.network_request_error), throwable);
+                        getBingWallpaperError(throwable);
                     }
                 });
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void getBingWallpaperError(Throwable throwable) {
+        dismissSwipeRefreshLayout();
+        String error = getString(R.string.network_request_error);
+        if (throwable instanceof SocketTimeoutException) {
+            error = getString(R.string.connection_timed_out);
+        }
+        mErrorTextView.setText(getString(R.string.pull_refresh)+error);
+        if (throwable == null) {
+            L.Log.e(TAG, error);
+        } else {
+            L.Log.e(TAG, throwable);
+            Crashlytics.log(throwable.getMessage());
+        }
+        if (BingWallpaperUtils.isEnableLog(getApplicationContext())) {
+            LogDebugFileUtils.get().e(TAG, throwable, error);
+        }
     }
 
     /**
@@ -150,17 +168,15 @@ public class MainActivity extends BaseActivity
      */
     private void setWallpaper(int type) {
         if (isRun) {
-            UIUtils.showSnack(this, R.string.set_wallpaper_running);
+            UIUtils.showToast(this, getString(R.string.set_wallpaper_running));
             return;
         }
         if (!BingWallpaperUtils.isConnectedOrConnecting(this)) {
-            UIUtils.showSnack(this, R.string.network_unavailable);
-            if (BingWallpaperUtils.isEnableLog(getApplicationContext())) {
-                LogDebugFileUtils.get().i(TAG, getString(R.string.network_unavailable));
-            }
+            UIUtils.showToast(this, getString(R.string.network_unavailable));
             return;
         }
-        BingWallpaperIntentService.start(this, type);
+        showProgressDialog();
+        BingWallpaperIntentService.start(this, type, false);
     }
 
     @Override
@@ -182,7 +198,30 @@ public class MainActivity extends BaseActivity
         });
     }
 
+    private void dismissProgressDialog() {
+        isRun = false;
+        mSetWallpaperActionMenu.showMenu(true);
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
+    }
+
     private void showSwipeRefreshLayout() {
+        mErrorTextView.setText("");
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(true);
+            }
+        });
+    }
+
+    private void showProgressDialog() {
+        isRun = true;
+        mSetWallpaperActionMenu.hideMenu(true);
         mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
@@ -226,19 +265,20 @@ public class MainActivity extends BaseActivity
         @Override
         public void onReceive(Context context, Intent intent) {
             if (BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE.equals(intent.getAction())) {
-                BingWallpaperState state = (BingWallpaperState) intent
-                        .getSerializableExtra(BingWallpaperIntentService.EXTRA_GET_WALLPAPER_STATE);
+                int extra = intent
+                        .getIntExtra(BingWallpaperIntentService.EXTRA_GET_WALLPAPER_STATE, -1);
+                if (extra < 0) {
+                    return;
+                }
+                BingWallpaperState state = BingWallpaperState.find(extra);
 
                 if (BingWallpaperState.BEGIN.equals(state)) {
-                    showSwipeRefreshLayout();
-                    isRun = true;
+//                    showProgressDialog();
                 } else if (BingWallpaperState.SUCCESS.equals(state)) {
-                    isRun = false;
-                    dismissSwipeRefreshLayout();
+                    dismissProgressDialog();
                     UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_success));
                 } else if (BingWallpaperState.FAIL.equals(state)) {
-                    isRun = false;
-                    dismissSwipeRefreshLayout();
+                    dismissProgressDialog();
                     UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_failure));
                 }
             }
@@ -254,6 +294,11 @@ public class MainActivity extends BaseActivity
 
         Glide.with(MainActivity.this).load(url).override(dm.widthPixels, dm.heightPixels)
                 .centerCrop().crossFade().into(new ImageViewTarget<GlideDrawable>(wallpaperView) {
+            @Override
+            public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                getBingWallpaperError(e);
+            }
+
             @Override
             protected void setResource(GlideDrawable resource) {
                 wallpaperView.setImageDrawable(resource);
@@ -336,14 +381,14 @@ public class MainActivity extends BaseActivity
     @Override
     protected void onStart() {
         super.onStart();
-        LocalBroadcastManager.getInstance(this).registerReceiver(mWallpaperBroadcastReceiver,
+        registerReceiver(mWallpaperBroadcastReceiver,
                 new IntentFilter(BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE));
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mWallpaperBroadcastReceiver);
+        unregisterReceiver(mWallpaperBroadcastReceiver);
     }
 
     @Override

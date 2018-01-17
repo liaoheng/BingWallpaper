@@ -40,17 +40,25 @@
 
         <service
             android:name=".service.BingWallpaperIntentService"
-            android:exported="false" />
+            android:exported="false"
+            android:process=":background" />
 
         <service
             android:name=".service.JobSchedulerDaemonService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
+        <provider
+            android:name=".data.provider.TasksProvider"
+            android:authorities="me.liaoheng.wallpaper"
+            android:exported="false" />
+
         <meta-data
             android:name="me.liaoheng.wallpaper.util.GlideModule"
-            android:value="GlideModule"/>
-        <meta-data android:name="firebase_crashlytics_collection_enabled" android:value="false" />
+            android:value="GlideModule" />
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="false" />
     </application>
 
 </manifest>

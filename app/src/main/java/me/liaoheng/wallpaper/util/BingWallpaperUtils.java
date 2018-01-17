@@ -14,6 +14,8 @@ import android.view.WindowManager;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.Utils;
 
+import net.grandcentrix.tray.AppPreferences;
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
@@ -50,13 +52,12 @@ public class BingWallpaperUtils {
     }
 
     public static String getResolution(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
+        AppPreferences appPreferences = new AppPreferences(context);
 
         String[] names = context.getResources()
                 .getStringArray(R.array.pref_set_wallpaper_resolution_name);
 
-        String resolution = sharedPreferences
+        String resolution = appPreferences
                 .getString(SettingsActivity.PREF_SET_WALLPAPER_RESOLUTION, "0");
 
         return names[Integer.parseInt(resolution)];
@@ -120,6 +121,12 @@ public class BingWallpaperUtils {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
         return sharedPreferences
+                .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_LOG, false);
+    }
+
+    public static boolean isEnableLogProvider(Context context) {
+        AppPreferences appPreferences = new AppPreferences(context);
+        return appPreferences
                 .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_LOG, false);
     }
 

@@ -26,4 +26,5 @@
     <string name="menu_main_drawer_wallpaper_info">Wallpaper information</string>
     <string name="setting">Setting</string>
     <string name="unable_open_url">Unable to open URL</string>
+    <string name="pull_refresh">"Please pull refresh, "</string>
 </resources>

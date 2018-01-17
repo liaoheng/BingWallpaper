@@ -1,6 +1,7 @@
 package me.liaoheng.wallpaper.ui;
 
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
@@ -13,8 +14,12 @@ import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.SystemException;
 import com.github.liaoheng.common.util.UIUtils;
 
+import net.grandcentrix.tray.AppPreferences;
+import net.grandcentrix.tray.TrayPreferences;
+
 import org.joda.time.LocalTime;
 
+import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.service.AutoSetWallpaperBroadcastReceiver;
 import me.liaoheng.wallpaper.util.BingWallpaperAlarmManager;
@@ -61,11 +66,13 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
         CheckBoxPreference mDayUpdatePreference;
         CheckBoxPreference mAutoUpdatePreference;
         Preference mLogPreference;
-//        private int openLogCount;
+        //        private int openLogCount;
+        private AppPreferences mAppPreferences;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+            mAppPreferences = new AppPreferences(getActivity());
             Preference version = findPreference("pref_version");
             mLogPreference = findPreference(PREF_SET_WALLPAPER_LOG);
             try {
@@ -86,8 +93,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
 //                    return true;
 //                }
 //            });
-            Preference licenses = findPreference("pref_license");
-            licenses.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            findPreference("pref_license").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     UIUtils.startActivity(getActivity(), LicenseActivity.class);
@@ -105,6 +111,12 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             mTimePreference = (TimePreference) findPreference(
                     PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME);
             mAutoUpdatePreference = (CheckBoxPreference) findPreference(PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE);
+
+            String[] nameStrings = getResources().getStringArray(R.array.pref_set_wallpaper_auto_mode_name);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                nameStrings = new String[]{getString(R.string.set_wallpaper_auto_mode_both)};
+            }
+            mModeTypeListPreference.setEntries(nameStrings);
 
             mResolutionListPreference.setSummary(BingWallpaperUtils.getResolution(getActivity()));
             mModeTypeListPreference.setSummary(BingWallpaperUtils.getAutoMode(getActivity()));
@@ -128,6 +140,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             switch (key) {
                 case PREF_SET_WALLPAPER_RESOLUTION:
                     mResolutionListPreference.setSummary(mResolutionListPreference.getEntry());
+                    mAppPreferences.put(PREF_SET_WALLPAPER_RESOLUTION, mResolutionListPreference.getValue());
                     break;
                 case PREF_SET_WALLPAPER_AUTO_MODE:
                     mModeTypeListPreference.setSummary(mModeTypeListPreference.getEntry());
@@ -164,6 +177,9 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                 case PREF_SET_WALLPAPER_LOG:
                     CheckBoxPreference logPreference = (CheckBoxPreference) findPreference(
                             PREF_SET_WALLPAPER_LOG);
+
+                    mAppPreferences.put(PREF_SET_WALLPAPER_LOG, logPreference.isChecked());
+
                     if (logPreference.isChecked()) {
                         LogDebugFileUtils.get().init();
                         LogDebugFileUtils.get().open();
