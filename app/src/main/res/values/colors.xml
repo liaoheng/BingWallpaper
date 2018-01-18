@@ -3,4 +3,29 @@
     <color name="colorPrimary">#1976d2</color>
     <color name="colorPrimaryDark">#1976d2</color>
     <color name="colorAccent">#1976d2</color>
+
+    <color name="divider_line">@color/color_cc</color>
+    <color name="color_fc">#fcfcfc</color>
+    <color name="color_99">#999999</color>
+    <color name="color_66">#666666</color>
+    <color name="color_33">#333333</color>
+    <color name="color_dd">#dddddd</color>
+    <color name="color_cc">#cccccc</color>
+    <color name="color_f7">#f7f7f7</color>
+    <color name="color_e6">#e6e6e6</color>
+    <color name="color_77">#777777</color>
+    <color name="color_ff">#ffffff</color>
+    <color name="color_fe">#fefefe</color>
+    <color name="color_f2">#f2f2f2</color>
+    <color name="color_d7">#d7d7d7</color>
+    <color name="color_aa">#aaaaaa</color>
+    <color name="color_ef">#efefef</color>
+    <color name="color_dc">#dcdcdc</color>
+    <color name="color_ba">#bababa</color>
+    <color name="color_ae">#aeaeae</color>
+    <color name="color_f3">#f3f3f3</color>
+    <color name="color_f0">#f0f0f0</color>
+    <color name="color_e5">#e5e5e5</color>
+    <color name="color_3000">#30000000</color>
+
 </resources>

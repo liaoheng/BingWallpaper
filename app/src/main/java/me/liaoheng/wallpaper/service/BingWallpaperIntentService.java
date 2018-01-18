@@ -56,7 +56,6 @@ public class BingWallpaperIntentService extends IntentService {
     public final static String EXTRA_SET_WALLPAPER_MODE = "SET_WALLPAPER_MODE";
     public final static String EXTRA_SET_WALLPAPER_BACKGROUND = "SET_WALLPAPER_BACKGROUND";
 
-
     public BingWallpaperIntentService() {
         super("BingWallpaperIntentService");
     }
@@ -94,12 +93,14 @@ public class BingWallpaperIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(final Intent intent) {
-//        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        //        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         final int setWallpaperType = intent.getIntExtra(EXTRA_SET_WALLPAPER_MODE, 0);
         final boolean isBackground = intent.getBooleanExtra(EXTRA_SET_WALLPAPER_BACKGROUND, false);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("bing_wallpaper_intent_service_notification_channel_id", "AutoSetWallpaperIntentService", NotificationManager.IMPORTANCE_LOW);
+            NotificationChannel channel = new NotificationChannel(
+                    "bing_wallpaper_intent_service_notification_channel_id", "AutoSetWallpaperIntentService",
+                    NotificationManager.IMPORTANCE_LOW);
 
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             if (manager == null) {
@@ -107,7 +108,8 @@ public class BingWallpaperIntentService extends IntentService {
             }
             manager.createNotificationChannel(channel);
 
-            Notification notification = new Notification.Builder(getApplicationContext(), "bing_wallpaper_intent_service_notification_channel_id")
+            Notification notification = new Notification.Builder(getApplicationContext(),
+                    "bing_wallpaper_intent_service_notification_channel_id")
                     .setSmallIcon(R.mipmap.ic_launcher_foreground)
                     .setContentText(getText(R.string.set_wallpaper_running))
                     .setContentTitle(getText(R.string.app_name)).build();
@@ -119,29 +121,29 @@ public class BingWallpaperIntentService extends IntentService {
             LogDebugFileUtils.get().i(TAG, "Run BingWallpaperIntentService");
         }
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            if (!WallpaperManager.getInstance(getApplicationContext()).isWallpaperSupported()) {
-//                Bundle bundle = new Bundle();
-//                bundle.putInt("not_supported_wallpaper", 1);
-//                mFirebaseAnalytics.logEvent("app_exception", bundle);
-//                if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-//                    LogDebugFileUtils.get().i(TAG, "Device not supported wallpaper");
-//                }
-//                return;
-//            }
-//        }
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//            if (!WallpaperManager.getInstance(getApplicationContext()).isSetWallpaperAllowed()) {
-//                Bundle bundle = new Bundle();
-//                bundle.putInt("not_allowed_set_wallpaper", 1);
-//                mFirebaseAnalytics.logEvent("app_exception", bundle);
-//                if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-//                    LogDebugFileUtils.get().i(TAG, "Device not allowed set wallpaper");
-//                }
-//                return;
-//            }
-//        }
+        //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        //            if (!WallpaperManager.getInstance(getApplicationContext()).isWallpaperSupported()) {
+        //                Bundle bundle = new Bundle();
+        //                bundle.putInt("not_supported_wallpaper", 1);
+        //                mFirebaseAnalytics.logEvent("app_exception", bundle);
+        //                if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+        //                    LogDebugFileUtils.get().i(TAG, "Device not supported wallpaper");
+        //                }
+        //                return;
+        //            }
+        //        }
+        //
+        //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        //            if (!WallpaperManager.getInstance(getApplicationContext()).isSetWallpaperAllowed()) {
+        //                Bundle bundle = new Bundle();
+        //                bundle.putInt("not_allowed_set_wallpaper", 1);
+        //                mFirebaseAnalytics.logEvent("app_exception", bundle);
+        //                if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+        //                    LogDebugFileUtils.get().i(TAG, "Device not allowed set wallpaper");
+        //                }
+        //                return;
+        //            }
+        //        }
 
         sendSetWallpaperBroadcast(BingWallpaperState.BEGIN);
 
@@ -155,21 +157,14 @@ public class BingWallpaperIntentService extends IntentService {
                     public Observable<File> call(
                             BingWallpaperImage bingWallpaperImage) {
                         String url = BingWallpaperUtils.getUrl(getApplicationContext(), bingWallpaperImage);
-                        L.Log.i(TAG, "wallpaper url : %s", url);
+                        L.Log.i(TAG, "wallpaper image url: " + url);
                         File wallpaper = null;
                         try {
                             wallpaper = Glide.with(getApplicationContext()).load(url)
                                     .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get(2, TimeUnit.MINUTES);
                             String absolutePath = wallpaper.getAbsolutePath();
                             L.Log.i(TAG, "wallpaper file : " + absolutePath);
-
-                            //切割壁纸
-                            BitmapFactory.Options options = new BitmapFactory.Options();
-                            options.outWidth = DisplayUtils
-                                    .getScreenWidthRealMetrics(getApplicationContext());
-                            options.outHeight = DisplayUtils
-                                    .getScreenHeightRealMetrics(getApplicationContext());
-                            Bitmap bitmap = BitmapFactory.decodeFile(absolutePath, options);
+                            Bitmap bitmap = BitmapFactory.decodeFile(absolutePath);
 
                             if (setWallpaperType == 1) {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

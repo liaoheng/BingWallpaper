@@ -86,8 +86,9 @@ public class TasksUtils {
             return true;
         }
 
-        DateTime dateTime = new DateTime(date, DateTimeZone.UTC);
-        int days = Days.daysBetween(dateTime.toLocalDate(), DateTime.now().toLocalDate()).getDays();
+        DateTime next = new DateTime(date, DateTimeZone.UTC);
+        DateTime now = DateTime.now(DateTimeZone.UTC);
+        int days = Days.daysBetween(next, now).getDays();
         return days >= day;
     }
 

@@ -27,4 +27,5 @@
     <string name="setting">Setting</string>
     <string name="unable_open_url">Unable to open URL</string>
     <string name="pull_refresh">"Please pull refresh, "</string>
+    <string name="exit">"Exit"</string>
 </resources>

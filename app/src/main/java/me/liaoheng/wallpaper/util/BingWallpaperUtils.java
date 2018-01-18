@@ -4,11 +4,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.WindowManager;
 
 import com.github.liaoheng.common.util.NetworkUtils;
@@ -161,5 +164,30 @@ public class BingWallpaperUtils {
             }
         }
         return false;
+    }
+
+    /**
+     * 获得导航栏的高度
+     *
+     * @see <a href="https://stackoverflow.com/questions/20264268/how-do-i-get-the-height-and-width-of-the-android-navigation-bar-programmatically">stackoverflow</a>
+     */
+    public static int getNavigationBarHeight(Context context) {
+        Resources resources = context.getResources();
+        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            return resources.getDimensionPixelSize(resourceId);
+        }
+        return 0;
+    }
+
+    /**
+     * 判断是否存在导航栏
+     *
+     * @see <a href="https://stackoverflow.com/questions/29575060/android-check-wether-action-button-home-back-etc-is-inside-the-screen-or">stackoverflow</a>
+     */
+    public static boolean isNavigationBar() {
+        boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
+        boolean hasHomeKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_HOME);
+        return !(hasBackKey && hasHomeKey);
     }
 }

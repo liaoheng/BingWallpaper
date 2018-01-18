@@ -21,11 +21,9 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.util.AndroidRuntimeException;
-import android.util.Log;
+import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -36,7 +34,6 @@ import com.crashlytics.android.Crashlytics;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.liaoheng.common.util.BitmapUtils;
-import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.ValidateUtils;
@@ -53,76 +50,60 @@ import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.TasksUtils;
+import me.zhanghai.android.systemuihelper.SystemUiHelper;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
 /**
- * 壁纸主界面
+ * 壁纸主界面 old
  *
  * @author liaoheng
  * @version 2017-2-15
  */
-public class MainActivity extends BaseActivity
+@SuppressLint("Registered")
+@Deprecated
+public class MainActivityOld extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private final String TAG = MainActivity.class.getSimpleName();
+    private final String TAG = MainActivityOld.class.getSimpleName();
 
-    @BindView(R.id.bing_wallpaper_view)
+    @BindView(R.id.old_bing_wallpaper_view)
     ImageView wallpaperView;
-    @BindView(R.id.bing_wallpaper_error)
+    @BindView(R.id.old_bing_wallpaper_error)
     TextView mErrorTextView;
-    @BindView(R.id.bing_wallpaper_bottom)
-    View mBottomView;
 
-    @BindView(R.id.bing_wallpaper_swipe_refresh)
+    @BindView(R.id.old_bing_wallpaper_swipe_refresh)
     SwipeRefreshLayout mSwipeRefreshLayout;
 
-    @BindView(R.id.drawer_layout)
+    @BindView(R.id.old_drawer_layout)
     DrawerLayout mDrawerLayout;
-    @BindView(R.id.navigation_drawer)
+    @BindView(R.id.old_navigation_drawer)
     NavigationView mNavigationView;
-    @BindView(R.id.bing_wallpaper_set_menu)
+    @BindView(R.id.old_bing_wallpaper_set_menu)
     FloatingActionMenu mSetWallpaperActionMenu;
 
     private WallpaperBroadcastReceiver mWallpaperBroadcastReceiver;
+    private SystemUiHelper mSystemUiHelper;
     private BingWallpaperImage mCurBingWallpaperImage;
     private boolean isRun;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().addFlags(
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_old);
         ButterKnife.bind(this);
         if (TasksUtils.isOne()) {
             TasksUtils.markOne();
         }
-        Toolbar toolbar = UIUtils.findViewById(this, R.id.toolbar);
-        int statusBarHeight = DisplayUtils.getStatusBarHeight(this);
-        ViewGroup.LayoutParams lp = toolbar.getLayoutParams();
-        lp.height += statusBarHeight;
-        toolbar.setPadding(toolbar.getPaddingLeft(), toolbar.getPaddingTop() + statusBarHeight,
-                toolbar.getPaddingRight(), toolbar.getPaddingBottom());
+        Toolbar toolbar = UIUtils.findViewById(this, R.id.old_toolbar);
         setSupportActionBar(toolbar);
         setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_drawer_home);
 
-        if (BingWallpaperUtils.isNavigationBar()) {
-            int navigationBarHeight = BingWallpaperUtils.getNavigationBarHeight(this);
-            if (navigationBarHeight > 0) {
-                UIUtils.viewVisible(mBottomView);
-                ViewGroup.LayoutParams layoutParams = mBottomView.getLayoutParams();
-                layoutParams.height = navigationBarHeight;
-                mBottomView.setLayoutParams(layoutParams);
-            }
-            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) mSetWallpaperActionMenu.getLayoutParams();
-            layoutParams.bottomMargin = layoutParams.bottomMargin + navigationBarHeight;
-            mSetWallpaperActionMenu.setLayoutParams(layoutParams);
-        }
-
+        mSystemUiHelper = new SystemUiHelper(this, SystemUiHelper.LEVEL_IMMERSIVE,
+                SystemUiHelper.FLAG_IMMERSIVE_STICKY);
+        mSystemUiHelper.hide();
         mNavigationView.setNavigationItemSelectedListener(this);
 
         mWallpaperBroadcastReceiver = new WallpaperBroadcastReceiver();
@@ -143,7 +124,7 @@ public class MainActivity extends BaseActivity
 
     private void getBingWallpaper() {
         if (!BingWallpaperUtils.isConnectedOrConnecting(getApplicationContext())) {
-            mErrorTextView.setText(getString(R.string.network_unavailable));
+            UIUtils.showToast(getApplicationContext(), getString(R.string.network_unavailable));
             return;
         }
         showSwipeRefreshLayout();
@@ -274,6 +255,12 @@ public class MainActivity extends BaseActivity
         return true;
     }
 
+    @Override
+    protected void onResume() {
+        mSystemUiHelper.hide();
+        super.onResume();
+    }
+
     class WallpaperBroadcastReceiver extends BroadcastReceiver {
 
         @Override
@@ -302,9 +289,11 @@ public class MainActivity extends BaseActivity
     private void setImage(BingWallpaperImage bingWallpaperImage) {
         setTitle(bingWallpaperImage.getCopyright());
 
+        DisplayMetrics dm = BingWallpaperUtils.getDisplayMetrics(this);
+
         String url = BingWallpaperUtils.getUrl(getApplicationContext(), bingWallpaperImage);
 
-        Glide.with(getActivity()).load(url)
+        Glide.with(getActivity()).load(url).override(dm.widthPixels, dm.heightPixels)
                 .centerCrop().crossFade().into(new ImageViewTarget<GlideDrawable>(wallpaperView) {
             @Override
             public void onLoadFailed(Exception e, Drawable errorDrawable) {

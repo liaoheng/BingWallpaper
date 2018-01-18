@@ -40,7 +40,6 @@
         android:title="@string/pref_other">
 
         <ListPreference
-            android:persistent="false"
             android:defaultValue="0"
             android:entries="@array/pref_set_wallpaper_resolution_name"
             android:entryValues="@array/pref_set_wallpaper_resolution_value"
