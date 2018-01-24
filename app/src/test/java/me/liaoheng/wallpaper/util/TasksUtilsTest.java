@@ -1,13 +1,10 @@
 package me.liaoheng.wallpaper.util;
 
-
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.internal.SdkConfig;
 
 import me.liaoheng.wallpaper.BaseTest;
 import me.liaoheng.wallpaper.BuildConfig;
@@ -19,7 +16,7 @@ import static org.junit.Assert.assertTrue;
  * @version 2018-01-21 16:58
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = SdkConfig.MAX_SDK_VERSION)
+@Config(constants = BuildConfig.class)
 public class TasksUtilsTest extends BaseTest {
     @Test
     public void isToDaysDoTest() {

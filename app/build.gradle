@@ -35,7 +35,11 @@ android {
             if (isSigning) signingConfig signingConfigs.config
         }
     }
-
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
     lintOptions {
         abortOnError false
     }
@@ -55,9 +59,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation deps.robolectric
-    testImplementation deps.robolectric_annotations
-    testImplementation deps.robolectric_shadows_core
-    testImplementation "org.mockito:mockito-core:2.5.4"
     testImplementation deps.junit
     //android system
     implementation deps.supportv4
