@@ -64,6 +64,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             return R.xml.preferences;
         }
 
+        CheckBoxPreference mOnlyWifiPreference;
         ListPreference mResolutionListPreference;
         ListPreference mModeTypeListPreference;
         TimePreference mTimePreference;
@@ -85,6 +86,8 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             } catch (SystemException e) {
                 L.Log.w(TAG, e);
             }
+            mOnlyWifiPreference = (CheckBoxPreference) findPreference(
+                    PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI);
 
             //            version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             //                @Override
@@ -142,6 +145,9 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
                 String key) {
             switch (key) {
+                case PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI:
+                    mPreferences.put(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI, mOnlyWifiPreference.isChecked());
+                    break;
                 case PREF_SET_WALLPAPER_RESOLUTION:
                     mResolutionListPreference.setSummary(mResolutionListPreference.getEntry());
                     mPreferences.put(PREF_SET_WALLPAPER_RESOLUTION, mResolutionListPreference.getValue());
