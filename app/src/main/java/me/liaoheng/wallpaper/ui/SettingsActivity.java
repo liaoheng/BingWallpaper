@@ -183,11 +183,10 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                 case PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME:
                     if (mTimePreference.isEnabled()) {
                         BingWallpaperAlarmManager
-                                .add(getActivity(), mTimePreference.getLocalTime().getHourOfDay(),
-                                        mTimePreference.getLocalTime().getMinuteOfHour());
+                                .add(getActivity(), mTimePreference.getLocalTime());
+                        mPreferences.put(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME,
+                                mTimePreference.getLocalTime().toString());
                     }
-                    mPreferences.put(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME,
-                            mTimePreference.getLocalTime().toString());
                     break;
                 case PREF_SET_WALLPAPER_LOG:
                     CheckBoxPreference logPreference = (CheckBoxPreference) findPreference(

@@ -5,12 +5,10 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.github.liaoheng.common.util.L;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalTime;
 
 import me.liaoheng.wallpaper.service.AutoSetWallpaperBroadcastReceiver;
@@ -44,7 +42,6 @@ public class BingWallpaperAlarmManager {
     }
 
     public static void add(Context context, DateTime time) {
-        time = time.withZone(DateTimeZone.getDefault());
         PendingIntent pendingIntent = getPendingIntent(context);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         // 设定每天在指定的时间运行alert
