@@ -6,6 +6,7 @@ import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
 import com.trello.rxlifecycle.LifecycleProvider;
 import com.trello.rxlifecycle.LifecycleTransformer;
@@ -89,5 +90,16 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     protected void onDestroy() {
         lifecycleSubject.onNext(ActivityEvent.DESTROY);
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

@@ -22,6 +22,14 @@ import me.liaoheng.wallpaper.util.TasksUtils;
 public class MApplication extends Application {
 
     @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        if (!BuildConfig.DEBUG) {
+            Crashlytics.log("onTrimMemory level : " + level);
+        }
+    }
+
+    @Override
     public void onCreate() {
         super.onCreate();
         Common.init(this, Constants.PROJECT_NAME, BuildConfig.DEBUG);

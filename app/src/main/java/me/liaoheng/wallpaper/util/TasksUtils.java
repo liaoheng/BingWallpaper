@@ -9,7 +9,6 @@ import com.github.liaoheng.common.util.SystemDataException;
 import com.github.liaoheng.common.util.SystemRuntimeException;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
 
 import me.liaoheng.wallpaper.data.provider.TasksContract;
@@ -65,7 +64,9 @@ public class TasksUtils {
     }
 
     public static boolean isToDaysDoProvider(Context context, int day, String tag) {
-        Cursor cursor = context.getContentResolver().query(TasksContract.TaskEntry.CONTENT_URI, null, TasksContract.TaskEntry.COLUMN_TAG + "=?", new String[]{tag}, null);
+        Cursor cursor = context.getContentResolver()
+                .query(TasksContract.TaskEntry.CONTENT_URI, null, TasksContract.TaskEntry.COLUMN_TAG + "=?",
+                        new String[] { tag }, null);
         long date = -1;
         if (cursor != null && cursor.moveToNext()) {
             date = cursor.getLong(2);
@@ -86,20 +87,34 @@ public class TasksUtils {
             return true;
         }
 
-        DateTime next = new DateTime(date, DateTimeZone.UTC);
-        DateTime now = DateTime.now(DateTimeZone.UTC);
-        int days = Days.daysBetween(next, now).getDays();
+        DateTime next = new DateTime(date);
+        DateTime now = DateTime.now();
+        return isToDaysDo(next, now, day);
+    }
+
+    /**
+     * 上一次操作与现在操作的距离，单位天
+     *
+     * @param next local date
+     * @param now local date
+     * @param day 距离，天
+     * @return true，超过或等于@param day
+     */
+    public static boolean isToDaysDo(DateTime next, DateTime now, int day) {
+        int days = Days.daysBetween(next.toLocalDate(), now.toLocalDate()).getDays();
         return days >= day;
     }
 
     public static void markDone(String tag) {
-        mTaskPreferencesUtils.putLong(tag, DateTime.now(DateTimeZone.UTC).getMillis()).apply();
+        mTaskPreferencesUtils.putLong(tag, DateTime.now().getMillis()).apply();
     }
 
     public static void markDoneProvider(Context context, String tag) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(TasksContract.TaskEntry.COLUMN_TAG, tag);
-        contentValues.put(TasksContract.TaskEntry.COLUMN_DATE, DateTime.now(DateTimeZone.UTC).getMillis());
-        context.getContentResolver().update(TasksContract.TaskEntry.CONTENT_URI, contentValues, TasksContract.TaskEntry.COLUMN_TAG + "=?", new String[]{tag});
+        contentValues.put(TasksContract.TaskEntry.COLUMN_DATE, DateTime.now().getMillis());
+        context.getContentResolver()
+                .update(TasksContract.TaskEntry.CONTENT_URI, contentValues, TasksContract.TaskEntry.COLUMN_TAG + "=?",
+                        new String[] { tag });
     }
 }

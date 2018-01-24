@@ -5,11 +5,15 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.github.liaoheng.common.util.L;
-import me.liaoheng.wallpaper.service.AutoSetWallpaperBroadcastReceiver;
+
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalTime;
+
+import me.liaoheng.wallpaper.service.AutoSetWallpaperBroadcastReceiver;
 
 /**
  * @author liaoheng
@@ -17,10 +21,10 @@ import org.joda.time.LocalTime;
  */
 public class BingWallpaperAlarmManager {
 
-    private static final String TAG            = BingWallpaperAlarmManager.class.getSimpleName();
-    public static final  String ACTION         = "me.liaoheng.wallpaper.ALARM_TASK_SCHEDULE";
+    private static final String TAG = BingWallpaperAlarmManager.class.getSimpleName();
+    public static final String ACTION = "me.liaoheng.wallpaper.ALARM_TASK_SCHEDULE";
 
-    public static final int REQUEST_CODE         = 0x12;
+    public static final int REQUEST_CODE = 0x12;
 
     private static PendingIntent getPendingIntent(Context context) {
         Intent intent = new Intent(context, AutoSetWallpaperBroadcastReceiver.class);
@@ -40,15 +44,16 @@ public class BingWallpaperAlarmManager {
     }
 
     public static void add(Context context, DateTime time) {
+        time = time.withZone(DateTimeZone.getDefault());
         PendingIntent pendingIntent = getPendingIntent(context);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         // 设定每天在指定的时间运行alert
         alarmManager
                 .setRepeating(AlarmManager.RTC_WAKEUP, time.getMillis(), AlarmManager.INTERVAL_DAY,
-                pendingIntent);
+                        pendingIntent);
 
         if (BingWallpaperUtils.isEnableLog(context)) {
-            LogDebugFileUtils.get().i(TAG,"Set Alarm Repeating Time : %s", time.toString("yyyy-MM-dd HH:mm"));
+            LogDebugFileUtils.get().i(TAG, "Set Alarm Repeating Time : %s", time.toString("yyyy-MM-dd HH:mm"));
         }
         L.Log.i(TAG, "Set Alarm Repeating Time : %s", time.toString("yyyy-MM-dd HH:mm"));
     }
@@ -58,7 +63,7 @@ public class BingWallpaperAlarmManager {
         add(context, localTime);
     }
 
-    public static void add(Context context,@NonNull LocalTime localTime) {
+    public static void add(Context context, @NonNull LocalTime localTime) {
         DateTime dateTime = BingWallpaperUtils.checkTime(localTime);
         add(context, dateTime);
     }

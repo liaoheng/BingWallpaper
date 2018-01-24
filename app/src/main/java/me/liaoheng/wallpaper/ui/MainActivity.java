@@ -45,6 +45,7 @@ import java.net.SocketTimeoutException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
@@ -110,7 +111,7 @@ public class MainActivity extends BaseActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_drawer_home);
 
-        if (BingWallpaperUtils.isNavigationBar()) {
+        if (BingWallpaperUtils.isNavigationBar(this)) {
             int navigationBarHeight = BingWallpaperUtils.getNavigationBarHeight(this);
             if (navigationBarHeight > 0) {
                 UIUtils.viewVisible(mBottomView);
@@ -176,7 +177,9 @@ public class MainActivity extends BaseActivity
             L.Log.e(TAG, error);
         } else {
             L.Log.e(TAG, throwable);
-            Crashlytics.log(throwable.getMessage());
+            if (!BuildConfig.DEBUG) {
+                Crashlytics.logException(throwable);
+            }
         }
         if (BingWallpaperUtils.isEnableLog(getApplicationContext())) {
             LogDebugFileUtils.get().e(TAG, throwable, error);

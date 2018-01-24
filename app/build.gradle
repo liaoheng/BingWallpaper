@@ -54,7 +54,11 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
+    testImplementation deps.robolectric
+    testImplementation deps.robolectric_annotations
+    testImplementation deps.robolectric_shadows_core
+    testImplementation "org.mockito:mockito-core:2.5.4"
+    testImplementation deps.junit
     //android system
     implementation deps.supportv4
     implementation deps.appcompatv7
@@ -69,41 +73,40 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:11.8.0'
 
     //View "injection" library:https://github.com/JakeWharton/butterknife
-    compile 'com.jakewharton:butterknife:8.6.0'
+    implementation 'com.jakewharton:butterknife:8.6.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
 
     compile 'com.google.code.gson:gson:2.8.0'
 
-    compile deps.glide
-    compile deps.glide_okhttp3_integration
-    compile deps.okhttp
-    compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
-    compile deps.retrofit
-    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
-    compile deps.retrofit_adapter_rxjava
-    compile deps.logger
-    compile deps.rxandroid
-    compile deps.rxjava
-    compile deps.rxlifecycle
-    compile deps.rxlifecycle_android
+    implementation deps.glide
+    implementation deps.glide_okhttp3_integration
+    implementation deps.okhttp
+    implementation deps.retrofit
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation deps.retrofit_adapter_rxjava
+    implementation deps.logger
+    implementation deps.rxandroid
+    implementation deps.rxjava
+    implementation deps.rxlifecycle
+    implementation deps.rxlifecycle_android
 
     //https://github.com/ferrannp/material-preferences
-    compile 'com.fnp:material-preferences:0.1.4'
+    implementation 'com.fnp:material-preferences:0.1.4'
 
     //https://github.com/DreaminginCodeZH/SystemUiHelper
-    compile 'me.zhanghai.android.systemuihelper:library:1.0.0'
+    implementation 'me.zhanghai.android.systemuihelper:library:1.0.0'
 
     //https://github.com/yshrsmz/LicenseAdapter
-    compile 'net.yslibrary.licenseadapter:licenseadapter:1.4.0'
+    implementation 'net.yslibrary.licenseadapter:licenseadapter:1.4.0'
 
     //https://github.com/H07000223/FlycoSystemBar
-    compile "com.flyco.systembar:FlycoSystemBar_Lib:1.0.0"
+    implementation "com.flyco.systembar:FlycoSystemBar_Lib:1.0.0"
 
     //https://github.com/Clans/FloatingActionButton
-    compile 'com.github.clans:fab:1.6.4'
+    implementation 'com.github.clans:fab:1.6.4'
 
     //https://github.com/grandcentrix/tray
-    compile 'net.grandcentrix.tray:tray:0.12.0'
+    implementation 'net.grandcentrix.tray:tray:0.12.0'
 
     compile 'com.github.liaoheng:common-core:0.0.5-SNAPSHOT'
 }

@@ -6,7 +6,11 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.flyco.systembar.SystemBarHelper;
 import com.github.liaoheng.common.util.AppUtils;
@@ -14,18 +18,15 @@ import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.SystemException;
 import com.github.liaoheng.common.util.UIUtils;
 
-import net.grandcentrix.tray.AppPreferences;
-import net.grandcentrix.tray.TrayPreferences;
-
 import org.joda.time.LocalTime;
 
-import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.service.AutoSetWallpaperBroadcastReceiver;
 import me.liaoheng.wallpaper.util.BingWallpaperAlarmManager;
 import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
+import me.liaoheng.wallpaper.util.SettingTrayPreferences;
 import me.liaoheng.wallpaper.view.TimePreference;
 
 /**
@@ -53,7 +54,10 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
 
     public static class MyPreferenceFragment extends com.fnp.materialpreferences.PreferenceFragment
             implements SharedPreferences.OnSharedPreferenceChangeListener {
-
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            return super.onCreateView(inflater, container, savedInstanceState);
+        }
 
         @Override
         public int addPreferencesFromResource() {
@@ -67,12 +71,12 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
         CheckBoxPreference mAutoUpdatePreference;
         Preference mLogPreference;
         //        private int openLogCount;
-        private AppPreferences mAppPreferences;
+        private SettingTrayPreferences mPreferences;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            mAppPreferences = new AppPreferences(getActivity());
+            mPreferences = new SettingTrayPreferences(getActivity());
             Preference version = findPreference("pref_version");
             mLogPreference = findPreference(PREF_SET_WALLPAPER_LOG);
             try {
@@ -82,17 +86,17 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                 L.Log.w(TAG, e);
             }
 
-//            version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-//                @Override
-//                public boolean onPreferenceClick(Preference preference) {
-//                    openLogCount++;
-//                    if (openLogCount >= 5) {
-//                        openLogCount = 0;
-//                        ((PreferenceCategory) findPreference("pref_other_group")).addPreference(mLogPreference);
-//                    }
-//                    return true;
-//                }
-//            });
+            //            version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            //                @Override
+            //                public boolean onPreferenceClick(Preference preference) {
+            //                    openLogCount++;
+            //                    if (openLogCount >= 5) {
+            //                        openLogCount = 0;
+            //                        ((PreferenceCategory) findPreference("pref_other_group")).addPreference(mLogPreference);
+            //                    }
+            //                    return true;
+            //                }
+            //            });
             findPreference("pref_license").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
@@ -100,7 +104,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     return false;
                 }
             });
-//            ((PreferenceCategory) findPreference("pref_other_group")).removePreference(mLogPreference);
+            //            ((PreferenceCategory) findPreference("pref_other_group")).removePreference(mLogPreference);
 
             mResolutionListPreference = (ListPreference) findPreference(
                     PREF_SET_WALLPAPER_RESOLUTION);
@@ -114,7 +118,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
 
             String[] nameStrings = getResources().getStringArray(R.array.pref_set_wallpaper_auto_mode_name);
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                nameStrings = new String[]{getString(R.string.set_wallpaper_auto_mode_both)};
+                nameStrings = new String[] { getString(R.string.set_wallpaper_auto_mode_both) };
             }
             mModeTypeListPreference.setEntries(nameStrings);
 
@@ -136,14 +140,15 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-                                              String key) {
+                String key) {
             switch (key) {
                 case PREF_SET_WALLPAPER_RESOLUTION:
                     mResolutionListPreference.setSummary(mResolutionListPreference.getEntry());
-                    mAppPreferences.put(PREF_SET_WALLPAPER_RESOLUTION, mResolutionListPreference.getValue());
+                    mPreferences.put(PREF_SET_WALLPAPER_RESOLUTION, mResolutionListPreference.getValue());
                     break;
                 case PREF_SET_WALLPAPER_AUTO_MODE:
                     mModeTypeListPreference.setSummary(mModeTypeListPreference.getEntry());
+                    mPreferences.put(PREF_SET_WALLPAPER_AUTO_MODE, mModeTypeListPreference.getValue());
                     break;
                 case PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE:
                     if (mAutoUpdatePreference.isChecked()) {
@@ -155,6 +160,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     } else {
                         BingWallpaperJobManager.disabled(getActivity());
                     }
+                    mPreferences.put(PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE, mAutoUpdatePreference.isChecked());
                     break;
                 case PREF_SET_WALLPAPER_DAY_AUTO_UPDATE:
                     if (mDayUpdatePreference.isChecked()) {
@@ -166,6 +172,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                                 AutoSetWallpaperBroadcastReceiver.class.getName());
                     }
                     mTimePreference.setEnabled(mDayUpdatePreference.isChecked());
+                    mPreferences.put(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE, mDayUpdatePreference.isChecked());
                     break;
                 case PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME:
                     if (mTimePreference.isEnabled()) {
@@ -173,12 +180,14 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                                 .add(getActivity(), mTimePreference.getLocalTime().getHourOfDay(),
                                         mTimePreference.getLocalTime().getMinuteOfHour());
                     }
+                    mPreferences.put(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME,
+                            mTimePreference.getLocalTime().toString());
                     break;
                 case PREF_SET_WALLPAPER_LOG:
                     CheckBoxPreference logPreference = (CheckBoxPreference) findPreference(
                             PREF_SET_WALLPAPER_LOG);
 
-                    mAppPreferences.put(PREF_SET_WALLPAPER_LOG, logPreference.isChecked());
+                    mPreferences.put(PREF_SET_WALLPAPER_LOG, logPreference.isChecked());
 
                     if (logPreference.isChecked()) {
                         LogDebugFileUtils.get().init();

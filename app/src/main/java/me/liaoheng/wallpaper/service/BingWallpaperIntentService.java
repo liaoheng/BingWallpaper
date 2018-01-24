@@ -16,7 +16,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.github.liaoheng.common.util.AppUtils;
-import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.L;
 
 import java.io.File;
@@ -151,7 +150,7 @@ public class BingWallpaperIntentService extends IntentService {
             LogDebugFileUtils.get().i(TAG, "bing url : %s", BingWallpaperUtils.getUrl());
         }
 
-        BingWallpaperNetworkClient.getBingWallpaper()
+        BingWallpaperNetworkClient.getBingWallpaperSimple()
                 .flatMap(new Func1<BingWallpaperImage, Observable<File>>() {
                     @Override
                     public Observable<File> call(

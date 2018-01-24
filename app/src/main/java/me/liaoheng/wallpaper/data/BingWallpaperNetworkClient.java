@@ -33,4 +33,20 @@ public class BingWallpaperNetworkClient {
                 });
     }
 
+    public static Observable<BingWallpaperImage> getBingWallpaperSimple() {
+        String url = BingWallpaperUtils.getUrl();
+        return NetUtils.get().getBingWallpaperSimpleNetworkService()
+                .getBingWallpaper(url).subscribeOn(Schedulers.io())
+                .map(new Func1<BingWallpaper, BingWallpaperImage>() {
+                    @Override
+                    public BingWallpaperImage call(BingWallpaper bingWallpaper) {
+                        if (bingWallpaper == null || bingWallpaper.getImages() == null
+                                || bingWallpaper.getImages().isEmpty()) {
+                            throw new SystemRuntimeException(new SystemDataException("bing wallpaper is not data"));
+                        }
+                        return bingWallpaper.getImages().get(0);
+                    }
+                });
+    }
+
 }

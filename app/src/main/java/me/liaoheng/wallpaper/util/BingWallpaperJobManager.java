@@ -26,7 +26,8 @@ public class BingWallpaperJobManager {
     }
 
     public static void enabled(Context context) {
-        enabled(context, TimeUnit.MINUTES.toMillis(60));
+        disabled(context);
+        enabled(context, TimeUnit.HOURS.toMillis(2));
     }
 
     public static void enabled(Context context, long time) {
@@ -35,6 +36,7 @@ public class BingWallpaperJobManager {
         JobInfo jobInfo = new JobInfo.Builder(JOB_ID, new ComponentName(context,
                 JobSchedulerDaemonService.class)).setPeriodic(time)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setBackoffCriteria(TimeUnit.MINUTES.toMillis(15), JobInfo.BACKOFF_POLICY_LINEAR)
                 .setPersisted(true)
                 .build();
         jobScheduler.schedule(jobInfo);
