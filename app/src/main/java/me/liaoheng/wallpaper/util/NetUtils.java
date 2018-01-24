@@ -1,6 +1,7 @@
 package me.liaoheng.wallpaper.util;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
@@ -156,7 +157,10 @@ public class NetUtils {
                     source.request(Long.MAX_VALUE); // Buffer the entire body.
                     Buffer buffer = source.buffer();
                     if (isPlaintext(buffer)) {
-                        L.Log.d(tag, buffer.clone().readUtf8());
+                        //TODO update base library
+                        if (L.isPrint()) {
+                            Log.d(tag, buffer.clone().readUtf8());
+                        }
                     }
                 }
             } catch (Exception ignored) {

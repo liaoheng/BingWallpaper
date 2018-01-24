@@ -120,7 +120,7 @@ public class BingWallpaperUtils {
     }
 
     /**
-     * 传入时间在当前时间后，则加时间到下一天。
+     * 传入时间的在当前时间后，则改变转入时间到下一天。
      * @param time Local
      * @return Local
      */

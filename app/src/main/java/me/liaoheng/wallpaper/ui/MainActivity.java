@@ -132,7 +132,7 @@ public class MainActivity extends BaseActivity
             @Override
             public void onRefresh() {
                 if (isRun) {
-                    UIUtils.showSnack(getActivity(), R.string.set_wallpaper_running);
+                    UIUtils.showToast(getActivity(),getString(R.string.set_wallpaper_running));
                 } else {
                     getBingWallpaper();
                 }
