@@ -7,6 +7,15 @@
     <string name="network_unavailable">没有可用网络</string>
     <string name="connection_timed_out">连接超时</string>
     <string name="network_request_error">网络请求错误</string>
+    <string name="download">下载中</string>
+    <string name="unable_open_url">无法打开网址</string>
+    <string name="pull_refresh">请下拉刷新，</string>
+    <string name="alert_mobile_data">你正在使用移动数据，想要继续吗？</string>
+    <string name="alert_save_wallpaper_success">保存壁纸成功</string>
+    <string name="alert_save_wallpaper_failure">保存壁纸失败</string>
+    <string name="open_source_license">开放源代码许可</string>
+
+    <!--setting -->
     <string name="pref_auto_update_wallpaper">自动更新壁纸</string>
     <string name="pref_update_only_on_wifi">只在WIFI时</string>
     <string name="pref_auto_update_everyday">每天自动</string>
@@ -15,17 +24,27 @@
     <string name="pref_alarm_update_wallpaper_time">每天定时时间</string>
     <string name="pref_not_set_time">没有设置时间</string>
     <string name="pref_other">其它</string>
-    <string name="choose_resolution">选择壁纸分辨率</string>
-    <string name="choose_auto_set_wallpaper_type">选择自动设置壁纸的模式</string>
-    <string name="set_wallpaper_auto_mode_both">主屏幕和锁定屏幕</string>
-    <string name="set_wallpaper_auto_mode_home">主屏幕</string>
-    <string name="set_wallpaper_auto_mode_lock">锁定屏幕</string>
-    <string name="pref_log_file">日志文件</string>
+    <string name="pref_choose_auto_set_resolution">选择自动设置壁纸分辨率</string>
+    <string name="pref_choose_auto_set_wallpaper_type">选择自动设置壁纸的模式</string>
+    <string name="pref_set_wallpaper_auto_mode_both">主屏幕和锁定屏幕</string>
+    <string name="pref_set_wallpaper_auto_mode_home">主屏幕</string>
+    <string name="pref_set_wallpaper_auto_mode_lock">锁定屏幕</string>
+    <string name="pref_clear_cache">清除缓存</string>
+    <string name="pref_clear_cache_success">清除缓存成功</string>
+    <string name="pref_log_file">启用活动日志</string>
     <string name="pref_about">关于</string>
     <string name="pref_version">版本</string>
-    <string name="open_source_license">开放源代码许可</string>
+
+    <!--menu-->
     <string name="menu_main_drawer_wallpaper_info">壁纸信息</string>
-    <string name="setting">设置</string>
-    <string name="unable_open_url">无法打开网址</string>
-    <string name="pull_refresh">请下拉刷新，</string>
+    <string name="menu_main_setting">设置</string>
+    <string name="menu_main_wallpaper_list">壁纸历史记录</string>
+
+    <!--wallpaper detail-->
+    <string name="bing_only_two_week">Bing只提供近两周记录</string>
+    <string name="menu_save_wallpaper">保存壁纸</string>
+    <string name="menu_set_wallpaper_mode_home">设置壁纸到主屏幕</string>
+    <string name="menu_set_wallpaper_mode_lock">设置壁纸到锁定屏幕</string>
+    <string name="menu_set_wallpaper_mode_both">设置壁纸</string>
+
 </resources>

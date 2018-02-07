@@ -1,5 +1,6 @@
 package me.liaoheng.wallpaper.ui;
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,8 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.flyco.systembar.SystemBarHelper;
 import com.github.liaoheng.common.util.AppUtils;
+import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.SystemException;
 import com.github.liaoheng.common.util.UIUtils;
@@ -28,6 +31,11 @@ import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.SettingTrayPreferences;
 import me.liaoheng.wallpaper.view.TimePreference;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * @author liaoheng
@@ -109,6 +117,38 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             });
             //            ((PreferenceCategory) findPreference("pref_other_group")).removePreference(mLogPreference);
 
+            findPreference("pref_clear_cache").setOnPreferenceClickListener(
+                    new Preference.OnPreferenceClickListener() {
+                        @Override
+                        public boolean onPreferenceClick(Preference preference) {
+                            UIUtils.showYNAlertDialog(getActivity(), getString(R.string.pref_clear_cache) + "?",
+                                    new Callback4.EmptyCallback<DialogInterface>() {
+                                        @Override
+                                        public void onYes(DialogInterface dialogInterface) {
+                                            Glide.get(getActivity()).clearMemory();
+                                            Observable.just("")
+                                                    .subscribeOn(Schedulers.io())
+                                                    .map(new Func1<String, Object>() {
+                                                        @Override
+                                                        public Object call(String s) {
+                                                            Glide.get(getActivity()).clearDiskCache();
+                                                            return null;
+                                                        }
+                                                    })
+                                                    .observeOn(AndroidSchedulers.mainThread())
+                                                    .subscribe(new Action1<Object>() {
+                                                        @Override
+                                                        public void call(Object o) {
+                                                            UIUtils.showToast(getActivity(),
+                                                                    getString(R.string.pref_clear_cache_success));
+                                                        }
+                                                    });
+                                        }
+                                    });
+                            return false;
+                        }
+                    });
+
             mResolutionListPreference = (ListPreference) findPreference(
                     PREF_SET_WALLPAPER_RESOLUTION);
             mModeTypeListPreference = (ListPreference) findPreference(
@@ -121,7 +161,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
 
             String[] nameStrings = getResources().getStringArray(R.array.pref_set_wallpaper_auto_mode_name);
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                nameStrings = new String[] { getString(R.string.set_wallpaper_auto_mode_both) };
+                nameStrings = new String[] { getString(R.string.pref_set_wallpaper_auto_mode_both) };
             }
             mModeTypeListPreference.setEntries(nameStrings);
 

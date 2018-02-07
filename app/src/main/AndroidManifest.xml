@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="me.liaoheng.wallpaper">
+          package="me.liaoheng.wallpaper">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:name=".MApplication"
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+            android:name=".MApplication"
+            android:allowBackup="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            android:supportsRtl="true"
+            android:theme="@style/AppTheme">
         <activity
-            android:name=".ui.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+                android:name=".ui.MainActivity"
+                android:screenOrientation="portrait"
+                android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,12 +27,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.SettingsActivity"
-            android:label="@string/setting"
-            android:theme="@style/AppTheme.Settings" />
+                android:name=".ui.SettingsActivity"
+                android:label="@string/menu_main_setting"
+                android:screenOrientation="portrait"
+                android:theme="@style/AppTheme.Settings" />
         <activity
-            android:name=".ui.LicenseActivity"
-            android:label="@string/open_source_license" />
+                android:name=".ui.LicenseActivity"
+                android:label="@string/open_source_license"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".ui.WallpaperHistoryListActivity"
+                android:label="@string/menu_main_wallpaper_list"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".ui.WallpaperDetailActivity"
+                android:screenOrientation="portrait"
+                android:theme="@style/AppTheme.NoActionBar" />
 
         <receiver android:name=".service.AutoSetWallpaperBroadcastReceiver">
             <intent-filter>
@@ -39,26 +52,26 @@
         </receiver>
 
         <service
-            android:name=".service.BingWallpaperIntentService"
-            android:exported="false"
-            android:process=":background" />
+                android:name=".service.BingWallpaperIntentService"
+                android:exported="false"
+                android:process=":background" />
 
         <service
-            android:name=".service.JobSchedulerDaemonService"
-            android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+                android:name=".service.JobSchedulerDaemonService"
+                android:exported="false"
+                android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <provider
-            android:name=".data.provider.TasksProvider"
-            android:authorities="me.liaoheng.wallpaper"
-            android:exported="false" />
+                android:name=".data.provider.TasksProvider"
+                android:authorities="me.liaoheng.wallpaper"
+                android:exported="false" />
 
         <meta-data
-            android:name="me.liaoheng.wallpaper.util.GlideModule"
-            android:value="GlideModule" />
+                android:name="me.liaoheng.wallpaper.util.GlideModule"
+                android:value="GlideModule" />
         <meta-data
-            android:name="firebase_crashlytics_collection_enabled"
-            android:value="false" />
+                android:name="firebase_crashlytics_collection_enabled"
+                android:value="false" />
     </application>
 
 </manifest>

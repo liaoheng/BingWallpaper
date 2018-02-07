@@ -7,8 +7,6 @@ import com.github.liaoheng.common.Common;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import io.fabric.sdk.android.Fabric;
-import me.liaoheng.wallpaper.util.BingWallpaperAlarmManager;
-import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
@@ -45,10 +43,5 @@ public class MApplication extends Application {
             Fabric.with(this, new Crashlytics());
         }
         FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(!BuildConfig.DEBUG);
-
-        if (TasksUtils.isOne()) {
-            BingWallpaperAlarmManager.clear(this);
-            BingWallpaperJobManager.disabled(this);
-        }
     }
 }

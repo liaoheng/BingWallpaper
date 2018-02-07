@@ -15,7 +15,7 @@ public interface Constants {
 
     String BASE_URL = "https://www.bing.com";
 
-    String CHINA_URL  = "https://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1";
-    String GLOBAL_URL = "https://global.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1";
+    String CHINA_URL  = "https://cn.bing.com/HPImageArchive.aspx?format=js&idx=%s&n=%s";
+    String GLOBAL_URL = "https://global.bing.com/HPImageArchive.aspx?format=js&idx=%s&n=%s";
 
 }

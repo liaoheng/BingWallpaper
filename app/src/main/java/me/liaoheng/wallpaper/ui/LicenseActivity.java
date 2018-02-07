@@ -57,9 +57,9 @@ public class LicenseActivity extends BaseActivity {
                 Licenses.fromGitHubApacheV2("ferrannp/material-preferences"));
         licenses.add(Licenses.fromGitHubApacheV2("yshrsmz/LicenseAdapter"));
         licenses.add(Licenses.fromGitHubMIT("H07000223/FlycoSystemBar"));
-        licenses.add(Licenses.fromGitHubApacheV2("tbruyelle/RxPermissions"));
         licenses.add(Licenses.fromGitHubApacheV2("Clans/FloatingActionButton"));
         licenses.add(Licenses.fromGitHubApacheV2("grandcentrix/tray"));
+        licenses.add(Licenses.fromGitHubApacheV2("chrisbanes/PhotoView"));
 
         LicenseAdapter adapter = new LicenseAdapter(licenses);
         mRecyclerView.setAdapter(adapter);

@@ -1,30 +1,51 @@
 package me.liaoheng.wallpaper.util;
 
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
+import com.github.liaoheng.common.util.BitmapUtils;
+import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.SystemException;
+import com.github.liaoheng.common.util.SystemRuntimeException;
+import com.github.liaoheng.common.util.Utils;
+
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkService;
 import okhttp3.Cache;
+import okhttp3.Dispatcher;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okhttp3.internal.Util;
 import okio.Buffer;
 import okio.BufferedSource;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import rx.Observable;
+import rx.Scheduler;
+import rx.Subscription;
+import rx.functions.Func1;
+import rx.observers.Subscribers;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.Subscriptions;
 
 /**
  * @author liaoheng
@@ -45,7 +66,7 @@ public class NetUtils {
     }
 
     private Retrofit mRetrofit;
-    private Retrofit mSimpleRetrofit;
+    private Retrofit mSingleRetrofit;
 
     public void init() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS)
@@ -61,11 +82,14 @@ public class NetUtils {
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create());
         mRetrofit = factory.client(builder.build()).build();
-        mSimpleRetrofit = factory.client(simpleBuilder.build()).build();
+        ExecutorService threadPoolExecutor = Executors
+                .newSingleThreadExecutor(Util.threadFactory("OkHttp Dispatcher", false));
+        Dispatcher dispatcher = new Dispatcher(threadPoolExecutor);
+        mSingleRetrofit = factory.client(simpleBuilder.dispatcher(dispatcher).build()).build();
     }
 
     private BingWallpaperNetworkService mBingWallpaperNetworkService;
-    private BingWallpaperNetworkService mBingWallpaperSimpleNetworkService;
+    private BingWallpaperNetworkService mBingWallpaperSingleNetworkService;
 
     public BingWallpaperNetworkService getBingWallpaperNetworkService() {
         if (mBingWallpaperNetworkService == null) {
@@ -74,11 +98,11 @@ public class NetUtils {
         return mBingWallpaperNetworkService;
     }
 
-    public BingWallpaperNetworkService getBingWallpaperSimpleNetworkService() {
-        if (mBingWallpaperSimpleNetworkService == null) {
-            mBingWallpaperSimpleNetworkService = mSimpleRetrofit.create(BingWallpaperNetworkService.class);
+    public BingWallpaperNetworkService getBingWallpaperSingleNetworkService() {
+        if (mBingWallpaperSingleNetworkService == null) {
+            mBingWallpaperSingleNetworkService = mSingleRetrofit.create(BingWallpaperNetworkService.class);
         }
-        return mBingWallpaperSimpleNetworkService;
+        return mBingWallpaperSingleNetworkService;
     }
 
     /**
@@ -168,4 +192,31 @@ public class NetUtils {
             return response;
         }
     }
+
+    public Subscription downloadImageToFile(final Context context, String url, Callback<File> callback) {
+        Observable<File> observable = Observable.just(url).subscribeOn(Schedulers.io())
+                .map(new Func1<String, File>() {
+                    @Override
+                    public File call(String url) {
+                        File temp = null;
+                        try {
+                            String name = FilenameUtils.getName(url);
+                            File outFile = FileUtils.createFile(FileUtils.getProjectImageDirectory(), name);
+                            temp = Glide.with(context).load(url)
+                                    .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get(2, TimeUnit.MINUTES);
+                            FileUtils.copyFile(temp, outFile);
+                            BitmapUtils.saveImageToSystemPhoto(context, outFile);
+                            return outFile;
+                        } catch (Exception e) {
+                            throw new SystemRuntimeException(e);
+                        } finally {
+                            if (temp != null) {
+                                FileUtils.delete(temp);
+                            }
+                        }
+                    }
+                });
+        return Utils.addSubscribe(observable, callback);
+    }
+
 }

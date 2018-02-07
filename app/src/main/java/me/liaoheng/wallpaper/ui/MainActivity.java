@@ -1,9 +1,6 @@
 package me.liaoheng.wallpaper.ui;
 
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -21,7 +18,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.util.AndroidRuntimeException;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +32,7 @@ import com.crashlytics.android.Crashlytics;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.liaoheng.common.util.BitmapUtils;
+import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.UIUtils;
@@ -51,6 +48,7 @@ import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
+import me.liaoheng.wallpaper.service.WallpaperBroadcastReceiver;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.TasksUtils;
@@ -126,13 +124,25 @@ public class MainActivity extends BaseActivity
 
         mNavigationView.setNavigationItemSelectedListener(this);
 
-        mWallpaperBroadcastReceiver = new WallpaperBroadcastReceiver();
+        mWallpaperBroadcastReceiver = new WallpaperBroadcastReceiver(new Callback4.EmptyCallback<BingWallpaperState>() {
+            @Override
+            public void onYes(BingWallpaperState bingWallpaperState) {
+                dismissProgressDialog();
+                UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_success));
+            }
+
+            @Override
+            public void onNo(BingWallpaperState bingWallpaperState) {
+                dismissProgressDialog();
+                UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_failure));
+            }
+        });
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 if (isRun) {
-                    UIUtils.showToast(getActivity(),getString(R.string.set_wallpaper_running));
+                    UIUtils.showToast(getActivity(), getString(R.string.set_wallpaper_running));
                 } else {
                     getBingWallpaper();
                 }
@@ -160,13 +170,13 @@ public class MainActivity extends BaseActivity
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        getBingWallpaperError(throwable);
+                        setBingWallpaperError(throwable);
                     }
                 });
     }
 
     @SuppressLint("SetTextI18n")
-    private void getBingWallpaperError(Throwable throwable) {
+    private void setBingWallpaperError(Throwable throwable) {
         dismissSwipeRefreshLayout();
         String error = getString(R.string.network_request_error);
         if (throwable instanceof SocketTimeoutException) {
@@ -194,12 +204,12 @@ public class MainActivity extends BaseActivity
             UIUtils.showToast(this, getString(R.string.set_wallpaper_running));
             return;
         }
-        if (!BingWallpaperUtils.isConnectedOrConnecting(this)) {
-            UIUtils.showToast(this, getString(R.string.network_unavailable));
-            return;
-        }
-        showProgressDialog();
-        BingWallpaperIntentService.start(this, type, false);
+        BingWallpaperUtils.setWallpaper(this, type, new Callback4.EmptyCallback<Boolean>() {
+            @Override
+            public void onYes(Boolean aBoolean) {
+                showProgressDialog();
+            }
+        });
     }
 
     @Override
@@ -257,6 +267,8 @@ public class MainActivity extends BaseActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.menu_main_drawer_settings) {
             UIUtils.startActivity(this, SettingsActivity.class);
+        } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_list) {
+            UIUtils.startActivity(this, WallpaperHistoryListActivity.class);
         } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_info) {
             if (mCurBingWallpaperImage != null) {
                 try {
@@ -277,41 +289,16 @@ public class MainActivity extends BaseActivity
         return true;
     }
 
-    class WallpaperBroadcastReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE.equals(intent.getAction())) {
-                int extra = intent
-                        .getIntExtra(BingWallpaperIntentService.EXTRA_GET_WALLPAPER_STATE, -1);
-                if (extra < 0) {
-                    return;
-                }
-                BingWallpaperState state = BingWallpaperState.find(extra);
-
-                if (BingWallpaperState.BEGIN.equals(state)) {
-                    //                    showProgressDialog();
-                } else if (BingWallpaperState.SUCCESS.equals(state)) {
-                    dismissProgressDialog();
-                    UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_success));
-                } else if (BingWallpaperState.FAIL.equals(state)) {
-                    dismissProgressDialog();
-                    UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_failure));
-                }
-            }
-        }
-    }
-
     private void setImage(BingWallpaperImage bingWallpaperImage) {
         setTitle(bingWallpaperImage.getCopyright());
 
-        String url = BingWallpaperUtils.getUrl(getApplicationContext(), bingWallpaperImage);
+        String url = BingWallpaperUtils.getImageUrl(getApplicationContext(), bingWallpaperImage);
 
         Glide.with(getActivity()).load(url)
                 .centerCrop().crossFade().into(new ImageViewTarget<GlideDrawable>(wallpaperView) {
             @Override
             public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                getBingWallpaperError(e);
+                setBingWallpaperError(e);
             }
 
             @Override
@@ -337,7 +324,7 @@ public class MainActivity extends BaseActivity
 
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                     addActionButton(lightMutedSwatch, lightVibrantSwatch,
-                                            getString(R.string.set_wallpaper_auto_mode_home),
+                                            getString(R.string.pref_set_wallpaper_auto_mode_home),
                                             R.drawable.ic_home_white_24dp, new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View v) {
@@ -347,7 +334,7 @@ public class MainActivity extends BaseActivity
                                             });
 
                                     addActionButton(lightMutedSwatch, lightVibrantSwatch,
-                                            getString(R.string.set_wallpaper_auto_mode_lock),
+                                            getString(R.string.pref_set_wallpaper_auto_mode_lock),
                                             R.drawable.ic_lock_white_24dp, new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View v) {
@@ -357,7 +344,7 @@ public class MainActivity extends BaseActivity
                                             });
 
                                     addActionButton(lightMutedSwatch, lightVibrantSwatch,
-                                            getString(R.string.set_wallpaper_auto_mode_both),
+                                            getString(R.string.pref_set_wallpaper_auto_mode_both),
                                             R.drawable.ic_smartphone_white_24dp, new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View v) {

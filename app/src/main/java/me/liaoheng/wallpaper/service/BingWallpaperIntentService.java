@@ -10,12 +10,14 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.AndroidRuntimeException;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.github.liaoheng.common.util.AppUtils;
+import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
 
 import java.io.File;
@@ -52,8 +54,9 @@ public class BingWallpaperIntentService extends IntentService {
      * <p>1. home</p>
      * <p>2. lock</p>
      */
-    public final static String EXTRA_SET_WALLPAPER_MODE = "SET_WALLPAPER_MODE";
-    public final static String EXTRA_SET_WALLPAPER_BACKGROUND = "SET_WALLPAPER_BACKGROUND";
+    public final static String EXTRA_SET_WALLPAPER_MODE = "set_wallpaper_mode";
+    public final static String EXTRA_SET_WALLPAPER_BACKGROUND = "set_wallpaper_background";
+    public final static String EXTRA_SET_WALLPAPER_URL = "set_wallpaper_url";
 
     public BingWallpaperIntentService() {
         super("BingWallpaperIntentService");
@@ -70,9 +73,17 @@ public class BingWallpaperIntentService extends IntentService {
      * @param mode 0. both , 1. home , 2. lock
      */
     public static void start(Context context, int mode, boolean background) {
+        start(context, "", mode, background);
+    }
+
+    /**
+     * @param mode 0. both , 1. home , 2. lock
+     */
+    public static void start(Context context, String url, int mode, boolean background) {
         Intent intent = new Intent(context, BingWallpaperIntentService.class);
         intent.putExtra(EXTRA_SET_WALLPAPER_MODE, mode);
         intent.putExtra(EXTRA_SET_WALLPAPER_BACKGROUND, background);
+        intent.putExtra(EXTRA_SET_WALLPAPER_URL, url);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent);
         } else {
@@ -95,6 +106,7 @@ public class BingWallpaperIntentService extends IntentService {
         //        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         final int setWallpaperType = intent.getIntExtra(EXTRA_SET_WALLPAPER_MODE, 0);
         final boolean isBackground = intent.getBooleanExtra(EXTRA_SET_WALLPAPER_BACKGROUND, false);
+        final String setWallpaperUrl = intent.getStringExtra(EXTRA_SET_WALLPAPER_URL);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
@@ -150,12 +162,16 @@ public class BingWallpaperIntentService extends IntentService {
             LogDebugFileUtils.get().i(TAG, "bing url : %s", BingWallpaperUtils.getUrl());
         }
 
-        BingWallpaperNetworkClient.getBingWallpaperSimple()
+        BingWallpaperNetworkClient.getBingWallpaperSingle()
                 .flatMap(new Func1<BingWallpaperImage, Observable<File>>() {
                     @Override
                     public Observable<File> call(
                             BingWallpaperImage bingWallpaperImage) {
-                        String url = BingWallpaperUtils.getUrl(getApplicationContext(), bingWallpaperImage);
+                        String url = setWallpaperUrl;
+                        if (TextUtils.isEmpty(url)) {
+                            url = BingWallpaperUtils.getResolutionImageUrl(getApplicationContext(),
+                                    bingWallpaperImage);
+                        }
                         L.Log.i(TAG, "wallpaper image url: " + url);
                         File wallpaper = null;
                         try {
@@ -190,9 +206,7 @@ public class BingWallpaperIntentService extends IntentService {
                             throw new AndroidRuntimeException(e);
                         } finally {
                             if (wallpaper != null) {
-                                if (wallpaper.exists()) {
-                                    wallpaper.delete();
-                                }
+                                FileUtils.delete(wallpaper);
                             }
                         }
                     }

@@ -2,6 +2,7 @@ package me.liaoheng.wallpaper.util;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -16,19 +17,21 @@ import android.view.KeyEvent;
 import android.view.ViewConfiguration;
 import android.view.WindowManager;
 
+import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.NetworkUtils;
+import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 
 import net.grandcentrix.tray.AppPreferences;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalTime;
 
 import java.util.Locale;
 
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
+import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.ui.SettingsActivity;
 
 /**
@@ -44,9 +47,18 @@ public class BingWallpaperUtils {
         return dm;
     }
 
-    public static String getUrl(Context context, BingWallpaperImage image) {
+    public static String getResolutionImageUrl(Context context, BingWallpaperImage image) {
+        return getImageUrl(getResolution(context), image);
+    }
+
+    public static String getImageUrl(Context context, BingWallpaperImage image) {
+        String[] names = context.getResources()
+                .getStringArray(R.array.pref_set_wallpaper_resolution_name);
+        return getImageUrl(names[0], image);
+    }
+
+    public static String getImageUrl(String resolution, BingWallpaperImage image) {
         String baseUrl = image.getUrlbase();
-        String resolution = BingWallpaperUtils.getResolution(context);
         return Constants.BASE_URL + baseUrl + "_" + resolution + ".jpg";
     }
 
@@ -87,13 +99,19 @@ public class BingWallpaperUtils {
     }
 
     public static String getUrl() {
+        return getUrl(0, 1);
+    }
+
+    public static String getUrl(int index, int count) {
         String language = Locale.getDefault().getLanguage();
         String country = Locale.getDefault().getCountry();
+        String url;
         if (country.equalsIgnoreCase("cn")) {
-            return Constants.CHINA_URL;
+            url = Constants.CHINA_URL;
         } else {
-            return Utils.appendUrlParameter(Constants.GLOBAL_URL, "setmkt", language + "-" + country);
+            url = Utils.appendUrlParameter(Constants.GLOBAL_URL, "setmkt", language + "-" + country);
         }
+        return String.format(url, index, count);
     }
 
     /**
@@ -121,6 +139,7 @@ public class BingWallpaperUtils {
 
     /**
      * 传入时间的在当前时间后，则改变转入时间到下一天。
+     *
      * @param time Local
      * @return Local
      */
@@ -227,5 +246,42 @@ public class BingWallpaperUtils {
                 || Build.MANUFACTURER.contains("Genymotion")
                 || (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
                 || "google_sdk".equals(Build.PRODUCT);
+    }
+
+    /**
+     * @param type 0. both , 1. home , 2. lock
+     */
+    public static void setWallpaper(final Context context, final int type,
+            @Nullable final Callback4<Boolean> callback) {
+        setWallpaper(context, "", type, callback);
+    }
+
+    /**
+     * @param type 0. both , 1. home , 2. lock
+     */
+    public static void setWallpaper(final Context context, final String url, final int type,
+            @Nullable final Callback4<Boolean> callback) {
+        if (!BingWallpaperUtils.isConnectedOrConnecting(context)) {
+            UIUtils.showToast(context, context.getString(R.string.network_unavailable));
+            return;
+        }
+        // use mobile network show alert
+        if (NetworkUtils.isMobileConnected(context)) {
+            UIUtils.showYNAlertDialog(context, context.getString(R.string.alert_mobile_data),
+                    new Callback4.EmptyCallback<DialogInterface>() {
+                        @Override
+                        public void onYes(DialogInterface dialogInterface) {
+                            if (callback != null) {
+                                callback.onYes(true);
+                            }
+                            BingWallpaperIntentService.start(context, url, type, false);
+                        }
+                    });
+        } else {
+            if (callback != null) {
+                callback.onYes(true);
+            }
+            BingWallpaperIntentService.start(context, url, type, false);
+        }
     }
 }

@@ -291,7 +291,7 @@ public class MainActivityOld extends BaseActivity
 
         DisplayMetrics dm = BingWallpaperUtils.getDisplayMetrics(this);
 
-        String url = BingWallpaperUtils.getUrl(getApplicationContext(), bingWallpaperImage);
+        String url = BingWallpaperUtils.getImageUrl(getApplicationContext(), bingWallpaperImage);
 
         Glide.with(getActivity()).load(url).override(dm.widthPixels, dm.heightPixels)
                 .centerCrop().crossFade().into(new ImageViewTarget<GlideDrawable>(wallpaperView) {
@@ -323,7 +323,7 @@ public class MainActivityOld extends BaseActivity
 
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                     addActionButton(lightMutedSwatch, lightVibrantSwatch,
-                                            getString(R.string.set_wallpaper_auto_mode_home),
+                                            getString(R.string.pref_set_wallpaper_auto_mode_home),
                                             R.drawable.ic_home_white_24dp, new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View v) {
@@ -333,7 +333,7 @@ public class MainActivityOld extends BaseActivity
                                             });
 
                                     addActionButton(lightMutedSwatch, lightVibrantSwatch,
-                                            getString(R.string.set_wallpaper_auto_mode_lock),
+                                            getString(R.string.pref_set_wallpaper_auto_mode_lock),
                                             R.drawable.ic_lock_white_24dp, new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View v) {
@@ -343,7 +343,7 @@ public class MainActivityOld extends BaseActivity
                                             });
 
                                     addActionButton(lightMutedSwatch, lightVibrantSwatch,
-                                            getString(R.string.set_wallpaper_auto_mode_both),
+                                            getString(R.string.pref_set_wallpaper_auto_mode_both),
                                             R.drawable.ic_smartphone_white_24dp, new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View v) {

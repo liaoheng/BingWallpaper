@@ -32,9 +32,9 @@
     </string-array>
 
     <string-array name="pref_set_wallpaper_auto_mode_name">
-        <item>@string/set_wallpaper_auto_mode_both</item>
-        <item>@string/set_wallpaper_auto_mode_home</item>
-        <item>@string/set_wallpaper_auto_mode_lock</item>
+        <item>@string/pref_set_wallpaper_auto_mode_both</item>
+        <item>@string/pref_set_wallpaper_auto_mode_home</item>
+        <item>@string/pref_set_wallpaper_auto_mode_lock</item>
     </string-array>
 
     <string-array name="pref_set_wallpaper_auto_mode_value">
