@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
   <item android:id="@+id/menu_main_drawer_wallpaper_info" android:title="@string/menu_main_drawer_wallpaper_info"/>
-  <item android:id="@+id/menu_main_drawer_wallpaper_list" android:title="@string/menu_main_wallpaper_list"/>
+  <item android:id="@+id/menu_main_drawer_wallpaper_history_list" android:title="@string/menu_main_wallpaper_history_list"/>
   <item android:id="@+id/menu_main_drawer_settings" android:title="@string/menu_main_setting"/>
 </menu>

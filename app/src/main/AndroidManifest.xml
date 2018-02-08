@@ -37,7 +37,7 @@
                 android:screenOrientation="portrait" />
         <activity
                 android:name=".ui.WallpaperHistoryListActivity"
-                android:label="@string/menu_main_wallpaper_list"
+                android:label="@string/menu_main_wallpaper_history_list"
                 android:screenOrientation="portrait" />
         <activity
                 android:name=".ui.WallpaperDetailActivity"

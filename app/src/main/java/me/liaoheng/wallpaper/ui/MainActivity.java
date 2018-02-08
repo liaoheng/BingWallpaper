@@ -267,7 +267,7 @@ public class MainActivity extends BaseActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.menu_main_drawer_settings) {
             UIUtils.startActivity(this, SettingsActivity.class);
-        } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_list) {
+        } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_history_list) {
             UIUtils.startActivity(this, WallpaperHistoryListActivity.class);
         } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_info) {
             if (mCurBingWallpaperImage != null) {

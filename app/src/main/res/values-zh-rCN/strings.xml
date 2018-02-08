@@ -38,7 +38,7 @@
     <!--menu-->
     <string name="menu_main_drawer_wallpaper_info">壁纸信息</string>
     <string name="menu_main_setting">设置</string>
-    <string name="menu_main_wallpaper_list">壁纸历史记录</string>
+    <string name="menu_main_wallpaper_history_list">壁纸历史记录</string>
 
     <!--wallpaper detail-->
     <string name="bing_only_two_week">Bing只提供近两周记录</string>

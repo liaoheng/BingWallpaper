@@ -39,7 +39,7 @@
     <!--menu-->
     <string name="menu_main_drawer_wallpaper_info">Wallpaper information</string>
     <string name="menu_main_setting">Setting</string>
-    <string name="menu_main_wallpaper_list">Wallpaper History List</string>
+    <string name="menu_main_wallpaper_history_list">Wallpaper history list</string>
 
     <!--wallpaper detail-->
     <string name="bing_only_two_week">Bing is only available for the past two weeks</string>
