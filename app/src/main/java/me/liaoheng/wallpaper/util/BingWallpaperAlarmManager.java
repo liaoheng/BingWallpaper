@@ -38,7 +38,7 @@ public class BingWallpaperAlarmManager {
         // 取消以前同类型的提醒
         alarmManager.cancel(pendingIntent);
 
-        L.Log.i(TAG, "cancel alarm");
+        L.Log.d(TAG, "cancel alarm");
     }
 
     public static void add(Context context, DateTime time) {
@@ -52,7 +52,7 @@ public class BingWallpaperAlarmManager {
         if (BingWallpaperUtils.isEnableLog(context)) {
             LogDebugFileUtils.get().i(TAG, "Set Alarm Repeating Time : %s", time.toString("yyyy-MM-dd HH:mm"));
         }
-        L.Log.i(TAG, "Set Alarm Repeating Time : %s", time.toString("yyyy-MM-dd HH:mm"));
+        L.Log.d(TAG, "Set Alarm Repeating Time : %s", time.toString("yyyy-MM-dd HH:mm"));
     }
 
     public static void add(Context context, int hour, int minute) {

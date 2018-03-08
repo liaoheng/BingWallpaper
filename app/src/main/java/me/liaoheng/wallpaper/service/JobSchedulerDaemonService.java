@@ -30,19 +30,19 @@ public class JobSchedulerDaemonService extends JobService {
             if (BingWallpaperUtils.isConnectedOrConnecting(getApplicationContext())) {
                 if (BingWallpaperUtils.getOnlyWifi(getApplicationContext())) {
                     if (!NetworkUtils.isWifiConnected(getApplicationContext())) {
-                        L.Log.i(TAG, "isWifiConnected :false");
+                        L.Log.d(TAG, "isWifiConnected :false");
                         return;
                     }
                 }
                 //每天成功执行一次
                 if (TasksUtils.isToDaysDoProvider(getApplicationContext(),1, BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
-                    L.Log.i(TAG, "isToDaysDo :true");
+                    L.Log.d(TAG, "isToDaysDo :true");
                     BingWallpaperIntentService.start(getApplicationContext(), BingWallpaperUtils.getAutoModeValue(getApplicationContext()));
                 } else {
-                    L.Log.i(TAG, "isToDaysDo :false");
+                    L.Log.d(TAG, "isToDaysDo :false");
                 }
             } else {
-                L.Log.i(TAG, "isConnectedOrConnecting :false");
+                L.Log.d(TAG, "isConnectedOrConnecting :false");
             }
             jobFinished((JobParameters) msg.obj, false);
         }
@@ -50,7 +50,7 @@ public class JobSchedulerDaemonService extends JobService {
 
     @Override
     public boolean onStartJob(JobParameters params) {
-        L.Log.i(TAG, "action job id : %s", params.getJobId());
+        L.Log.d(TAG, "action job id : %s", params.getJobId());
         if (BingWallpaperUtils.isEnableLog(getApplicationContext())) {
             LogDebugFileUtils.get()
                     .i(TAG, "action job id : %s", params.getJobId());

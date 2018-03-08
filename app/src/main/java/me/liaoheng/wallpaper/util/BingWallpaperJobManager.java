@@ -44,7 +44,7 @@ public class BingWallpaperJobManager {
         if (BingWallpaperUtils.isEnableLog(context)) {
             LogDebugFileUtils.get().i(TAG, "job interval time : %s", time / 1000 / 60);
         }
-        L.Log.i(TAG, "job interval time : %s", time / 1000 / 60);
+        L.Log.d(TAG, "job interval time : %s", time / 1000 / 60);
     }
 
 }

@@ -43,6 +43,7 @@
                 android:name=".ui.WallpaperDetailActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ui.IntroActivity" android:theme="@style/Theme.AppCompat.NoActionBar"/>
 
         <receiver android:name=".service.AutoSetWallpaperBroadcastReceiver">
             <intent-filter>

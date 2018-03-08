@@ -139,6 +139,8 @@ public class WallpaperHistoryListActivity extends BaseActivity {
 
         @BindView(R.id.bing_wallpaper_list_item_image)
         ImageView mImageView;
+        @BindView(R.id.bing_wallpaper_list_item_image_date)
+        TextView mDate;
 
         public WallpaperViewHolder(View itemView) {
             super(itemView);
@@ -147,6 +149,8 @@ public class WallpaperHistoryListActivity extends BaseActivity {
 
         @Override
         public void onHandle(final BingWallpaperImage item, int position) {
+            mDate.setText(item.getEnddate());
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

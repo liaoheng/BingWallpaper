@@ -90,14 +90,16 @@ public class MainActivity extends BaseActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (TasksUtils.isOne()) {
+            UIUtils.startActivity(this, IntroActivity.class);
+            finish();
+            return;
+        }
         getWindow().addFlags(
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                         | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        if (TasksUtils.isOne()) {
-            TasksUtils.markOne();
-        }
         Toolbar toolbar = UIUtils.findViewById(this, R.id.toolbar);
         int statusBarHeight = DisplayUtils.getStatusBarHeight(this);
         ViewGroup.LayoutParams lp = toolbar.getLayoutParams();

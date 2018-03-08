@@ -47,4 +47,10 @@
     <string name="menu_set_wallpaper_mode_lock">设置壁纸到锁定屏幕</string>
     <string name="menu_set_wallpaper_mode_both">设置壁纸</string>
 
+    <!--intro-->
+    <string name="intro_update_set">设置自动更新壁纸</string>
+    <string name="intro_update_set_timing_time">定时时间：</string>
+    <string name="intro_hint_welcome">@string/app_name</string>
+    <string name="intro_hint_whitelist">需要将该应用添加到后台管理应用的白名单中，如Brevent, Greenify等</string>
+    <string name="intro_hint_battery">系统电池优化会使应用不能准时执行更新壁纸操作</string>
 </resources>

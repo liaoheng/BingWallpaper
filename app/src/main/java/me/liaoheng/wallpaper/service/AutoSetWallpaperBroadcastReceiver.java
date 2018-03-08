@@ -22,7 +22,7 @@ public class AutoSetWallpaperBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        L.Log.i("AutoSetWallpaperBroadcastReceiver", "action : %s", intent.getAction());
+        L.Log.d("AutoSetWallpaperBroadcastReceiver", "action : %s", intent.getAction());
         if (BingWallpaperUtils.isEnableLog(context)) {
             LogDebugFileUtils.get()
                     .i("AutoSetWallpaperBroadcastReceiver", "action  : %s", intent.getAction());

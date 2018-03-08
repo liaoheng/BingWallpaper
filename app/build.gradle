@@ -57,7 +57,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation deps.robolectric
     testImplementation deps.junit
     //android system
@@ -112,7 +112,12 @@ dependencies {
     //https://github.com/chrisbanes/PhotoView
     implementation 'com.github.chrisbanes:PhotoView:2.1.3'
 
-    compile 'com.github.liaoheng:common-core:0.0.5-SNAPSHOT'
-    compile 'com.github.liaoheng:common-adapter:0.0.5-SNAPSHOT'
+    implementation('com.github.apl-devs:appintro:v4.2.3'){
+        exclude module:'appcompat-v7'
+        exclude module:'support-annotations'
+    }
+
+    implementation 'com.github.liaoheng:common-core:0.0.5-SNAPSHOT'
+    implementation 'com.github.liaoheng:common-adapter:0.0.5-SNAPSHOT'
 }
 apply plugin: 'com.google.gms.google-services'
