@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">每日必應桌布</string>
+    <string name="app_name">Starth必應桌布</string>
     <string name="set_wallpaper_running">正在設定桌布，請稍候</string>
     <string name="set_wallpaper_success">桌布設定成功</string>
     <string name="set_wallpaper_failure">桌布設定失敗</string>

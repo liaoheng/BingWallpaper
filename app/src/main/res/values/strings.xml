@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Daily Bing Wallpaper</string>
+    <string name="app_name">Starth Bing Wallpaper</string>
     <string name="set_wallpaper_running">Setting wallpaper, please wait</string>
     <string name="set_wallpaper_success">Setting wallpaper success</string>
     <string name="set_wallpaper_failure">Setting wallpaper failed</string>
@@ -51,7 +51,7 @@
     <!--intro-->
     <string name="intro_update_set">Set Automatic update wallpaper</string>
     <string name="intro_update_set_timing_time">Timing time: </string>
-    <string name="intro_hint_welcome">Welcome to Daily Bing Wallpaper</string>
+    <string name="intro_hint_welcome">Welcome to Starth Bing Wallpaper</string>
     <string name="intro_hint_whitelist">The app needs to be added to the whitelist of the background admin app, as Brevent, Greenify&#8230;</string>
     <string name="intro_hint_battery">System battery optimization will make the application can not be performed on time to update the wallpaper</string>
 
