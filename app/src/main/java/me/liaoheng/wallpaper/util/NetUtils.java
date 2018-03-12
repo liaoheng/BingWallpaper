@@ -1,12 +1,16 @@
 package me.liaoheng.wallpaper.util;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
+import com.github.liaoheng.common.Common;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.FileUtils;
@@ -201,11 +205,14 @@ public class NetUtils {
                         File temp = null;
                         try {
                             String name = FilenameUtils.getName(url);
-                            File outFile = FileUtils.createFile(FileUtils.getProjectImageDirectory(), name);
+                            File p = new File(Environment.DIRECTORY_PICTURES, Common.getProjectName());
+                            File file = new File(FileUtils.getSDPath(), p.getAbsolutePath());
+                            File outFile = FileUtils.createFile(file, name);
                             temp = Glide.with(context).load(url)
                                     .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get(2, TimeUnit.MINUTES);
                             FileUtils.copyFile(temp, outFile);
-                            BitmapUtils.saveImageToSystemPhoto(context, outFile);
+                            context.sendBroadcast(
+                                    new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(outFile)));
                             return outFile;
                         } catch (Exception e) {
                             throw new SystemRuntimeException(e);
