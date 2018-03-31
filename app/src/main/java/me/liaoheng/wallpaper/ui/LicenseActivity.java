@@ -50,7 +50,6 @@ public class LicenseActivity extends BaseActivity {
         licenses.add(Licenses.fromGitHubApacheV2("reactivex/rxjava"));
         licenses.add(Licenses.fromGitHubApacheV2("reactivex/rxandroid"));
         licenses.add(Licenses.fromGitHubApacheV2("trello/rxlifecycle"));
-        licenses.add(Licenses.fromGitHubApacheV2("JakeWharton/butterknife"));
         licenses.add(Licenses.fromGitHubApacheV2("orhanobut/logger"));
         licenses.add(Licenses.fromGitHub("DreaminginCodeZH/SystemUiHelper", Licenses.LICENSE_APACHE_V2));
         licenses.add(

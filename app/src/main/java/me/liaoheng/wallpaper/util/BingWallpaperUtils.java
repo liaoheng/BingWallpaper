@@ -249,17 +249,17 @@ public class BingWallpaperUtils {
     }
 
     /**
-     * @param type 0. both , 1. home , 2. lock
+     * @param mode 0. both , 1. home , 2. lock
      */
-    public static void setWallpaper(final Context context, final int type,
+    public static void setWallpaper(final Context context,@Constants.setWallpaperMode final int mode,
             @Nullable final Callback4<Boolean> callback) {
-        setWallpaper(context, "", type, callback);
+        setWallpaper(context, "", mode, callback);
     }
 
     /**
-     * @param type 0. both , 1. home , 2. lock
+     * @param mode 0. both , 1. home , 2. lock
      */
-    public static void setWallpaper(final Context context, final String url, final int type,
+    public static void setWallpaper(final Context context, final String url, @Constants.setWallpaperMode final int mode,
             @Nullable final Callback4<Boolean> callback) {
         if (!BingWallpaperUtils.isConnectedOrConnecting(context)) {
             UIUtils.showToast(context, context.getString(R.string.network_unavailable));
@@ -274,14 +274,14 @@ public class BingWallpaperUtils {
                             if (callback != null) {
                                 callback.onYes(true);
                             }
-                            BingWallpaperIntentService.start(context, url, type, false);
+                            BingWallpaperIntentService.start(context, url, mode, false);
                         }
                     });
         } else {
             if (callback != null) {
                 callback.onYes(true);
             }
-            BingWallpaperIntentService.start(context, url, type, false);
+            BingWallpaperIntentService.start(context, url, mode, false);
         }
     }
 }
