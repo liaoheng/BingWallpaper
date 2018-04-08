@@ -1,10 +1,11 @@
 package me.liaoheng.wallpaper.ui;
 
 import android.app.Activity;
+import android.content.pm.ShortcutManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.github.liaoheng.common.util.UIUtils;
 
@@ -29,6 +30,10 @@ public class ShortcutActivity extends Activity {
             return;
         }
         BingWallpaperIntentService.start(this, mode, false);
+        Toast.makeText(getApplicationContext(), getString(R.string.set_wallpaper_running), Toast.LENGTH_SHORT).show();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            getSystemService(ShortcutManager.class).reportShortcutUsed("toggle");
+        }
         finish();
     }
 }

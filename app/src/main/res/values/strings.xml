@@ -52,7 +52,7 @@
     <string name="intro_update_set">Set Automatic update wallpaper</string>
     <string name="intro_update_set_timing_time">Timing time: </string>
     <string name="intro_hint_welcome">Welcome to Starth Bing Wallpaper</string>
-    <string name="intro_hint_whitelist">The app needs to be added to the whitelist of the background admin app, as Brevent, Greenify&#8230;</string>
-    <string name="intro_hint_battery">System battery optimization will make the app can not be performed on time to update the wallpaper</string>
+    <string name="intro_hint_whitelist">The app needs to be added to the whitelist of the background admin app, as Brevent, Greenify&#8230;. </string>
+    <string name="intro_hint_battery">System battery optimization will make the app can not be performed on time to update the wallpaper, Apps can be added to the battery optimization white list. </string>
 
 </resources>
