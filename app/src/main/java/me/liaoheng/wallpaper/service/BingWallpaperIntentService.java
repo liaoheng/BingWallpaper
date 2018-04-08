@@ -104,9 +104,14 @@ public class BingWallpaperIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(final Intent intent) {
-        final int setWallpaperType = intent.getIntExtra(EXTRA_SET_WALLPAPER_MODE, 0);
+        int setWallpaperType = intent.getIntExtra(EXTRA_SET_WALLPAPER_MODE, 0);
         final boolean isBackground = intent.getBooleanExtra(EXTRA_SET_WALLPAPER_BACKGROUND, false);
-        final String setWallpaperUrl = intent.getStringExtra(EXTRA_SET_WALLPAPER_URL);
+        String setWallpaperUrl = intent.getStringExtra(EXTRA_SET_WALLPAPER_URL);
+        L.Log.d(TAG, " setWallpaperType : " + setWallpaperType);
+
+        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+            LogDebugFileUtils.get().i(TAG, "Run BingWallpaperIntentService");
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
@@ -126,10 +131,6 @@ public class BingWallpaperIntentService extends IntentService {
                     .setContentTitle(getText(R.string.app_name)).build();
 
             startForeground(0x111, notification);
-        }
-
-        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().i(TAG, "Run BingWallpaperIntentService");
         }
 
         sendSetWallpaperBroadcast(BingWallpaperState.BEGIN);
@@ -189,44 +190,49 @@ public class BingWallpaperIntentService extends IntentService {
     private Observable.Transformer<String, File> applyDownload(final int setWallpaperType) {
         return new Observable.Transformer<String, File>() {
             @Override
-            public Observable<File> call(Observable<String> url) {
-                L.Log.i(TAG, "wallpaper image url: " + url);
-                File wallpaper = null;
-                try {
-                    wallpaper = Glide.with(getApplicationContext()).load(url)
-                            .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get(2, TimeUnit.MINUTES);
-                    String absolutePath = wallpaper.getAbsolutePath();
-                    L.Log.i(TAG, "wallpaper file : " + absolutePath);
-                    Bitmap bitmap = BitmapFactory.decodeFile(absolutePath);
+            public Observable<File> call(Observable<String> stringObservable) {
+                return stringObservable.flatMap(new Func1<String, Observable<File>>() {
+                    @Override
+                    public Observable<File> call(String url) {
+                        L.Log.i(TAG, "wallpaper image url: " + url);
+                        File wallpaper = null;
+                        try {
+                            wallpaper = Glide.with(getApplicationContext()).load(url)
+                                    .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get(2, TimeUnit.MINUTES);
+                            String absolutePath = wallpaper.getAbsolutePath();
+                            L.Log.i(TAG, "wallpaper file : " + absolutePath);
+                            Bitmap bitmap = BitmapFactory.decodeFile(absolutePath);
 
-                    if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            WallpaperManager.getInstance(getApplicationContext())
-                                    .setBitmap(bitmap, null, false, WallpaperManager.FLAG_SYSTEM);
-                        }
-                    } else if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            WallpaperManager.getInstance(getApplicationContext())
-                                    .setBitmap(bitmap, null, false, WallpaperManager.FLAG_LOCK);
-                        }
-                    } else {
-                        WallpaperManager.getInstance(getApplicationContext())
-                                .setBitmap(bitmap);
-                    }
+                            if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                    WallpaperManager.getInstance(getApplicationContext())
+                                            .setBitmap(bitmap, null, false, WallpaperManager.FLAG_SYSTEM);
+                                }
+                            } else if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                    WallpaperManager.getInstance(getApplicationContext())
+                                            .setBitmap(bitmap, null, false, WallpaperManager.FLAG_LOCK);
+                                }
+                            } else {
+                                WallpaperManager.getInstance(getApplicationContext())
+                                        .setBitmap(bitmap);
+                            }
 
-                    if (bitmap != null) {
-                        if (!bitmap.isRecycled()) {
-                            bitmap.recycle();
+                            if (bitmap != null) {
+                                if (!bitmap.isRecycled()) {
+                                    bitmap.recycle();
+                                }
+                            }
+                            return Observable.just(wallpaper);
+                        } catch (Exception e) {
+                            throw new AndroidRuntimeException(e);
+                        } finally {
+                            if (wallpaper != null) {
+                                FileUtils.delete(wallpaper);
+                            }
                         }
                     }
-                    return Observable.just(wallpaper);
-                } catch (Exception e) {
-                    throw new AndroidRuntimeException(e);
-                } finally {
-                    if (wallpaper != null) {
-                        FileUtils.delete(wallpaper);
-                    }
-                }
+                });
             }
         };
     }

@@ -11,13 +11,14 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-            tools:replace="android:allowBackup"
             android:name=".MApplication"
             android:allowBackup="false"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:supportsRtl="true"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            tools:replace="android:allowBackup">
+
         <activity
                 android:name=".ui.MainActivity"
                 android:screenOrientation="portrait"
@@ -27,6 +28,9 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data
+                    android:name="android.app.shortcuts"
+                    android:resource="@xml/shortcuts" />
         </activity>
         <activity
                 android:name=".ui.SettingsActivity"
@@ -45,11 +49,23 @@
                 android:name=".ui.WallpaperDetailActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ui.IntroActivity" android:theme="@style/Theme.AppCompat.NoActionBar"/>
+        <activity
+                android:name=".ui.IntroActivity"
+                android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
+                android:name=".ui.ShortcutActivity"
+                android:excludeFromRecents="true"
+                android:launchMode="singleTask"
+                android:taskAffinity=""
+                android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.CREATE_SHORTCUT" />
+            </intent-filter>
+        </activity>
 
         <receiver android:name=".service.AutoSetWallpaperBroadcastReceiver">
             <intent-filter>
-                <action android:name="me.liaoheng.wallpaper.alarm.task_schedule" />
+                <action android:name="me.liaoheng.wallpaper.ALARM_TASK_SCHEDULE" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>

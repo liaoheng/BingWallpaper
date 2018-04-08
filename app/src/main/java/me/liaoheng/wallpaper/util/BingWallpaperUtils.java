@@ -20,7 +20,6 @@ import android.view.WindowManager;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.UIUtils;
-import com.github.liaoheng.common.util.Utils;
 
 import net.grandcentrix.tray.AppPreferences;
 
@@ -109,7 +108,7 @@ public class BingWallpaperUtils {
         if (country.equalsIgnoreCase("cn")) {
             url = Constants.CHINA_URL;
         } else {
-            url = Utils.appendUrlParameter(Constants.GLOBAL_URL, "setmkt", language + "-" + country);
+            url = Constants.GLOBAL_URL + "&setmkt=" + language + "-" + country;
         }
         return String.format(url, index, count);
     }
@@ -251,7 +250,7 @@ public class BingWallpaperUtils {
     /**
      * @param mode 0. both , 1. home , 2. lock
      */
-    public static void setWallpaper(final Context context,@Constants.setWallpaperMode final int mode,
+    public static void setWallpaper(final Context context, @Constants.setWallpaperMode final int mode,
             @Nullable final Callback4<Boolean> callback) {
         setWallpaper(context, "", mode, callback);
     }

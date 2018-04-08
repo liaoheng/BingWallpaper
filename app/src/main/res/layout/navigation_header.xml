@@ -6,8 +6,8 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView
-        android:scaleType="center"
-        android:src="@drawable/rocketship"
+        android:scaleType="centerCrop"
+        android:src="@drawable/milky_way"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </LinearLayout>
