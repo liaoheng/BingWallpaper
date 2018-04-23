@@ -84,7 +84,8 @@ public class WallpaperHistoryListActivity extends BaseActivity {
     }
 
     private void getBingWallpaperList(final Callback callback) {
-        Observable<List<BingWallpaperImage>> listObservable = BingWallpaperNetworkClient.getBingWallpaper(index, count)
+        Observable<List<BingWallpaperImage>> listObservable = BingWallpaperNetworkClient.getBingWallpaper(this, index,
+                count)
                 .compose(this.<List<BingWallpaperImage>>bindToLifecycle());
         Utils.addSubscribe2(listObservable, new Callback2.EmptyCallback<List<BingWallpaperImage>>() {
             @Override

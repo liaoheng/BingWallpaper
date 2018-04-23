@@ -11,11 +11,9 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.ViewConfiguration;
-import android.view.WindowManager;
 
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.NetworkUtils;
@@ -38,13 +36,6 @@ import me.liaoheng.wallpaper.ui.SettingsActivity;
  * @version 2016-09-20 17:17
  */
 public class BingWallpaperUtils {
-
-    public static DisplayMetrics getDisplayMetrics(Context context) {
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics dm = new DisplayMetrics();
-        wm.getDefaultDisplay().getRealMetrics(dm);
-        return dm;
-    }
 
     public static String getResolutionImageUrl(Context context, BingWallpaperImage image) {
         return getImageUrl(getResolution(context), image);
@@ -80,6 +71,19 @@ public class BingWallpaperUtils {
         return names[Integer.parseInt(resolution)];
     }
 
+    public static String getSaveResolution(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
+
+        String[] names = context.getResources()
+                .getStringArray(R.array.pref_set_wallpaper_resolution_name);
+
+        String resolution = sharedPreferences
+                .getString(SettingsActivity.PREF_SAVE_WALLPAPER_RESOLUTION, "0");
+
+        return names[Integer.parseInt(resolution)];
+    }
+
     public static int getAutoModeValue(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
@@ -97,13 +101,39 @@ public class BingWallpaperUtils {
         return names[value];
     }
 
-    public static String getUrl() {
-        return getUrl(0, 1);
+    public static String getCountryName(Context context) {
+        AppPreferences appPreferences = new AppPreferences(context);
+
+        String[] names = context.getResources()
+                .getStringArray(R.array.pref_country_names);
+
+        String country = appPreferences
+                .getString(SettingsActivity.PREF_COUNTRY, "0");
+
+        return names[Integer.parseInt(country)];
     }
 
-    public static String getUrl(int index, int count) {
+    public static int getCountryValue(Context context) {
+        AppPreferences appPreferences = new AppPreferences(context);
+
+        String country = appPreferences
+                .getString(SettingsActivity.PREF_COUNTRY, "0");
+
+        return Integer.parseInt(country);
+    }
+
+    public static String getUrl(Context context) {
+        return getUrl(context, 0, 1);
+    }
+
+    public static String getUrl(Context context, int index, int count) {
+        int auto = getCountryValue(context);
         String language = Locale.getDefault().getLanguage();
         String country = Locale.getDefault().getCountry();
+        if (auto == 1) {
+            language = Locale.CHINA.getLanguage();
+            country = Locale.CHINA.getCountry();
+        }
         String url;
         if (country.equalsIgnoreCase("cn")) {
             url = Constants.CHINA_URL;

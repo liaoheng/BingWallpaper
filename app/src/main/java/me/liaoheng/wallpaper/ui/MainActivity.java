@@ -160,7 +160,7 @@ public class MainActivity extends BaseActivity
             return;
         }
         showSwipeRefreshLayout();
-        BingWallpaperNetworkClient.getBingWallpaper()
+        BingWallpaperNetworkClient.getBingWallpaper(this)
                 .compose(this.<BingWallpaperImage>bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<BingWallpaperImage>() {

@@ -2,10 +2,7 @@ package me.liaoheng.wallpaper.ui;
 
 import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -85,7 +82,7 @@ public class WallpaperDetailActivity extends BaseActivity {
         setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mWallpaperBroadcastReceiver = new WallpaperBroadcastReceiver(new Callback4.EmptyCallback<BingWallpaperState>(){
+        mWallpaperBroadcastReceiver = new WallpaperBroadcastReceiver(new Callback4.EmptyCallback<BingWallpaperState>() {
             @Override
             public void onYes(BingWallpaperState bingWallpaperState) {
                 dismissProgressDialog();
@@ -201,7 +198,7 @@ public class WallpaperDetailActivity extends BaseActivity {
     }
 
     private void downloadSaveWallpaper() {
-        String url = BingWallpaperUtils.getImageUrl(this, mWallpaperImage);
+        String url = BingWallpaperUtils.getImageUrl(BingWallpaperUtils.getSaveResolution(this), mWallpaperImage);
         mDownLoadSubscription = NetUtils.get().downloadImageToFile(this, url, new Callback.EmptyCallback<File>() {
             @Override
             public void onPreExecute() {

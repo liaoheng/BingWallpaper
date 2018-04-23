@@ -52,7 +52,9 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
         setPreferenceFragment(new MyPreferenceFragment());
     }
 
+    public static final String PREF_COUNTRY = "pref_country";
     public static final String PREF_SET_WALLPAPER_RESOLUTION = "pref_set_wallpaper_resolution";
+    public static final String PREF_SAVE_WALLPAPER_RESOLUTION = "pref_save_wallpaper_resolution";
     public static final String PREF_SET_WALLPAPER_AUTO_MODE = "pref_set_wallpaper_auto_mode";
     public static final String PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE = "pref_set_wallpaper_day_fully_automatic_update";
     public static final String PREF_SET_WALLPAPER_DAY_AUTO_UPDATE = "pref_set_wallpaper_day_auto_update";
@@ -73,7 +75,9 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
         }
 
         CheckBoxPreference mOnlyWifiPreference;
+        ListPreference mCountryListPreference;
         ListPreference mResolutionListPreference;
+        ListPreference mSaveResolutionListPreference;
         ListPreference mModeTypeListPreference;
         TimePreference mTimePreference;
         CheckBoxPreference mDayUpdatePreference;
@@ -149,8 +153,12 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                         }
                     });
 
+            mCountryListPreference = (ListPreference) findPreference(
+                    PREF_COUNTRY);
             mResolutionListPreference = (ListPreference) findPreference(
                     PREF_SET_WALLPAPER_RESOLUTION);
+            mSaveResolutionListPreference = (ListPreference) findPreference(
+                    PREF_SAVE_WALLPAPER_RESOLUTION);
             mModeTypeListPreference = (ListPreference) findPreference(
                     PREF_SET_WALLPAPER_AUTO_MODE);
             mDayUpdatePreference = (CheckBoxPreference) findPreference(
@@ -167,6 +175,8 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
 
             mResolutionListPreference.setSummary(BingWallpaperUtils.getResolution(getActivity()));
             mModeTypeListPreference.setSummary(BingWallpaperUtils.getAutoMode(getActivity()));
+            mSaveResolutionListPreference.setSummary(BingWallpaperUtils.getSaveResolution(getActivity()));
+            mCountryListPreference.setSummary(BingWallpaperUtils.getCountryName(getActivity()));
 
             LocalTime localTime = BingWallpaperUtils.getDayUpdateTime(getActivity());
 
@@ -191,6 +201,13 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                 case PREF_SET_WALLPAPER_RESOLUTION:
                     mResolutionListPreference.setSummary(mResolutionListPreference.getEntry());
                     mPreferences.put(PREF_SET_WALLPAPER_RESOLUTION, mResolutionListPreference.getValue());
+                    break;
+                case PREF_SAVE_WALLPAPER_RESOLUTION:
+                    mSaveResolutionListPreference.setSummary(mSaveResolutionListPreference.getEntry());
+                    break;
+                case PREF_COUNTRY:
+                    mCountryListPreference.setSummary(mCountryListPreference.getEntry());
+                    mPreferences.put(PREF_COUNTRY, mCountryListPreference.getValue());
                     break;
                 case PREF_SET_WALLPAPER_AUTO_MODE:
                     mModeTypeListPreference.setSummary(mModeTypeListPreference.getEntry());

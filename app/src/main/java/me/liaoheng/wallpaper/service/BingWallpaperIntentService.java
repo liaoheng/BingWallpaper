@@ -135,21 +135,24 @@ public class BingWallpaperIntentService extends IntentService {
 
         sendSetWallpaperBroadcast(BingWallpaperState.BEGIN);
 
-        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().i(TAG, "bing url : %s", BingWallpaperUtils.getUrl());
-        }
         Observable<String> bingWallpaper;
         if (TextUtils.isEmpty(setWallpaperUrl)) {
-            bingWallpaper = BingWallpaperNetworkClient.getBingWallpaperSingle().flatMap(
-                    new Func1<BingWallpaperImage, Observable<String>>() {
-                        @Override
-                        public Observable<String> call(BingWallpaperImage bingWallpaperImage) {
-                            return Observable.just(BingWallpaperUtils.getResolutionImageUrl(getApplicationContext(),
-                                    bingWallpaperImage));
-                        }
-                    });
+            setWallpaperUrl = BingWallpaperUtils.getUrl(getApplicationContext());
+            bingWallpaper = BingWallpaperNetworkClient.getBingWallpaperSingle(setWallpaperUrl, getApplicationContext())
+                    .flatMap(
+                            new Func1<BingWallpaperImage, Observable<String>>() {
+                                @Override
+                                public Observable<String> call(BingWallpaperImage bingWallpaperImage) {
+                                    return Observable.just(
+                                            BingWallpaperUtils.getResolutionImageUrl(getApplicationContext(),
+                                                    bingWallpaperImage));
+                                }
+                            });
         } else {
             bingWallpaper = Observable.just(setWallpaperUrl).subscribeOn(Schedulers.io());
+        }
+        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+            LogDebugFileUtils.get().i(TAG, "bing url : %s", setWallpaperUrl);
         }
         bingWallpaper.compose(applyDownload(setWallpaperType))
                 .observeOn(AndroidSchedulers.mainThread())

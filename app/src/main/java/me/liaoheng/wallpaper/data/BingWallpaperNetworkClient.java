@@ -1,5 +1,7 @@
 package me.liaoheng.wallpaper.data;
 
+import android.content.Context;
+
 import com.github.liaoheng.common.util.SystemDataException;
 import com.github.liaoheng.common.util.SystemRuntimeException;
 
@@ -19,26 +21,21 @@ import rx.schedulers.Schedulers;
  */
 public class BingWallpaperNetworkClient {
 
-    public static Observable<BingWallpaperImage> getBingWallpaper() {
-        String url = BingWallpaperUtils.getUrl();
-        return getBingWallpaper(url).map(new Func1<BingWallpaper, BingWallpaperImage>() {
+    public static Observable<BingWallpaperImage> getBingWallpaper(Context context) {
+        return getBingWallpaper(context, 0, 1).map(new Func1<List<BingWallpaperImage>, BingWallpaperImage>() {
             @Override
-            public BingWallpaperImage call(BingWallpaper bingWallpaper) {
-                if (bingWallpaper == null || bingWallpaper.getImages() == null
-                        || bingWallpaper.getImages().isEmpty()) {
-                    throw new SystemRuntimeException(new SystemDataException("bing wallpaper is not data"));
-                }
-                return bingWallpaper.getImages().get(0);
+            public BingWallpaperImage call(List<BingWallpaperImage> bingWallpaperImages) {
+                return bingWallpaperImages.get(0);
             }
         });
     }
 
-    public static Observable<List<BingWallpaperImage>> getBingWallpaper(int index, int count) {
-        String url = BingWallpaperUtils.getUrl(index, count);
+    public static Observable<List<BingWallpaperImage>> getBingWallpaper(Context context, int index, int count) {
+        String url = BingWallpaperUtils.getUrl(context, index, count);
         return getBingWallpaper(url).map(new Func1<BingWallpaper, List<BingWallpaperImage>>() {
             @Override
             public List<BingWallpaperImage> call(BingWallpaper bingWallpaper) {
-                if (bingWallpaper == null || bingWallpaper.getImages() == null) {
+                if (bingWallpaper == null || bingWallpaper.getImages() == null || bingWallpaper.getImages().isEmpty()) {
                     throw new SystemRuntimeException(new SystemDataException("bing wallpaper is not data"));
                 }
                 return bingWallpaper.getImages();
@@ -51,8 +48,7 @@ public class BingWallpaperNetworkClient {
                 .getBingWallpaper(url).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<BingWallpaperImage> getBingWallpaperSingle() {
-        String url = BingWallpaperUtils.getUrl();
+    public static Observable<BingWallpaperImage> getBingWallpaperSingle(String url, Context context) {
         return NetUtils.get().getBingWallpaperSingleNetworkService()
                 .getBingWallpaper(url).subscribeOn(Schedulers.io())
                 .map(new Func1<BingWallpaper, BingWallpaperImage>() {
