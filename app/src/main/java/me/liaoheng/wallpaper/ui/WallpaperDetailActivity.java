@@ -5,11 +5,11 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,12 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.target.ImageViewTarget;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.DisplayUtils;
@@ -33,6 +33,7 @@ import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 
 import java.io.File;
+import java.net.SocketTimeoutException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -62,7 +63,9 @@ public class WallpaperDetailActivity extends BaseActivity {
     @BindView(R.id.bing_wallpaper_detail_bottom_text)
     TextView mBottomTextView;
     @BindView(R.id.bing_wallpaper_detail_loading)
-    ContentLoadingProgressBar mProgressBar;
+    ProgressBar mProgressBar;
+    @BindView(R.id.bing_wallpaper_detail_error)
+    TextView mErrorTextView;
 
     private BingWallpaperImage mWallpaperImage;
     private ProgressDialog mDownLoadProgressDialog;
@@ -119,22 +122,31 @@ public class WallpaperDetailActivity extends BaseActivity {
                 .centerCrop()
                 .dontAnimate()
                 .thumbnail(0.1f)
-                .listener(new RequestListener<String, GlideDrawable>() {
+                .into(new ImageViewTarget<GlideDrawable>(mImageView) {
                     @Override
-                    public boolean onException(Exception e, String model, Target<GlideDrawable> target,
-                            boolean isFirstResource) {
-                        mProgressBar.hide();
-                        return false;
+                    public void onLoadStarted(Drawable placeholder) {
+                        UIUtils.viewVisible(mProgressBar);
+                        UIUtils.viewGone(mErrorTextView);
                     }
 
                     @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target,
-                            boolean isFromMemoryCache, boolean isFirstResource) {
-                        mProgressBar.hide();
-                        return false;
+                    public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                        UIUtils.viewGone(mProgressBar);
+                        String error = getString(R.string.network_request_error);
+                        if (e instanceof SocketTimeoutException) {
+                            error = getString(R.string.connection_timed_out);
+                        }
+                        UIUtils.viewVisible(mErrorTextView);
+                        mErrorTextView.setText(error);
                     }
-                })
-                .into(mImageView);
+
+                    @Override
+                    protected void setResource(GlideDrawable resource) {
+                        mImageView.setImageDrawable(resource);
+                        UIUtils.viewGone(mProgressBar);
+                        UIUtils.viewGone(mErrorTextView);
+                    }
+                });
         mSetWallpaperProgressDialog = UIUtils.createProgressDialog(this, getString(R.string.set_wallpaper_running));
         mSetWallpaperProgressDialog.setCancelable(false);
         mDownLoadProgressDialog = UIUtils.createProgressDialog(this, getString(R.string.download));

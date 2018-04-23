@@ -297,7 +297,12 @@ public class MainActivity extends BaseActivity
         String url = BingWallpaperUtils.getImageUrl(getApplicationContext(), bingWallpaperImage);
 
         Glide.with(getActivity()).load(url)
-                .centerCrop().crossFade().into(new ImageViewTarget<GlideDrawable>(wallpaperView) {
+                .centerCrop().crossFade().thumbnail(0.3f).into(new ImageViewTarget<GlideDrawable>(wallpaperView) {
+            @Override
+            public void onLoadStarted(Drawable placeholder) {
+                showSwipeRefreshLayout();
+            }
+
             @Override
             public void onLoadFailed(Exception e, Drawable errorDrawable) {
                 setBingWallpaperError(e);
