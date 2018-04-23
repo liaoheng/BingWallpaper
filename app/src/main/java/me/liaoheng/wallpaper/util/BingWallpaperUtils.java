@@ -44,7 +44,7 @@ public class BingWallpaperUtils {
     public static String getImageUrl(Context context, BingWallpaperImage image) {
         String[] names = context.getResources()
                 .getStringArray(R.array.pref_set_wallpaper_resolution_name);
-        return getImageUrl(names[0], image);
+        return getImageUrl(names[4], image);
     }
 
     public static String getImageUrl(String resolution, BingWallpaperImage image) {

@@ -43,6 +43,7 @@ import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.service.WallpaperBroadcastReceiver;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.ExceptionHandle;
 import me.liaoheng.wallpaper.util.NetUtils;
 import rx.Subscription;
 
@@ -138,6 +139,7 @@ public class WallpaperDetailActivity extends BaseActivity {
                         }
                         UIUtils.viewVisible(mErrorTextView);
                         mErrorTextView.setText(error);
+                        ExceptionHandle.collectException(TAG, e);
                     }
 
                     @Override
@@ -278,6 +280,7 @@ public class WallpaperDetailActivity extends BaseActivity {
         } else if (type == 2) {
             message = getString(R.string.menu_set_wallpaper_mode_lock);
         }
+
         final String url = BingWallpaperUtils.getResolutionImageUrl(this, mWallpaperImage);
         UIUtils.showYNAlertDialog(this, message + "?",
                 new Callback4.EmptyCallback<DialogInterface>() {

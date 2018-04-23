@@ -28,12 +28,12 @@
     <string name="pref_set_wallpaper_auto_mode_both">Both</string>
     <string name="pref_set_wallpaper_auto_mode_home">Home screen</string>
     <string name="pref_set_wallpaper_auto_mode_lock">Lock screen</string>
-    <string name="pref_choose_auto_set_resolution">Choose auto set wallpaper resolution</string>
     <string name="pref_other">Other</string>
+    <string name="pref_choose_set_wallpaper_resolution">Choose set wallpaper resolution</string>
+    <string name="pref_choose_save_resolution">Choose save wallpaper resolution</string>
     <string name="pref_country">Choose Server regions</string>
     <string name="pref_country_auto">Auto</string>
     <string name="pref_country_china">PRC</string>
-    <string name="pref_choose_save_resolution">Choose save wallpaper resolution</string>
     <string name="pref_clear_cache">Clear cache</string>
     <string name="pref_clear_cache_success">Clear cache success</string>
     <string name="pref_log_file">Enable action Log</string>

@@ -163,6 +163,9 @@ public class LogDebugFileUtils {
 
     private synchronized void writeLog(String severityLevel, String tag, Throwable throwable,
                                        String logEntry) {
+        if (mFileOutputStream==null) {
+            return;
+        }
         String currentDateTime = DateTime.now().toString("yyyy-MM-dd HH:mm:ss.SSS");
         String stencil = currentDateTime + "   |" + severityLevel + "|   " + tag + " : " + logEntry;
         try {

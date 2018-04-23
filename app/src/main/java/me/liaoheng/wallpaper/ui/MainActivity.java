@@ -28,7 +28,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.ImageViewTarget;
-import com.crashlytics.android.Crashlytics;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.liaoheng.common.util.BitmapUtils;
@@ -42,7 +41,6 @@ import java.net.SocketTimeoutException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
@@ -50,6 +48,7 @@ import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.service.WallpaperBroadcastReceiver;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.ExceptionHandle;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.TasksUtils;
 import rx.android.schedulers.AndroidSchedulers;
@@ -189,9 +188,7 @@ public class MainActivity extends BaseActivity
             L.Log.e(TAG, error);
         } else {
             L.Log.e(TAG, throwable);
-            if (!BuildConfig.DEBUG) {
-                Crashlytics.logException(throwable);
-            }
+            ExceptionHandle.collectException(TAG, throwable);
         }
         if (BingWallpaperUtils.isEnableLog(getApplicationContext())) {
             LogDebugFileUtils.get().e(TAG, throwable, error);
@@ -206,7 +203,11 @@ public class MainActivity extends BaseActivity
             UIUtils.showToast(this, getString(R.string.set_wallpaper_running));
             return;
         }
-        BingWallpaperUtils.setWallpaper(this, type, new Callback4.EmptyCallback<Boolean>() {
+        if (mCurBingWallpaperImage == null) {
+            return;
+        }
+        String url = BingWallpaperUtils.getResolutionImageUrl(this, mCurBingWallpaperImage);
+        BingWallpaperUtils.setWallpaper(this, url, type, new Callback4.EmptyCallback<Boolean>() {
             @Override
             public void onYes(Boolean aBoolean) {
                 showProgressDialog();
@@ -297,7 +298,7 @@ public class MainActivity extends BaseActivity
         String url = BingWallpaperUtils.getImageUrl(getApplicationContext(), bingWallpaperImage);
 
         Glide.with(getActivity()).load(url)
-                .centerCrop().crossFade().thumbnail(0.3f).into(new ImageViewTarget<GlideDrawable>(wallpaperView) {
+                .centerCrop().dontAnimate().thumbnail(0.1f).into(new ImageViewTarget<GlideDrawable>(wallpaperView) {
             @Override
             public void onLoadStarted(Drawable placeholder) {
                 showSwipeRefreshLayout();
