@@ -10,7 +10,7 @@ def support = '25.3.1'
 def retrofit = '2.3.0'
 ext.deps = [
         //test
-        robolectric                 : 'org.robolectric:robolectric:3.6.1',
+        robolectric                 : 'org.robolectric:robolectric:3.8',
         junit                       : 'junit:junit:4.12',
         //dev
         supportv4                   : "com.android.support:support-v4:$support",
