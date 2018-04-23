@@ -2,7 +2,7 @@
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
     <shortcut
             android:enabled="true"
-            android:icon="@drawable/ic_smartphone_black_24dp"
+            android:icon="@drawable/ic_shortcut_both"
             android:shortcutId="both"
             android:shortcutLongLabel="@string/menu_set_wallpaper_mode_both"
             android:shortcutShortLabel="@string/pref_set_wallpaper_auto_mode_both">
@@ -18,7 +18,7 @@
 
     <shortcut
             android:enabled="true"
-            android:icon="@drawable/ic_home_black_24dp"
+            android:icon="@drawable/ic_shortcut_home"
             android:shortcutId="home"
             android:shortcutLongLabel="@string/menu_set_wallpaper_mode_home"
             android:shortcutShortLabel="@string/pref_set_wallpaper_auto_mode_home">
@@ -34,7 +34,7 @@
 
     <shortcut
             android:enabled="true"
-            android:icon="@drawable/ic_lock_black_24dp"
+            android:icon="@drawable/ic_shortcut_lock"
             android:shortcutId="lock"
             android:shortcutLongLabel="@string/menu_set_wallpaper_mode_lock"
             android:shortcutShortLabel="@string/pref_set_wallpaper_auto_mode_lock">

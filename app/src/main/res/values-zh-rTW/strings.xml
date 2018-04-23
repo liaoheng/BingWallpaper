@@ -29,7 +29,7 @@
     <string name="pref_set_wallpaper_auto_mode_lock">熒幕鎖定</string>
     <string name="pref_choose_auto_set_resolution">選擇自動設定桌布分辨率</string>
     <string name="pref_other">其它</string>
-    <string name="pref_country">選擇API地區</string>
+    <string name="pref_country">選擇服務器地區</string>
     <string name="pref_country_auto">自動</string>
     <string name="pref_country_china">中國大陸</string>
     <string name="pref_choose_save_resolution">選擇儲存时桌布分辨率</string>

@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +20,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.DisplayUtils;
@@ -57,6 +61,8 @@ public class WallpaperDetailActivity extends BaseActivity {
     View mBottomView;
     @BindView(R.id.bing_wallpaper_detail_bottom_text)
     TextView mBottomTextView;
+    @BindView(R.id.bing_wallpaper_detail_loading)
+    ContentLoadingProgressBar mProgressBar;
 
     private BingWallpaperImage mWallpaperImage;
     private ProgressDialog mDownLoadProgressDialog;
@@ -113,6 +119,21 @@ public class WallpaperDetailActivity extends BaseActivity {
                 .centerCrop()
                 .dontAnimate()
                 .thumbnail(0.1f)
+                .listener(new RequestListener<String, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target,
+                            boolean isFirstResource) {
+                        mProgressBar.hide();
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target,
+                            boolean isFromMemoryCache, boolean isFirstResource) {
+                        mProgressBar.hide();
+                        return false;
+                    }
+                })
                 .into(mImageView);
         mSetWallpaperProgressDialog = UIUtils.createProgressDialog(this, getString(R.string.set_wallpaper_running));
         mSetWallpaperProgressDialog.setCancelable(false);

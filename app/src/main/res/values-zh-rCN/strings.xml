@@ -29,7 +29,7 @@
     <string name="pref_set_wallpaper_auto_mode_lock">锁定屏幕</string>
     <string name="pref_choose_auto_set_resolution">选择自动设置壁纸分辨率</string>
     <string name="pref_other">其它</string>
-    <string name="pref_country">选择API区域</string>
+    <string name="pref_country">选择服务器区域</string>
     <string name="pref_country_auto">自动</string>
     <string name="pref_country_china">中国</string>
     <string name="pref_choose_save_resolution">选择保存时壁纸分辨率</string>

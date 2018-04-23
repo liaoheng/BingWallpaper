@@ -163,8 +163,10 @@ public class WallpaperHistoryListActivity extends BaseActivity {
                     ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
                 }
             });
-            String imageUrl = BingWallpaperUtils.getImageUrl(getContext(), item);
-            Glide.with(getContext()).load(imageUrl).centerCrop().crossFade().into(mImageView);
+            String[] names = getResources()
+                    .getStringArray(R.array.pref_set_wallpaper_resolution_name);
+            String imageUrl = BingWallpaperUtils.getImageUrl(names[3], item);
+            Glide.with(getContext()).load(imageUrl).thumbnail(0.3f).centerCrop().crossFade().into(mImageView);//TODO optimization
         }
     }
 

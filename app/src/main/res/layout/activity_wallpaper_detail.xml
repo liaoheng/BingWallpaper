@@ -21,13 +21,13 @@
             android:background="@color/color_3000">
 
         <TextView
-                tools:text="message"
                 android:id="@+id/bing_wallpaper_detail_bottom_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"
                 android:layout_margin="10dp"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                tools:text="message" />
 
     </FrameLayout>
 
@@ -39,4 +39,12 @@
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <android.support.v4.widget.ContentLoadingProgressBar
+            android:id="@+id/bing_wallpaper_detail_loading"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
 </android.support.design.widget.CoordinatorLayout>
