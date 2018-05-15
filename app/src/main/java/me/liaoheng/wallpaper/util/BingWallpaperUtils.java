@@ -15,7 +15,9 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.ViewConfiguration;
 
+import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback4;
+import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.UIUtils;
 
@@ -215,17 +217,7 @@ public class BingWallpaperUtils {
      * @return boolean 不管wifi，还是mobile net，只有当前在连接状态（可有效传输数据）才返回true,反之false。
      */
     public static boolean isConnectedOrConnecting(Context context) {
-        if (NetworkUtils.isConnected(context)) {
-            NetworkInfo[] nets = NetworkUtils.getConnManager(context).getAllNetworkInfo();
-            if (nets != null) {
-                for (NetworkInfo net : nets) {
-                    if (net.isConnectedOrConnecting()) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        return NetworkUtils.isConnectedOrConnecting(context);
     }
 
     /**
@@ -234,12 +226,7 @@ public class BingWallpaperUtils {
      * @see <a href="https://stackoverflow.com/questions/20264268/how-do-i-get-the-height-and-width-of-the-android-navigation-bar-programmatically">stackoverflow</a>
      */
     public static int getNavigationBarHeight(Context context) {
-        Resources resources = context.getResources();
-        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            return resources.getDimensionPixelSize(resourceId);
-        }
-        return 0;
+        return DisplayUtils.getNavigationBarHeight(context);
     }
 
     /**
@@ -249,32 +236,7 @@ public class BingWallpaperUtils {
      * @see <a href="https://stackoverflow.com/questions/16092431/check-for-navigation-bar">stackoverflow</a>
      */
     public static boolean isNavigationBar(Context context) {
-        if (isEmulator()) {
-            return true;
-        }
-        Resources resources = context.getResources();
-        int id = resources.getIdentifier("config_showNavigationBar", "bool", "android");
-        if (id > 0) {
-            return resources.getBoolean(id);
-        } else {    // Check for keys
-            boolean hasMenuKey = ViewConfiguration.get(context).hasPermanentMenuKey();
-            boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
-            return !hasMenuKey && !hasBackKey;
-        }
-    }
-
-    /**
-     * @see <a href="https://stackoverflow.com/questions/2799097/how-can-i-detect-when-an-android-application-is-running-in-the-emulator">stackoverflow</a>
-     */
-    public static boolean isEmulator() {
-        return Build.FINGERPRINT.startsWith("generic")
-                || Build.FINGERPRINT.startsWith("unknown")
-                || Build.MODEL.contains("google_sdk")
-                || Build.MODEL.contains("Emulator")
-                || Build.MODEL.contains("Android SDK built for x86")
-                || Build.MANUFACTURER.contains("Genymotion")
-                || (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
-                || "google_sdk".equals(Build.PRODUCT);
+        return DisplayUtils.isNavigationBar(context);
     }
 
     /**

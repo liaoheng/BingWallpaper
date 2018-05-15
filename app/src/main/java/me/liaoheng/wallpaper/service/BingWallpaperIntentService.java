@@ -12,11 +12,9 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.AndroidRuntimeException;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
-import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
 
@@ -29,6 +27,7 @@ import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
+import me.liaoheng.wallpaper.util.ExceptionHandle;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.TasksUtils;
 import rx.Observable;
@@ -185,6 +184,7 @@ public class BingWallpaperIntentService extends IntentService {
                         }
                         sendSetWallpaperBroadcast(BingWallpaperState.FAIL);
                         clearNotification();
+                        ExceptionHandle.collectException(TAG,throwable);
                     }
                 });
 
@@ -241,11 +241,6 @@ public class BingWallpaperIntentService extends IntentService {
     }
 
     private void sendSetWallpaperBroadcast(BingWallpaperState state) {
-        if (BingWallpaperState.FAIL.equals(state)) {
-            if (!AppUtils.isForeground(getApplicationContext())) {
-                Toast.makeText(getApplicationContext(), R.string.set_wallpaper_failure, Toast.LENGTH_LONG).show();
-            }
-        }
         Intent intent = new Intent(ACTION_GET_WALLPAPER_STATE);
         intent.putExtra(EXTRA_GET_WALLPAPER_STATE, state.getState());
         sendBroadcast(intent);

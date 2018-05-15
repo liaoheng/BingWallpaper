@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.flyco.systembar.SystemBarHelper;
 import com.github.liaoheng.common.adapter.base.BaseRecyclerAdapter;
 import com.github.liaoheng.common.adapter.core.HandleView;
@@ -20,11 +20,9 @@ import com.github.liaoheng.common.adapter.core.RecyclerViewHelper;
 import com.github.liaoheng.common.adapter.holder.BaseRecyclerViewHolder;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback2;
-import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.Utils;
 import com.github.liaoheng.common.util.ValidateUtils;
 
-import java.net.SocketTimeoutException;
 import java.util.List;
 
 import butterknife.BindView;
@@ -33,6 +31,8 @@ import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.ExceptionHandle;
+import me.liaoheng.wallpaper.util.GlideApp;
 import rx.Observable;
 
 /**
@@ -124,16 +124,8 @@ public class WallpaperHistoryListActivity extends BaseActivity {
     }
 
     private void setBingWallpaperError(Throwable throwable) {
-        String error = getString(R.string.network_request_error);
-        if (throwable instanceof SocketTimeoutException) {
-            error = getString(R.string.connection_timed_out);
-        }
+        String error = ExceptionHandle.loadFailed(this, TAG, throwable);
         mErrorTextView.setText(error);
-        if (throwable == null) {
-            L.Log.e(TAG, error);
-        } else {
-            L.Log.e(TAG, throwable);
-        }
     }
 
     public class WallpaperViewHolder extends BaseRecyclerViewHolder<BingWallpaperImage> {
@@ -166,7 +158,9 @@ public class WallpaperHistoryListActivity extends BaseActivity {
             String[] names = getResources()
                     .getStringArray(R.array.pref_set_wallpaper_resolution_name);
             String imageUrl = BingWallpaperUtils.getImageUrl(names[3], item);
-            Glide.with(getContext()).load(imageUrl).centerCrop().crossFade().into(mImageView);//TODO optimization
+            GlideApp.with(getContext()).load(imageUrl).centerCrop().transition(
+                    new DrawableTransitionOptions()
+                            .crossFade()).into(mImageView);//TODO optimization
         }
     }
 

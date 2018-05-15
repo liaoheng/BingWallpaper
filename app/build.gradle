@@ -57,7 +57,6 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation deps.robolectric
     testImplementation deps.junit
     //android system
@@ -66,10 +65,10 @@ dependencies {
     implementation deps.recyclerviewv7
     implementation deps.cardviewv7
     implementation deps.design
-    implementation "com.android.support:palette-v7:25.3.1"
-    implementation "com.android.support:customtabs:25.3.1"
+    implementation deps.palette_v7
+    implementation deps.customtabs
 
-    implementation('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
         transitive = true
     }
     implementation 'com.google.firebase:firebase-core:11.8.0'
@@ -80,16 +79,17 @@ dependencies {
 
     implementation 'com.google.code.gson:gson:2.8.0'
     implementation deps.glide
+    annotationProcessor deps.glide_compiler
     implementation deps.glide_okhttp3_integration
     implementation deps.okhttp
     implementation deps.retrofit
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
     implementation deps.retrofit_adapter_rxjava
-    implementation deps.logger
     implementation deps.rxandroid
     implementation deps.rxjava
     implementation deps.rxlifecycle
     implementation deps.rxlifecycle_android
+    implementation deps.joda_time_android
 
     //https://github.com/ferrannp/material-preferences
     implementation 'com.fnp:material-preferences:0.1.4'
@@ -112,12 +112,9 @@ dependencies {
     //https://github.com/chrisbanes/PhotoView
     implementation 'com.github.chrisbanes:PhotoView:2.1.3'
 
-    implementation('com.github.apl-devs:appintro:v4.2.3'){
-        exclude module:'appcompat-v7'
-        exclude module:'support-annotations'
-    }
+    implementation 'com.github.apl-devs:appintro:v4.2.3'
 
-    implementation 'com.github.liaoheng:common-core:0.0.5-SNAPSHOT'
-    implementation 'com.github.liaoheng:common-adapter:0.0.5-SNAPSHOT'
+    implementation 'com.github.liaoheng:common-core:0.0.6-SNAPSHOT'
+    implementation 'com.github.liaoheng:common-adapter:0.0.6-SNAPSHOT'
 }
 apply plugin: 'com.google.gms.google-services'

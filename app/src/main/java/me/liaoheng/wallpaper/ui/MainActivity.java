@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
@@ -25,19 +26,18 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.ImageViewTarget;
+import com.bumptech.glide.request.target.Target;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.DisplayUtils;
-import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.ValidateUtils;
-
-import java.net.SocketTimeoutException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,7 +49,7 @@ import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.service.WallpaperBroadcastReceiver;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.ExceptionHandle;
-import me.liaoheng.wallpaper.util.LogDebugFileUtils;
+import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.TasksUtils;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -179,20 +179,8 @@ public class MainActivity extends BaseActivity
     @SuppressLint("SetTextI18n")
     private void setBingWallpaperError(Throwable throwable) {
         dismissSwipeRefreshLayout();
-        String error = getString(R.string.network_request_error);
-        if (throwable instanceof SocketTimeoutException) {
-            error = getString(R.string.connection_timed_out);
-        }
+        String error = ExceptionHandle.loadFailed(this, TAG, throwable);
         mErrorTextView.setText(getString(R.string.pull_refresh) + error);
-        if (throwable == null) {
-            L.Log.e(TAG, error);
-        } else {
-            L.Log.e(TAG, throwable);
-            ExceptionHandle.collectException(TAG, throwable);
-        }
-        if (BingWallpaperUtils.isEnableLog(getApplicationContext())) {
-            LogDebugFileUtils.get().e(TAG, throwable, error);
-        }
     }
 
     /**
@@ -297,20 +285,31 @@ public class MainActivity extends BaseActivity
 
         String url = BingWallpaperUtils.getImageUrl(getApplicationContext(), bingWallpaperImage);
 
-        Glide.with(getActivity()).load(url)
-                .centerCrop().dontAnimate().thumbnail(0.1f).into(new ImageViewTarget<GlideDrawable>(wallpaperView) {
+        GlideApp.with(getActivity()).load(url)
+                .centerCrop().dontAnimate().thumbnail(0.1f).listener(new RequestListener<Drawable>() {
+
+            @Override
+            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target,
+                    boolean isFirstResource) {
+                setBingWallpaperError(e);
+                return false;
+            }
+
+            @Override
+            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target,
+                    DataSource dataSource,
+                    boolean isFirstResource) {
+                return false;
+            }
+        }).into(new ImageViewTarget<Drawable>(wallpaperView) {
             @Override
             public void onLoadStarted(Drawable placeholder) {
+                super.onLoadStarted(placeholder);
                 showSwipeRefreshLayout();
             }
 
             @Override
-            public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                setBingWallpaperError(e);
-            }
-
-            @Override
-            protected void setResource(GlideDrawable resource) {
+            protected void setResource(Drawable resource) {
                 wallpaperView.setImageDrawable(resource);
 
                 Palette.from(BitmapUtils.drawableToBitmap(resource))

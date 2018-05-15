@@ -82,9 +82,6 @@
                 android:exported="false" />
 
         <meta-data
-                android:name="me.liaoheng.wallpaper.util.MGlideModule"
-                android:value="GlideModule" />
-        <meta-data
                 android:name="firebase_crashlytics_collection_enabled"
                 android:value="false" />
     </application>

@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -20,9 +21,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.ImageViewTarget;
+import com.bumptech.glide.request.target.Target;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.DisplayUtils;
@@ -33,7 +36,6 @@ import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 
 import java.io.File;
-import java.net.SocketTimeoutException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,6 +46,7 @@ import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.service.WallpaperBroadcastReceiver;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.ExceptionHandle;
+import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.NetUtils;
 import rx.Subscription;
 
@@ -118,32 +121,39 @@ public class WallpaperDetailActivity extends BaseActivity {
             }
         }
 
-        Glide.with(this)
+        GlideApp.with(this)
                 .load(BingWallpaperUtils.getImageUrl(this, mWallpaperImage))
                 .centerCrop()
                 .dontAnimate()
                 .thumbnail(0.1f)
-                .into(new ImageViewTarget<GlideDrawable>(mImageView) {
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target,
+                            boolean isFirstResource) {
+                        UIUtils.viewGone(mProgressBar);
+                        UIUtils.viewVisible(mErrorTextView);
+                        String error = ExceptionHandle.loadFailed(getApplicationContext(), TAG, e);
+                        mErrorTextView.setText(error);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target,
+                            DataSource dataSource,
+                            boolean isFirstResource) {
+                        return false;
+                    }
+                })
+                .into(new ImageViewTarget<Drawable>(mImageView) {
                     @Override
                     public void onLoadStarted(Drawable placeholder) {
+                        super.onLoadStarted(placeholder);
                         UIUtils.viewVisible(mProgressBar);
                         UIUtils.viewGone(mErrorTextView);
                     }
 
                     @Override
-                    public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                        UIUtils.viewGone(mProgressBar);
-                        String error = getString(R.string.network_request_error);
-                        if (e instanceof SocketTimeoutException) {
-                            error = getString(R.string.connection_timed_out);
-                        }
-                        UIUtils.viewVisible(mErrorTextView);
-                        mErrorTextView.setText(error);
-                        ExceptionHandle.collectException(TAG, e);
-                    }
-
-                    @Override
-                    protected void setResource(GlideDrawable resource) {
+                    protected void setResource(Drawable resource) {
                         mImageView.setImageDrawable(resource);
                         UIUtils.viewGone(mProgressBar);
                         UIUtils.viewGone(mErrorTextView);
