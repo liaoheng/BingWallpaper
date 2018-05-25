@@ -22,6 +22,11 @@ public interface Constants {
 
     String CHINA_URL = "https://cn.bing.com/HPImageArchive.aspx?format=js&idx=%s&n=%s";
     String GLOBAL_URL = "https://global.bing.com/HPImageArchive.aspx?format=js&idx=%s&n=%s";
+    class  WallpaperConfig{
+        public static String WALLPAPER_RESOLUTION="720x1280";
+        public static String MAIN_WALLPAPER_RESOLUTION="768x1280";
+    }
+
 
     /**
      * 0. both , 1. home , 2. lock

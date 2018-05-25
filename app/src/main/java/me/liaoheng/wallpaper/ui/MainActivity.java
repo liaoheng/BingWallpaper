@@ -1,6 +1,7 @@
 package me.liaoheng.wallpaper.ui;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -17,7 +18,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.graphics.Palette;
-import android.support.v7.widget.Toolbar;
 import android.util.AndroidRuntimeException;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,23 +31,28 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.ImageViewTarget;
 import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.Callback4;
-import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.ValidateUtils;
 
+import java.util.Locale;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
+import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.service.WallpaperBroadcastReceiver;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.ExceptionHandle;
 import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.TasksUtils;
@@ -69,6 +74,8 @@ public class MainActivity extends BaseActivity
     ImageView wallpaperView;
     @BindView(R.id.bing_wallpaper_error)
     TextView mErrorTextView;
+    @BindView(R.id.bing_wallpaper_coverstory_text)
+    TextView mCoverStoryTextView;
     @BindView(R.id.bing_wallpaper_bottom)
     View mBottomView;
 
@@ -86,6 +93,21 @@ public class MainActivity extends BaseActivity
     private BingWallpaperImage mCurBingWallpaperImage;
     private boolean isRun;
 
+    private BingWallpaperCoverStory mCoverStory;
+
+    @OnClick(R.id.bing_wallpaper_coverstory_text)
+    void openMap() {
+        if (mCoverStory == null) {
+            return;
+        }
+        String longitude = mCoverStory.getLongitude();//经度
+        String latitude = mCoverStory.getLatitude();//纬度
+        Uri uri = Uri.parse("geo:" + latitude + "," + longitude);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(uri);
+        startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,28 +121,18 @@ public class MainActivity extends BaseActivity
                         | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        Toolbar toolbar = UIUtils.findViewById(this, R.id.toolbar);
-        int statusBarHeight = DisplayUtils.getStatusBarHeight(this);
-        ViewGroup.LayoutParams lp = toolbar.getLayoutParams();
-        lp.height += statusBarHeight;
-        toolbar.setPadding(toolbar.getPaddingLeft(), toolbar.getPaddingTop() + statusBarHeight,
-                toolbar.getPaddingRight(), toolbar.getPaddingBottom());
-        setSupportActionBar(toolbar);
-        setTitle("");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        initStatusBarAddToolbar();
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_drawer_home);
 
-        if (BingWallpaperUtils.isNavigationBar(this)) {
-            int navigationBarHeight = BingWallpaperUtils.getNavigationBarHeight(this);
-            if (navigationBarHeight > 0) {
-                UIUtils.viewVisible(mBottomView);
-                ViewGroup.LayoutParams layoutParams = mBottomView.getLayoutParams();
-                layoutParams.height = navigationBarHeight;
-                mBottomView.setLayoutParams(layoutParams);
-            }
-            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) mSetWallpaperActionMenu.getLayoutParams();
-            layoutParams.bottomMargin = layoutParams.bottomMargin + navigationBarHeight;
-            mSetWallpaperActionMenu.setLayoutParams(layoutParams);
+        int navigationBarHeight = BingWallpaperUtils.getNavigationBarHeight(this);
+        if (navigationBarHeight > 0) {
+            ViewGroup.LayoutParams layoutParams = mBottomView.getLayoutParams();
+            layoutParams.height = navigationBarHeight;
+            mBottomView.setLayoutParams(layoutParams);
+
+            ViewGroup.MarginLayoutParams menuLayoutParams = (ViewGroup.MarginLayoutParams) mSetWallpaperActionMenu.getLayoutParams();
+            menuLayoutParams.bottomMargin = menuLayoutParams.bottomMargin + navigationBarHeight;
+            mSetWallpaperActionMenu.setLayoutParams(menuLayoutParams);
         }
 
         mNavigationView.setNavigationItemSelectedListener(this);
@@ -159,6 +171,34 @@ public class MainActivity extends BaseActivity
             return;
         }
         showSwipeRefreshLayout();
+        int auto = BingWallpaperUtils.getCountryValue(this);
+        if (auto == 0) {
+            String displayCountry = Locale.getDefault().getDisplayCountry();
+            if (Locale.CHINA.getDisplayCountry().equalsIgnoreCase(displayCountry)) {
+                auto = 1;
+            }
+        }
+
+        if (auto == 1) {
+            BingWallpaperNetworkClient.getCoverstory()
+                    .compose(this.<BingWallpaperCoverStory>bindToLifecycle())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            new Action1<BingWallpaperCoverStory>() {
+                                @Override
+                                public void call(BingWallpaperCoverStory bingWallpaperCoverStory) {
+                                    mCoverStory = bingWallpaperCoverStory;
+                                    mCoverStoryTextView.setText(
+                                            bingWallpaperCoverStory.getPara1() + bingWallpaperCoverStory.getPara2());
+                                }
+                            }, new Action1<Throwable>() {
+                                @Override
+                                public void call(Throwable throwable) {
+
+                                }
+                            });
+        }
+
         BingWallpaperNetworkClient.getBingWallpaper(this)
                 .compose(this.<BingWallpaperImage>bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -283,10 +323,10 @@ public class MainActivity extends BaseActivity
     private void setImage(BingWallpaperImage bingWallpaperImage) {
         setTitle(bingWallpaperImage.getCopyright());
 
-        String url = BingWallpaperUtils.getImageUrl(getApplicationContext(), bingWallpaperImage);
+        String url = BingWallpaperUtils.getImageUrl(Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION,
+                bingWallpaperImage);
 
-        GlideApp.with(getActivity()).load(url)
-                .centerCrop().dontAnimate().thumbnail(0.1f).listener(new RequestListener<Drawable>() {
+        GlideApp.with(getActivity()).load(url).dontAnimate().thumbnail(0.5f).listener(new RequestListener<Drawable>() {
 
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target,
@@ -309,13 +349,14 @@ public class MainActivity extends BaseActivity
             }
 
             @Override
-            protected void setResource(Drawable resource) {
+            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                super.onResourceReady(resource, transition);
                 wallpaperView.setImageDrawable(resource);
 
                 Palette.from(BitmapUtils.drawableToBitmap(resource))
                         .generate(new Palette.PaletteAsyncListener() {
                             @Override
-                            public void onGenerated(Palette palette) {
+                            public void onGenerated(@NonNull Palette palette) {
 
                                 int lightMutedSwatch = palette.getMutedColor(ContextCompat
                                         .getColor(getActivity(), R.color.colorPrimaryDark));
@@ -374,6 +415,10 @@ public class MainActivity extends BaseActivity
 
                 isRun = false;
                 dismissSwipeRefreshLayout();
+            }
+
+            @Override
+            protected void setResource(@Nullable Drawable resource) {
             }
         });
 

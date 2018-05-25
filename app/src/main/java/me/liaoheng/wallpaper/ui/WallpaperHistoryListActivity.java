@@ -2,17 +2,24 @@ package me.liaoheng.wallpaper.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.target.ImageViewTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.flyco.systembar.SystemBarHelper;
 import com.github.liaoheng.common.adapter.base.BaseRecyclerAdapter;
 import com.github.liaoheng.common.adapter.core.HandleView;
@@ -20,6 +27,7 @@ import com.github.liaoheng.common.adapter.core.RecyclerViewHelper;
 import com.github.liaoheng.common.adapter.holder.BaseRecyclerViewHolder;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback2;
+import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 import com.github.liaoheng.common.util.ValidateUtils;
 
@@ -31,6 +39,7 @@ import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.ExceptionHandle;
 import me.liaoheng.wallpaper.util.GlideApp;
 import rx.Observable;
@@ -59,6 +68,8 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         SystemBarHelper
                 .tintStatusBar(this, ContextCompat.getColor(this, R.color.colorPrimaryDark), 0);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        initSlidr();
+
         mWallpaperAdapter = new WallpaperAdapter(this);
 
         mRecyclerViewHelper = new RecyclerViewHelper.Builder(this,
@@ -70,6 +81,15 @@ public class WallpaperHistoryListActivity extends BaseActivity {
                 })
                 .setMergedIntoLineSpanSizeLookup()
                 .setAdapter(mWallpaperAdapter).build();
+        mRecyclerViewHelper.getRecyclerView().setRecyclerListener(new RecyclerView.RecyclerListener() {
+            @Override
+            public void onViewRecycled(RecyclerView.ViewHolder holder) {
+                if (holder instanceof WallpaperViewHolder) {
+                    WallpaperViewHolder vh = (WallpaperViewHolder) holder;
+                    GlideApp.with(getActivity()).clear(vh.mImageView);
+                }
+            }
+        });
         getBingWallpaperList(new Callback.EmptyCallback() {
             @Override
             public void onFinish() {
@@ -134,6 +154,8 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         ImageView mImageView;
         @BindView(R.id.bing_wallpaper_list_item_image_date)
         TextView mDate;
+        @BindView(R.id.bing_wallpaper_list_item_loading)
+        ProgressBar mProgressBar;
 
         public WallpaperViewHolder(View itemView) {
             super(itemView);
@@ -155,12 +177,61 @@ public class WallpaperHistoryListActivity extends BaseActivity {
                     ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
                 }
             });
-            String[] names = getResources()
-                    .getStringArray(R.array.pref_set_wallpaper_resolution_name);
-            String imageUrl = BingWallpaperUtils.getImageUrl(names[3], item);
-            GlideApp.with(getContext()).load(imageUrl).centerCrop().transition(
-                    new DrawableTransitionOptions()
-                            .crossFade()).into(mImageView);//TODO optimization
+
+            final String imageUrl = BingWallpaperUtils.getImageUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
+                    item);
+            GlideApp.with(getContext()).asDrawable().thumbnail(0.5f)
+                    .error(R.drawable.lcn_empty_photo)
+                    .transition(
+                            new DrawableTransitionOptions()
+                                    .crossFade()).load(imageUrl)
+                    .into(new ProgressImageViewTarget(mImageView, mProgressBar));
+        }
+    }
+
+    public class ProgressImageViewTarget extends ImageViewTarget<Drawable> {
+        private ProgressBar mProgressBar;
+        private ImageView mImageView;
+
+        public ProgressImageViewTarget(ImageView view, ProgressBar mProgressBar) {
+            super(view);
+            this.mProgressBar = mProgressBar;
+            this.mImageView = view;
+        }
+
+        @Override
+        public void onLoadStarted(@Nullable Drawable placeholder) {
+            super.onLoadStarted(placeholder);
+            UIUtils.viewVisible(mProgressBar);
+        }
+
+        @Override
+        public void onLoadFailed(@Nullable Drawable errorDrawable) {
+            super.onLoadFailed(errorDrawable);
+            UIUtils.viewGone(mProgressBar);
+        }
+
+        @Override
+        public void onLoadCleared(@Nullable Drawable placeholder) {
+            super.onLoadCleared(placeholder);
+            UIUtils.viewGone(mProgressBar);
+        }
+
+        @Override
+        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+            super.onResourceReady(resource, transition);
+            UIUtils.viewGone(mProgressBar);
+            mImageView.setImageDrawable(resource);
+        }
+
+        @Override
+        protected void setResource(@Nullable Drawable resource) {
+        }
+
+        @Override
+        public void onDestroy() {
+            UIUtils.viewGone(mProgressBar);
+            super.onDestroy();
         }
     }
 
@@ -170,6 +241,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
             super(context);
         }
 
+        @NonNull
         @Override
         public WallpaperViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View itemView = inflate(R.layout.view_wallpaper_list_item, parent);

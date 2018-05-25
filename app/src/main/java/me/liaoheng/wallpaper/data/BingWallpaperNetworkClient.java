@@ -8,6 +8,7 @@ import com.github.liaoheng.common.util.SystemRuntimeException;
 import java.util.List;
 
 import me.liaoheng.wallpaper.model.BingWallpaper;
+import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.NetUtils;
@@ -61,6 +62,10 @@ public class BingWallpaperNetworkClient {
                         return bingWallpaper.getImages().get(0);
                     }
                 });
+    }
+
+    public static Observable<BingWallpaperCoverStory> getCoverstory(){
+        return NetUtils.get().getBingWallpaperNetworkService().getCoverstory().subscribeOn(Schedulers.io());
     }
 
 }

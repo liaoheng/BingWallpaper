@@ -2,6 +2,7 @@ package me.liaoheng.wallpaper.util;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
@@ -18,6 +19,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
+import me.liaoheng.wallpaper.BuildConfig;
 import okhttp3.OkHttpClient;
 
 /**
@@ -35,6 +37,7 @@ public class MGlideModule extends AppGlideModule {
                     Constants.IMAGE_DISK_CACHE_SIZE));
         } catch (SystemException ignored) {
         }
+        builder.setLogLevel(BuildConfig.DEBUG ? Log.DEBUG : Log.INFO);
     }
 
     @Override

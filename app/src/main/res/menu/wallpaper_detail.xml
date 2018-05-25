@@ -7,6 +7,11 @@
             android:title="@string/menu_save_wallpaper"
             app:showAsAction="ifRoom" />
     <item
+            app:showAsAction="ifRoom"
+            android:id="@+id/menu_wallpaper_resolution"
+            android:icon="@drawable/ic_smartphone_white_24dp"
+            android:title="@string/menu_wallpaper_resolution" />
+    <item
             android:id="@+id/menu_wallpaper_both"
             android:icon="@drawable/ic_smartphone_white_24dp"
             android:title="@string/menu_set_wallpaper_mode_both" />

@@ -6,7 +6,8 @@
                                                  android:layout_height="match_parent"
                                                  android:background="@android:color/white">
 
-    <com.github.chrisbanes.photoview.PhotoView
+    <ImageView
+            android:scaleType="centerCrop"
             android:id="@+id/bing_wallpaper_detail_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

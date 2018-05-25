@@ -7,6 +7,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">
@@ -14,15 +16,17 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <!--Fullscreen-->
-    <style name="AppTheme.Fullscreen" parent="AppTheme.NoActionBar">
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowContentOverlay">@null</item>
+    <style name="AppTheme.Settings" parent="AppTheme">
+        <item name="windowNoTitle">false</item>
+        <item name="windowActionBar">true</item>
+        <item name="actionBarStyle">@style/AppTheme.actionBarStyle</item>
     </style>
 
-    <style name="AppTheme.Settings" parent="AppTheme">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <!-- To follow the guidelines http://www.google.com/design/spec/layout/structure.html#structure-toolbars -->
+    <style name="AppTheme.actionBarStyle" parent="Widget.AppCompat.ActionBar">
+        <item name="background">?attr/colorPrimary</item>
+        <!--<item name="contentInsetStart">72dp</item>-->
+        <!--<item name="contentInsetLeft">72dp</item>-->
     </style>
 
 </resources>

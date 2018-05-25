@@ -5,18 +5,23 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -26,9 +31,9 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.ImageViewTarget;
 import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
-import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.SystemException;
@@ -37,6 +42,7 @@ import com.github.liaoheng.common.util.Utils;
 
 import java.io.File;
 
+import butterknife.BindArray;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.liaoheng.wallpaper.R;
@@ -45,6 +51,7 @@ import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.service.WallpaperBroadcastReceiver;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.ExceptionHandle;
 import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.NetUtils;
@@ -71,6 +78,14 @@ public class WallpaperDetailActivity extends BaseActivity {
     @BindView(R.id.bing_wallpaper_detail_error)
     TextView mErrorTextView;
 
+    @BindArray(R.array.pref_set_wallpaper_resolution_name)
+    String[] mResolutions;
+
+    private String mSelectedResolution;
+
+    private AlertDialog mResolutionDialog;
+    private int mNavigationBarHeight;
+
     private BingWallpaperImage mWallpaperImage;
     private ProgressDialog mDownLoadProgressDialog;
     private ProgressDialog mSetWallpaperProgressDialog;
@@ -80,20 +95,11 @@ public class WallpaperDetailActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().addFlags(
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        normalScreen();
         setContentView(R.layout.activity_wallpaper_detail);
         ButterKnife.bind(this);
-        Toolbar toolbar = UIUtils.findViewById(this, R.id.toolbar);
-        int statusBarHeight = DisplayUtils.getStatusBarHeight(this);
-        ViewGroup.LayoutParams lp = toolbar.getLayoutParams();
-        lp.height += statusBarHeight;
-        toolbar.setPadding(toolbar.getPaddingLeft(), toolbar.getPaddingTop() + statusBarHeight,
-                toolbar.getPaddingRight(), toolbar.getPaddingBottom());
-        setSupportActionBar(toolbar);
-        setTitle("");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        initStatusBarAddToolbar();
+        initSlidr();
 
         mWallpaperBroadcastReceiver = new WallpaperBroadcastReceiver(new Callback4.EmptyCallback<BingWallpaperState>() {
             @Override
@@ -113,19 +119,122 @@ public class WallpaperDetailActivity extends BaseActivity {
 
         mBottomTextView.setText(mWallpaperImage.getCopyright());
 
-        if (BingWallpaperUtils.isNavigationBar(this)) {
-            int navigationBarHeight = BingWallpaperUtils.getNavigationBarHeight(this);
-            if (navigationBarHeight > 0) {
-                mBottomView.setPadding(mBottomView.getPaddingLeft(), mBottomView.getPaddingTop(),
-                        mBottomView.getPaddingRight(), mBottomView.getPaddingBottom() + navigationBarHeight);
-            }
-        }
+        mNavigationBarHeight = BingWallpaperUtils.getNavigationBarHeight(this);
+        setBottomHeight();
+        setToolbarHeight();
 
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_singlechoice);
+        arrayAdapter.addAll(mResolutions);
+
+        mResolutionDialog = new AlertDialog.Builder(this).setTitle(R.string.menu_wallpaper_resolution)
+                .setSingleChoiceItems(arrayAdapter, 4, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mSelectedResolution = mResolutions[which];
+                        mResolutionDialog.dismiss();
+                        loadImage();
+                    }
+                })
+                .create();
+
+        mSetWallpaperProgressDialog = UIUtils.createProgressDialog(this, getString(R.string.set_wallpaper_running));
+        mSetWallpaperProgressDialog.setCancelable(false);
+        mDownLoadProgressDialog = UIUtils.createProgressDialog(this, getString(R.string.download));
+        mDownLoadProgressDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                Utils.unsubscribe(mDownLoadSubscription);
+            }
+        });
+        mGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                toggleToolbar();
+                return super.onSingleTapUp(e);
+            }
+        });
+        loadImage();
+
+    }
+
+    private void setBottomHeight() {
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            mBottomView.setPadding(0, 0, 0, 0);
+        } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mBottomView.setPadding(mBottomView.getPaddingLeft(), mBottomView.getPaddingTop(),
+                    mBottomView.getPaddingRight(), mNavigationBarHeight);
+        }
+    }
+
+    private GestureDetector mGestureDetector;
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return mGestureDetector.onTouchEvent(event);
+    }
+
+    private void toggleToolbar() {
+        if (getSupportActionBar().isShowing()) {
+            getSupportActionBar().hide();
+            fullScreen();
+            mBottomView.setPadding(0, 0, 0, 0);
+        } else {
+            getSupportActionBar().show();
+            normalScreen();
+            setBottomHeight();
+        }
+    }
+
+    private void fullScreen() {
+        getWindow().clearFlags(
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        getWindow().getDecorView()
+                .setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    }
+
+    private void normalScreen() {
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        loadImage();
+        setBottomHeight();
+        setToolbarHeight();
+    }
+
+    private void setToolbarHeight() {
+        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) mToolbar.getLayoutParams();
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            layoutParams.rightMargin = mNavigationBarHeight;
+        } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            layoutParams.rightMargin = 0;
+        }
+    }
+
+    private String getUrl(String resolution) {
+        if (TextUtils.isEmpty(mSelectedResolution)) {
+            return BingWallpaperUtils.getImageUrl(resolution, mWallpaperImage);
+        } else {
+            return BingWallpaperUtils.getImageUrl(mSelectedResolution, mWallpaperImage);
+        }
+    }
+
+    private void loadImage() {
         GlideApp.with(this)
-                .load(BingWallpaperUtils.getImageUrl(this, mWallpaperImage))
-                .centerCrop()
+                .load(getUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION))
+                .thumbnail(0.5f)
                 .dontAnimate()
-                .thumbnail(0.1f)
                 .listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target,
@@ -143,30 +252,24 @@ public class WallpaperDetailActivity extends BaseActivity {
                             boolean isFirstResource) {
                         return false;
                     }
-                })
-                .into(new ImageViewTarget<Drawable>(mImageView) {
-                    @Override
-                    public void onLoadStarted(Drawable placeholder) {
-                        super.onLoadStarted(placeholder);
-                        UIUtils.viewVisible(mProgressBar);
-                        UIUtils.viewGone(mErrorTextView);
-                    }
-
-                    @Override
-                    protected void setResource(Drawable resource) {
-                        mImageView.setImageDrawable(resource);
-                        UIUtils.viewGone(mProgressBar);
-                        UIUtils.viewGone(mErrorTextView);
-                    }
-                });
-        mSetWallpaperProgressDialog = UIUtils.createProgressDialog(this, getString(R.string.set_wallpaper_running));
-        mSetWallpaperProgressDialog.setCancelable(false);
-        mDownLoadProgressDialog = UIUtils.createProgressDialog(this, getString(R.string.download));
-        mDownLoadProgressDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                }).into(new ImageViewTarget<Drawable>(mImageView) {
+            @Override
+            public void onLoadStarted(Drawable placeholder) {
+                super.onLoadStarted(placeholder);
+                UIUtils.viewVisible(mProgressBar);
+                UIUtils.viewGone(mErrorTextView);
+            }
 
             @Override
-            public void onDismiss(DialogInterface dialog) {
-                Utils.unsubscribe(mDownLoadSubscription);
+            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                super.onResourceReady(resource, transition);
+                UIUtils.viewGone(mProgressBar);
+                UIUtils.viewGone(mErrorTextView);
+                mImageView.setImageDrawable(resource);
+            }
+
+            @Override
+            protected void setResource(Drawable resource) {
             }
         });
     }
@@ -224,6 +327,9 @@ public class WallpaperDetailActivity extends BaseActivity {
                             }
                         });
                 break;
+            case R.id.menu_wallpaper_resolution:
+                mResolutionDialog.show();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -243,7 +349,7 @@ public class WallpaperDetailActivity extends BaseActivity {
     }
 
     private void downloadSaveWallpaper() {
-        String url = BingWallpaperUtils.getImageUrl(BingWallpaperUtils.getSaveResolution(this), mWallpaperImage);
+        String url = getUrl(BingWallpaperUtils.getSaveResolution(this));
         mDownLoadSubscription = NetUtils.get().downloadImageToFile(this, url, new Callback.EmptyCallback<File>() {
             @Override
             public void onPreExecute() {
@@ -291,7 +397,7 @@ public class WallpaperDetailActivity extends BaseActivity {
             message = getString(R.string.menu_set_wallpaper_mode_lock);
         }
 
-        final String url = BingWallpaperUtils.getResolutionImageUrl(this, mWallpaperImage);
+        final String url = getUrl(BingWallpaperUtils.getResolution(this));
         UIUtils.showYNAlertDialog(this, message + "?",
                 new Callback4.EmptyCallback<DialogInterface>() {
                     @Override

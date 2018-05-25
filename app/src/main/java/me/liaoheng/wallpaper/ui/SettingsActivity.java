@@ -2,6 +2,7 @@ package me.liaoheng.wallpaper.ui;
 
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -49,6 +50,8 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
         super.onCreate(savedInstanceState);
         SystemBarHelper
                 .tintStatusBar(this, ContextCompat.getColor(this, R.color.colorPrimaryDark), 0);
+        BingWallpaperUtils.initSlidr(this);
+        getListView().setBackgroundColor(Color.WHITE);
         setPreferenceFragment(new MyPreferenceFragment());
     }
 

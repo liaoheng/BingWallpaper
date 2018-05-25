@@ -1,25 +1,22 @@
 package me.liaoheng.wallpaper.util;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.net.NetworkInfo;
-import android.os.Build;
+import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.view.KeyCharacterMap;
-import android.view.KeyEvent;
-import android.view.ViewConfiguration;
 
-import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.UIUtils;
+import com.r0adkll.slidr.Slidr;
+import com.r0adkll.slidr.model.SlidrConfig;
 
 import net.grandcentrix.tray.AppPreferences;
 
@@ -41,12 +38,6 @@ public class BingWallpaperUtils {
 
     public static String getResolutionImageUrl(Context context, BingWallpaperImage image) {
         return getImageUrl(getResolution(context), image);
-    }
-
-    public static String getImageUrl(Context context, BingWallpaperImage image) {
-        String[] names = context.getResources()
-                .getStringArray(R.array.pref_set_wallpaper_resolution_name);
-        return getImageUrl(names[4], image);
     }
 
     public static String getImageUrl(String resolution, BingWallpaperImage image) {
@@ -221,25 +212,6 @@ public class BingWallpaperUtils {
     }
 
     /**
-     * 获得导航栏的高度
-     *
-     * @see <a href="https://stackoverflow.com/questions/20264268/how-do-i-get-the-height-and-width-of-the-android-navigation-bar-programmatically">stackoverflow</a>
-     */
-    public static int getNavigationBarHeight(Context context) {
-        return DisplayUtils.getNavigationBarHeight(context);
-    }
-
-    /**
-     * 判断是否存在导航栏
-     *
-     * @return false if physical, true if virtual
-     * @see <a href="https://stackoverflow.com/questions/16092431/check-for-navigation-bar">stackoverflow</a>
-     */
-    public static boolean isNavigationBar(Context context) {
-        return DisplayUtils.isNavigationBar(context);
-    }
-
-    /**
      * @param mode 0. both , 1. home , 2. lock
      */
     public static void setWallpaper(final Context context, @Constants.setWallpaperMode final int mode,
@@ -274,5 +246,16 @@ public class BingWallpaperUtils {
             }
             BingWallpaperIntentService.start(context, url, mode, false);
         }
+    }
+
+    public static int getNavigationBarHeight(Context context) {
+        if (DisplayUtils.isNavigationBar(context)) {
+            return DisplayUtils.getNavigationBarHeight(context);
+        }
+        return 0;
+    }
+
+    public static void initSlidr(Activity activity){
+        Slidr.attach(activity, new SlidrConfig.Builder().edge(true).build());
     }
 }

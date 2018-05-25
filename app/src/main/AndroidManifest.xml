@@ -43,12 +43,12 @@
                 android:screenOrientation="portrait" />
         <activity
                 android:name=".ui.WallpaperHistoryListActivity"
-                android:label="@string/menu_main_wallpaper_history_list"
-                android:screenOrientation="portrait" />
+                android:configChanges="screenSize|orientation|keyboardHidden"
+                android:label="@string/menu_main_wallpaper_history_list" />
         <activity
                 android:name=".ui.WallpaperDetailActivity"
-                android:screenOrientation="portrait"
-                android:theme="@style/AppTheme.NoActionBar" />
+                android:theme="@style/AppTheme.NoActionBar"
+                android:configChanges="screenSize|orientation|keyboardHidden" />
         <activity
                 android:name=".ui.IntroActivity"
                 android:theme="@style/Theme.AppCompat.NoActionBar" />
@@ -57,7 +57,7 @@
                 android:excludeFromRecents="true"
                 android:launchMode="singleTask"
                 android:taskAffinity=""
-                android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+                android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <receiver android:name=".service.AutoSetWallpaperBroadcastReceiver">
             <intent-filter>
