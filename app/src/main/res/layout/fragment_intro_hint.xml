@@ -14,16 +14,23 @@
             android:textSize="30sp" />
 
     <TextView
-            android:layout_marginBottom="10dp"
-            android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/intro_hint_whitelist" />
+            android:layout_marginBottom="10dp"
+            android:text="@string/intro_hint_whitelist"
+            android:textSize="20sp" />
 
     <TextView
-            android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/intro_hint_battery" />
+            android:text="@string/intro_hint_battery"
+            android:textSize="20sp" />
 
+    <Button
+            android:visibility="gone"
+            android:id="@+id/intro_hint_ignore_battery_optimization"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/ignore_battery_optimization" />
 </LinearLayout>

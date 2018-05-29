@@ -2,11 +2,16 @@ package me.liaoheng.wallpaper.ui;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -48,11 +53,44 @@ public class IntroActivity extends AppIntro {
     }
 
     public static class IntroHintFragment extends Fragment {
+        @BindView(R.id.intro_hint_ignore_battery_optimization)
+        View ignore;
+
+        @OnClick(R.id.intro_hint_ignore_battery_optimization)
+        void ignoreBatteryOptimization() {
+            //https://developer.android.com/reference/android/provider/Settings#ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                FragmentActivity activity = getActivity();
+                if (activity == null) {
+                    return;
+                }
+                PowerManager powerManager = (PowerManager) activity.getSystemService(POWER_SERVICE);
+                if (powerManager == null) {
+                    return;
+                }
+                boolean hasIgnored = powerManager.isIgnoringBatteryOptimizations(activity.getPackageName());
+                if (!hasIgnored) {
+                    Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                    intent.setData(Uri.parse("package:" + activity.getPackageName()));
+                    if (intent.resolveActivity(activity.getPackageManager()) != null) {
+                        startActivity(intent);
+                    } else {
+                        UIUtils.showToast(activity, "No support !");
+                    }
+                }
+            }
+        }
+
         @Nullable
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                 @Nullable Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.fragment_intro_hint, container, false);
+            View view = inflater.inflate(R.layout.fragment_intro_hint, container, false);
+            ButterKnife.bind(this, view);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                UIUtils.viewVisible(ignore);
+            }
+            return view;
         }
     }
 

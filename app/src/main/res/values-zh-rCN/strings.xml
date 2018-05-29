@@ -59,4 +59,5 @@
     <string name="intro_hint_welcome">@string/app_name</string>
     <string name="intro_hint_whitelist">需要将该应用添加到后台管理应用的白名单中，如黑阀, 绿色守护等。</string>
     <string name="intro_hint_battery">系统电池优化会使应用不能准时执行更新壁纸操作，可以将应用添加到电池优化白名单中。</string>
+    <string name="ignore_battery_optimization">忽略电池优化</string>
 </resources>
