@@ -18,12 +18,6 @@ import me.liaoheng.wallpaper.R;
  */
 public class ExceptionHandle {
 
-    static class MyException extends Exception {
-        MyException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
     public static String loadFailed(Context context, String TAG, Throwable throwable) {
         String error = context.getString(R.string.network_request_error);
         if (throwable == null) {
@@ -55,6 +49,7 @@ public class ExceptionHandle {
         if (BuildConfig.DEBUG) {
             return;
         }
-        Crashlytics.logException(new MyException(TAG, t));
+        Crashlytics.log("TAG: " + TAG);
+        Crashlytics.logException(t);
     }
 }

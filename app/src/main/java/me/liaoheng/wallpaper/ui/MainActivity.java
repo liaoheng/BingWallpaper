@@ -34,6 +34,7 @@ import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.github.liaoheng.common.core.OnCheckedChangeListener;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.UIUtils;
@@ -56,6 +57,7 @@ import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.ExceptionHandle;
 import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.TasksUtils;
+import me.liaoheng.wallpaper.view.ToggleImageButton;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
@@ -71,11 +73,20 @@ public class MainActivity extends BaseActivity
     private final String TAG = MainActivity.class.getSimpleName();
 
     @BindView(R.id.bing_wallpaper_view)
-    ImageView wallpaperView;
+    ImageView mWallpaperView;
     @BindView(R.id.bing_wallpaper_error)
     TextView mErrorTextView;
-    @BindView(R.id.bing_wallpaper_coverstory_text)
+    @BindView(R.id.bing_wallpaper_cover_story_content)
+    View mCoverStoryContent;
+    @BindView(R.id.bing_wallpaper_cover_story_text)
     TextView mCoverStoryTextView;
+    @BindView(R.id.bing_wallpaper_cover_story_title)
+    TextView mCoverStoryTitleView;
+    TextView mHeaderCoverStoryTitleView;
+    @BindView(R.id.bing_wallpaper_cover_story_toggle)
+    ToggleImageButton mCoverStoryToggle;
+    @BindView(R.id.bing_wallpaper_cover_story)
+    View mCoverStoryView;
     @BindView(R.id.bing_wallpaper_bottom)
     View mBottomView;
 
@@ -89,13 +100,16 @@ public class MainActivity extends BaseActivity
     @BindView(R.id.bing_wallpaper_set_menu)
     FloatingActionMenu mSetWallpaperActionMenu;
 
+    private ImageView mNavigationHeaderImage;
+
     private WallpaperBroadcastReceiver mWallpaperBroadcastReceiver;
     private BingWallpaperImage mCurBingWallpaperImage;
     private boolean isRun;
+    private int mLocale;
 
     private BingWallpaperCoverStory mCoverStory;
 
-    @OnClick(R.id.bing_wallpaper_coverstory_text)
+    @OnClick(R.id.bing_wallpaper_cover_story_text)
     void openMap() {
         if (mCoverStory == null) {
             return;
@@ -126,6 +140,7 @@ public class MainActivity extends BaseActivity
 
         int navigationBarHeight = BingWallpaperUtils.getNavigationBarHeight(this);
         if (navigationBarHeight > 0) {
+            UIUtils.viewVisible(mBottomView);
             ViewGroup.LayoutParams layoutParams = mBottomView.getLayoutParams();
             layoutParams.height = navigationBarHeight;
             mBottomView.setLayoutParams(layoutParams);
@@ -136,6 +151,28 @@ public class MainActivity extends BaseActivity
         }
 
         mNavigationView.setNavigationItemSelectedListener(this);
+
+        ((View) mCoverStoryToggle.getParent()).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCoverStoryToggle.toggle();
+            }
+        });
+        mCoverStoryToggle.setOnCheckedChangeListener(new OnCheckedChangeListener<ToggleImageButton>() {
+            @Override
+            public void onCheckedChanged(ToggleImageButton view, boolean isChecked) {
+                if (mCurBingWallpaperImage != null) {
+                    if (mCoverStoryContent.getVisibility() == View.VISIBLE) {
+                        setTitle(mCurBingWallpaperImage.getCopyright());
+                        mCoverStoryTitleView.setText("");
+                    } else {
+                        setTitle("");
+                        mCoverStoryTitleView.setText(mCurBingWallpaperImage.getCopyright());
+                    }
+                }
+                UIUtils.toggleVisibility(mCoverStoryContent);
+            }
+        });
 
         mWallpaperBroadcastReceiver = new WallpaperBroadcastReceiver(new Callback4.EmptyCallback<BingWallpaperState>() {
             @Override
@@ -162,6 +199,23 @@ public class MainActivity extends BaseActivity
             }
         });
 
+        mNavigationHeaderImage = mNavigationView.getHeaderView(0).findViewById(R.id.navigation_header_image);
+        mHeaderCoverStoryTitleView = mNavigationView.getHeaderView(0)
+                .findViewById(R.id.navigation_header_cover_story_title);
+
+        mLocale = BingWallpaperUtils.getCountryValue(this);
+        if (mLocale == 0) {
+            String displayCountry = Locale.getDefault().getDisplayCountry();
+            if (Locale.CHINA.getDisplayCountry().equalsIgnoreCase(displayCountry)) {
+                mLocale = 1;
+            }
+        }
+        if (mLocale != 1) {
+            UIUtils.viewGone(mCoverStoryView);
+        } else {
+            UIUtils.viewVisible(mCoverStoryView);
+        }
+
         getBingWallpaper();
     }
 
@@ -171,20 +225,14 @@ public class MainActivity extends BaseActivity
             return;
         }
         showSwipeRefreshLayout();
-        int auto = BingWallpaperUtils.getCountryValue(this);
-        if (auto == 0) {
-            String displayCountry = Locale.getDefault().getDisplayCountry();
-            if (Locale.CHINA.getDisplayCountry().equalsIgnoreCase(displayCountry)) {
-                auto = 1;
-            }
-        }
 
-        if (auto == 1) {
-            BingWallpaperNetworkClient.getCoverstory()
+        if (mLocale == 1) {
+            BingWallpaperNetworkClient.getCoverStory()
                     .compose(this.<BingWallpaperCoverStory>bindToLifecycle())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             new Action1<BingWallpaperCoverStory>() {
+                                @SuppressLint("SetTextI18n")
                                 @Override
                                 public void call(BingWallpaperCoverStory bingWallpaperCoverStory) {
                                     mCoverStory = bingWallpaperCoverStory;
@@ -322,6 +370,7 @@ public class MainActivity extends BaseActivity
 
     private void setImage(BingWallpaperImage bingWallpaperImage) {
         setTitle(bingWallpaperImage.getCopyright());
+        mHeaderCoverStoryTitleView.setText(bingWallpaperImage.getCopyright());
 
         String url = BingWallpaperUtils.getImageUrl(Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION,
                 bingWallpaperImage);
@@ -341,7 +390,7 @@ public class MainActivity extends BaseActivity
                     boolean isFirstResource) {
                 return false;
             }
-        }).into(new ImageViewTarget<Drawable>(wallpaperView) {
+        }).into(new ImageViewTarget<Drawable>(mWallpaperView) {
             @Override
             public void onLoadStarted(Drawable placeholder) {
                 super.onLoadStarted(placeholder);
@@ -351,7 +400,8 @@ public class MainActivity extends BaseActivity
             @Override
             public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                 super.onResourceReady(resource, transition);
-                wallpaperView.setImageDrawable(resource);
+                mWallpaperView.setImageDrawable(resource);
+                mNavigationHeaderImage.setImageDrawable(resource);
 
                 Palette.from(BitmapUtils.drawableToBitmap(resource))
                         .generate(new Palette.PaletteAsyncListener() {

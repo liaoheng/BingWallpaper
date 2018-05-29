@@ -42,11 +42,13 @@
     <string-array name="pref_country_names">
         <item>@string/pref_country_auto</item>
         <item>@string/pref_country_china</item>
+        <item>@string/pref_country_usa</item>
     </string-array>
 
     <string-array name="pref_country_values">
         <item>0</item>
         <item>1</item>
+        <item>2</item>
     </string-array>
 
 </resources>

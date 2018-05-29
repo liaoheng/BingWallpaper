@@ -81,6 +81,9 @@ public class WallpaperDetailActivity extends BaseActivity {
     @BindArray(R.array.pref_set_wallpaper_resolution_name)
     String[] mResolutions;
 
+    @BindArray(R.array.pref_set_wallpaper_resolution_value)
+    String[] mResolutionValue;
+
     private String mSelectedResolution;
 
     private AlertDialog mResolutionDialog;
@@ -99,7 +102,6 @@ public class WallpaperDetailActivity extends BaseActivity {
         setContentView(R.layout.activity_wallpaper_detail);
         ButterKnife.bind(this);
         initStatusBarAddToolbar();
-        initSlidr();
 
         mWallpaperBroadcastReceiver = new WallpaperBroadcastReceiver(new Callback4.EmptyCallback<BingWallpaperState>() {
             @Override
@@ -127,12 +129,12 @@ public class WallpaperDetailActivity extends BaseActivity {
         arrayAdapter.addAll(mResolutions);
 
         mResolutionDialog = new AlertDialog.Builder(this).setTitle(R.string.menu_wallpaper_resolution)
-                .setSingleChoiceItems(arrayAdapter, 4, new DialogInterface.OnClickListener() {
+                .setSingleChoiceItems(arrayAdapter, 2, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         mSelectedResolution = mResolutions[which];
                         mResolutionDialog.dismiss();
-                        loadImage();
+                        loadImage(getUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION));
                     }
                 })
                 .create();
@@ -154,7 +156,7 @@ public class WallpaperDetailActivity extends BaseActivity {
                 return super.onSingleTapUp(e);
             }
         });
-        loadImage();
+        loadImage(BingWallpaperUtils.getImageUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION, mWallpaperImage));
 
     }
 
@@ -208,7 +210,7 @@ public class WallpaperDetailActivity extends BaseActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        loadImage();
+        loadImage(getUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION));
         setBottomHeight();
         setToolbarHeight();
     }
@@ -222,17 +224,17 @@ public class WallpaperDetailActivity extends BaseActivity {
         }
     }
 
-    private String getUrl(String resolution) {
+    private String getUrl(String def) {
         if (TextUtils.isEmpty(mSelectedResolution)) {
-            return BingWallpaperUtils.getImageUrl(resolution, mWallpaperImage);
+            return BingWallpaperUtils.getImageUrl(def, mWallpaperImage);
         } else {
             return BingWallpaperUtils.getImageUrl(mSelectedResolution, mWallpaperImage);
         }
     }
 
-    private void loadImage() {
+    private void loadImage(String url) {
         GlideApp.with(this)
-                .load(getUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION))
+                .load(url)
                 .thumbnail(0.5f)
                 .dontAnimate()
                 .listener(new RequestListener<Drawable>() {

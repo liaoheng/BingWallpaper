@@ -47,22 +47,59 @@
                     app:layout_scrollFlags="scroll|enterAlways"
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-            <FrameLayout
-                    android:id="@+id/bing_wallpaper_coverstory"
+            <LinearLayout
+                    android:id="@+id/bing_wallpaper_cover_story"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/color_3000">
 
-                <TextView
-                        android:id="@+id/bing_wallpaper_coverstory_text"
+                <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="top"
-                        android:layout_margin="10dp"
-                        android:textColor="@android:color/white"
-                        tools:text="message" />
+                        android:layout_gravity="end">
 
-            </FrameLayout>
+                    <me.liaoheng.wallpaper.view.ToggleImageButton
+                            android:id="@+id/bing_wallpaper_cover_story_toggle"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="end"
+                            android:layout_margin="5dp"
+                            android:background="?selectableItemBackgroundBorderless"
+                            app:enableSelected="true"
+                            app:normalDrawableRes="@drawable/ic_expand_more_white_24dp"
+                            app:selectedDrawableRes="@drawable/ic_expand_less_white_24dp" />
+                </FrameLayout>
+
+                <LinearLayout
+                        android:visibility="gone"
+                        android:id="@+id/bing_wallpaper_cover_story_content"
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    <TextView
+                            android:id="@+id/bing_wallpaper_cover_story_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginStart="10dp"
+                            android:textColor="@android:color/white"
+                            android:textSize="18sp"
+                            tools:text="title" />
+
+                    <TextView
+                            android:id="@+id/bing_wallpaper_cover_story_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginStart="10dp"
+                            android:textColor="@android:color/white"
+                            tools:text="message" />
+                </LinearLayout>
+            </LinearLayout>
 
             <android.support.v4.widget.SwipeRefreshLayout
                     android:id="@+id/bing_wallpaper_swipe_refresh"

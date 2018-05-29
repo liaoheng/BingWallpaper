@@ -9,8 +9,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 111
-        versionName "1.1.1"
+        versionCode 112
+        versionName "1.1.2"
     }
 
     def isSigning = true
@@ -108,9 +108,6 @@ dependencies {
 
     //https://github.com/grandcentrix/tray
     implementation 'net.grandcentrix.tray:tray:0.12.0'
-
-    //https://github.com/r0adkll/Slidr
-    implementation 'com.r0adkll:slidableactivity:2.0.6'
 
     implementation 'com.github.apl-devs:appintro:v4.2.3'
 

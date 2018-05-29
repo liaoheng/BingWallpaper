@@ -64,7 +64,7 @@ public class BingWallpaperNetworkClient {
                 });
     }
 
-    public static Observable<BingWallpaperCoverStory> getCoverstory(){
+    public static Observable<BingWallpaperCoverStory> getCoverStory(){
         return NetUtils.get().getBingWallpaperNetworkService().getCoverstory().subscribeOn(Schedulers.io());
     }
 

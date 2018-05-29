@@ -12,5 +12,5 @@ import rx.Observable;
  */
 public interface BingWallpaperNetworkService {
     @GET Observable<BingWallpaper> getBingWallpaper(@Url String url);
-    @GET("https://www.bing.com/cnhp/coverstory/") Observable<BingWallpaperCoverStory> getCoverstory();
+    @GET("https://cn.bing.com/cnhp/coverstory/") Observable<BingWallpaperCoverStory> getCoverstory();
 }

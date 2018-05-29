@@ -47,10 +47,11 @@
                 android:label="@string/menu_main_wallpaper_history_list" />
         <activity
                 android:name=".ui.WallpaperDetailActivity"
-                android:theme="@style/AppTheme.NoActionBar"
-                android:configChanges="screenSize|orientation|keyboardHidden" />
+                android:configChanges="screenSize|orientation|keyboardHidden"
+                android:theme="@style/AppTheme.NoActionBar" />
         <activity
                 android:name=".ui.IntroActivity"
+                android:screenOrientation="portrait"
                 android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
                 android:name=".ui.ShortcutActivity"

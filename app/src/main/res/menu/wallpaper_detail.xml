@@ -9,7 +9,7 @@
     <item
             app:showAsAction="ifRoom"
             android:id="@+id/menu_wallpaper_resolution"
-            android:icon="@drawable/ic_smartphone_white_24dp"
+            android:icon="@drawable/ic_aspect_ratio_white_24dp"
             android:title="@string/menu_wallpaper_resolution" />
     <item
             android:id="@+id/menu_wallpaper_both"

@@ -68,7 +68,6 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         SystemBarHelper
                 .tintStatusBar(this, ContextCompat.getColor(this, R.color.colorPrimaryDark), 0);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        initSlidr();
 
         mWallpaperAdapter = new WallpaperAdapter(this);
 

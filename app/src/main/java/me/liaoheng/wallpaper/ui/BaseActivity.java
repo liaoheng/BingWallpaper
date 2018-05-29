@@ -12,8 +12,6 @@ import android.view.ViewGroup;
 
 import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.UIUtils;
-import com.r0adkll.slidr.Slidr;
-import com.r0adkll.slidr.model.SlidrConfig;
 import com.trello.rxlifecycle.LifecycleProvider;
 import com.trello.rxlifecycle.LifecycleTransformer;
 import com.trello.rxlifecycle.RxLifecycle;
@@ -21,7 +19,6 @@ import com.trello.rxlifecycle.android.ActivityEvent;
 import com.trello.rxlifecycle.android.RxLifecycleAndroid;
 
 import me.liaoheng.wallpaper.R;
-import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 
@@ -36,9 +33,11 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     public BaseActivity getActivity() {
         return this;
     }
+
     protected Toolbar mToolbar;
-    protected void initStatusBarAddToolbar(){
-        mToolbar= UIUtils.findViewById(this, R.id.toolbar);
+
+    protected void initStatusBarAddToolbar() {
+        mToolbar = UIUtils.findViewById(this, R.id.toolbar);
         int statusBarHeight = DisplayUtils.getStatusBarHeight(this);
         ViewGroup.LayoutParams lp = mToolbar.getLayoutParams();
         lp.height += statusBarHeight;
@@ -47,10 +46,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
         setSupportActionBar(mToolbar);
         setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    }
-
-    protected void initSlidr(){
-        BingWallpaperUtils.initSlidr(this);
     }
 
     @Override

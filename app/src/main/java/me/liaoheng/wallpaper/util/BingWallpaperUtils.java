@@ -1,12 +1,10 @@
 package me.liaoheng.wallpaper.util;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -15,8 +13,6 @@ import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.UIUtils;
-import com.r0adkll.slidr.Slidr;
-import com.r0adkll.slidr.model.SlidrConfig;
 
 import net.grandcentrix.tray.AppPreferences;
 
@@ -126,6 +122,9 @@ public class BingWallpaperUtils {
         if (auto == 1) {
             language = Locale.CHINA.getLanguage();
             country = Locale.CHINA.getCountry();
+        } else if (auto == 2) {
+            language = Locale.US.getLanguage();
+            country = Locale.US.getCountry();
         }
         String url;
         if (country.equalsIgnoreCase("cn")) {
@@ -253,9 +252,5 @@ public class BingWallpaperUtils {
             return DisplayUtils.getNavigationBarHeight(context);
         }
         return 0;
-    }
-
-    public static void initSlidr(Activity activity){
-        Slidr.attach(activity, new SlidrConfig.Builder().edge(true).build());
     }
 }

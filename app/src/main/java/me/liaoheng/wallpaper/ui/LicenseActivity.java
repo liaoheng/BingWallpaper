@@ -34,7 +34,6 @@ public class LicenseActivity extends BaseActivity {
         SystemBarHelper
                 .tintStatusBar(this, ContextCompat.getColor(this, R.color.colorPrimaryDark), 0);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        initSlidr();
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setHasFixedSize(true);
@@ -60,7 +59,6 @@ public class LicenseActivity extends BaseActivity {
         licenses.add(Licenses.fromGitHubMIT("H07000223/FlycoSystemBar"));
         licenses.add(Licenses.fromGitHubApacheV2("Clans/FloatingActionButton"));
         licenses.add(Licenses.fromGitHubApacheV2("grandcentrix/tray"));
-        licenses.add(Licenses.fromGitHubApacheV2("r0adkll/Slidr"));
 
         LicenseAdapter adapter = new LicenseAdapter(licenses);
         mRecyclerView.setAdapter(adapter);
