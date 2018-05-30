@@ -3,9 +3,13 @@ package me.liaoheng.wallpaper.util;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
@@ -252,5 +256,42 @@ public class BingWallpaperUtils {
             return DisplayUtils.getNavigationBarHeight(context);
         }
         return 0;
+    }
+
+    /**
+     * 打开忽略电池优化对话框
+     *
+     * @see <a href="https://developer.android.com/reference/android/provider/Settings#ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS">android doc</a>
+     */
+    public static void showIgnoreBatteryOptimizationDialog(Context context) {
+        if (context == null) {
+            return;
+        }
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
+            return;
+        }
+        Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+        intent.setData(Uri.parse("package:" + context.getPackageName()));
+        if (intent.resolveActivity(context.getPackageManager()) != null) {
+            context.startActivity(intent);
+        } else {
+            UIUtils.showToast(context, "No support !");
+        }
+    }
+
+    /**
+     * 判断应用是否在忽略电池优化中
+     *
+     * @see <a href="https://developer.android.com/reference/android/provider/Settings#ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS">android doc</a>
+     */
+    public static boolean isIgnoreBatteryOptimization(Context context) {
+        if (context == null) {
+            return true;
+        }
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
+            return true;
+        }
+        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        return powerManager == null || powerManager.isIgnoringBatteryOptimizations(context.getPackageName());
     }
 }

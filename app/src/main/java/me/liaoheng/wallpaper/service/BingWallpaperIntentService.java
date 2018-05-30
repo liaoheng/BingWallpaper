@@ -29,6 +29,7 @@ import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.ExceptionHandle;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
+import me.liaoheng.wallpaper.util.ROM;
 import me.liaoheng.wallpaper.util.TasksUtils;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -184,7 +185,7 @@ public class BingWallpaperIntentService extends IntentService {
                         }
                         sendSetWallpaperBroadcast(BingWallpaperState.FAIL);
                         clearNotification();
-                        ExceptionHandle.collectException(TAG,throwable);
+                        ExceptionHandle.collectException(TAG, throwable);
                     }
                 });
 
@@ -206,19 +207,27 @@ public class BingWallpaperIntentService extends IntentService {
                             L.Log.i(TAG, "wallpaper file : " + absolutePath);
                             Bitmap bitmap = BitmapFactory.decodeFile(absolutePath);
 
-                            if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                    WallpaperManager.getInstance(getApplicationContext())
-                                            .setBitmap(bitmap, null, false, WallpaperManager.FLAG_SYSTEM);
-                                }
-                            } else if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                    WallpaperManager.getInstance(getApplicationContext())
-                                            .setBitmap(bitmap, null, false, WallpaperManager.FLAG_LOCK);
-                                }
-                            } else {
+                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                                 WallpaperManager.getInstance(getApplicationContext())
                                         .setBitmap(bitmap);
+                            } else {
+                                if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
+                                    WallpaperManager.getInstance(getApplicationContext())
+                                            .setBitmap(bitmap, null, false, WallpaperManager.FLAG_SYSTEM);
+                                } else if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
+                                    WallpaperManager.getInstance(getApplicationContext())
+                                            .setBitmap(bitmap, null, false, WallpaperManager.FLAG_LOCK);
+                                } else {
+                                    if (ROM.getROM().isEmui()) {
+                                        WallpaperManager.getInstance(getApplicationContext())
+                                                .setBitmap(bitmap, null, false, WallpaperManager.FLAG_SYSTEM);
+                                        WallpaperManager.getInstance(getApplicationContext())
+                                                .setBitmap(bitmap, null, false, WallpaperManager.FLAG_LOCK);
+                                    } else {
+                                        WallpaperManager.getInstance(getApplicationContext())
+                                                .setBitmap(bitmap);
+                                    }
+                                }
                             }
 
                             if (bitmap != null) {

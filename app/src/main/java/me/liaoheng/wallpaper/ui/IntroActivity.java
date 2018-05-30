@@ -2,16 +2,11 @@ package me.liaoheng.wallpaper.ui;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -32,6 +27,7 @@ import butterknife.OnClick;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.util.BingWallpaperAlarmManager;
 import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
+import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.SettingTrayPreferences;
 import me.liaoheng.wallpaper.util.TasksUtils;
 
@@ -58,27 +54,7 @@ public class IntroActivity extends AppIntro {
 
         @OnClick(R.id.intro_hint_ignore_battery_optimization)
         void ignoreBatteryOptimization() {
-            //https://developer.android.com/reference/android/provider/Settings#ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                FragmentActivity activity = getActivity();
-                if (activity == null) {
-                    return;
-                }
-                PowerManager powerManager = (PowerManager) activity.getSystemService(POWER_SERVICE);
-                if (powerManager == null) {
-                    return;
-                }
-                boolean hasIgnored = powerManager.isIgnoringBatteryOptimizations(activity.getPackageName());
-                if (!hasIgnored) {
-                    Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-                    intent.setData(Uri.parse("package:" + activity.getPackageName()));
-                    if (intent.resolveActivity(activity.getPackageManager()) != null) {
-                        startActivity(intent);
-                    } else {
-                        UIUtils.showToast(activity, "No support !");
-                    }
-                }
-            }
+            BingWallpaperUtils.showIgnoreBatteryOptimizationDialog(getActivity());
         }
 
         @Nullable
@@ -197,5 +173,15 @@ public class IntroActivity extends AppIntro {
         TasksUtils.markOne();
         UIUtils.startActivity(this, MainActivity.class);
         finish();
+    }
+
+    @Override
+    public void onSlideChanged(@Nullable Fragment oldFragment, @Nullable Fragment newFragment) {
+        super.onSlideChanged(oldFragment, newFragment);
+        if (oldFragment instanceof IntroHintFragment) {
+            if (!BingWallpaperUtils.isIgnoreBatteryOptimization(this)) {
+                BingWallpaperUtils.showIgnoreBatteryOptimizationDialog(this);
+            }
+        }
     }
 }
