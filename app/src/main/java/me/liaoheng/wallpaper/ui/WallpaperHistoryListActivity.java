@@ -177,7 +177,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
                 }
             });
 
-            final String imageUrl = BingWallpaperUtils.getImageUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
+            final String imageUrl = BingWallpaperUtils.getImageUrl(getApplicationContext(),Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
                     item);
             GlideApp.with(getContext()).asDrawable().thumbnail(0.5f)
                     .error(R.drawable.lcn_empty_photo)

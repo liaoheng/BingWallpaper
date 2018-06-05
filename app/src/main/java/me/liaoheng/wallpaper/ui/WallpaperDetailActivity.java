@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -87,7 +86,6 @@ public class WallpaperDetailActivity extends BaseActivity {
     private String mSelectedResolution;
 
     private AlertDialog mResolutionDialog;
-    private int mNavigationBarHeight;
 
     private BingWallpaperImage mWallpaperImage;
     private ProgressDialog mDownLoadProgressDialog;
@@ -97,8 +95,8 @@ public class WallpaperDetailActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         normalScreen();
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallpaper_detail);
         ButterKnife.bind(this);
         initStatusBarAddToolbar();
@@ -118,12 +116,16 @@ public class WallpaperDetailActivity extends BaseActivity {
         });
 
         mWallpaperImage = (BingWallpaperImage) getIntent().getSerializableExtra("image");
+        if (mWallpaperImage == null) {
+            UIUtils.showToast(getApplicationContext(), "unknown error");
+            finish();
+            return;
+        }
 
         mBottomTextView.setText(mWallpaperImage.getCopyright());
 
-        mNavigationBarHeight = BingWallpaperUtils.getNavigationBarHeight(this);
-        setBottomHeight();
-        setToolbarHeight();
+        mBottomView.setPadding(mBottomView.getPaddingLeft(), mBottomView.getPaddingTop(),
+                mBottomView.getPaddingRight(), BingWallpaperUtils.getNavigationBarHeight(this));
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_singlechoice);
         arrayAdapter.addAll(mResolutions);
@@ -156,17 +158,10 @@ public class WallpaperDetailActivity extends BaseActivity {
                 return super.onSingleTapUp(e);
             }
         });
-        loadImage(BingWallpaperUtils.getImageUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION, mWallpaperImage));
+        loadImage(
+                BingWallpaperUtils.getImageUrl(getApplicationContext(), Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
+                        mWallpaperImage));
 
-    }
-
-    private void setBottomHeight() {
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            mBottomView.setPadding(0, 0, 0, 0);
-        } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            mBottomView.setPadding(mBottomView.getPaddingLeft(), mBottomView.getPaddingTop(),
-                    mBottomView.getPaddingRight(), mNavigationBarHeight);
-        }
     }
 
     private GestureDetector mGestureDetector;
@@ -180,29 +175,23 @@ public class WallpaperDetailActivity extends BaseActivity {
         if (getSupportActionBar().isShowing()) {
             getSupportActionBar().hide();
             fullScreen();
-            mBottomView.setPadding(0, 0, 0, 0);
+            UIUtils.viewGone(mBottomView);
         } else {
             getSupportActionBar().show();
             normalScreen();
-            setBottomHeight();
+            UIUtils.viewVisible(mBottomView);
         }
     }
 
     private void fullScreen() {
-        getWindow().clearFlags(
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         getWindow().getDecorView()
-                .setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+                .setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
 
     private void normalScreen() {
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
     }
@@ -211,24 +200,13 @@ public class WallpaperDetailActivity extends BaseActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         loadImage(getUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION));
-        setBottomHeight();
-        setToolbarHeight();
-    }
-
-    private void setToolbarHeight() {
-        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) mToolbar.getLayoutParams();
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            layoutParams.rightMargin = mNavigationBarHeight;
-        } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            layoutParams.rightMargin = 0;
-        }
     }
 
     private String getUrl(String def) {
         if (TextUtils.isEmpty(mSelectedResolution)) {
-            return BingWallpaperUtils.getImageUrl(def, mWallpaperImage);
+            return BingWallpaperUtils.getImageUrl(getApplicationContext(), def, mWallpaperImage);
         } else {
-            return BingWallpaperUtils.getImageUrl(mSelectedResolution, mWallpaperImage);
+            return BingWallpaperUtils.getImageUrl(getApplicationContext(), mSelectedResolution, mWallpaperImage);
         }
     }
 

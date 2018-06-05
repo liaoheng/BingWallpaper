@@ -70,8 +70,6 @@ import rx.functions.Action1;
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private final String TAG = MainActivity.class.getSimpleName();
-
     @BindView(R.id.bing_wallpaper_view)
     ImageView mWallpaperView;
     @BindView(R.id.bing_wallpaper_error)
@@ -372,7 +370,7 @@ public class MainActivity extends BaseActivity
         setTitle(bingWallpaperImage.getCopyright());
         mHeaderCoverStoryTitleView.setText(bingWallpaperImage.getCopyright());
 
-        String url = BingWallpaperUtils.getImageUrl(Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION,
+        String url = BingWallpaperUtils.getImageUrl(getApplicationContext(),Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION,
                 bingWallpaperImage);
 
         GlideApp.with(getActivity()).load(url).dontAnimate().thumbnail(0.5f).listener(new RequestListener<Drawable>() {

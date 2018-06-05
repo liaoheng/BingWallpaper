@@ -18,15 +18,21 @@ public interface Constants {
     int IMAGE_DISK_CACHE_SIZE = 100 * 1024 * 1024; // 100MB
     int HTTP_DISK_CACHE_SIZE = 5 * 1024 * 1024;  // 5MB
 
-    String BASE_URL = "https://www.bing.com";
+    String BASE_URL = "https://global.bing.com";
+    String CHINA_BASE_URL = "https://cn.bing.com";
+    String GLOBAL_BASE_URL = "https://global.bing.com";
 
     String CHINA_URL = "https://cn.bing.com/HPImageArchive.aspx?format=js&idx=%s&n=%s";
     String GLOBAL_URL = "https://global.bing.com/HPImageArchive.aspx?format=js&idx=%s&n=%s";
-    class  WallpaperConfig{
-        public static String WALLPAPER_RESOLUTION="480x800";
-        public static String MAIN_WALLPAPER_RESOLUTION="720x1280";
+
+    class WallpaperConfig {
+        public static String WALLPAPER_RESOLUTION = "480x800";
+        public static String MAIN_WALLPAPER_RESOLUTION = "720x1280";
     }
 
+    class Config {
+        public static boolean isPhone = true;
+    }
 
     /**
      * 0. both , 1. home , 2. lock

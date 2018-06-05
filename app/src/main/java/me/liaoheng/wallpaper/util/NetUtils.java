@@ -2,16 +2,13 @@ package me.liaoheng.wallpaper.util;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.github.liaoheng.common.Common;
-import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
@@ -44,12 +41,9 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
-import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Func1;
-import rx.observers.Subscribers;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.Subscriptions;
 
 /**
  * @author liaoheng
@@ -185,7 +179,6 @@ public class NetUtils {
                     source.request(Long.MAX_VALUE); // Buffer the entire body.
                     Buffer buffer = source.buffer();
                     if (isPlaintext(buffer)) {
-                        //TODO update base library
                         if (L.isPrint()) {
                             Log.d(tag, buffer.clone().readUtf8());
                         }
@@ -208,8 +201,7 @@ public class NetUtils {
                             File p = new File(Environment.DIRECTORY_PICTURES, Common.getProjectName());
                             File file = new File(FileUtils.getSDPath(), p.getAbsolutePath());
                             File outFile = FileUtils.createFile(file, name);
-                            temp = Glide.with(context).load(url)
-                                    .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get(2, TimeUnit.MINUTES);
+                            temp=GlideApp.with(context).asFile().load(url).submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get(2, TimeUnit.MINUTES);
                             FileUtils.copyFile(temp, outFile);
                             context.sendBroadcast(
                                     new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(outFile)));

@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
 import com.flyco.systembar.SystemBarHelper;
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback4;
@@ -28,6 +27,7 @@ import me.liaoheng.wallpaper.service.AutoSetWallpaperBroadcastReceiver;
 import me.liaoheng.wallpaper.util.BingWallpaperAlarmManager;
 import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.SettingTrayPreferences;
 import me.liaoheng.wallpaper.view.TimePreference;
@@ -46,6 +46,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        BingWallpaperUtils.setPhoneScreen(this);
         super.onCreate(savedInstanceState);
         SystemBarHelper
                 .tintStatusBar(this, ContextCompat.getColor(this, R.color.colorPrimaryDark), 0);
@@ -129,13 +130,13 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                                     new Callback4.EmptyCallback<DialogInterface>() {
                                         @Override
                                         public void onYes(DialogInterface dialogInterface) {
-                                            Glide.get(getActivity()).clearMemory();
+                                            GlideApp.get(getActivity()).clearMemory();
                                             Observable.just("")
                                                     .subscribeOn(Schedulers.io())
                                                     .map(new Func1<String, Object>() {
                                                         @Override
                                                         public Object call(String s) {
-                                                            Glide.get(getActivity()).clearDiskCache();
+                                                            GlideApp.get(getActivity()).clearDiskCache();
                                                             return null;
                                                         }
                                                     })

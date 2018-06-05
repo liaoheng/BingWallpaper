@@ -19,6 +19,7 @@ import com.trello.rxlifecycle.android.ActivityEvent;
 import com.trello.rxlifecycle.android.RxLifecycleAndroid;
 
 import me.liaoheng.wallpaper.R;
+import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 
@@ -29,6 +30,8 @@ import rx.subjects.BehaviorSubject;
  */
 public abstract class BaseActivity extends AppCompatActivity implements LifecycleProvider<ActivityEvent> {
     private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
+
+    protected final String TAG = this.getClass().getSimpleName();
 
     public BaseActivity getActivity() {
         return this;
@@ -72,6 +75,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     @Override
     @CallSuper
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        BingWallpaperUtils.setPhoneScreen(this);
         super.onCreate(savedInstanceState);
         lifecycleSubject.onNext(ActivityEvent.CREATE);
     }

@@ -10,13 +10,14 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.AndroidRuntimeException;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
+import com.github.liaoheng.common.util.SystemDataException;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +29,7 @@ import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.ExceptionHandle;
+import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.ROM;
 import me.liaoheng.wallpaper.util.TasksUtils;
@@ -85,11 +87,7 @@ public class BingWallpaperIntentService extends IntentService {
         intent.putExtra(EXTRA_SET_WALLPAPER_MODE, mode);
         intent.putExtra(EXTRA_SET_WALLPAPER_BACKGROUND, background);
         intent.putExtra(EXTRA_SET_WALLPAPER_URL, url);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent);
-        } else {
-            context.startService(intent);
-        }
+        ContextCompat.startForegroundService(context, intent);
     }
 
     private void clearNotification() {
@@ -109,10 +107,6 @@ public class BingWallpaperIntentService extends IntentService {
         String setWallpaperUrl = intent.getStringExtra(EXTRA_SET_WALLPAPER_URL);
         L.Log.d(TAG, " setWallpaperType : " + setWallpaperType);
 
-        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().i(TAG, "Run BingWallpaperIntentService");
-        }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     "bing_wallpaper_intent_service_notification_channel_id", "AutoSetWallpaperIntentService",
@@ -131,6 +125,10 @@ public class BingWallpaperIntentService extends IntentService {
                     .setContentTitle(getText(R.string.app_name)).build();
 
             startForeground(0x111, notification);
+        }
+
+        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+            LogDebugFileUtils.get().i(TAG, "Run BingWallpaperIntentService");
         }
 
         sendSetWallpaperBroadcast(BingWallpaperState.BEGIN);
@@ -201,11 +199,19 @@ public class BingWallpaperIntentService extends IntentService {
                         L.Log.i(TAG, "wallpaper image url: " + url);
                         File wallpaper = null;
                         try {
-                            wallpaper = Glide.with(getApplicationContext()).load(url)
-                                    .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get(2, TimeUnit.MINUTES);
+                            wallpaper = GlideApp.with(getApplicationContext())
+                                    .asFile()
+                                    .load(url)
+                                    .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                                    .get(2, TimeUnit.MINUTES);
+
                             String absolutePath = wallpaper.getAbsolutePath();
                             L.Log.i(TAG, "wallpaper file : " + absolutePath);
                             Bitmap bitmap = BitmapFactory.decodeFile(absolutePath);
+
+                            if (bitmap == null) {
+                                throw new SystemDataException("wallpaper file not found");
+                            }
 
                             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                                 WallpaperManager.getInstance(getApplicationContext())
@@ -230,10 +236,8 @@ public class BingWallpaperIntentService extends IntentService {
                                 }
                             }
 
-                            if (bitmap != null) {
-                                if (!bitmap.isRecycled()) {
-                                    bitmap.recycle();
-                                }
+                            if (!bitmap.isRecycled()) {
+                                bitmap.recycle();
                             }
                             return Observable.just(wallpaper);
                         } catch (Exception e) {

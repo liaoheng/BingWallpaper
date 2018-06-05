@@ -29,6 +29,7 @@ public class MApplication extends Application {
             LogDebugFileUtils.get().open();
         }
         NetUtils.get().init();
+        Constants.Config.isPhone = getString(R.string.screen_type).equals("phone");
 
         if (!BuildConfig.DEBUG) {
             Fabric.with(this, new Crashlytics());

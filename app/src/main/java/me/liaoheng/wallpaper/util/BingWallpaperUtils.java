@@ -1,10 +1,12 @@
 package me.liaoheng.wallpaper.util;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.PowerManager;
@@ -37,12 +39,12 @@ import me.liaoheng.wallpaper.ui.SettingsActivity;
 public class BingWallpaperUtils {
 
     public static String getResolutionImageUrl(Context context, BingWallpaperImage image) {
-        return getImageUrl(getResolution(context), image);
+        return getImageUrl(context, getResolution(context), image);
     }
 
-    public static String getImageUrl(String resolution, BingWallpaperImage image) {
+    public static String getImageUrl(Context context, String resolution, BingWallpaperImage image) {
         String baseUrl = image.getUrlbase();
-        return Constants.BASE_URL + baseUrl + "_" + resolution + ".jpg";
+        return getCountryBaseUrl(context) + baseUrl + "_" + resolution + ".jpg";
     }
 
     public static boolean getOnlyWifi(Context context) {
@@ -60,8 +62,11 @@ public class BingWallpaperUtils {
 
         String resolution = appPreferences
                 .getString(SettingsActivity.PREF_SET_WALLPAPER_RESOLUTION, "0");
-
-        return names[Integer.parseInt(resolution)];
+        int i = Integer.parseInt(resolution);
+        if (names.length <= i) {//兼容之前的分辨率
+            i -= 2;
+        }
+        return names[i];
     }
 
     public static String getSaveResolution(Context context) {
@@ -137,6 +142,21 @@ public class BingWallpaperUtils {
             url = Constants.GLOBAL_URL + "&setmkt=" + language + "-" + country;
         }
         return String.format(url, index, count);
+    }
+
+    public static String getCountryBaseUrl(Context context) {
+        int auto = getCountryValue(context);
+        String country = Locale.getDefault().getCountry();
+        if (auto == 1) {
+            country = Locale.CHINA.getCountry();
+        } else if (auto == 2) {
+            country = Locale.US.getCountry();
+        }
+        if (country.equalsIgnoreCase("cn")) {
+            return Constants.CHINA_BASE_URL;
+        } else {
+            return Constants.GLOBAL_BASE_URL;
+        }
     }
 
     /**
@@ -293,5 +313,14 @@ public class BingWallpaperUtils {
         }
         PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         return powerManager == null || powerManager.isIgnoringBatteryOptimizations(context.getPackageName());
+    }
+
+    public static void setPhoneScreen(Activity context) {
+        if (context == null) {
+            return;
+        }
+        if (Constants.Config.isPhone) {
+            context.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
     }
 }
