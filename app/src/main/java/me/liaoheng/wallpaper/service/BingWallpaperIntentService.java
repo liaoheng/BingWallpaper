@@ -136,7 +136,7 @@ public class BingWallpaperIntentService extends IntentService {
         Observable<String> bingWallpaper;
         if (TextUtils.isEmpty(setWallpaperUrl)) {
             setWallpaperUrl = BingWallpaperUtils.getUrl(getApplicationContext());
-            bingWallpaper = BingWallpaperNetworkClient.getBingWallpaperSingle(setWallpaperUrl, getApplicationContext())
+            bingWallpaper = BingWallpaperNetworkClient.getBingWallpaperSingle(setWallpaperUrl)
                     .flatMap(
                             new Func1<BingWallpaperImage, Observable<String>>() {
                                 @Override

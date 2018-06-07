@@ -49,7 +49,7 @@ public class BingWallpaperNetworkClient {
                 .getBingWallpaper(url).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<BingWallpaperImage> getBingWallpaperSingle(String url, Context context) {
+    public static Observable<BingWallpaperImage> getBingWallpaperSingle(String url) {
         return NetUtils.get().getBingWallpaperSingleNetworkService()
                 .getBingWallpaper(url).subscribeOn(Schedulers.io())
                 .map(new Func1<BingWallpaper, BingWallpaperImage>() {

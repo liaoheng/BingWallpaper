@@ -78,8 +78,11 @@ public class BingWallpaperUtils {
 
         String resolution = sharedPreferences
                 .getString(SettingsActivity.PREF_SAVE_WALLPAPER_RESOLUTION, "0");
-
-        return names[Integer.parseInt(resolution)];
+        int i = Integer.parseInt(resolution);
+        if (names.length <= i) {//兼容之前的分辨率
+            i -= 2;
+        }
+        return names[i];
     }
 
     public static int getAutoModeValue(Context context) {
