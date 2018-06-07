@@ -50,8 +50,10 @@ public class DBHelper extends SQLiteOpenHelper {
             PreferenceManager.getDefaultSharedPreferences(mContext)
                     .edit()
                     .putString(SettingsActivity.PREF_SET_WALLPAPER_RESOLUTION, "0")
+                    .putString(SettingsActivity.PREF_SAVE_WALLPAPER_RESOLUTION, "0")
                     .apply();
             appPreferences.put(SettingsActivity.PREF_SET_WALLPAPER_RESOLUTION, "0");
+            appPreferences.put(SettingsActivity.PREF_SAVE_WALLPAPER_RESOLUTION, "0");
         }
     }
 }
