@@ -7,8 +7,8 @@ import android.support.v7.widget.RecyclerView;
 
 import com.flyco.systembar.SystemBarHelper;
 
+import net.yslibrary.licenseadapter.Library;
 import net.yslibrary.licenseadapter.LicenseAdapter;
-import net.yslibrary.licenseadapter.LicenseEntry;
 import net.yslibrary.licenseadapter.Licenses;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class LicenseActivity extends BaseActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setHasFixedSize(true);
 
-        List<LicenseEntry> licenses = new ArrayList<>();
+        List<Library> licenses = new ArrayList<>();
         licenses.add(Licenses.noContent("Android SDK", "Google Inc.",
                 "https://developer.android.com/sdk/terms.html"));
         licenses.add(Licenses.fromGitHubApacheV2("JakeWharton/ButterKnife"));
@@ -47,10 +47,10 @@ public class LicenseActivity extends BaseActivity {
         licenses.add(Licenses.fromGitHubApacheV2("dlew/joda-time-android"));
         licenses.add(Licenses.fromGitHubApacheV2("square/okhttp"));
         licenses.add(Licenses.fromGitHubApacheV2("square/retrofit"));
-        licenses.add(Licenses.fromGitHubApacheV2("bumptech/glide"));
-        licenses.add(Licenses.fromGitHubApacheV2("reactivex/rxjava"));
-        licenses.add(Licenses.fromGitHubApacheV2("reactivex/rxandroid"));
-        licenses.add(Licenses.fromGitHubApacheV2("trello/rxlifecycle"));
+        licenses.add(Licenses.fromGitHubBSD("bumptech/glide"));
+        licenses.add(Licenses.fromGitHubApacheV2("ReactiveX/RxAndroid", "1.x/" + Licenses.FILE_AUTO));
+        licenses.add(Licenses.fromGitHubApacheV2("ReactiveX/RxJava", "1.x/" + Licenses.FILE_AUTO));
+        licenses.add(Licenses.fromGitHubApacheV2("trello/rxlifecycle", "1.x/" + Licenses.FILE_AUTO));
         licenses.add(Licenses.fromGitHubApacheV2("orhanobut/logger"));
         licenses.add(Licenses.fromGitHub("DreaminginCodeZH/SystemUiHelper", Licenses.LICENSE_APACHE_V2));
         licenses.add(
@@ -59,10 +59,8 @@ public class LicenseActivity extends BaseActivity {
         licenses.add(Licenses.fromGitHubMIT("H07000223/FlycoSystemBar"));
         licenses.add(Licenses.fromGitHubApacheV2("Clans/FloatingActionButton"));
         licenses.add(Licenses.fromGitHubApacheV2("grandcentrix/tray"));
+        licenses.add(Licenses.fromGitHubApacheV2("apl-devs/AppIntro"));
 
-        LicenseAdapter adapter = new LicenseAdapter(licenses);
-        mRecyclerView.setAdapter(adapter);
-
-        Licenses.load(licenses);
+        mRecyclerView.setAdapter(new LicenseAdapter(licenses));
     }
 }

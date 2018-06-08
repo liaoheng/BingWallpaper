@@ -55,7 +55,7 @@
         <activity
                 android:name=".ui.IntroActivity"
                 android:screenOrientation="portrait"
-                android:theme="@style/Theme.AppCompat.NoActionBar" />
+                android:theme="@style/AppTheme.Intro" />
         <activity
                 android:name=".ui.ShortcutActivity"
                 android:excludeFromRecents="true"

@@ -98,7 +98,7 @@ dependencies {
     implementation 'me.zhanghai.android.systemuihelper:library:1.0.0'
 
     //https://github.com/yshrsmz/LicenseAdapter
-    implementation 'net.yslibrary.licenseadapter:licenseadapter:1.4.0'
+    implementation 'net.yslibrary.licenseadapter:licenseadapter:2.1.0'
 
     //https://github.com/H07000223/FlycoSystemBar
     implementation "com.flyco.systembar:FlycoSystemBar_Lib:1.0.0"
@@ -109,6 +109,7 @@ dependencies {
     //https://github.com/grandcentrix/tray
     implementation 'net.grandcentrix.tray:tray:0.12.0'
 
+    //https://github.com/apl-devs/AppIntro
     implementation 'com.github.apl-devs:appintro:v4.2.3'
 
     implementation 'com.github.liaoheng:common-core:0.0.6-SNAPSHOT'

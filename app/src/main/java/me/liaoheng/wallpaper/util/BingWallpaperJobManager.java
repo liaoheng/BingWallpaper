@@ -27,7 +27,7 @@ public class BingWallpaperJobManager {
 
     public static void enabled(Context context) {
         disabled(context);
-        enabled(context, TimeUnit.HOURS.toMillis(2));
+        enabled(context, Constants.JOB_SCHEDULER_PERIODIC);
     }
 
     public static void enabled(Context context, long time) {

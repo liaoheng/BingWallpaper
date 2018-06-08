@@ -18,6 +18,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.graphics.Palette;
+import android.text.TextUtils;
 import android.util.AndroidRuntimeException;
 import android.view.MenuItem;
 import android.view.View;
@@ -114,9 +115,18 @@ public class MainActivity extends BaseActivity
         }
         String longitude = mCoverStory.getLongitude();//经度
         String latitude = mCoverStory.getLatitude();//纬度
+        if (TextUtils.isEmpty(latitude) || TextUtils.isEmpty(longitude)) {
+            return;
+        }
+        if (Integer.parseInt(longitude) == 0 || Integer.parseInt(latitude) == 0) {
+            return;
+        }
         Uri uri = Uri.parse("geo:" + latitude + "," + longitude);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(uri);
+        if (intent.resolveActivity(getPackageManager()) == null) {
+            return;
+        }
         startActivity(intent);
     }
 
@@ -353,14 +363,17 @@ public class MainActivity extends BaseActivity
                     if (!ValidateUtils.isWebUrl(url)) {
                         url = "https://www.bing.com";
                     }
-                    new CustomTabsIntent.Builder()
-                            .setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary)).build()
-                            .launchUrl(this, Uri.parse(url));
+                    CustomTabsIntent build = new CustomTabsIntent.Builder()
+                            .setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary)).build();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                        build.intent.putExtra(Intent.EXTRA_REFERRER,
+                                Uri.parse(Intent.URI_ANDROID_APP_SCHEME + "//" + getPackageName()));
+                    }
+                    build.launchUrl(this, Uri.parse(url));
                 } catch (AndroidRuntimeException e) {
                     UIUtils.showToast(getActivity(), getString(R.string.unable_open_url));
                 }
             }
-
         }
         mDrawerLayout.closeDrawers();
         return true;
@@ -370,7 +383,8 @@ public class MainActivity extends BaseActivity
         setTitle(bingWallpaperImage.getCopyright());
         mHeaderCoverStoryTitleView.setText(bingWallpaperImage.getCopyright());
 
-        String url = BingWallpaperUtils.getImageUrl(getApplicationContext(),Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION,
+        String url = BingWallpaperUtils.getImageUrl(getApplicationContext(),
+                Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION,
                 bingWallpaperImage);
 
         GlideApp.with(getActivity()).load(url).dontAnimate().thumbnail(0.5f).listener(new RequestListener<Drawable>() {

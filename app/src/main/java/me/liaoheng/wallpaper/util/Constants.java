@@ -4,6 +4,7 @@ import android.support.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author liaoheng
@@ -17,6 +18,8 @@ public interface Constants {
     String HTTP_CACHE_DIR = "httpCache";
     int IMAGE_DISK_CACHE_SIZE = 100 * 1024 * 1024; // 100MB
     int HTTP_DISK_CACHE_SIZE = 5 * 1024 * 1024;  // 5MB
+
+    long JOB_SCHEDULER_PERIODIC= TimeUnit.HOURS.toMillis(3);
 
     String BASE_URL = "https://global.bing.com";
     String CHINA_BASE_URL = "https://cn.bing.com";
