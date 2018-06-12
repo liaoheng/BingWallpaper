@@ -240,6 +240,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     break;
                 case PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME:
                     if (mTimePreference.isEnabled()) {
+                        BingWallpaperAlarmManager.clear(getActivity());
                         BingWallpaperAlarmManager
                                 .add(getActivity(), mTimePreference.getLocalTime());
                         mPreferences.put(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME,

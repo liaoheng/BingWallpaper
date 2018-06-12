@@ -2,9 +2,13 @@ package me.liaoheng.wallpaper.data;
 
 import android.content.Context;
 
+import com.github.liaoheng.common.util.NetException;
+import com.github.liaoheng.common.util.NetLocalException;
+import com.github.liaoheng.common.util.NetServerException;
 import com.github.liaoheng.common.util.SystemDataException;
 import com.github.liaoheng.common.util.SystemRuntimeException;
 
+import java.io.IOException;
 import java.util.List;
 
 import me.liaoheng.wallpaper.model.BingWallpaper;
@@ -12,6 +16,8 @@ import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.NetUtils;
+import retrofit2.Call;
+import retrofit2.Response;
 import rx.Observable;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -62,6 +68,25 @@ public class BingWallpaperNetworkClient {
                         return bingWallpaper.getImages().get(0);
                     }
                 });
+    }
+
+    public static BingWallpaperImage getBingWallpaperSingleCall(String url) throws NetException {
+        try {
+            Response<BingWallpaper> execute = NetUtils.get().getBingWallpaperSingleNetworkService()
+                    .getBingWallpaperCall(url).execute();
+            if (execute.isSuccessful()) {
+                BingWallpaper bingWallpaper = execute.body();
+                if (bingWallpaper == null || bingWallpaper.getImages() == null
+                        || bingWallpaper.getImages().isEmpty()) {
+                    throw new NetServerException("bing wallpaper is not data");
+                }
+                return bingWallpaper.getImages().get(0);
+            }else{
+                throw new NetServerException("bing server response failure");
+            }
+        } catch (IOException e) {
+            throw new NetLocalException(e);
+        }
     }
 
     public static Observable<BingWallpaperCoverStory> getCoverStory(){

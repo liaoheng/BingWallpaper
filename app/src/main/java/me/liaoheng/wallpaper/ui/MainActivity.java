@@ -41,8 +41,6 @@ import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.ValidateUtils;
 
-import java.util.Locale;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -104,7 +102,7 @@ public class MainActivity extends BaseActivity
     private WallpaperBroadcastReceiver mWallpaperBroadcastReceiver;
     private BingWallpaperImage mCurBingWallpaperImage;
     private boolean isRun;
-    private int mLocale;
+    private boolean isChina;
 
     private BingWallpaperCoverStory mCoverStory;
 
@@ -115,19 +113,7 @@ public class MainActivity extends BaseActivity
         }
         String longitude = mCoverStory.getLongitude();//经度
         String latitude = mCoverStory.getLatitude();//纬度
-        if (TextUtils.isEmpty(latitude) || TextUtils.isEmpty(longitude)) {
-            return;
-        }
-        if (Integer.parseInt(longitude) == 0 || Integer.parseInt(latitude) == 0) {
-            return;
-        }
-        Uri uri = Uri.parse("geo:" + latitude + "," + longitude);
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(uri);
-        if (intent.resolveActivity(getPackageManager()) == null) {
-            return;
-        }
-        startActivity(intent);
+        BingWallpaperUtils.openMap(this, longitude, latitude);
     }
 
     @Override
@@ -196,6 +182,9 @@ public class MainActivity extends BaseActivity
             }
         });
 
+        registerReceiver(mWallpaperBroadcastReceiver,
+                new IntentFilter(BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE));
+
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -211,17 +200,11 @@ public class MainActivity extends BaseActivity
         mHeaderCoverStoryTitleView = mNavigationView.getHeaderView(0)
                 .findViewById(R.id.navigation_header_cover_story_title);
 
-        mLocale = BingWallpaperUtils.getCountryValue(this);
-        if (mLocale == 0) {
-            String displayCountry = Locale.getDefault().getDisplayCountry();
-            if (Locale.CHINA.getDisplayCountry().equalsIgnoreCase(displayCountry)) {
-                mLocale = 1;
-            }
-        }
-        if (mLocale != 1) {
-            UIUtils.viewGone(mCoverStoryView);
-        } else {
+        isChina = BingWallpaperUtils.isChinaLocale(this);
+        if (isChina) {
             UIUtils.viewVisible(mCoverStoryView);
+        } else {
+            UIUtils.viewGone(mCoverStoryView);
         }
 
         getBingWallpaper();
@@ -234,7 +217,7 @@ public class MainActivity extends BaseActivity
         }
         showSwipeRefreshLayout();
 
-        if (mLocale == 1) {
+        if (isChina) {
             BingWallpaperNetworkClient.getCoverStory()
                     .compose(this.<BingWallpaperCoverStory>bindToLifecycle())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -291,12 +274,13 @@ public class MainActivity extends BaseActivity
             return;
         }
         String url = BingWallpaperUtils.getResolutionImageUrl(this, mCurBingWallpaperImage);
-        BingWallpaperUtils.setWallpaper(this, url, type, new Callback4.EmptyCallback<Boolean>() {
-            @Override
-            public void onYes(Boolean aBoolean) {
-                showProgressDialog();
-            }
-        });
+        BingWallpaperUtils.setWallpaper(this, mCurBingWallpaperImage.copy(url), type,
+                new Callback4.EmptyCallback<Boolean>() {
+                    @Override
+                    public void onYes(Boolean aBoolean) {
+                        showProgressDialog();
+                    }
+                });
     }
 
     @Override
@@ -501,20 +485,10 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        registerReceiver(mWallpaperBroadcastReceiver,
-                new IntentFilter(BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE));
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        unregisterReceiver(mWallpaperBroadcastReceiver);
-    }
-
-    @Override
     protected void onDestroy() {
+        if (mWallpaperBroadcastReceiver!=null) {
+            unregisterReceiver(mWallpaperBroadcastReceiver);
+        }
         UIUtils.cancelToast();
         super.onDestroy();
     }

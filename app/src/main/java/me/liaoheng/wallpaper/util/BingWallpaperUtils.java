@@ -28,6 +28,7 @@ import org.joda.time.LocalTime;
 import java.util.Locale;
 
 import me.liaoheng.wallpaper.R;
+import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.ui.SettingsActivity;
@@ -128,18 +129,11 @@ public class BingWallpaperUtils {
     }
 
     public static String getUrl(Context context, int index, int count) {
-        int auto = getCountryValue(context);
-        String language = Locale.getDefault().getLanguage();
-        String country = Locale.getDefault().getCountry();
-        if (auto == 1) {
-            language = Locale.CHINA.getLanguage();
-            country = Locale.CHINA.getCountry();
-        } else if (auto == 2) {
-            language = Locale.US.getLanguage();
-            country = Locale.US.getCountry();
-        }
+        Locale locale = getLocale(context);
+        String country = locale.getCountry();
+        String language = locale.getLanguage();
         String url;
-        if (country.equalsIgnoreCase("cn")) {
+        if (isChinaLocale(locale)) {
             url = Constants.CHINA_URL;
         } else {
             url = Constants.GLOBAL_URL + "&setmkt=" + language + "-" + country;
@@ -148,18 +142,37 @@ public class BingWallpaperUtils {
     }
 
     public static String getCountryBaseUrl(Context context) {
-        int auto = getCountryValue(context);
-        String country = Locale.getDefault().getCountry();
-        if (auto == 1) {
-            country = Locale.CHINA.getCountry();
-        } else if (auto == 2) {
-            country = Locale.US.getCountry();
-        }
-        if (country.equalsIgnoreCase("cn")) {
+        if (isChinaLocale(context)) {
             return Constants.CHINA_BASE_URL;
         } else {
             return Constants.GLOBAL_BASE_URL;
         }
+    }
+
+    public static Locale getLocale(Context context) {
+        int auto = getCountryValue(context);
+        Locale country = Locale.getDefault();
+        if (auto == 1) {
+            country = Locale.CHINA;
+        } else if (auto == 2) {
+            country = Locale.US;
+        }
+        return country;
+    }
+
+    /**
+     * 以所在地区为标准
+     */
+    public static boolean isChinaLocale(Context context) {
+        Locale locale = getLocale(context);
+        return isChinaLocale(locale);
+    }
+
+    /**
+     * 以所在地区为标准
+     */
+    public static boolean isChinaLocale(Locale locale) {
+        return Locale.CHINA.getCountry().equalsIgnoreCase(locale.getCountry());
     }
 
     /**
@@ -242,13 +255,14 @@ public class BingWallpaperUtils {
      */
     public static void setWallpaper(final Context context, @Constants.setWallpaperMode final int mode,
             @Nullable final Callback4<Boolean> callback) {
-        setWallpaper(context, "", mode, callback);
+        setWallpaper(context, null, mode, callback);
     }
 
     /**
      * @param mode 0. both , 1. home , 2. lock
      */
-    public static void setWallpaper(final Context context, final String url, @Constants.setWallpaperMode final int mode,
+    public static void setWallpaper(final Context context, final @Nullable BingWallpaperImage image,
+            @Constants.setWallpaperMode final int mode,
             @Nullable final Callback4<Boolean> callback) {
         if (!BingWallpaperUtils.isConnectedOrConnecting(context)) {
             UIUtils.showToast(context, context.getString(R.string.network_unavailable));
@@ -263,14 +277,14 @@ public class BingWallpaperUtils {
                             if (callback != null) {
                                 callback.onYes(true);
                             }
-                            BingWallpaperIntentService.start(context, url, mode, false);
+                            BingWallpaperIntentService.start(context, image, mode, false);
                         }
                     });
         } else {
             if (callback != null) {
                 callback.onYes(true);
             }
-            BingWallpaperIntentService.start(context, url, mode, false);
+            BingWallpaperIntentService.start(context, image, mode, false);
         }
     }
 
@@ -325,5 +339,24 @@ public class BingWallpaperUtils {
         if (Constants.Config.isPhone) {
             context.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
+    }
+
+    /**
+     * open map application
+     *
+     * @param longitude 经度
+     * @param latitude 纬度
+     */
+    public static void openMap(Context context, String longitude, String latitude) {
+        if (TextUtils.isEmpty(latitude) || TextUtils.isEmpty(longitude)) {
+            return;
+        }
+        Uri uri = Uri.parse("geo:" + latitude + "," + longitude);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(uri);
+        if (intent.resolveActivity(context.getPackageManager()) == null) {
+            return;
+        }
+        context.startActivity(intent);
     }
 }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
           package="me.liaoheng.wallpaper">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -9,8 +8,8 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
             android:name=".MApplication"
@@ -18,12 +17,12 @@
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:supportsRtl="true"
-            android:theme="@style/AppTheme"
-            tools:replace="android:allowBackup">
+            android:theme="@style/AppTheme">
 
         <activity
                 android:name=".ui.MainActivity"
                 android:configChanges="screenSize|orientation|keyboardHidden"
+                android:launchMode="singleTask"
                 android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,8 +35,8 @@
         </activity>
         <activity
                 android:name=".ui.SettingsActivity"
-                android:label="@string/menu_main_setting"
                 android:configChanges="screenSize|orientation|keyboardHidden"
+                android:label="@string/menu_main_setting"
                 android:theme="@style/AppTheme.Settings" />
         <activity
                 android:name=".ui.LicenseActivity"
@@ -49,8 +48,8 @@
                 android:label="@string/menu_main_wallpaper_history_list" />
         <activity
                 android:name=".ui.WallpaperDetailActivity"
-                android:screenOrientation="behind"
                 android:configChanges="screenSize|orientation|keyboardHidden"
+                android:screenOrientation="behind"
                 android:theme="@style/AppTheme.NoActionBar" />
         <activity
                 android:name=".ui.IntroActivity"
@@ -62,6 +61,31 @@
                 android:launchMode="singleTask"
                 android:taskAffinity=""
                 android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <receiver android:name=".ui.AppWidget_5x2">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="me.liaoheng.wallpaper.UPDATE_WALLPAPER_COVER_STORY" />
+                <action android:name="TITLE_CLICK" />
+                <action android:name="CONTENT_CLICK" />
+            </intent-filter>
+
+            <meta-data
+                    android:name="android.appwidget.provider"
+                    android:resource="@xml/appwidget_5x2" />
+        </receiver>
+
+        <receiver android:name=".ui.AppWidget_5x1">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="me.liaoheng.wallpaper.UPDATE_WALLPAPER_COVER_STORY" />
+                <action android:name="TITLE_CLICK" />
+            </intent-filter>
+
+            <meta-data
+                    android:name="android.appwidget.provider"
+                    android:resource="@xml/appwidget_5x1" />
+        </receiver>
 
         <receiver android:name=".service.AutoSetWallpaperBroadcastReceiver">
             <intent-filter>

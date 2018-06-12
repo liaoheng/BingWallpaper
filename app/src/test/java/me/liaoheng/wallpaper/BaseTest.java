@@ -1,9 +1,6 @@
 package me.liaoheng.wallpaper;
 
-import net.danlew.android.joda.JodaTimeAndroid;
-
 import org.junit.Before;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLog;
 
 /**
@@ -17,7 +14,6 @@ public class BaseTest {
     @Before
     public void setUp() {
         ShadowLog.stream = System.out;
-        JodaTimeAndroid.init(RuntimeEnvironment.application);
     }
 
     public void log(String msg, Object... o) {

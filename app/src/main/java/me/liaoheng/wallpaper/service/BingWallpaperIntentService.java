@@ -2,30 +2,35 @@ package me.liaoheng.wallpaper.service;
 
 import android.app.IntentService;
 import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
-import android.text.TextUtils;
-import android.util.AndroidRuntimeException;
 
 import com.bumptech.glide.request.target.Target;
+import com.github.liaoheng.common.util.Callback2;
 import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
+import com.github.liaoheng.common.util.NetException;
 import com.github.liaoheng.common.util.SystemDataException;
+import com.github.liaoheng.common.util.SystemException;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nullable;
 
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
+import me.liaoheng.wallpaper.ui.AppWidget_5x1;
+import me.liaoheng.wallpaper.ui.AppWidget_5x2;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.ExceptionHandle;
@@ -33,11 +38,6 @@ import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.ROM;
 import me.liaoheng.wallpaper.util.TasksUtils;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * 设置壁纸操作IntentService
@@ -60,6 +60,7 @@ public class BingWallpaperIntentService extends IntentService {
     public final static String EXTRA_SET_WALLPAPER_MODE = "set_wallpaper_mode";
     public final static String EXTRA_SET_WALLPAPER_BACKGROUND = "set_wallpaper_background";
     public final static String EXTRA_SET_WALLPAPER_URL = "set_wallpaper_url";
+    public final static String EXTRA_SET_WALLPAPER_IMAGE = "set_wallpaper_image";
 
     public BingWallpaperIntentService() {
         super("BingWallpaperIntentService");
@@ -76,56 +77,34 @@ public class BingWallpaperIntentService extends IntentService {
      * @param mode 0. both , 1. home , 2. lock
      */
     public static void start(Context context, @Constants.setWallpaperMode int mode, boolean background) {
-        start(context, "", mode, background);
+        start(context, null, mode, background);
     }
 
     /**
      * @param mode 0. both , 1. home , 2. lock
      */
-    public static void start(Context context, String url, @Constants.setWallpaperMode int mode, boolean background) {
+    public static void start(Context context, @Nullable BingWallpaperImage image, @Constants.setWallpaperMode int mode,
+            boolean background) {
         Intent intent = new Intent(context, BingWallpaperIntentService.class);
         intent.putExtra(EXTRA_SET_WALLPAPER_MODE, mode);
         intent.putExtra(EXTRA_SET_WALLPAPER_BACKGROUND, background);
-        intent.putExtra(EXTRA_SET_WALLPAPER_URL, url);
+        intent.putExtra(EXTRA_SET_WALLPAPER_IMAGE, image);
         ContextCompat.startForegroundService(context, intent);
-    }
-
-    private void clearNotification() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            if (manager == null) {
-                return;
-            }
-            manager.cancelAll();
-        }
     }
 
     @Override
     protected void onHandleIntent(final Intent intent) {
         int setWallpaperType = intent.getIntExtra(EXTRA_SET_WALLPAPER_MODE, 0);
         final boolean isBackground = intent.getBooleanExtra(EXTRA_SET_WALLPAPER_BACKGROUND, false);
-        String setWallpaperUrl = intent.getStringExtra(EXTRA_SET_WALLPAPER_URL);
-        L.Log.d(TAG, " setWallpaperType : " + setWallpaperType);
+        BingWallpaperImage bingWallpaperImage = intent.getParcelableExtra(EXTRA_SET_WALLPAPER_IMAGE);
+        L.alog().d(TAG, " setWallpaperType : " + setWallpaperType);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    "bing_wallpaper_intent_service_notification_channel_id", "AutoSetWallpaperIntentService",
-                    NotificationManager.IMPORTANCE_LOW);
-
-            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            if (manager == null) {
-                return;
-            }
-            manager.createNotificationChannel(channel);
-
-            Notification notification = new Notification.Builder(getApplicationContext(),
-                    "bing_wallpaper_intent_service_notification_channel_id")
-                    .setSmallIcon(R.mipmap.ic_launcher_foreground)
-                    .setContentText(getText(R.string.set_wallpaper_running))
-                    .setContentTitle(getText(R.string.app_name)).build();
-
-            startForeground(0x111, notification);
-        }
+        Notification notification = new NotificationCompat.Builder(getApplicationContext(),
+                Constants.FOREGROUND_SET_NOTIFICATION_CHANNEL).setSmallIcon(
+                R.mipmap.ic_launcher_foreground)
+                .setContentText(getText(R.string.set_wallpaper_running))
+                .setContentTitle(getText(R.string.app_name)).build();
+        startForeground(0x111, notification);
 
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
             LogDebugFileUtils.get().i(TAG, "Run BingWallpaperIntentService");
@@ -133,124 +112,142 @@ public class BingWallpaperIntentService extends IntentService {
 
         sendSetWallpaperBroadcast(BingWallpaperState.BEGIN);
 
-        Observable<String> bingWallpaper;
-        if (TextUtils.isEmpty(setWallpaperUrl)) {
-            setWallpaperUrl = BingWallpaperUtils.getUrl(getApplicationContext());
-            bingWallpaper = BingWallpaperNetworkClient.getBingWallpaperSingle(setWallpaperUrl)
-                    .flatMap(
-                            new Func1<BingWallpaperImage, Observable<String>>() {
-                                @Override
-                                public Observable<String> call(BingWallpaperImage bingWallpaperImage) {
-                                    return Observable.just(
-                                            BingWallpaperUtils.getResolutionImageUrl(getApplicationContext(),
-                                                    bingWallpaperImage));
-                                }
-                            });
-        } else {
-            bingWallpaper = Observable.just(setWallpaperUrl).subscribeOn(Schedulers.io());
-        }
-        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().i(TAG, "bing url : %s", setWallpaperUrl);
-        }
-        bingWallpaper.compose(applyDownload(setWallpaperType))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<File>() {
-                    @Override
-                    public void call(File file) {
-                        L.Log.i(TAG, "setBingWallpaper Success");
-                        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-                            LogDebugFileUtils.get().i(TAG, "setBingWallpaper Success");
-                        }
-                        sendSetWallpaperBroadcast(BingWallpaperState.SUCCESS);
-                        if (isBackground) {
-                            //标记成功，每天只在后台执行一次
-                            if (TasksUtils.isToDaysDoProvider(getApplicationContext(), 1, FLAG_SET_WALLPAPER_STATE)) {
-                                L.Log.i(TAG, "Today markDone");
-                                if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-                                    LogDebugFileUtils.get().i(TAG, "Today markDone");
-                                }
-                                TasksUtils.markDoneProvider(getApplicationContext(), FLAG_SET_WALLPAPER_STATE);
-                            }
-                        }
-                        clearNotification();
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        L.Log.e(TAG, throwable, "setBingWallpaper Error");
-                        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-                            LogDebugFileUtils.get().e(TAG, throwable, "setBingWallpaper Error");
-                        }
-                        sendSetWallpaperBroadcast(BingWallpaperState.FAIL);
-                        clearNotification();
-                        ExceptionHandle.collectException(TAG, throwable);
-                    }
-                });
-
-    }
-
-    private Observable.Transformer<String, File> applyDownload(final int setWallpaperType) {
-        return new Observable.Transformer<String, File>() {
+        Callback2<BingWallpaperImage> callback = new Callback2.EmptyCallback<BingWallpaperImage>() {
             @Override
-            public Observable<File> call(Observable<String> stringObservable) {
-                return stringObservable.flatMap(new Func1<String, Observable<File>>() {
-                    @Override
-                    public Observable<File> call(String url) {
-                        L.Log.i(TAG, "wallpaper image url: " + url);
-                        File wallpaper = null;
-                        try {
-                            wallpaper = GlideApp.with(getApplicationContext())
-                                    .asFile()
-                                    .load(url)
-                                    .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-                                    .get(2, TimeUnit.MINUTES);
+            public void onSuccess(BingWallpaperImage bingWallpaperImage) {
+                success(isBackground, bingWallpaperImage);
+            }
 
-                            String absolutePath = wallpaper.getAbsolutePath();
-                            L.Log.i(TAG, "wallpaper file : " + absolutePath);
-                            Bitmap bitmap = BitmapFactory.decodeFile(absolutePath);
+            @Override
+            public void onError(Throwable e) {
+                failure(e);
+            }
 
-                            if (bitmap == null) {
-                                throw new SystemDataException("wallpaper file not found");
-                            }
-
-                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                                WallpaperManager.getInstance(getApplicationContext())
-                                        .setBitmap(bitmap);
-                            } else {
-                                if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-                                    WallpaperManager.getInstance(getApplicationContext())
-                                            .setBitmap(bitmap, null, false, WallpaperManager.FLAG_SYSTEM);
-                                } else if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                                    WallpaperManager.getInstance(getApplicationContext())
-                                            .setBitmap(bitmap, null, false, WallpaperManager.FLAG_LOCK);
-                                } else {
-                                    if (ROM.getROM().isEmui()) {
-                                        WallpaperManager.getInstance(getApplicationContext())
-                                                .setBitmap(bitmap, null, false, WallpaperManager.FLAG_SYSTEM);
-                                        WallpaperManager.getInstance(getApplicationContext())
-                                                .setBitmap(bitmap, null, false, WallpaperManager.FLAG_LOCK);
-                                    } else {
-                                        WallpaperManager.getInstance(getApplicationContext())
-                                                .setBitmap(bitmap);
-                                    }
-                                }
-                            }
-
-                            if (!bitmap.isRecycled()) {
-                                bitmap.recycle();
-                            }
-                            return Observable.just(wallpaper);
-                        } catch (Exception e) {
-                            throw new AndroidRuntimeException(e);
-                        } finally {
-                            if (wallpaper != null) {
-                                FileUtils.delete(wallpaper);
-                            }
-                        }
-                    }
-                });
+            @Override
+            public void onFinish() {
+                stopForeground(true);
             }
         };
+        String imageUrl;
+        if (bingWallpaperImage == null) {
+            try {
+                bingWallpaperImage = BingWallpaperNetworkClient.getBingWallpaperSingleCall(
+                        BingWallpaperUtils.getUrl(getApplicationContext()));
+                imageUrl = BingWallpaperUtils.getResolutionImageUrl(getApplicationContext(),
+                        bingWallpaperImage);
+            } catch (NetException e) {
+                callback.onError(e);
+                return;
+            }
+        } else {
+            imageUrl = bingWallpaperImage.getImageUrl();
+        }
+
+        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+            LogDebugFileUtils.get().i(TAG, "bing url : %s", imageUrl);
+        }
+
+        File wallpaper = null;
+        try {
+            wallpaper = downloadAndSetWallpaper(imageUrl, setWallpaperType);
+            callback.onSuccess(bingWallpaperImage);
+            callback.onFinish();
+        } catch (Exception e) {
+            callback.onError(new SystemException(e));
+        } finally {
+            if (wallpaper != null) {
+                FileUtils.delete(wallpaper);
+            }
+        }
+    }
+
+    private void failure(Throwable throwable) {
+        L.alog().e(TAG, throwable, "setBingWallpaper Error");
+        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+            LogDebugFileUtils.get().e(TAG, throwable, "setBingWallpaper Error");
+        }
+        sendSetWallpaperBroadcast(BingWallpaperState.FAIL);
+        ExceptionHandle.collectException(TAG, throwable);
+
+        Notification notification = new NotificationCompat.Builder(getApplicationContext(),
+                Constants.FOREGROUND_SET_NOTIFICATION_CHANNEL).setSmallIcon(
+                R.mipmap.ic_launcher_foreground)
+                .setAutoCancel(true)
+                .setContentText(getText(R.string.set_wallpaper_failure))
+                .setContentTitle(getText(R.string.app_name)).build();
+        NotificationManagerCompat manager = NotificationManagerCompat.from(this);
+        manager.notify(11, notification);
+    }
+
+    private void success(boolean isBackground, BingWallpaperImage bingWallpaperImage) {
+        L.alog().i(TAG, "setBingWallpaper Success");
+        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+            LogDebugFileUtils.get().i(TAG, "setBingWallpaper Success");
+        }
+
+        AppWidget_5x2.start(this, bingWallpaperImage);
+        AppWidget_5x1.start(this, bingWallpaperImage);
+
+        sendSetWallpaperBroadcast(BingWallpaperState.SUCCESS);
+        if (isBackground) {
+            //标记成功，每天只在后台执行一次
+            if (TasksUtils.isToDaysDoProvider(getApplicationContext(), 1, FLAG_SET_WALLPAPER_STATE)) {
+                L.Log.i(TAG, "Today markDone");
+                if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+                    LogDebugFileUtils.get().i(TAG, "Today markDone");
+                }
+                TasksUtils.markDoneProvider(getApplicationContext(), FLAG_SET_WALLPAPER_STATE);
+            }
+        }
+    }
+
+    private File downloadAndSetWallpaper(String url, int setWallpaperType)
+            throws Exception {
+        L.alog().i(TAG, "wallpaper image url: " + url);
+        File wallpaper = GlideApp.with(getApplicationContext())
+                .asFile()
+                .load(url)
+                .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                .get(2, TimeUnit.MINUTES);
+
+        if (wallpaper == null) {
+            throw new SystemDataException("download wallpaper failure");
+        }
+
+        String absolutePath = wallpaper.getAbsolutePath();
+
+        Bitmap bitmap = BitmapFactory.decodeFile(absolutePath);
+
+        if (bitmap == null) {
+            throw new SystemDataException("wallpaper file not found");
+        }
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            WallpaperManager.getInstance(getApplicationContext())
+                    .setBitmap(bitmap);
+        } else {
+            if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
+                WallpaperManager.getInstance(getApplicationContext())
+                        .setBitmap(bitmap, null, false, WallpaperManager.FLAG_SYSTEM);
+            } else if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
+                WallpaperManager.getInstance(getApplicationContext())
+                        .setBitmap(bitmap, null, false, WallpaperManager.FLAG_LOCK);
+            } else {
+                if (ROM.getROM().isEmui()) {
+                    WallpaperManager.getInstance(getApplicationContext())
+                            .setBitmap(bitmap, null, false, WallpaperManager.FLAG_SYSTEM);
+                    WallpaperManager.getInstance(getApplicationContext())
+                            .setBitmap(bitmap, null, false, WallpaperManager.FLAG_LOCK);
+                } else {
+                    WallpaperManager.getInstance(getApplicationContext())
+                            .setBitmap(bitmap);
+                }
+            }
+        }
+        if (!bitmap.isRecycled()) {
+            bitmap.recycle();
+        }
+        return wallpaper;
     }
 
     private void sendSetWallpaperBroadcast(BingWallpaperState state) {
@@ -258,4 +255,11 @@ public class BingWallpaperIntentService extends IntentService {
         intent.putExtra(EXTRA_GET_WALLPAPER_STATE, state.getState());
         sendBroadcast(intent);
     }
+
+    //@Override
+    //public void onTrimMemory(int level) {
+    //    if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+    //        LogDebugFileUtils.get().i(TAG, "onTrimMemory  " + level);
+    //    }
+    //}
 }

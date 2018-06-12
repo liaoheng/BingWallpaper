@@ -114,8 +114,10 @@ public class WallpaperDetailActivity extends BaseActivity {
                 UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_failure));
             }
         });
+        registerReceiver(mWallpaperBroadcastReceiver,
+                new IntentFilter(BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE));
 
-        mWallpaperImage = (BingWallpaperImage) getIntent().getSerializableExtra("image");
+        mWallpaperImage = getIntent().getParcelableExtra("image");
         if (mWallpaperImage == null) {
             UIUtils.showToast(getApplicationContext(), "unknown error");
             finish();
@@ -213,7 +215,6 @@ public class WallpaperDetailActivity extends BaseActivity {
     private void loadImage(String url) {
         GlideApp.with(this)
                 .load(url)
-                .thumbnail(0.5f)
                 .dontAnimate()
                 .listener(new RequestListener<Drawable>() {
                     @Override
@@ -370,6 +371,10 @@ public class WallpaperDetailActivity extends BaseActivity {
      * @param type 0. both , 1. home , 2. lock
      */
     private void setWallpaper(final int type) {
+        if (mWallpaperImage == null) {
+            return;
+        }
+
         String message = getString(R.string.menu_set_wallpaper_mode_both);
         if (type == 1) {
             message = getString(R.string.menu_set_wallpaper_mode_home);
@@ -382,26 +387,20 @@ public class WallpaperDetailActivity extends BaseActivity {
                 new Callback4.EmptyCallback<DialogInterface>() {
                     @Override
                     public void onYes(DialogInterface dialogInterface) {
-                        BingWallpaperUtils.setWallpaper(getActivity(), url, type, new EmptyCallback<Boolean>() {
-                            @Override
-                            public void onYes(Boolean aBoolean) {
-                                showProgressDialog();
-                            }
-                        });
+                        BingWallpaperUtils.setWallpaper(getActivity(), mWallpaperImage.copy(url), type,
+                                new EmptyCallback<Boolean>() {
+                                    @Override
+                                    public void onYes(Boolean aBoolean) {
+                                        showProgressDialog();
+                                    }
+                                });
                     }
                 });
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        registerReceiver(mWallpaperBroadcastReceiver,
-                new IntentFilter(BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE));
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
         unregisterReceiver(mWallpaperBroadcastReceiver);
+        super.onDestroy();
     }
 }

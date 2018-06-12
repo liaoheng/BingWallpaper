@@ -59,6 +59,7 @@ android {
 dependencies {
     testImplementation deps.robolectric
     testImplementation deps.junit
+    testImplementation 'joda-time:joda-time:2.9.9'
     //android system
     implementation deps.supportv4
     implementation deps.appcompatv7

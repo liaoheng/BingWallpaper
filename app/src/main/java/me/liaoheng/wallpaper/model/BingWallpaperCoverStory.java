@@ -16,6 +16,7 @@ public class BingWallpaperCoverStory {
     private String longitude;
     @SerializedName("Latitude")
     private String latitude;
+    private String attribute;
     private String provider;
     private String para1="";
     private String para2="";
@@ -66,6 +67,14 @@ public class BingWallpaperCoverStory {
 
     public void setProvider(String provider) {
         this.provider = provider;
+    }
+
+    public String getAttribute() {
+        return attribute;
+    }
+
+    public void setAttribute(String attribute) {
+        this.attribute = attribute;
     }
 
     public String getPara1() {
