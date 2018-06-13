@@ -9,11 +9,8 @@ import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.UIUtils;
 
 import me.liaoheng.wallpaper.R;
-import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.util.Constants;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 
 /**
  * @author liaoheng
@@ -42,7 +39,8 @@ public class AppWidget_5x1 extends BaseAppWidget {
         }
     }
 
-    private void setText(Context context, BingWallpaperImage image) {
+    @Override
+    protected void setText(Context context, BingWallpaperImage image) {
         RemoteViews remoteViews = getRemoteViews(context, R.layout.view_appwidget_5x1);
 
         if (image == null) {
@@ -62,21 +60,4 @@ public class AppWidget_5x1 extends BaseAppWidget {
         appWidgetManager.updateAppWidget(appWidgetIds, remoteViews);
     }
 
-    @Override
-    public void onEnabled(final Context context) {
-        super.onEnabled(context);
-        BingWallpaperNetworkClient.getBingWallpaper(context)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<BingWallpaperImage>() {
-                    @Override
-                    public void call(BingWallpaperImage bingWallpaperImage) {
-                        setText(context, bingWallpaperImage);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                    }
-                });
-
-    }
 }

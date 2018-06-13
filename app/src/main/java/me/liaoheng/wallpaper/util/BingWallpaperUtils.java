@@ -246,6 +246,7 @@ public class BingWallpaperUtils {
      *
      * @return boolean 不管wifi，还是mobile net，只有当前在连接状态（可有效传输数据）才返回true,反之false。
      */
+    @Deprecated
     public static boolean isConnectedOrConnecting(Context context) {
         return NetworkUtils.isConnectedOrConnecting(context);
     }

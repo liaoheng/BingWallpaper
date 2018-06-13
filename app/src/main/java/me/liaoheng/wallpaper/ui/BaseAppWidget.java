@@ -11,9 +11,14 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.widget.RemoteViews;
 
+import com.github.liaoheng.common.util.NetworkUtils;
+
 import me.liaoheng.wallpaper.R;
+import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.util.Constants;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 
 /**
  * @author liaoheng
@@ -24,7 +29,7 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
     protected final String CONTENT_CLICK = "CONTENT_CLICK";
     protected final String TAG = this.getClass().getSimpleName();
 
-    protected static void start(Context context,Class<?> cls,BingWallpaperImage bingWallpaperImage){
+    protected static void start(Context context, Class<?> cls, BingWallpaperImage bingWallpaperImage) {
         Intent intent = new Intent(context, cls);
         intent.setAction(Constants.ACTION_UPDATE_WALLPAPER_COVER_STORY);
         intent.putExtra(Constants.EXTRA_UPDATE_WALLPAPER_COVER_STORY, bingWallpaperImage);
@@ -52,11 +57,34 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
         remoteViews.setOnClickPendingIntent(id, pendingIntent);
     }
 
-    protected void update(Context context, Class<?> cls,RemoteViews remoteViews) {
+    protected void update(Context context, Class<?> cls, RemoteViews remoteViews) {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 
         ComponentName componentName = new ComponentName(context, cls);
 
         appWidgetManager.updateAppWidget(componentName, remoteViews);
     }
+
+    @Override
+    public void onEnabled(final Context context) {
+        super.onEnabled(context);
+        if (!NetworkUtils.isConnectedOrConnecting(context)) {
+            return;
+        }
+        BingWallpaperNetworkClient.getBingWallpaper(context)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<BingWallpaperImage>() {
+                    @Override
+                    public void call(BingWallpaperImage bingWallpaperImage) {
+                        setText(context, bingWallpaperImage);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                    }
+                });
+
+    }
+
+    protected void setText(Context context, BingWallpaperImage image) {}
 }

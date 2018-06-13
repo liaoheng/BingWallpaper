@@ -46,7 +46,8 @@ public class AppWidget_5x2 extends BaseAppWidget {
         }
     }
 
-    private void setText(final Context context, final BingWallpaperImage image) {
+    @Override
+    protected void setText(final Context context, final BingWallpaperImage image) {
         final RemoteViews remoteViews = getRemoteViews(context, R.layout.view_appwidget_5x2);
 
         if (image == null) {
@@ -90,22 +91,5 @@ public class AppWidget_5x2 extends BaseAppWidget {
         addContentClick(context, AppWidget_5x2.class, remoteViews);
 
         appWidgetManager.updateAppWidget(appWidgetIds, remoteViews);
-    }
-
-    @Override
-    public void onEnabled(final Context context) {
-        super.onEnabled(context);
-        BingWallpaperNetworkClient.getBingWallpaper(context)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<BingWallpaperImage>() {
-                    @Override
-                    public void call(BingWallpaperImage bingWallpaperImage) {
-                        setText(context, bingWallpaperImage);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                    }
-                });
     }
 }
