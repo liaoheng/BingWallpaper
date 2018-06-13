@@ -219,7 +219,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                         mTimePreference.setSummary(R.string.pref_not_set_time);
                         mDayUpdatePreference.setChecked(false);
                         BingWallpaperUtils.clearDayUpdateTime(getActivity());
-                        BingWallpaperAlarmManager.clear(getActivity());
+                        BingWallpaperAlarmManager.disabled(getActivity());
                         BingWallpaperJobManager.enabled(getActivity());
                     } else {
                         BingWallpaperJobManager.disabled(getActivity());
@@ -240,9 +240,8 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     break;
                 case PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME:
                     if (mTimePreference.isEnabled()) {
-                        BingWallpaperAlarmManager.clear(getActivity());
                         BingWallpaperAlarmManager
-                                .add(getActivity(), mTimePreference.getLocalTime());
+                                .enabled(getActivity(), mTimePreference.getLocalTime());
                         mPreferences.put(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME,
                                 mTimePreference.getLocalTime().toString());
                     }

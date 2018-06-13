@@ -152,7 +152,7 @@ public class IntroActivity extends AppIntro {
             case 2:
                 if (fragment.localTime != null) {
                     BingWallpaperAlarmManager
-                            .add(this, fragment.localTime);
+                            .enabled(this, fragment.localTime);
                     mSharedPreferences.edit()
                             .putBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE, true)
                             .apply();

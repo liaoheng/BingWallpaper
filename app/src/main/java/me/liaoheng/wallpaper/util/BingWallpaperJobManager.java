@@ -22,6 +22,9 @@ public class BingWallpaperJobManager {
     public static void disabled(Context context) {
         JobScheduler jobScheduler = (JobScheduler)
                 context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        if (jobScheduler == null) {
+            return;
+        }
         jobScheduler.cancel(JOB_ID);
     }
 
@@ -39,6 +42,9 @@ public class BingWallpaperJobManager {
                 .setBackoffCriteria(TimeUnit.MINUTES.toMillis(15), JobInfo.BACKOFF_POLICY_LINEAR)
                 .setPersisted(true)
                 .build();
+        if (jobScheduler == null) {
+            return;
+        }
         jobScheduler.schedule(jobInfo);
 
         if (BingWallpaperUtils.isEnableLog(context)) {

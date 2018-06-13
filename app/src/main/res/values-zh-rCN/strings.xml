@@ -19,7 +19,7 @@
     <string name="pref_auto_update_wallpaper">自动更新壁纸</string>
     <string name="pref_update_only_on_wifi">只在WIFI时</string>
     <string name="pref_auto_update_everyday">每天自动</string>
-    <string name="pref_auto_update_check_every_hour">两小时检查一次</string>
+    <string name="pref_auto_update_check_every_hour">三小时检查一次</string>
     <string name="pref_alarm_update_wallpaper_everyday">每天定时</string>
     <string name="pref_alarm_update_wallpaper_time">每天定时时间</string>
     <string name="pref_not_set_time">没有设置时间</string>

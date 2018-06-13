@@ -32,7 +32,7 @@ public class AutoSetWallpaperBroadcastReceiver extends BroadcastReceiver {
             if (dayUpdateTime == null) {
                 return;
             }
-            BingWallpaperAlarmManager.add(context, dayUpdateTime);
+            BingWallpaperAlarmManager.enabled(context, dayUpdateTime);
             return;
         }
 
