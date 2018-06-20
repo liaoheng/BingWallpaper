@@ -53,7 +53,7 @@
                 android:theme="@style/AppTheme.NoActionBar" />
         <activity
                 android:name=".ui.IntroActivity"
-                android:screenOrientation="portrait"
+                android:configChanges="screenSize|orientation|keyboardHidden"
                 android:theme="@style/AppTheme.Intro" />
         <activity
                 android:name=".ui.ShortcutActivity"

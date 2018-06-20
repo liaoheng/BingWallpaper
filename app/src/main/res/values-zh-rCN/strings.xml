@@ -7,6 +7,7 @@
     <string name="network_unavailable">没有可用网络</string>
     <string name="connection_timed_out">连接超时</string>
     <string name="network_request_error">网络请求错误</string>
+    <string name="load_image_error">加载图片错误</string>
     <string name="download">下载中</string>
     <string name="unable_open_url">无法打开网址</string>
     <string name="pull_refresh">请下拉刷新，</string>

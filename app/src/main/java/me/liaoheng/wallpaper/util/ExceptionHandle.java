@@ -25,6 +25,7 @@ public class ExceptionHandle {
         } else {
             if (throwable instanceof GlideException) {
                 GlideException e = (GlideException) throwable;
+                error = context.getString(R.string.load_image_error);
                 List<Throwable> causes = e.getCauses();
                 if (causes != null) {
                     for (Throwable t : causes) {

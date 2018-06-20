@@ -18,7 +18,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.graphics.Palette;
-import android.text.TextUtils;
 import android.util.AndroidRuntimeException;
 import android.view.MenuItem;
 import android.view.View;
@@ -371,102 +370,110 @@ public class MainActivity extends BaseActivity
                 Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION,
                 bingWallpaperImage);
 
-        GlideApp.with(getActivity()).load(url).dontAnimate().thumbnail(0.5f).listener(new RequestListener<Drawable>() {
+        GlideApp.with(getActivity())
+                .load(url)
+                .dontAnimate()
+                .thumbnail(0.5f)
+                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                .listener(new RequestListener<Drawable>() {
 
-            @Override
-            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target,
-                    boolean isFirstResource) {
-                setBingWallpaperError(e);
-                return false;
-            }
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target,
+                            boolean isFirstResource) {
+                        setBingWallpaperError(e);
+                        return false;
+                    }
 
-            @Override
-            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target,
-                    DataSource dataSource,
-                    boolean isFirstResource) {
-                return false;
-            }
-        }).into(new ImageViewTarget<Drawable>(mWallpaperView) {
-            @Override
-            public void onLoadStarted(Drawable placeholder) {
-                super.onLoadStarted(placeholder);
-                showSwipeRefreshLayout();
-            }
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target,
+                            DataSource dataSource,
+                            boolean isFirstResource) {
+                        return false;
+                    }
+                })
+                .into(new ImageViewTarget<Drawable>(mWallpaperView) {
+                    @Override
+                    public void onLoadStarted(Drawable placeholder) {
+                        super.onLoadStarted(placeholder);
+                        showSwipeRefreshLayout();
+                    }
 
-            @Override
-            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                super.onResourceReady(resource, transition);
-                mWallpaperView.setImageDrawable(resource);
-                mNavigationHeaderImage.setImageDrawable(resource);
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource,
+                            @Nullable Transition<? super Drawable> transition) {
+                        super.onResourceReady(resource, transition);
+                        mWallpaperView.setImageDrawable(resource);
+                        mNavigationHeaderImage.setImageDrawable(resource);
 
-                Palette.from(BitmapUtils.drawableToBitmap(resource))
-                        .generate(new Palette.PaletteAsyncListener() {
-                            @Override
-                            public void onGenerated(@NonNull Palette palette) {
+                        Palette.from(BitmapUtils.drawableToBitmap(resource))
+                                .generate(new Palette.PaletteAsyncListener() {
+                                    @Override
+                                    public void onGenerated(@NonNull Palette palette) {
 
-                                int lightMutedSwatch = palette.getMutedColor(ContextCompat
-                                        .getColor(getActivity(), R.color.colorPrimaryDark));
+                                        int lightMutedSwatch = palette.getMutedColor(ContextCompat
+                                                .getColor(getActivity(), R.color.colorPrimaryDark));
 
-                                int lightVibrantSwatch = palette.getVibrantColor(ContextCompat
-                                        .getColor(getActivity(), R.color.colorAccent));
+                                        int lightVibrantSwatch = palette.getVibrantColor(ContextCompat
+                                                .getColor(getActivity(), R.color.colorAccent));
 
-                                mSetWallpaperActionMenu.removeAllMenuButtons();
+                                        mSetWallpaperActionMenu.removeAllMenuButtons();
 
-                                mSetWallpaperActionMenu.setMenuButtonColorNormal(lightMutedSwatch);
-                                mSetWallpaperActionMenu.setMenuButtonColorPressed(lightMutedSwatch);
-                                mSetWallpaperActionMenu.setMenuButtonColorRipple(lightVibrantSwatch);
+                                        mSetWallpaperActionMenu.setMenuButtonColorNormal(lightMutedSwatch);
+                                        mSetWallpaperActionMenu.setMenuButtonColorPressed(lightMutedSwatch);
+                                        mSetWallpaperActionMenu.setMenuButtonColorRipple(lightVibrantSwatch);
 
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                    addActionButton(lightMutedSwatch, lightVibrantSwatch,
-                                            getString(R.string.pref_set_wallpaper_auto_mode_home),
-                                            R.drawable.ic_home_white_24dp, new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View v) {
-                                                    setWallpaper(1);
-                                                    mSetWallpaperActionMenu.close(true);
-                                                }
-                                            });
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                            addActionButton(lightMutedSwatch, lightVibrantSwatch,
+                                                    getString(R.string.pref_set_wallpaper_auto_mode_home),
+                                                    R.drawable.ic_home_white_24dp, new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            setWallpaper(1);
+                                                            mSetWallpaperActionMenu.close(true);
+                                                        }
+                                                    });
 
-                                    addActionButton(lightMutedSwatch, lightVibrantSwatch,
-                                            getString(R.string.pref_set_wallpaper_auto_mode_lock),
-                                            R.drawable.ic_lock_white_24dp, new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View v) {
-                                                    setWallpaper(2);
-                                                    mSetWallpaperActionMenu.close(true);
-                                                }
-                                            });
+                                            addActionButton(lightMutedSwatch, lightVibrantSwatch,
+                                                    getString(R.string.pref_set_wallpaper_auto_mode_lock),
+                                                    R.drawable.ic_lock_white_24dp, new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            setWallpaper(2);
+                                                            mSetWallpaperActionMenu.close(true);
+                                                        }
+                                                    });
 
-                                    addActionButton(lightMutedSwatch, lightVibrantSwatch,
-                                            getString(R.string.pref_set_wallpaper_auto_mode_both),
-                                            R.drawable.ic_smartphone_white_24dp, new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View v) {
-                                                    setWallpaper(0);
-                                                    mSetWallpaperActionMenu.close(true);
-                                                }
-                                            });
-                                } else {
-                                    mSetWallpaperActionMenu.setOnMenuButtonClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            setWallpaper(0);
+                                            addActionButton(lightMutedSwatch, lightVibrantSwatch,
+                                                    getString(R.string.pref_set_wallpaper_auto_mode_both),
+                                                    R.drawable.ic_smartphone_white_24dp, new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            setWallpaper(0);
+                                                            mSetWallpaperActionMenu.close(true);
+                                                        }
+                                                    });
+                                        } else {
+                                            mSetWallpaperActionMenu.setOnMenuButtonClickListener(
+                                                    new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            setWallpaper(0);
+                                                        }
+                                                    });
                                         }
-                                    });
-                                }
 
-                                mSetWallpaperActionMenu.showMenu(true);
-                            }
-                        });
+                                        mSetWallpaperActionMenu.showMenu(true);
+                                    }
+                                });
 
-                isRun = false;
-                dismissSwipeRefreshLayout();
-            }
+                        isRun = false;
+                        dismissSwipeRefreshLayout();
+                    }
 
-            @Override
-            protected void setResource(@Nullable Drawable resource) {
-            }
-        });
+                    @Override
+                    protected void setResource(@Nullable Drawable resource) {
+                    }
+                });
 
     }
 
@@ -486,7 +493,7 @@ public class MainActivity extends BaseActivity
 
     @Override
     protected void onDestroy() {
-        if (mWallpaperBroadcastReceiver!=null) {
+        if (mWallpaperBroadcastReceiver != null) {
             unregisterReceiver(mWallpaperBroadcastReceiver);
         }
         UIUtils.cancelToast();

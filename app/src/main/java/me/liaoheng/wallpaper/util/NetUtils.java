@@ -25,6 +25,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkService;
 import okhttp3.Cache;
 import okhttp3.Dispatcher;
@@ -67,23 +71,24 @@ public class NetUtils {
     private Retrofit mSingleRetrofit;
 
     public void init() {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS)
-                .connectTimeout(60, TimeUnit.SECONDS).addInterceptor(new LogInterceptor("NetUtils"));
-        OkHttpClient.Builder simpleBuilder = new OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS)
-                .connectTimeout(60, TimeUnit.SECONDS);
-        try {
-            File cacheFile = FileUtils.createCacheSDAndroidDirectory(Constants.HTTP_CACHE_DIR);
-            builder.cache(new Cache(cacheFile, Constants.HTTP_DISK_CACHE_SIZE));
-        } catch (SystemException ignored) {
-        }
         Retrofit.Builder factory = new Retrofit.Builder().baseUrl(Constants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create());
-        mRetrofit = factory.client(builder.build()).build();
+
+        OkHttpClient.Builder simpleBuilder = new OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(60, TimeUnit.SECONDS);
         ExecutorService threadPoolExecutor = Executors
                 .newSingleThreadExecutor(Util.threadFactory("OkHttp Dispatcher", false));
         Dispatcher dispatcher = new Dispatcher(threadPoolExecutor);
         mSingleRetrofit = factory.client(simpleBuilder.dispatcher(dispatcher).build()).build();
+
+        simpleBuilder.dispatcher(new Dispatcher()).addInterceptor(new LogInterceptor("NetUtils"));
+        try {
+            File cacheFile = FileUtils.createCacheSDAndroidDirectory(Constants.HTTP_CACHE_DIR);
+            simpleBuilder.cache(new Cache(cacheFile, Constants.HTTP_DISK_CACHE_SIZE));
+        } catch (SystemException ignored) {
+        }
+        mRetrofit = factory.client(simpleBuilder.build()).build();
     }
 
     private BingWallpaperNetworkService mBingWallpaperNetworkService;
@@ -201,7 +206,11 @@ public class NetUtils {
                             File p = new File(Environment.DIRECTORY_PICTURES, Common.getProjectName());
                             File file = new File(FileUtils.getSDPath(), p.getAbsolutePath());
                             File outFile = FileUtils.createFile(file, name);
-                            temp=GlideApp.with(context).asFile().load(url).submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get(2, TimeUnit.MINUTES);
+                            temp = GlideApp.with(context)
+                                    .asFile()
+                                    .load(url)
+                                    .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                                    .get(2, TimeUnit.MINUTES);
                             FileUtils.copyFile(temp, outFile);
                             context.sendBroadcast(
                                     new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(outFile)));

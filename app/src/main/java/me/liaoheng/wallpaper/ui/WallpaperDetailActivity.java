@@ -216,6 +216,7 @@ public class WallpaperDetailActivity extends BaseActivity {
         GlideApp.with(this)
                 .load(url)
                 .dontAnimate()
+                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
                 .listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target,

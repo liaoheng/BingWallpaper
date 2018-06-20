@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.target.ImageViewTarget;
+import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.flyco.systembar.SystemBarHelper;
 import com.github.liaoheng.common.adapter.base.BaseRecyclerAdapter;
@@ -177,13 +178,18 @@ public class WallpaperHistoryListActivity extends BaseActivity {
                 }
             });
 
-            final String imageUrl = BingWallpaperUtils.getImageUrl(getApplicationContext(),Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
+            String imageUrl = BingWallpaperUtils.getImageUrl(getApplicationContext(),
+                    Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
                     item);
-            GlideApp.with(getContext()).asDrawable().thumbnail(0.5f)
+            GlideApp.with(getContext())
+                    .asDrawable()
+                    .thumbnail(0.5f)
+                    .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
                     .error(R.drawable.lcn_empty_photo)
                     .transition(
                             new DrawableTransitionOptions()
-                                    .crossFade()).load(imageUrl)
+                                    .crossFade())
+                    .load(imageUrl)
                     .into(new ProgressImageViewTarget(mImageView, mProgressBar));
         }
     }
