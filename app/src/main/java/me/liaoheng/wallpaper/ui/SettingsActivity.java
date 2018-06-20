@@ -30,7 +30,7 @@ import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.SettingTrayPreferences;
-import me.liaoheng.wallpaper.view.TimePreference;
+import me.liaoheng.wallpaper.widget.TimePreference;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;

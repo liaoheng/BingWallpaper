@@ -1,4 +1,4 @@
-package me.liaoheng.wallpaper.ui;
+package me.liaoheng.wallpaper.widget;
 
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
@@ -12,6 +12,7 @@ import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
+import me.liaoheng.wallpaper.ui.MainActivity;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import rx.android.schedulers.AndroidSchedulers;

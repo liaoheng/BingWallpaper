@@ -1,4 +1,4 @@
-package me.liaoheng.wallpaper.view;
+package me.liaoheng.wallpaper.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;

@@ -1,16 +1,13 @@
-package me.liaoheng.wallpaper.view;
+package me.liaoheng.wallpaper.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.preference.DialogPreference;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TimePicker;
-
-import com.github.liaoheng.common.util.ValidateUtils;
 
 import org.joda.time.LocalTime;
 
@@ -89,11 +86,11 @@ public class TimePreference extends DialogPreference {
         return localTime;
     }
 
-//    @Override
-//    public CharSequence getSummary() {
-//        if (localTime == null) {
-//            return "";
-//        }
-//        return localTime.toString("HH:mm");
-//    }
+    //    @Override
+    //    public CharSequence getSummary() {
+    //        if (localTime == null) {
+    //            return "";
+    //        }
+    //        return localTime.toString("HH:mm");
+    //    }
 }

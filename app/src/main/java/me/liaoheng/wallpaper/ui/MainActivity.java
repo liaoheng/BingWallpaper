@@ -55,7 +55,7 @@ import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.ExceptionHandle;
 import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.TasksUtils;
-import me.liaoheng.wallpaper.view.ToggleImageButton;
+import me.liaoheng.wallpaper.widget.ToggleImageButton;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 

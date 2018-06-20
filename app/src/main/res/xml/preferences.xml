@@ -20,7 +20,7 @@
                 android:title="@string/pref_alarm_update_wallpaper_everyday"
                 android:widgetLayout="@layout/mp_preference_switch" />
 
-        <me.liaoheng.wallpaper.view.TimePreference
+        <me.liaoheng.wallpaper.widget.TimePreference
                 android:enabled="false"
                 android:key="pref_set_wallpaper_day_auto_update_time"
                 android:negativeButtonText="@android:string/no"

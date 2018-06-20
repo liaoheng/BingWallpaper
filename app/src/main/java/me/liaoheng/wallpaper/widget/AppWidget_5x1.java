@@ -1,4 +1,4 @@
-package me.liaoheng.wallpaper.ui;
+package me.liaoheng.wallpaper.widget;
 
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
@@ -10,6 +10,7 @@ import com.github.liaoheng.common.util.UIUtils;
 
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
+import me.liaoheng.wallpaper.ui.MainActivity;
 import me.liaoheng.wallpaper.util.Constants;
 
 /**

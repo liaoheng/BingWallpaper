@@ -59,7 +59,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="end">
 
-                    <me.liaoheng.wallpaper.view.ToggleImageButton
+                    <me.liaoheng.wallpaper.widget.ToggleImageButton
                             android:id="@+id/bing_wallpaper_cover_story_toggle"
                             android:layout_width="30dp"
                             android:layout_height="30dp"

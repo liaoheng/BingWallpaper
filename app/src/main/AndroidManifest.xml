@@ -62,7 +62,7 @@
                 android:taskAffinity=""
                 android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
-        <receiver android:name=".ui.AppWidget_5x2">
+        <receiver android:name=".widget.AppWidget_5x2">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="me.liaoheng.wallpaper.UPDATE_WALLPAPER_COVER_STORY" />
@@ -75,7 +75,7 @@
                     android:resource="@xml/appwidget_5x2" />
         </receiver>
 
-        <receiver android:name=".ui.AppWidget_5x1">
+        <receiver android:name=".widget.AppWidget_5x1">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="me.liaoheng.wallpaper.UPDATE_WALLPAPER_COVER_STORY" />

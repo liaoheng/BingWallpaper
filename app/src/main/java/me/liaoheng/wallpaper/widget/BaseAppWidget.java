@@ -1,4 +1,4 @@
-package me.liaoheng.wallpaper.ui;
+package me.liaoheng.wallpaper.widget;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
