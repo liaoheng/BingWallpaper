@@ -3,6 +3,7 @@ package me.liaoheng.wallpaper.widget;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.widget.RemoteViews;
 
 import com.github.liaoheng.common.util.L;
@@ -64,7 +65,8 @@ public class AppWidget_5x2 extends BaseAppWidget {
 
                                 @Override
                                 public void call(BingWallpaperCoverStory bingWallpaperCoverStory) {
-                                    remoteViews.setTextViewText(R.id.app_widget_title, image.getCopyright());
+                                    remoteViews.setTextViewText(R.id.app_widget_title,
+                                            bingWallpaperCoverStory.getTitle());
                                     remoteViews.setTextViewText(R.id.app_widget_content,
                                             bingWallpaperCoverStory.getPara1()
                                                     + bingWallpaperCoverStory.getPara2());
@@ -77,6 +79,10 @@ public class AppWidget_5x2 extends BaseAppWidget {
 
                                 }
                             });
+        } else if (!TextUtils.isEmpty(image.getCaption())) {
+            remoteViews.setTextViewText(R.id.app_widget_title, image.getCaption());
+            remoteViews.setTextViewText(R.id.app_widget_content, image.getDesc());
+            update(context, AppWidget_5x2.class, remoteViews);
         } else {
             remoteViews.setTextViewText(R.id.app_widget_title, image.getCopyright());
             remoteViews.setTextViewText(R.id.app_widget_content, "");

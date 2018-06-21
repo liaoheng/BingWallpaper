@@ -29,8 +29,6 @@ import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
-import me.liaoheng.wallpaper.widget.AppWidget_5x1;
-import me.liaoheng.wallpaper.widget.AppWidget_5x2;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.ExceptionHandle;
@@ -38,6 +36,8 @@ import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.ROM;
 import me.liaoheng.wallpaper.util.TasksUtils;
+import me.liaoheng.wallpaper.widget.AppWidget_5x1;
+import me.liaoheng.wallpaper.widget.AppWidget_5x2;
 
 /**
  * 设置壁纸操作IntentService
@@ -131,8 +131,9 @@ public class BingWallpaperIntentService extends IntentService {
         String imageUrl;
         if (bingWallpaperImage == null) {
             try {
-                bingWallpaperImage = BingWallpaperNetworkClient.getBingWallpaperSingleCall(
-                        BingWallpaperUtils.getUrl(getApplicationContext()));
+                String locale = BingWallpaperUtils.getAutoLocale(getApplicationContext());
+                String url = BingWallpaperUtils.getUrl(getApplicationContext());
+                bingWallpaperImage = BingWallpaperNetworkClient.getBingWallpaperSingleCall(url, locale);
                 imageUrl = BingWallpaperUtils.getResolutionImageUrl(getApplicationContext(),
                         bingWallpaperImage);
             } catch (NetException e) {

@@ -28,7 +28,6 @@ import org.joda.time.LocalTime;
 import java.util.Locale;
 
 import me.liaoheng.wallpaper.R;
-import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.ui.SettingsActivity;
@@ -129,14 +128,11 @@ public class BingWallpaperUtils {
     }
 
     public static String getUrl(Context context, int index, int count) {
-        Locale locale = getLocale(context);
-        String country = locale.getCountry();
-        String language = locale.getLanguage();
         String url;
-        if (isChinaLocale(locale)) {
+        if (isChinaLocale(context)) {
             url = Constants.CHINA_URL;
         } else {
-            url = Constants.GLOBAL_URL + "&setmkt=" + language + "-" + country;
+            url = Constants.GLOBAL_URL;
         }
         return String.format(url, index, count);
     }
@@ -158,6 +154,17 @@ public class BingWallpaperUtils {
             country = Locale.US;
         }
         return country;
+    }
+
+    public static String getAutoLocale(Context context) {
+        Locale locale = getLocale(context);
+        String country = locale.getCountry();
+        String language = locale.getLanguage();
+        if (isChinaLocale(locale)) {
+            return "zh-cn";
+        } else {
+            return language + "-" + country;
+        }
     }
 
     /**

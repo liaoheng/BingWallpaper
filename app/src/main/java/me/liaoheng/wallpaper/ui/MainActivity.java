@@ -18,6 +18,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.graphics.Palette;
+import android.text.TextUtils;
 import android.util.AndroidRuntimeException;
 import android.view.MenuItem;
 import android.view.View;
@@ -101,7 +102,6 @@ public class MainActivity extends BaseActivity
     private WallpaperBroadcastReceiver mWallpaperBroadcastReceiver;
     private BingWallpaperImage mCurBingWallpaperImage;
     private boolean isRun;
-    private boolean isChina;
 
     private BingWallpaperCoverStory mCoverStory;
 
@@ -157,10 +157,8 @@ public class MainActivity extends BaseActivity
                 if (mCurBingWallpaperImage != null) {
                     if (mCoverStoryContent.getVisibility() == View.VISIBLE) {
                         setTitle(mCurBingWallpaperImage.getCopyright());
-                        mCoverStoryTitleView.setText("");
                     } else {
                         setTitle("");
-                        mCoverStoryTitleView.setText(mCurBingWallpaperImage.getCopyright());
                     }
                 }
                 UIUtils.toggleVisibility(mCoverStoryContent);
@@ -199,13 +197,6 @@ public class MainActivity extends BaseActivity
         mHeaderCoverStoryTitleView = mNavigationView.getHeaderView(0)
                 .findViewById(R.id.navigation_header_cover_story_title);
 
-        isChina = BingWallpaperUtils.isChinaLocale(this);
-        if (isChina) {
-            UIUtils.viewVisible(mCoverStoryView);
-        } else {
-            UIUtils.viewGone(mCoverStoryView);
-        }
-
         getBingWallpaper();
     }
 
@@ -216,34 +207,24 @@ public class MainActivity extends BaseActivity
         }
         showSwipeRefreshLayout();
 
-        if (isChina) {
-            BingWallpaperNetworkClient.getCoverStory()
-                    .compose(this.<BingWallpaperCoverStory>bindToLifecycle())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            new Action1<BingWallpaperCoverStory>() {
-                                @SuppressLint("SetTextI18n")
-                                @Override
-                                public void call(BingWallpaperCoverStory bingWallpaperCoverStory) {
-                                    mCoverStory = bingWallpaperCoverStory;
-                                    mCoverStoryTextView.setText(
-                                            bingWallpaperCoverStory.getPara1() + bingWallpaperCoverStory.getPara2());
-                                }
-                            }, new Action1<Throwable>() {
-                                @Override
-                                public void call(Throwable throwable) {
-
-                                }
-                            });
-        }
-
         BingWallpaperNetworkClient.getBingWallpaper(this)
                 .compose(this.<BingWallpaperImage>bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<BingWallpaperImage>() {
+                    @SuppressLint("SetTextI18n")
                     @Override
                     public void call(BingWallpaperImage bingWallpaperImage) {
                         mCurBingWallpaperImage = bingWallpaperImage;
+                        if (!TextUtils.isEmpty(bingWallpaperImage.getCaption())) {
+                            UIUtils.viewVisible(mCoverStoryView);
+                            mCoverStoryTitleView.setText(bingWallpaperImage.getCaption()+bingWallpaperImage.getCopyrightonly());
+                            mCoverStoryTextView.setText(bingWallpaperImage.getDesc());
+                        } else {
+                            if (!BingWallpaperUtils.isChinaLocale(getApplicationContext())) {
+                                UIUtils.viewGone(mCoverStoryView);
+                            }
+                        }
+
                         setImage(bingWallpaperImage);
                     }
                 }, new Action1<Throwable>() {
@@ -252,6 +233,29 @@ public class MainActivity extends BaseActivity
                         setBingWallpaperError(throwable);
                     }
                 });
+
+        if (BingWallpaperUtils.isChinaLocale(this)) {
+            BingWallpaperNetworkClient.getCoverStory()
+                    .compose(this.<BingWallpaperCoverStory>bindToLifecycle())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            new Action1<BingWallpaperCoverStory>() {
+                                @SuppressLint("SetTextI18n")
+                                @Override
+                                public void call(BingWallpaperCoverStory bingWallpaperCoverStory) {
+                                    UIUtils.viewVisible(mCoverStoryView);
+                                    mCoverStory = bingWallpaperCoverStory;
+                                    mCoverStoryTitleView.setText(bingWallpaperCoverStory.getTitle());
+                                    mCoverStoryTextView.setText(
+                                            bingWallpaperCoverStory.getPara1() + bingWallpaperCoverStory.getPara2());
+                                }
+                            }, new Action1<Throwable>() {
+                                @Override
+                                public void call(Throwable throwable) {
+                                    UIUtils.viewGone(mCoverStoryView);
+                                }
+                            });
+        }
     }
 
     @SuppressLint("SetTextI18n")

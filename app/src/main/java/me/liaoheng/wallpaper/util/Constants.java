@@ -22,11 +22,13 @@ public interface Constants {
     long JOB_SCHEDULER_PERIODIC = TimeUnit.HOURS.toMillis(3);
 
     String BASE_URL = "https://global.bing.com";
-    String CHINA_BASE_URL = "https://cn.bing.com";
+    String CHINA_BASE_URL = "https://www.bing.com";
     String GLOBAL_BASE_URL = "https://global.bing.com";
 
-    String CHINA_URL = "https://cn.bing.com/HPImageArchive.aspx?format=js&idx=%s&n=%s";
-    String GLOBAL_URL = "https://global.bing.com/HPImageArchive.aspx?format=js&idx=%s&n=%s";
+    String CHINA_URL = "https://www.bing.com/HPImageArchive.aspx?format=js&idx=%s&n=%s";
+    String GLOBAL_URL = "https://global.bing.com/HPImageArchive.aspx?format=js&idx=%s&n=%s&pid=hp";
+
+    String MKT_HEADER="_EDGE_S=mkt=%s";
 
     class WallpaperConfig {
         public static String WALLPAPER_RESOLUTION = "480x800";

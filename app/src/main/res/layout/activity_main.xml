@@ -52,7 +52,8 @@
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/color_3000">
+                    android:background="@color/color_3000"
+                    android:visibility="gone">
 
                 <FrameLayout
                         android:layout_width="match_parent"
@@ -72,11 +73,11 @@
                 </FrameLayout>
 
                 <LinearLayout
-                        android:visibility="gone"
                         android:id="@+id/bing_wallpaper_cover_story_content"
                         android:orientation="vertical"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:visibility="gone">
 
                     <TextView
                             android:id="@+id/bing_wallpaper_cover_story_title"
@@ -85,6 +86,7 @@
                             android:layout_marginBottom="10dp"
                             android:layout_marginEnd="10dp"
                             android:layout_marginStart="10dp"
+                            android:maxLines="2"
                             android:textColor="@android:color/white"
                             android:textSize="18sp"
                             tools:text="title" />

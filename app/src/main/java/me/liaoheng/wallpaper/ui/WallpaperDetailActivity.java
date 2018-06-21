@@ -31,6 +31,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.ImageViewTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
+import com.github.liaoheng.common.core.OnCheckedChangeListener;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.L;
@@ -54,6 +55,7 @@ import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.ExceptionHandle;
 import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.NetUtils;
+import me.liaoheng.wallpaper.widget.ToggleImageButton;
 import rx.Subscription;
 
 /**
@@ -76,6 +78,15 @@ public class WallpaperDetailActivity extends BaseActivity {
     ProgressBar mProgressBar;
     @BindView(R.id.bing_wallpaper_detail_error)
     TextView mErrorTextView;
+
+    @BindView(R.id.bing_wallpaper_detail_cover_story_content)
+    View mCoverStoryContent;
+    @BindView(R.id.bing_wallpaper_detail_cover_story_text)
+    TextView mCoverStoryTextView;
+    @BindView(R.id.bing_wallpaper_detail_cover_story_title)
+    TextView mCoverStoryTitleView;
+    @BindView(R.id.bing_wallpaper_detail_cover_story_toggle)
+    ToggleImageButton mCoverStoryToggle;
 
     @BindArray(R.array.pref_set_wallpaper_resolution_name)
     String[] mResolutions;
@@ -124,7 +135,35 @@ public class WallpaperDetailActivity extends BaseActivity {
             return;
         }
 
+        ((View) mCoverStoryToggle.getParent()).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCoverStoryToggle.toggle();
+            }
+        });
+        mCoverStoryToggle.setOnCheckedChangeListener(new OnCheckedChangeListener<ToggleImageButton>() {
+            @Override
+            public void onCheckedChanged(ToggleImageButton view, boolean isChecked) {
+                if (mWallpaperImage != null) {
+                    if (mCoverStoryContent.getVisibility() == View.VISIBLE) {
+                        UIUtils.viewVisible(mBottomTextView);
+                    } else {
+                        UIUtils.viewGone(mBottomTextView);
+                    }
+                }
+                UIUtils.toggleVisibility(mCoverStoryContent);
+            }
+        });
+
         mBottomTextView.setText(mWallpaperImage.getCopyright());
+
+        if (!TextUtils.isEmpty(mWallpaperImage.getCaption())) {
+            UIUtils.viewParentVisible(mCoverStoryToggle.getParent());
+            mCoverStoryTitleView.setText(mWallpaperImage.getCaption());
+            mCoverStoryTextView.setText(mWallpaperImage.getDesc());
+        } else {
+            UIUtils.viewParentGone(mCoverStoryToggle.getParent());
+        }
 
         mBottomView.setPadding(mBottomView.getPaddingLeft(), mBottomView.getPaddingTop(),
                 mBottomView.getPaddingRight(), BingWallpaperUtils.getNavigationBarHeight(this));

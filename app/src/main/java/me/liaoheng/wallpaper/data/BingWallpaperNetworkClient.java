@@ -15,8 +15,8 @@ import me.liaoheng.wallpaper.model.BingWallpaper;
 import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.NetUtils;
-import retrofit2.Call;
 import retrofit2.Response;
 import rx.Observable;
 import rx.functions.Func1;
@@ -37,9 +37,11 @@ public class BingWallpaperNetworkClient {
         });
     }
 
-    public static Observable<List<BingWallpaperImage>> getBingWallpaper(Context context, int index, int count) {
+    public static Observable<List<BingWallpaperImage>> getBingWallpaper(Context context, int index,
+            int count) {
         String url = BingWallpaperUtils.getUrl(context, index, count);
-        return getBingWallpaper(url).map(new Func1<BingWallpaper, List<BingWallpaperImage>>() {
+        String locale = BingWallpaperUtils.getAutoLocale(context);
+        return getBingWallpaper(url, locale).map(new Func1<BingWallpaper, List<BingWallpaperImage>>() {
             @Override
             public List<BingWallpaperImage> call(BingWallpaper bingWallpaper) {
                 if (bingWallpaper == null || bingWallpaper.getImages() == null || bingWallpaper.getImages().isEmpty()) {
@@ -50,14 +52,20 @@ public class BingWallpaperNetworkClient {
         });
     }
 
-    public static Observable<BingWallpaper> getBingWallpaper(String url) {
+    public static Observable<BingWallpaper> getBingWallpaper(String url, String locale) {
         return NetUtils.get().getBingWallpaperNetworkService()
-                .getBingWallpaper(url).subscribeOn(Schedulers.io());
+                .getBingWallpaper(url, getMkt(locale)).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<BingWallpaperImage> getBingWallpaperSingle(String url) {
+    public static Observable<BingWallpaperImage> getBingWallpaperSingle(Context context) {
+        String url = BingWallpaperUtils.getUrl(context, 0, 1);
+        String locale = BingWallpaperUtils.getAutoLocale(context);
+        return getBingWallpaperSingle(url, locale);
+    }
+
+    public static Observable<BingWallpaperImage> getBingWallpaperSingle(String url, String locale) {
         return NetUtils.get().getBingWallpaperSingleNetworkService()
-                .getBingWallpaper(url).subscribeOn(Schedulers.io())
+                .getBingWallpaper(url, getMkt(locale)).subscribeOn(Schedulers.io())
                 .map(new Func1<BingWallpaper, BingWallpaperImage>() {
                     @Override
                     public BingWallpaperImage call(BingWallpaper bingWallpaper) {
@@ -70,10 +78,10 @@ public class BingWallpaperNetworkClient {
                 });
     }
 
-    public static BingWallpaperImage getBingWallpaperSingleCall(String url) throws NetException {
+    public static BingWallpaperImage getBingWallpaperSingleCall(String url, String locale) throws NetException {
         try {
             Response<BingWallpaper> execute = NetUtils.get().getBingWallpaperSingleNetworkService()
-                    .getBingWallpaperCall(url).execute();
+                    .getBingWallpaperCall(url, getMkt(locale)).execute();
             if (execute.isSuccessful()) {
                 BingWallpaper bingWallpaper = execute.body();
                 if (bingWallpaper == null || bingWallpaper.getImages() == null
@@ -81,7 +89,7 @@ public class BingWallpaperNetworkClient {
                     throw new NetServerException("bing wallpaper is not data");
                 }
                 return bingWallpaper.getImages().get(0);
-            }else{
+            } else {
                 throw new NetServerException("bing server response failure");
             }
         } catch (IOException e) {
@@ -89,8 +97,12 @@ public class BingWallpaperNetworkClient {
         }
     }
 
-    public static Observable<BingWallpaperCoverStory> getCoverStory(){
-        return NetUtils.get().getBingWallpaperNetworkService().getCoverstory().subscribeOn(Schedulers.io());
+    public static Observable<BingWallpaperCoverStory> getCoverStory() {
+        return NetUtils.get().getBingWallpaperNetworkService().getCoverStory().subscribeOn(Schedulers.io());
+    }
+
+    private static String getMkt(String locale) {
+        return String.format(Constants.MKT_HEADER, locale);
     }
 
 }

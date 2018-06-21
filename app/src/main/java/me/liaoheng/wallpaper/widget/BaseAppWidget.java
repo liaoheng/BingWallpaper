@@ -66,12 +66,24 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
     }
 
     @Override
-    public void onEnabled(final Context context) {
+    public void onEnabled(Context context) {
         super.onEnabled(context);
+        getBingWallpaper(context);
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
+        if ("android.appwidget.action.APPWIDGET_UPDATE".equals(intent.getAction())) {
+            getBingWallpaper(context);
+        }
+    }
+
+    protected void getBingWallpaper(final Context context) {
         if (!NetworkUtils.isConnectedOrConnecting(context)) {
             return;
         }
-        BingWallpaperNetworkClient.getBingWallpaper(context)
+        BingWallpaperNetworkClient.getBingWallpaperSingle(context)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<BingWallpaperImage>() {
                     @Override
@@ -83,7 +95,6 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
                     public void call(Throwable throwable) {
                     }
                 });
-
     }
 
     protected void setText(Context context, BingWallpaperImage image) {}

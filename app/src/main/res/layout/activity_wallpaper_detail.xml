@@ -7,10 +7,10 @@
                                                  android:background="@android:color/white">
 
     <ImageView
-            android:scaleType="centerCrop"
             android:id="@+id/bing_wallpaper_detail_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:scaleType="centerCrop"
             android:transitionName="bing_wallpaper_detail_image" />
 
     <FrameLayout
@@ -20,14 +20,69 @@
             android:layout_gravity="bottom"
             android:background="@color/color_3000">
 
-        <TextView
-                android:id="@+id/bing_wallpaper_detail_bottom_text"
+        <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="top"
-                android:layout_margin="10dp"
-                android:textColor="@android:color/white"
-                tools:text="message" />
+                android:layout_gravity="top">
+
+            <TextView
+                    android:id="@+id/bing_wallpaper_detail_bottom_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:layout_margin="10dp"
+                    android:textColor="@android:color/white"
+                    tools:text="message" />
+
+            <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:visibility="gone">
+
+                <me.liaoheng.wallpaper.widget.ToggleImageButton
+                        android:id="@+id/bing_wallpaper_detail_cover_story_toggle"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="end"
+                        android:layout_margin="5dp"
+                        android:background="?selectableItemBackgroundBorderless"
+                        app:enableSelected="true"
+                        app:normalDrawableRes="@drawable/ic_expand_less_white_24dp"
+                        app:selectedDrawableRes="@drawable/ic_expand_more_white_24dp" />
+            </FrameLayout>
+
+            <LinearLayout
+                    android:id="@+id/bing_wallpaper_detail_cover_story_content"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
+
+                <TextView
+                        android:id="@+id/bing_wallpaper_detail_cover_story_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp"
+                        android:maxLines="2"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp"
+                        tools:text="title" />
+
+                <TextView
+                        android:id="@+id/bing_wallpaper_detail_cover_story_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp"
+                        android:textColor="@android:color/white"
+                        tools:text="message" />
+            </LinearLayout>
+        </LinearLayout>
 
     </FrameLayout>
 
@@ -46,6 +101,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center" />
+
     <TextView
             android:id="@+id/bing_wallpaper_detail_error"
             android:layout_width="wrap_content"

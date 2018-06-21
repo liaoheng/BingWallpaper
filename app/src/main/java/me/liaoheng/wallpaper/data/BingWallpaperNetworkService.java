@@ -4,6 +4,8 @@ import me.liaoheng.wallpaper.model.BingWallpaper;
 import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Headers;
 import retrofit2.http.Url;
 import rx.Observable;
 
@@ -12,7 +14,14 @@ import rx.Observable;
  * @version 2016-09-19 11:15
  */
 public interface BingWallpaperNetworkService {
-    @GET Observable<BingWallpaper> getBingWallpaper(@Url String url);
-    @GET Call<BingWallpaper> getBingWallpaperCall(@Url String url);
-    @GET("https://cn.bing.com/cnhp/coverstory/") Observable<BingWallpaperCoverStory> getCoverstory();
+
+    @GET
+    Observable<BingWallpaper> getBingWallpaper(@Url String url, @Header("Cookie") String mkt);
+
+    @GET
+    Call<BingWallpaper> getBingWallpaperCall(@Url String url, @Header("Cookie") String mkt);
+
+    @Headers("Cookie: _EDGE_S=mkt=zh-cn")
+    @GET("https://www.bing.com/cnhp/coverstory/")
+    Observable<BingWallpaperCoverStory> getCoverStory();
 }

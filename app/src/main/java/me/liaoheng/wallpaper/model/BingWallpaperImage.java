@@ -22,17 +22,20 @@ public class BingWallpaperImage implements Parcelable {
     private int drk;
     private int top;
     private int bot;
+    private String caption;
+    private String copyrightonly;
+    private String desc;
     @Expose(serialize = false, deserialize = false)
     private String imageUrl;
 
     public BingWallpaperImage copy(String imageUrl) {
         return new BingWallpaperImage(startdate, fullstartdate, enddate, url, urlbase, copyright, copyrightlink, wp,
-                hsh, drk, top, bot, imageUrl);
+                hsh, drk, top, bot, caption, copyrightonly, desc, imageUrl);
     }
 
     public BingWallpaperImage(String startdate, String fullstartdate, String enddate, String url, String urlbase,
             String copyright, String copyrightlink, boolean wp, String hsh, int drk, int top, int bot,
-            String imageUrl) {
+            String caption, String copyrightonly, String desc, String imageUrl) {
         this.startdate = startdate;
         this.fullstartdate = fullstartdate;
         this.enddate = enddate;
@@ -45,6 +48,9 @@ public class BingWallpaperImage implements Parcelable {
         this.drk = drk;
         this.top = top;
         this.bot = bot;
+        this.caption = caption;
+        this.copyrightonly = copyrightonly;
+        this.desc = desc;
         this.imageUrl = imageUrl;
     }
 
@@ -144,6 +150,30 @@ public class BingWallpaperImage implements Parcelable {
         this.bot = bot;
     }
 
+    public String getCaption() {
+        return caption;
+    }
+
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
+
+    public String getCopyrightonly() {
+        return copyrightonly;
+    }
+
+    public void setCopyrightonly(String copyrightonly) {
+        this.copyrightonly = copyrightonly;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
     public String getImageUrl() {
         return imageUrl;
     }
@@ -167,6 +197,9 @@ public class BingWallpaperImage implements Parcelable {
                 ", drk=" + drk +
                 ", top=" + top +
                 ", bot=" + bot +
+                ", caption='" + caption + '\'' +
+                ", copyrightonly='" + copyrightonly + '\'' +
+                ", desc='" + desc + '\'' +
                 '}';
     }
 
@@ -183,24 +216,10 @@ public class BingWallpaperImage implements Parcelable {
         drk = in.readInt();
         top = in.readInt();
         bot = in.readInt();
+        caption = in.readString();
+        copyrightonly = in.readString();
+        desc = in.readString();
         imageUrl = in.readString();
-    }
-
-    public static final Creator<BingWallpaperImage> CREATOR = new Creator<BingWallpaperImage>() {
-        @Override
-        public BingWallpaperImage createFromParcel(Parcel in) {
-            return new BingWallpaperImage(in);
-        }
-
-        @Override
-        public BingWallpaperImage[] newArray(int size) {
-            return new BingWallpaperImage[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     @Override
@@ -217,6 +236,26 @@ public class BingWallpaperImage implements Parcelable {
         dest.writeInt(drk);
         dest.writeInt(top);
         dest.writeInt(bot);
+        dest.writeString(caption);
+        dest.writeString(copyrightonly);
+        dest.writeString(desc);
         dest.writeString(imageUrl);
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<BingWallpaperImage> CREATOR = new Creator<BingWallpaperImage>() {
+        @Override
+        public BingWallpaperImage createFromParcel(Parcel in) {
+            return new BingWallpaperImage(in);
+        }
+
+        @Override
+        public BingWallpaperImage[] newArray(int size) {
+            return new BingWallpaperImage[size];
+        }
+    };
 }
