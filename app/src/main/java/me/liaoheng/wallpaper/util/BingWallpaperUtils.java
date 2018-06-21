@@ -316,7 +316,6 @@ public class BingWallpaperUtils {
             return;
         }
         Intent intent = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
-        intent.setData(Uri.parse("package:" + context.getPackageName()));
         if (intent.resolveActivity(context.getPackageManager()) != null) {
             context.startActivity(intent);
         } else {
