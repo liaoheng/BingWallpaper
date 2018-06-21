@@ -54,7 +54,7 @@ public class IntroActivity extends AppIntro {
 
         @OnClick(R.id.intro_hint_ignore_battery_optimization)
         void ignoreBatteryOptimization() {
-            BingWallpaperUtils.showIgnoreBatteryOptimizationDialog(getActivity());
+            BingWallpaperUtils.showIgnoreBatteryOptimizationSetting(getActivity());
         }
 
         @Nullable
@@ -173,15 +173,5 @@ public class IntroActivity extends AppIntro {
         TasksUtils.markOne();
         UIUtils.startActivity(this, MainActivity.class);
         finish();
-    }
-
-    @Override
-    public void onSlideChanged(@Nullable Fragment oldFragment, @Nullable Fragment newFragment) {
-        super.onSlideChanged(oldFragment, newFragment);
-        if (oldFragment instanceof IntroHintFragment) {
-            if (!BingWallpaperUtils.isIgnoreBatteryOptimization(this)) {
-                BingWallpaperUtils.showIgnoreBatteryOptimizationDialog(this);
-            }
-        }
     }
 }

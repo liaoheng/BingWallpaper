@@ -304,18 +304,18 @@ public class BingWallpaperUtils {
     }
 
     /**
-     * 打开忽略电池优化对话框
+     * 打开忽略电池优化系统设置界面
      *
      * @see <a href="https://developer.android.com/reference/android/provider/Settings#ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS">android doc</a>
      */
-    public static void showIgnoreBatteryOptimizationDialog(Context context) {
+    public static void showIgnoreBatteryOptimizationSetting(Context context) {
         if (context == null) {
             return;
         }
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
             return;
         }
-        Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+        Intent intent = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
         intent.setData(Uri.parse("package:" + context.getPackageName()));
         if (intent.resolveActivity(context.getPackageManager()) != null) {
             context.startActivity(intent);
