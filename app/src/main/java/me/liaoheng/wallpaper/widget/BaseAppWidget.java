@@ -16,6 +16,7 @@ import com.github.liaoheng.common.util.NetworkUtils;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
+import me.liaoheng.wallpaper.ui.MainActivity;
 import me.liaoheng.wallpaper.util.Constants;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -74,8 +75,17 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
-        if ("android.appwidget.action.APPWIDGET_UPDATE".equals(intent.getAction())) {
+        String action = intent.getAction();
+        if ("android.appwidget.action.APPWIDGET_UPDATE".equals(action)) {
             getBingWallpaper(context);
+        } else if (Constants.ACTION_UPDATE_WALLPAPER_COVER_STORY.equals(action)) {
+            BingWallpaperImage image = intent.getParcelableExtra(
+                    Constants.EXTRA_UPDATE_WALLPAPER_COVER_STORY);
+            setText(context, image);
+        } else if (TITLE_CLICK.equals(action) || CONTENT_CLICK.equals(action)) {
+            Intent openIntent = new Intent(context, MainActivity.class);
+            openIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(openIntent);
         }
     }
 
