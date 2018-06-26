@@ -110,7 +110,7 @@ public class MainActivity extends BaseActivity
     @OnClick(R.id.bing_wallpaper_cover_story_text)
     void openMap() {
         if (mCoverStory == null) {
-            openBrowser();
+            BingWallpaperUtils.openBrowser(this,mCurBingWallpaperImage);
             return;
         }
         String longitude = mCoverStory.getLongitude();//经度
@@ -348,42 +348,10 @@ public class MainActivity extends BaseActivity
         } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_history_list) {
             UIUtils.startActivity(this, WallpaperHistoryListActivity.class);
         } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_info) {
-            openBrowser();
+            BingWallpaperUtils.openBrowser(this,mCurBingWallpaperImage);
         }
         mDrawerLayout.closeDrawers();
         return true;
-    }
-
-    private void openBrowser() {
-        if (mCurBingWallpaperImage != null) {
-            try {
-                String url = mCurBingWallpaperImage.getCopyrightlink();
-                if (TextUtils.isEmpty(url) || "javascript:void(0)".equals(url)) {
-                    url = Constants.BASE_URL;
-                } else {
-                    if (!ValidateUtils.isWebUrl(url)) {
-                        url = Constants.BASE_URL + url;
-                    }
-                    if (!ValidateUtils.isWebUrl(url)) {
-                        url = Constants.BASE_URL;
-                    }
-                }
-                String locale = BingWallpaperUtils.getAutoLocale(this);
-                url = Utils.appendUrlParameter(url, "mkt", locale);
-                CustomTabsIntent build = new CustomTabsIntent.Builder()
-                        .setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary)).build();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                    build.intent.putExtra(Intent.EXTRA_REFERRER,
-                            Uri.parse(Intent.URI_ANDROID_APP_SCHEME + "//" + getPackageName()));
-                }
-                Bundle headers = new Bundle();
-                headers.putString("Cookie", String.format(Constants.MKT_HEADER, locale));
-                build.intent.putExtra(Browser.EXTRA_HEADERS, headers);
-                build.launchUrl(this, Uri.parse(url));
-            } catch (AndroidRuntimeException e) {
-                UIUtils.showToast(getActivity(), getString(R.string.unable_open_url));
-            }
-        }
     }
 
     private void setImage(BingWallpaperImage bingWallpaperImage) {

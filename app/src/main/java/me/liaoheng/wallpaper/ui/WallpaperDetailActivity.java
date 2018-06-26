@@ -14,10 +14,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
@@ -45,6 +43,7 @@ import java.io.File;
 import butterknife.BindArray;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
@@ -103,6 +102,11 @@ public class WallpaperDetailActivity extends BaseActivity {
     private ProgressDialog mSetWallpaperProgressDialog;
     private Subscription mDownLoadSubscription;
     private WallpaperBroadcastReceiver mWallpaperBroadcastReceiver;
+
+    @OnClick(R.id.bing_wallpaper_detail_cover_story_text)
+    void openBrowser() {
+        BingWallpaperUtils.openBrowser(this, mWallpaperImage);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,24 +196,16 @@ public class WallpaperDetailActivity extends BaseActivity {
                 Utils.unsubscribe(mDownLoadSubscription);
             }
         });
-        mGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+        mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onSingleTapUp(MotionEvent e) {
+            public void onClick(View v) {
                 toggleToolbar();
-                return super.onSingleTapUp(e);
             }
         });
         loadImage(
                 BingWallpaperUtils.getImageUrl(getApplicationContext(), Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
                         mWallpaperImage));
 
-    }
-
-    private GestureDetector mGestureDetector;
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        return mGestureDetector.onTouchEvent(event);
     }
 
     private void toggleToolbar() {

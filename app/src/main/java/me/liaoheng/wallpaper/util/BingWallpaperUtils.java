@@ -9,16 +9,24 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.provider.Browser;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.util.AndroidRuntimeException;
 
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.UIUtils;
+import com.github.liaoheng.common.util.Utils;
+import com.github.liaoheng.common.util.ValidateUtils;
 
 import net.grandcentrix.tray.AppPreferences;
 
@@ -365,5 +373,38 @@ public class BingWallpaperUtils {
             return;
         }
         context.startActivity(intent);
+    }
+
+    public static void openBrowser(Context context, BingWallpaperImage image) {
+        if (image == null) {
+            return;
+        }
+        try {
+            String url = image.getCopyrightlink();
+            if (TextUtils.isEmpty(url) || "javascript:void(0)".equals(url)) {
+                url = Constants.BASE_URL;
+            } else {
+                if (!ValidateUtils.isWebUrl(url)) {
+                    url = Constants.BASE_URL + url;
+                }
+                if (!ValidateUtils.isWebUrl(url)) {
+                    url = Constants.BASE_URL;
+                }
+            }
+            String locale = BingWallpaperUtils.getAutoLocale(context);
+            url = Utils.appendUrlParameter(url, "mkt", locale);
+            CustomTabsIntent build = new CustomTabsIntent.Builder()
+                    .setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary)).build();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                build.intent.putExtra(Intent.EXTRA_REFERRER,
+                        Uri.parse(Intent.URI_ANDROID_APP_SCHEME + "//" + context.getPackageName()));
+            }
+            Bundle headers = new Bundle();
+            headers.putString("Cookie", String.format(Constants.MKT_HEADER, locale));
+            build.intent.putExtra(Browser.EXTRA_HEADERS, headers);
+            build.launchUrl(context, Uri.parse(url));
+        } catch (AndroidRuntimeException e) {
+            UIUtils.showToast(context, context.getString(R.string.unable_open_url));
+        }
     }
 }

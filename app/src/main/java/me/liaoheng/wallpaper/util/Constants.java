@@ -28,10 +28,12 @@ public interface Constants {
     String CHINA_URL = "https://www.bing.com/HPImageArchive.aspx?format=js&idx=%s&n=%s";
     String GLOBAL_URL = "https://global.bing.com/HPImageArchive.aspx?format=js&idx=%s&n=%s&pid=hp";
 
-    String MKT_HEADER="_EDGE_S=mkt=%s";
+    String MKT_HEADER = "_EDGE_S=mkt=%s";
 
     class WallpaperConfig {
-        public static String WALLPAPER_RESOLUTION = "480x800";
+        public static int WALLPAPER_RESOLUTION_WIDTH = 480;
+        public static int WALLPAPER_RESOLUTION_HEIGHT = 800;
+        public static String WALLPAPER_RESOLUTION = WALLPAPER_RESOLUTION_WIDTH + "x" + WALLPAPER_RESOLUTION_HEIGHT;
         public static String MAIN_WALLPAPER_RESOLUTION = "720x1280";
     }
 

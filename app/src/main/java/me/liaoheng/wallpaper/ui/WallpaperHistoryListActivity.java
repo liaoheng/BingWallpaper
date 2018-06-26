@@ -10,7 +10,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -19,7 +18,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.target.ImageViewTarget;
-import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.flyco.systembar.SystemBarHelper;
 import com.github.liaoheng.common.adapter.base.BaseRecyclerAdapter;
@@ -84,15 +82,6 @@ public class WallpaperHistoryListActivity extends BaseActivity {
                 })
                 .setMergedIntoLineSpanSizeLookup()
                 .setAdapter(mWallpaperAdapter).build();
-        mRecyclerViewHelper.getRecyclerView().setRecyclerListener(new RecyclerView.RecyclerListener() {
-            @Override
-            public void onViewRecycled(RecyclerView.ViewHolder holder) {
-                if (holder instanceof WallpaperViewHolder) {
-                    WallpaperViewHolder vh = (WallpaperViewHolder) holder;
-                    GlideApp.with(getActivity()).clear(vh.mImageView);
-                }
-            }
-        });
         getBingWallpaperList(new Callback.EmptyCallback() {
             @Override
             public void onFinish() {
@@ -187,8 +176,9 @@ public class WallpaperHistoryListActivity extends BaseActivity {
                     item);
             GlideApp.with(getContext())
                     .asDrawable()
-                    .thumbnail(0.5f)
-                    .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                    .thumbnail(0.3f)
+                    .override(Constants.WallpaperConfig.WALLPAPER_RESOLUTION_WIDTH,
+                            Constants.WallpaperConfig.WALLPAPER_RESOLUTION_HEIGHT)
                     .error(R.drawable.lcn_empty_photo)
                     .transition(
                             new DrawableTransitionOptions()

@@ -52,8 +52,7 @@
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/color_3000"
-                    android:visibility="gone">
+                    android:background="@color/color_3000">
 
                 <FrameLayout
                         android:layout_width="match_parent"
