@@ -17,6 +17,7 @@
             android:transitionName="bing_wallpaper_detail_image" />
 
     <TextView
+            android:layout_marginEnd="5dp"
             android:gravity="end"
             android:id="@+id/bing_wallpaper_list_item_image_date"
             android:textColor="@android:color/white"

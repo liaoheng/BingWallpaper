@@ -32,6 +32,9 @@ import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 import com.github.liaoheng.common.util.ValidateUtils;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+
 import java.util.List;
 
 import butterknife.BindView;
@@ -164,7 +167,8 @@ public class WallpaperHistoryListActivity extends BaseActivity {
 
         @Override
         public void onHandle(final BingWallpaperImage item, int position) {
-            mDate.setText(item.getEnddate());
+            DateTime dateTime = DateTime.parse(item.getEnddate(), DateTimeFormat.forPattern("YYYYMMdd"));
+            mDate.setText(dateTime.toString("MMMM dd", BingWallpaperUtils.getLocale(getContext())));
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

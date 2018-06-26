@@ -21,7 +21,7 @@ public interface Constants {
 
     long JOB_SCHEDULER_PERIODIC = TimeUnit.HOURS.toMillis(3);
 
-    String BASE_URL = "https://global.bing.com";
+    String BASE_URL = "https://www.bing.com";
     String CHINA_BASE_URL = "https://www.bing.com";
     String GLOBAL_BASE_URL = "https://global.bing.com";
 
