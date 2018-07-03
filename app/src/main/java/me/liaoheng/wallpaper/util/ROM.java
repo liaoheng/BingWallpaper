@@ -99,6 +99,10 @@ public class ROM {
         return rom;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public String getVersion() {
         return version;
     }

@@ -33,8 +33,8 @@ public class LogDebugFileUtils {
     public final static String LEVEL_WARN = " WARN ";
     public final static String LEVEL_ERROR = " ERROR ";
 
-    @StringDef({LEVEL_VERBOSE, LEVEL_ERROR, LEVEL_WARN, LEVEL_DEBUG,
-            LEVEL_INFO})
+    @StringDef({ LEVEL_VERBOSE, LEVEL_ERROR, LEVEL_WARN, LEVEL_DEBUG,
+            LEVEL_INFO })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LevelFlags {
     }
@@ -68,6 +68,10 @@ public class LogDebugFileUtils {
         }
         mLogFile = logFile;
         L.Log.d(TAG, "init log file : %s ", mLogFile.getAbsoluteFile());
+    }
+
+    public File getLogFile() {
+        return mLogFile;
     }
 
     public static File createFile(File path, String fileName) throws SystemException {
@@ -157,13 +161,13 @@ public class LogDebugFileUtils {
     }
 
     public synchronized void log(@LevelFlags String level, String tag, Throwable throwable,
-                                 String logEntry) {
+            String logEntry) {
         writeLog(level, tag, throwable, logEntry);
     }
 
     private synchronized void writeLog(String severityLevel, String tag, Throwable throwable,
-                                       String logEntry) {
-        if (mFileOutputStream==null) {
+            String logEntry) {
+        if (mFileOutputStream == null) {
             return;
         }
         String currentDateTime = DateTime.now().toString("yyyy-MM-dd HH:mm:ss.SSS");

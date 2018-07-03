@@ -25,10 +25,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkService;
 import okhttp3.Cache;
 import okhttp3.Dispatcher;
@@ -70,6 +66,18 @@ public class NetUtils {
     private Retrofit mRetrofit;
     private Retrofit mSingleRetrofit;
 
+    private OkHttpClient client;
+
+    public void clearCache() {
+        if (client.cache() == null) {
+            return;
+        }
+        try {
+            client.cache().delete();
+        } catch (IOException ignored) {
+        }
+    }
+
     public void init() {
         Retrofit.Builder factory = new Retrofit.Builder().baseUrl(Constants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -88,7 +96,8 @@ public class NetUtils {
             simpleBuilder.cache(new Cache(cacheFile, Constants.HTTP_DISK_CACHE_SIZE));
         } catch (SystemException ignored) {
         }
-        mRetrofit = factory.client(simpleBuilder.build()).build();
+        client = simpleBuilder.build();
+        mRetrofit = factory.client(client).build();
     }
 
     private BingWallpaperNetworkService mBingWallpaperNetworkService;

@@ -14,8 +14,8 @@
     <string name="alert_mobile_data">你正在使用移动数据，想要继续吗？</string>
     <string name="alert_save_wallpaper_success">保存壁纸成功</string>
     <string name="alert_save_wallpaper_failure">保存壁纸失败</string>
+    <string name="about">关于</string>
     <string name="open_source_license">开放源代码许可</string>
-
     <!--setting -->
     <string name="pref_auto_update_wallpaper">自动更新壁纸</string>
     <string name="pref_update_only_on_wifi">只在WIFI时</string>
@@ -38,8 +38,8 @@
     <string name="pref_clear_cache">清除缓存</string>
     <string name="pref_clear_cache_success">清除缓存成功</string>
     <string name="pref_log_file">启用活动日志</string>
-    <string name="pref_about">关于</string>
     <string name="pref_version">版本</string>
+    <string name="pref_feedback">反馈</string>
 
     <!--menu-->
     <string name="menu_main_drawer_wallpaper_info">壁纸信息</string>

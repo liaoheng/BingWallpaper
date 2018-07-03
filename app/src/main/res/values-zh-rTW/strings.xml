@@ -14,6 +14,7 @@
     <string name="alert_mobile_data">你正在使用行動數據，想要繼續嗎？</string>
     <string name="alert_save_wallpaper_success">儲存桌布成功</string>
     <string name="alert_save_wallpaper_failure">儲存桌布失败</string>
+    <string name="about">關於</string>
     <string name="open_source_license">開放原始碼授權</string>
 
     <!--setting -->
@@ -38,8 +39,8 @@
     <string name="pref_clear_cache">清除快取</string>
     <string name="pref_clear_cache_success">清除快取成功</string>
     <string name="pref_log_file">啓用活動日誌</string>
-    <string name="pref_about">關於</string>
     <string name="pref_version">版本</string>
+    <string name="pref_feedback">反饋</string>
 
     <!--menu-->
     <string name="menu_main_drawer_wallpaper_info">桌布信息</string>

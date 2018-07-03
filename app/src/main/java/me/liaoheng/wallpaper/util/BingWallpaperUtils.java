@@ -18,6 +18,7 @@ import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.AndroidRuntimeException;
 
@@ -35,6 +36,7 @@ import org.joda.time.LocalTime;
 
 import java.util.Locale;
 
+import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
@@ -406,5 +408,78 @@ public class BingWallpaperUtils {
         } catch (AndroidRuntimeException e) {
             UIUtils.showToast(context, context.getString(R.string.unable_open_url));
         }
+    }
+
+    public static void openBrowser(Context context, String url) {
+        try {
+            new CustomTabsIntent.Builder()
+                    .setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary))
+                    .build()
+                    .launchUrl(context, Uri.parse(url));
+        } catch (AndroidRuntimeException e) {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            context.startActivity(browserIntent);
+        }
+    }
+
+    public static String getSystemInfo(Context context) {
+        String osVersion = System.getProperty("os.version");
+        int sdk = Build.VERSION.SDK_INT;
+        String device = Build.DEVICE;
+        String model = Build.MODEL;
+        String product = Build.PRODUCT;
+        String romName = ROM.getROM().getName();
+        String romVersion = ROM.getROM().getVersion();
+        Locale locale = Locale.getDefault();
+        Locale autoLocale = BingWallpaperUtils.getLocale(context);
+
+        return "system info ------------------------- \n"
+                + "os_version: "
+                + osVersion
+                + " sdk: "
+                + sdk
+                + " device: "
+                + device
+                + " model: "
+                + model
+                + " product: "
+                + product
+                + " rom_name: "
+                + romName
+                + " rom_version: "
+                + romVersion
+                + " locale: "
+                + locale
+                + " auto_locale: "
+                + autoLocale
+                + "\n"
+                + "system info ------------------------- \n";
+    }
+
+    public static void sendFeedback(Context context) {
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.setType("message/rfc822");
+        String to[] = { "liaohengcn@gmail.com" };
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, to);
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Feedback");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, BingWallpaperUtils.getSystemInfo(context));
+
+        if (emailIntent.resolveActivity(context.getPackageManager()) == null) {
+            UIUtils.showToast(context, "no support");
+            return;
+        }
+
+        if (BingWallpaperUtils.isEnableLog(context)) {
+            Uri path;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                path = FileProvider.getUriForFile(context,
+                        BuildConfig.APPLICATION_ID + ".fileProvider", LogDebugFileUtils.get().getLogFile());
+            } else {
+                path = Uri.fromFile(LogDebugFileUtils.get().getLogFile());
+            }
+            emailIntent.putExtra(Intent.EXTRA_STREAM, path);
+        }
+
+        context.startActivity(Intent.createChooser(emailIntent, "Send email..."));
     }
 }

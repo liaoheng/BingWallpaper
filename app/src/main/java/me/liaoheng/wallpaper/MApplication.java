@@ -39,17 +39,15 @@ public class MApplication extends Application {
         }
         FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(!BuildConfig.DEBUG);
 
-        if (TasksUtils.isOne()) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                NotificationChannel channel = new NotificationChannel(
-                        Constants.FOREGROUND_SET_NOTIFICATION_CHANNEL, "AutoSetWallpaperIntentService",
-                        NotificationManager.IMPORTANCE_LOW);
-                NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                if (manager == null) {
-                    return;
-                }
-                manager.createNotificationChannel(channel);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    Constants.FOREGROUND_SET_NOTIFICATION_CHANNEL, "AutoSetWallpaperIntentService",
+                    NotificationManager.IMPORTANCE_LOW);
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (manager == null) {
+                return;
             }
+            manager.createNotificationChannel(channel);
         }
     }
 }

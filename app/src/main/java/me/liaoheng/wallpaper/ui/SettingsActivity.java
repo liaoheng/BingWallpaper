@@ -1,5 +1,6 @@
 package me.liaoheng.wallpaper.ui;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -29,6 +30,7 @@ import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
+import me.liaoheng.wallpaper.util.NetUtils;
 import me.liaoheng.wallpaper.util.SettingTrayPreferences;
 import me.liaoheng.wallpaper.widget.TimePreference;
 import rx.Observable;
@@ -75,24 +77,22 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             return R.xml.preferences;
         }
 
-        CheckBoxPreference mOnlyWifiPreference;
-        ListPreference mCountryListPreference;
-        ListPreference mResolutionListPreference;
-        ListPreference mSaveResolutionListPreference;
-        ListPreference mModeTypeListPreference;
-        TimePreference mTimePreference;
-        CheckBoxPreference mDayUpdatePreference;
-        CheckBoxPreference mAutoUpdatePreference;
-        Preference mLogPreference;
-        //        private int openLogCount;
+        private CheckBoxPreference mOnlyWifiPreference;
+        private ListPreference mCountryListPreference;
+        private ListPreference mResolutionListPreference;
+        private ListPreference mSaveResolutionListPreference;
+        private ListPreference mModeTypeListPreference;
+        private TimePreference mTimePreference;
+        private CheckBoxPreference mDayUpdatePreference;
+        private CheckBoxPreference mAutoUpdatePreference;
         private SettingTrayPreferences mPreferences;
+        private Dialog mFeedbackDialog;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             mPreferences = new SettingTrayPreferences(getActivity());
             Preference version = findPreference("pref_version");
-            mLogPreference = findPreference(PREF_SET_WALLPAPER_LOG);
             try {
                 String versionName = AppUtils.getVersionInfo(getActivity()).versionName;
                 version.setSummary(versionName);
@@ -102,25 +102,36 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             mOnlyWifiPreference = (CheckBoxPreference) findPreference(
                     PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI);
 
-            //            version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            //                @Override
-            //                public boolean onPreferenceClick(Preference preference) {
-            //                    openLogCount++;
-            //                    if (openLogCount >= 5) {
-            //                        openLogCount = 0;
-            //                        ((PreferenceCategory) findPreference("pref_other_group")).addPreference(mLogPreference);
-            //                    }
-            //                    return true;
-            //                }
-            //            });
+            mFeedbackDialog = UIUtils.createAlertDialog(getActivity(), getString(R.string.pref_feedback), "E-Mail",
+                    "Github",
+                    new Callback4.EmptyCallback<DialogInterface>() {
+                        @Override
+                        public void onYes(DialogInterface dialogInterface) {
+                            BingWallpaperUtils.sendFeedback(getActivity());
+                        }
+
+                        @Override
+                        public void onNo(DialogInterface dialogInterface) {
+                            BingWallpaperUtils.openBrowser(getActivity(),
+                                    "https://github.com/liaoheng/BingWallpaper/issues");
+                        }
+                    });
+
+            findPreference("pref_issues").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    UIUtils.showDialog(mFeedbackDialog);
+                    return true;
+                }
+            });
+
             findPreference("pref_license").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     UIUtils.startActivity(getActivity(), LicenseActivity.class);
-                    return false;
+                    return true;
                 }
             });
-            //            ((PreferenceCategory) findPreference("pref_other_group")).removePreference(mLogPreference);
 
             findPreference("pref_clear_cache").setOnPreferenceClickListener(
                     new Preference.OnPreferenceClickListener() {
@@ -137,6 +148,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                                                         @Override
                                                         public Object call(String s) {
                                                             GlideApp.get(getActivity()).clearDiskCache();
+                                                            NetUtils.get().clearCache();
                                                             return null;
                                                         }
                                                     })
@@ -150,7 +162,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                                                     });
                                         }
                                     });
-                            return false;
+                            return true;
                         }
                     });
 

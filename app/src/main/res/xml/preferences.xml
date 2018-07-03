@@ -73,19 +73,19 @@
                 android:widgetLayout="@layout/mp_preference_switch" />
 
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/pref_about">
+    <PreferenceCategory android:title="@string/about">
         <Preference
                 android:key="pref_version"
                 android:persistent="false"
-                android:title="@string/pref_version" />
+                android:title="@string/pref_version" >
+            <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="https://github.com/liaoheng/BingWallpaper/releases/latest" />
+        </Preference>
         <Preference
                 android:key="pref_issues"
                 android:persistent="false"
-                android:title="Issues">
-            <intent
-                    android:action="android.intent.action.VIEW"
-                    android:data="https://github.com/liaoheng/BingWallpaper/issues" />
-        </Preference>
+                android:title="@string/pref_feedback"/>
         <Preference
                 android:key="pref_license"
                 android:persistent="false"

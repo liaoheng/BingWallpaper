@@ -107,7 +107,7 @@ public class BingWallpaperIntentService extends IntentService {
         startForeground(0x111, notification);
 
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().i(TAG, "Run BingWallpaperIntentService");
+            LogDebugFileUtils.get().i(TAG, "Starting");
         }
 
         sendSetWallpaperBroadcast(BingWallpaperState.BEGIN);
@@ -145,7 +145,8 @@ public class BingWallpaperIntentService extends IntentService {
         }
 
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().i(TAG, "bing url : %s", imageUrl);
+            String locale = BingWallpaperUtils.getAutoLocale(getApplicationContext());
+            LogDebugFileUtils.get().i(TAG, "locale : %s", locale.hashCode());
         }
 
         File wallpaper = null;
@@ -163,9 +164,9 @@ public class BingWallpaperIntentService extends IntentService {
     }
 
     private void failure(Throwable throwable) {
-        L.alog().e(TAG, throwable, "setBingWallpaper Error");
+        L.alog().e(TAG, throwable, "Failure");
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().e(TAG, throwable, "setBingWallpaper Error");
+            LogDebugFileUtils.get().e(TAG, throwable, "Failure");
         }
         sendSetWallpaperBroadcast(BingWallpaperState.FAIL);
         ExceptionHandle.collectException(TAG, throwable);
@@ -181,9 +182,9 @@ public class BingWallpaperIntentService extends IntentService {
     }
 
     private void success(boolean isBackground, BingWallpaperImage bingWallpaperImage) {
-        L.alog().i(TAG, "setBingWallpaper Success");
+        L.alog().i(TAG, "Complete");
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().i(TAG, "setBingWallpaper Success");
+            LogDebugFileUtils.get().i(TAG, "Complete");
         }
 
         AppWidget_5x2.start(this, bingWallpaperImage);
@@ -245,6 +246,12 @@ public class BingWallpaperIntentService extends IntentService {
                 }
             }
         }
+
+        L.alog().i(TAG, "setBingWallpaper Success");
+        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+            LogDebugFileUtils.get().i(TAG, "setBingWallpaper Success");
+        }
+
         if (!bitmap.isRecycled()) {
             bitmap.recycle();
         }
@@ -257,10 +264,10 @@ public class BingWallpaperIntentService extends IntentService {
         sendBroadcast(intent);
     }
 
-    //@Override
-    //public void onTrimMemory(int level) {
-    //    if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-    //        LogDebugFileUtils.get().i(TAG, "onTrimMemory  " + level);
-    //    }
-    //}
+    @Override
+    public void onTrimMemory(int level) {
+        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+            LogDebugFileUtils.get().i(TAG, "onTrimMemory  " + level);
+        }
+    }
 }
