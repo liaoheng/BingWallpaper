@@ -185,6 +185,18 @@ public class BingWallpaperUtils {
         return Locale.CHINA.getCountry().equalsIgnoreCase(locale.getCountry());
     }
 
+    public static boolean isAlarm(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE, false);
+    }
+
+    public static String getAlarmTime(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        return sharedPreferences.getString(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME, "");
+    }
+
     /**
      * 定时更新时间
      *
@@ -192,10 +204,7 @@ public class BingWallpaperUtils {
      */
     @Nullable
     public static LocalTime getDayUpdateTime(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        String time = sharedPreferences
-                .getString(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME, null);
+        String time = getAlarmTime(context);
         if (TextUtils.isEmpty(time)) {
             return null;
         }
@@ -424,12 +433,12 @@ public class BingWallpaperUtils {
         String romName = ROM.getROM().getName();
         String romVersion = ROM.getROM().getVersion();
         Locale locale = Locale.getDefault();
-        Locale autoLocale = BingWallpaperUtils.getLocale(context);
+        Locale autoLocale = getLocale(context);
         boolean job = BingWallpaperJobManager.check(context);
+        boolean alarm = isAlarm(context);
+        String alarmTime = getAlarmTime(context);
 
         return "feedback info ------------------------- \n"
-                + "os_version: "
-                + osVersion
                 + " sdk: "
                 + sdk
                 + " device: "
@@ -450,6 +459,10 @@ public class BingWallpaperUtils {
                 + BuildConfig.VERSION_NAME
                 + " job: "
                 + job
+                + " alarm: "
+                + alarm
+                + " alarm_time: "
+                + alarmTime
                 + "\n"
                 + "feedback info ------------------------- \n";
     }

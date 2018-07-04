@@ -71,7 +71,7 @@ public class BingWallpaperJobManager {
                 }
             }
         }
-        return myJobInfo == null;
+        return myJobInfo != null;
     }
 
 }

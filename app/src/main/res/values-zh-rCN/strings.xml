@@ -16,7 +16,7 @@
     <string name="alert_save_wallpaper_failure">保存壁纸失败</string>
     <string name="about">关于</string>
     <string name="open_source_license">开放源代码许可</string>
-    <string name="send_email">發送郵件</string>
+    <string name="send_email">发送邮件</string>
 
     <!--setting -->
     <string name="pref_auto_update_wallpaper">自动更新壁纸</string>

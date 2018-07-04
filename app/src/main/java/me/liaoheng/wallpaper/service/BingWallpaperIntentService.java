@@ -145,8 +145,7 @@ public class BingWallpaperIntentService extends IntentService {
         }
 
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            String locale = BingWallpaperUtils.getAutoLocale(getApplicationContext());
-            LogDebugFileUtils.get().i(TAG, "locale : %s", locale.hashCode());
+            LogDebugFileUtils.get().i(TAG, "imageUrl : %s", imageUrl);
         }
 
         File wallpaper = null;
