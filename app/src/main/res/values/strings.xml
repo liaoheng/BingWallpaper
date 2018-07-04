@@ -16,6 +16,7 @@
     <string name="unable_open_url">Unable to open URL</string>
     <string name="about">About</string>
     <string name="open_source_license">Open source licenses</string>
+    <string name="send_email">Send email</string>
 
     <!--setting -->
     <string name="pref_auto_update_wallpaper">Automatic update wallpaper</string>

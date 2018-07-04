@@ -7,6 +7,7 @@ import android.content.Context;
 
 import com.github.liaoheng.common.util.L;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import me.liaoheng.wallpaper.service.JobSchedulerDaemonService;
@@ -51,6 +52,26 @@ public class BingWallpaperJobManager {
             LogDebugFileUtils.get().i(TAG, "job interval time : %s", time / 1000 / 60);
         }
         L.Log.d(TAG, "job interval time : %s", time / 1000 / 60);
+    }
+
+    public static boolean check(Context context) {
+        JobScheduler jobScheduler = (JobScheduler)
+                context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        if (jobScheduler == null) {
+            return false;
+        }
+        JobInfo myJobInfo = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            myJobInfo = jobScheduler.getPendingJob(JOB_ID);
+        } else {
+            List<JobInfo> allPendingJobs = jobScheduler.getAllPendingJobs();
+            for (JobInfo allPendingJob : allPendingJobs) {
+                if (allPendingJob.getId() == JOB_ID) {
+                    myJobInfo = allPendingJob;
+                }
+            }
+        }
+        return myJobInfo == null;
     }
 
 }

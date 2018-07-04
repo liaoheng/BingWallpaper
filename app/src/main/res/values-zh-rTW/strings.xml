@@ -16,6 +16,7 @@
     <string name="alert_save_wallpaper_failure">儲存桌布失败</string>
     <string name="about">關於</string>
     <string name="open_source_license">開放原始碼授權</string>
+    <string name="send_email">Send email</string>
 
     <!--setting -->
     <string name="pref_auto_update_wallpaper">自動更新桌布</string>

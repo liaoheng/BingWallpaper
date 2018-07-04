@@ -33,7 +33,9 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
     protected static void start(Context context, Class<?> cls, BingWallpaperImage bingWallpaperImage) {
         Intent intent = new Intent(context, cls);
         intent.setAction(Constants.ACTION_UPDATE_WALLPAPER_COVER_STORY);
-        intent.putExtra(Constants.EXTRA_UPDATE_WALLPAPER_COVER_STORY, bingWallpaperImage);
+        if (bingWallpaperImage != null) {
+            intent.putExtra(Constants.EXTRA_UPDATE_WALLPAPER_COVER_STORY, bingWallpaperImage);
+        }
         context.sendBroadcast(intent);
     }
 
@@ -81,7 +83,11 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
         } else if (Constants.ACTION_UPDATE_WALLPAPER_COVER_STORY.equals(action)) {
             BingWallpaperImage image = intent.getParcelableExtra(
                     Constants.EXTRA_UPDATE_WALLPAPER_COVER_STORY);
-            setText(context, image);
+            if (image == null) {
+                getBingWallpaper(context);
+            } else {
+                setText(context, image);
+            }
         } else if (TITLE_CLICK.equals(action) || CONTENT_CLICK.equals(action)) {
             Intent openIntent = new Intent(context, MainActivity.class);
             openIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -34,6 +34,7 @@ import net.grandcentrix.tray.AppPreferences;
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
+import java.io.File;
 import java.util.Locale;
 
 import me.liaoheng.wallpaper.BuildConfig;
@@ -72,11 +73,7 @@ public class BingWallpaperUtils {
 
         String resolution = appPreferences
                 .getString(SettingsActivity.PREF_SET_WALLPAPER_RESOLUTION, "0");
-        int i = Integer.parseInt(resolution);
-        if (names.length <= i) {//兼容之前的分辨率
-            i -= 2;
-        }
-        return names[i];
+        return names[Integer.parseInt(resolution)];
     }
 
     public static String getSaveResolution(Context context) {
@@ -88,11 +85,7 @@ public class BingWallpaperUtils {
 
         String resolution = sharedPreferences
                 .getString(SettingsActivity.PREF_SAVE_WALLPAPER_RESOLUTION, "0");
-        int i = Integer.parseInt(resolution);
-        if (names.length <= i) {//兼容之前的分辨率
-            i -= 2;
-        }
-        return names[i];
+        return names[Integer.parseInt(resolution)];
     }
 
     public static int getAutoModeValue(Context context) {
@@ -282,7 +275,7 @@ public class BingWallpaperUtils {
     public static void setWallpaper(final Context context, final @Nullable BingWallpaperImage image,
             @Constants.setWallpaperMode final int mode,
             @Nullable final Callback4<Boolean> callback) {
-        if (!BingWallpaperUtils.isConnectedOrConnecting(context)) {
+        if (!NetworkUtils.isConnectedOrConnecting(context)) {
             UIUtils.showToast(context, context.getString(R.string.network_unavailable));
             return;
         }
@@ -432,8 +425,9 @@ public class BingWallpaperUtils {
         String romVersion = ROM.getROM().getVersion();
         Locale locale = Locale.getDefault();
         Locale autoLocale = BingWallpaperUtils.getLocale(context);
+        boolean job = BingWallpaperJobManager.check(context);
 
-        return "system info ------------------------- \n"
+        return "feedback info ------------------------- \n"
                 + "os_version: "
                 + osVersion
                 + " sdk: "
@@ -452,8 +446,12 @@ public class BingWallpaperUtils {
                 + locale
                 + " auto_locale: "
                 + autoLocale
+                + " version: "
+                + BuildConfig.VERSION_NAME
+                + " job: "
+                + job
                 + "\n"
-                + "system info ------------------------- \n";
+                + "feedback info ------------------------- \n";
     }
 
     public static void sendFeedback(Context context) {
@@ -461,25 +459,29 @@ public class BingWallpaperUtils {
         emailIntent.setType("message/rfc822");
         String to[] = { "liaohengcn@gmail.com" };
         emailIntent.putExtra(Intent.EXTRA_EMAIL, to);
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Feedback");
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT,
+                context.getString(R.string.app_name) + " : " + context.getString(R.string.pref_feedback));
         emailIntent.putExtra(Intent.EXTRA_TEXT, BingWallpaperUtils.getSystemInfo(context));
 
+        if (BingWallpaperUtils.isEnableLog(context)) {
+            File logFile = LogDebugFileUtils.get().getLogFile();
+            if (logFile != null && logFile.exists()) {
+                Uri path;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    path = FileProvider.getUriForFile(context,
+                            BuildConfig.APPLICATION_ID + ".fileProvider", logFile);
+                } else {
+                    path = Uri.fromFile(logFile);
+                }
+                emailIntent.putExtra(Intent.EXTRA_STREAM, path);
+            }
+        }
+
         if (emailIntent.resolveActivity(context.getPackageManager()) == null) {
-            UIUtils.showToast(context, "no support");
+            UIUtils.showToast(context, "No support !");
             return;
         }
 
-        if (BingWallpaperUtils.isEnableLog(context)) {
-            Uri path;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                path = FileProvider.getUriForFile(context,
-                        BuildConfig.APPLICATION_ID + ".fileProvider", LogDebugFileUtils.get().getLogFile());
-            } else {
-                path = Uri.fromFile(LogDebugFileUtils.get().getLogFile());
-            }
-            emailIntent.putExtra(Intent.EXTRA_STREAM, path);
-        }
-
-        context.startActivity(Intent.createChooser(emailIntent, "Send email..."));
+        context.startActivity(Intent.createChooser(emailIntent, context.getString(R.string.send_email)));
     }
 }
