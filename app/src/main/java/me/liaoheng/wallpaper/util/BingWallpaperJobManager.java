@@ -40,7 +40,7 @@ public class BingWallpaperJobManager {
         JobInfo jobInfo = new JobInfo.Builder(JOB_ID, new ComponentName(context,
                 JobSchedulerDaemonService.class)).setPeriodic(time)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setBackoffCriteria(TimeUnit.MINUTES.toMillis(15), JobInfo.BACKOFF_POLICY_LINEAR)
+                .setBackoffCriteria(TimeUnit.MINUTES.toMillis(15), JobInfo.BACKOFF_POLICY_EXPONENTIAL)
                 .setPersisted(true)
                 .build();
         if (jobScheduler == null) {
