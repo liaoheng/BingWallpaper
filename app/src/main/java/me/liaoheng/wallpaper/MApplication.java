@@ -36,8 +36,8 @@ public class MApplication extends Application {
 
         if (!BuildConfig.DEBUG) {
             Fabric.with(this, new Crashlytics());
+            FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(true);
         }
-        FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(!BuildConfig.DEBUG);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
