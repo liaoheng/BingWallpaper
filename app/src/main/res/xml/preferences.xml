@@ -14,6 +14,13 @@
                 android:title="@string/pref_auto_update_everyday"
                 android:widgetLayout="@layout/mp_preference_switch" />
 
+        <ListPreference
+                android:defaultValue="0"
+                android:entries="@array/pref_set_wallpaper_day_fully_automatic_update_type_names"
+                android:entryValues="@array/pref_set_wallpaper_day_fully_automatic_update_type_values"
+                android:key="pref_set_wallpaper_day_fully_automatic_update_type"
+                android:title="@string/pref_choose_auto_set_wallpaper_type" />
+
         <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="pref_set_wallpaper_day_auto_update"

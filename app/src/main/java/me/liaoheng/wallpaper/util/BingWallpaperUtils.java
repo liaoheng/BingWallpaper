@@ -28,6 +28,8 @@ import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 import com.github.liaoheng.common.util.ValidateUtils;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import net.grandcentrix.tray.AppPreferences;
 
@@ -246,6 +248,14 @@ public class BingWallpaperUtils {
                 .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_LOG, false);
     }
 
+    public static int getAutomaticUpdateType(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        String type = sharedPreferences
+                .getString(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_TYPE, "0");
+        return Integer.parseInt(type);
+    }
+
     public static void disabledReceiver(Context context, String receiver) {
         settingReceiver(context, receiver, PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
     }
@@ -425,7 +435,6 @@ public class BingWallpaperUtils {
     }
 
     public static String getSystemInfo(Context context) {
-        String osVersion = System.getProperty("os.version");
         int sdk = Build.VERSION.SDK_INT;
         String device = Build.DEVICE;
         String model = Build.MODEL;
@@ -434,7 +443,7 @@ public class BingWallpaperUtils {
         String romVersion = ROM.getROM().getVersion();
         Locale locale = Locale.getDefault();
         Locale autoLocale = getLocale(context);
-        boolean job = BingWallpaperJobManager.check(context);
+        String job = BingWallpaperJobManager.check(context);
         boolean alarm = isAlarm(context);
         String alarmTime = getAlarmTime(context);
 
@@ -496,5 +505,11 @@ public class BingWallpaperUtils {
         }
 
         context.startActivity(Intent.createChooser(emailIntent, context.getString(R.string.send_email)));
+    }
+
+    public static boolean isGooglePlayServicesAvailable(Context context){
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = googleApiAvailability.isGooglePlayServicesAvailable(context);
+        return resultCode == ConnectionResult.SUCCESS;
     }
 }

@@ -71,6 +71,7 @@ dependencies {
 
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.4'
     implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
 
     //View "injection" library:https://github.com/JakeWharton/butterknife
     implementation 'com.jakewharton:butterknife:8.6.0'
