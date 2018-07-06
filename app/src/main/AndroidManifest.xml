@@ -93,6 +93,17 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".service.SetWallpaperBroadcastReceiver">
+            <intent-filter>
+                <action android:name="me.liaoheng.wallpaper.SET_BING_WALLPAPER" />
+            </intent-filter>
+        </receiver>
+
+        <service
+                android:name=".service.WallpaperDaemonService"
+                android:exported="false"
+                android:process=":background" />
+
         <service
                 android:name=".service.BingWallpaperIntentService"
                 android:exported="false"

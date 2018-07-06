@@ -100,7 +100,7 @@ public class BingWallpaperIntentService extends IntentService {
         L.alog().d(TAG, " setWallpaperType : " + setWallpaperType);
 
         Notification notification = new NotificationCompat.Builder(getApplicationContext(),
-                Constants.FOREGROUND_SET_NOTIFICATION_CHANNEL).setSmallIcon(
+                Constants.FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL).setSmallIcon(
                 R.mipmap.ic_launcher_foreground)
                 .setContentText(getText(R.string.set_wallpaper_running))
                 .setContentTitle(getText(R.string.app_name)).build();
@@ -171,7 +171,7 @@ public class BingWallpaperIntentService extends IntentService {
         ExceptionHandle.collectException(TAG, throwable);
 
         Notification notification = new NotificationCompat.Builder(getApplicationContext(),
-                Constants.FOREGROUND_SET_NOTIFICATION_CHANNEL).setSmallIcon(
+                Constants.FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL).setSmallIcon(
                 R.mipmap.ic_launcher_foreground)
                 .setAutoCancel(true)
                 .setContentText(getText(R.string.set_wallpaper_failure))

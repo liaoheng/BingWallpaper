@@ -4,15 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Browser;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -20,7 +17,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.graphics.Palette;
 import android.text.TextUtils;
-import android.util.AndroidRuntimeException;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,8 +36,6 @@ import com.github.liaoheng.common.core.OnCheckedChangeListener;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.UIUtils;
-import com.github.liaoheng.common.util.Utils;
-import com.github.liaoheng.common.util.ValidateUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,7 +46,9 @@ import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
-import me.liaoheng.wallpaper.service.WallpaperBroadcastReceiver;
+import me.liaoheng.wallpaper.service.SetWallpaperStateBroadcastReceiver;
+import me.liaoheng.wallpaper.service.WallpaperDaemonService;
+import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.ExceptionHandle;
@@ -101,7 +97,7 @@ public class MainActivity extends BaseActivity
 
     private ImageView mNavigationHeaderImage;
 
-    private WallpaperBroadcastReceiver mWallpaperBroadcastReceiver;
+    private SetWallpaperStateBroadcastReceiver mSetWallpaperStateBroadcastReceiver;
     private BingWallpaperImage mCurBingWallpaperImage;
     private boolean isRun;
 
@@ -110,7 +106,7 @@ public class MainActivity extends BaseActivity
     @OnClick(R.id.bing_wallpaper_cover_story_text)
     void openMap() {
         if (mCoverStory == null) {
-            BingWallpaperUtils.openBrowser(this,mCurBingWallpaperImage);
+            BingWallpaperUtils.openBrowser(this, mCurBingWallpaperImage);
             return;
         }
         String longitude = mCoverStory.getLongitude();//经度
@@ -133,6 +129,10 @@ public class MainActivity extends BaseActivity
         ButterKnife.bind(this);
         initStatusBarAddToolbar();
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_drawer_home);
+
+        if (BingWallpaperJobManager.getJobType(this) == 2) {
+            BingWallpaperJobManager.startDaemonService(this);
+        }
 
         int navigationBarHeight = BingWallpaperUtils.getNavigationBarHeight(this);
         if (navigationBarHeight > 0) {
@@ -168,21 +168,22 @@ public class MainActivity extends BaseActivity
             }
         });
 
-        mWallpaperBroadcastReceiver = new WallpaperBroadcastReceiver(new Callback4.EmptyCallback<BingWallpaperState>() {
-            @Override
-            public void onYes(BingWallpaperState bingWallpaperState) {
-                dismissProgressDialog();
-                UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_success));
-            }
+        mSetWallpaperStateBroadcastReceiver = new SetWallpaperStateBroadcastReceiver(
+                new Callback4.EmptyCallback<BingWallpaperState>() {
+                    @Override
+                    public void onYes(BingWallpaperState bingWallpaperState) {
+                        dismissProgressDialog();
+                        UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_success));
+                    }
 
-            @Override
-            public void onNo(BingWallpaperState bingWallpaperState) {
-                dismissProgressDialog();
-                UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_failure));
-            }
-        });
+                    @Override
+                    public void onNo(BingWallpaperState bingWallpaperState) {
+                        dismissProgressDialog();
+                        UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_failure));
+                    }
+                });
 
-        registerReceiver(mWallpaperBroadcastReceiver,
+        registerReceiver(mSetWallpaperStateBroadcastReceiver,
                 new IntentFilter(BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE));
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -348,7 +349,7 @@ public class MainActivity extends BaseActivity
         } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_history_list) {
             UIUtils.startActivity(this, WallpaperHistoryListActivity.class);
         } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_info) {
-            BingWallpaperUtils.openBrowser(this,mCurBingWallpaperImage);
+            BingWallpaperUtils.openBrowser(this, mCurBingWallpaperImage);
         }
         mDrawerLayout.closeDrawers();
         return true;
@@ -485,8 +486,8 @@ public class MainActivity extends BaseActivity
 
     @Override
     protected void onDestroy() {
-        if (mWallpaperBroadcastReceiver != null) {
-            unregisterReceiver(mWallpaperBroadcastReceiver);
+        if (mSetWallpaperStateBroadcastReceiver != null) {
+            unregisterReceiver(mSetWallpaperStateBroadcastReceiver);
         }
         UIUtils.cancelToast();
         super.onDestroy();

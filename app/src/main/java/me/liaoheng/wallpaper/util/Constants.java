@@ -19,7 +19,9 @@ public interface Constants {
     int IMAGE_DISK_CACHE_SIZE = 100 * 1024 * 1024; // 100MB
     int HTTP_DISK_CACHE_SIZE = 5 * 1024 * 1024;  // 5MB
 
-    long JOB_SCHEDULER_PERIODIC = TimeUnit.HOURS.toMillis(1);
+    //long JOB_SCHEDULER_PERIODIC = TimeUnit.HOURS.toSeconds(1);
+    //long JOB_SCHEDULER_PERIODIC = TimeUnit.MINUTES.toSeconds(30);
+    long JOB_SCHEDULER_PERIODIC = 60;
 
     String BASE_URL = "https://www.bing.com";
     String CHINA_BASE_URL = "https://www.bing.com";
@@ -56,7 +58,8 @@ public interface Constants {
     int EXTRA_SET_WALLPAPER_MODE_HOME = 1;
     int EXTRA_SET_WALLPAPER_MODE_LOCK = 1 << 1;
 
-    String FOREGROUND_SET_NOTIFICATION_CHANNEL = "bing_wallpaper_intent_service_notification_channel_id";
+    String FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL = "bing_wallpaper_intent_service_notification_channel_id";
+    String FOREGROUND_DAEMON_SERVICE_NOTIFICATION_CHANNEL = "bing_wallpaper_daemon_service_notification_channel_id";
 
     String ACTION_UPDATE_WALLPAPER_COVER_STORY = "me.liaoheng.wallpaper.UPDATE_WALLPAPER_COVER_STORY";
     String EXTRA_UPDATE_WALLPAPER_COVER_STORY = "WALLPAPER_COVER_STORY";

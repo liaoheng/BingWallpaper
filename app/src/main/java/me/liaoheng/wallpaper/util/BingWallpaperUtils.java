@@ -256,6 +256,13 @@ public class BingWallpaperUtils {
         return Integer.parseInt(type);
     }
 
+    public static String getAutomaticUpdateTypeName(Context context) {
+        int type = getAutomaticUpdateType(context);
+        String[] names = context.getResources()
+                .getStringArray(R.array.pref_set_wallpaper_day_fully_automatic_update_type_names);
+        return names[type];
+    }
+
     public static void disabledReceiver(Context context, String receiver) {
         settingReceiver(context, receiver, PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
     }
@@ -507,7 +514,28 @@ public class BingWallpaperUtils {
         context.startActivity(Intent.createChooser(emailIntent, context.getString(R.string.send_email)));
     }
 
-    public static boolean isGooglePlayServicesAvailable(Context context){
+    public static int checkRunningService(Context context) {
+        if (NetworkUtils.isConnectedOrConnecting(context)) {
+            if (BingWallpaperUtils.getOnlyWifi(context)) {
+                if (!NetworkUtils.isWifiConnected(context)) {
+                    return 2;
+                }
+            }
+            //每天成功执行一次
+            if (TasksUtils.isToDaysDoProvider(context, 1,
+                    BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
+                BingWallpaperIntentService.start(context,
+                        BingWallpaperUtils.getAutoModeValue(context));
+                return 0;
+            } else {
+                return 3;
+            }
+        } else {
+            return 1;
+        }
+    }
+
+    public static boolean isGooglePlayServicesAvailable(Context context) {
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = googleApiAvailability.isGooglePlayServicesAvailable(context);
         return resultCode == ConnectionResult.SUCCESS;

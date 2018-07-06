@@ -17,14 +17,17 @@
     <string name="about">About</string>
     <string name="open_source_license">Open source licenses</string>
     <string name="send_email">Send email</string>
+    <string name="foreground_intent_service_notification_channel">Update wallpaper service</string>
+    <string name="foreground_daemon_service_notification_channel">Background daemon service</string>
 
     <!--setting -->
     <string name="pref_auto_update_wallpaper">Automatic update wallpaper</string>
     <string name="pref_update_only_on_wifi">Wi-Fi only</string>
-    <string name="pref_auto_update_everyday">Automatic every day</string>
+    <string name="pref_auto_update_everyday">Daily automatic</string>
     <string name="pref_auto_update_check_every_hour">Check every three hours</string>
-    <string name="pref_alarm_update_wallpaper_everyday">Timing every day</string>
-    <string name="pref_alarm_update_wallpaper_time">Timing</string>
+    <string name="pref_set_wallpaper_day_fully_automatic_update_type">Choose daily automatic running mode</string>
+    <string name="pref_alarm_update_wallpaper_everyday">Daily timer</string>
+    <string name="pref_alarm_update_wallpaper_time">Set time</string>
     <string name="pref_not_set_time">No time</string>
     <string name="pref_choose_auto_set_wallpaper_type">Choose auto set wallpaper mode</string>
     <string name="pref_set_wallpaper_auto_mode_both">Both</string>

@@ -7,11 +7,9 @@ import android.os.Message;
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
 import com.github.liaoheng.common.util.L;
-import com.github.liaoheng.common.util.NetworkUtils;
 
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
-import me.liaoheng.wallpaper.util.TasksUtils;
 
 /**
  * 自动更新壁纸守护服务
@@ -26,25 +24,7 @@ public class FirebaseJobSchedulerDaemonService extends JobService {
     Handler mHandler = new Handler(Looper.myLooper()) {
         @Override
         public void handleMessage(Message msg) {
-            if (BingWallpaperUtils.isConnectedOrConnecting(getApplicationContext())) {
-                if (BingWallpaperUtils.getOnlyWifi(getApplicationContext())) {
-                    if (!NetworkUtils.isWifiConnected(getApplicationContext())) {
-                        L.Log.d(TAG, "isWifiConnected :false");
-                        return;
-                    }
-                }
-                //每天成功执行一次
-                if (TasksUtils.isToDaysDoProvider(getApplicationContext(), 1,
-                        BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
-                    L.Log.d(TAG, "isToDaysDo :true");
-                    BingWallpaperIntentService.start(getApplicationContext(),
-                            BingWallpaperUtils.getAutoModeValue(getApplicationContext()));
-                } else {
-                    L.Log.d(TAG, "isToDaysDo :false");
-                }
-            } else {
-                L.Log.d(TAG, "isConnectedOrConnecting :false");
-            }
+            SetWallpaperBroadcastReceiver.send(getApplicationContext(), TAG);
             jobFinished((JobParameters) msg.obj, false);
         }
     };

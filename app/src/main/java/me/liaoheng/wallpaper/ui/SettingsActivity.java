@@ -86,6 +86,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
         private TimePreference mTimePreference;
         private CheckBoxPreference mDayUpdatePreference;
         private CheckBoxPreference mAutoUpdatePreference;
+        private ListPreference mAutoUpdateTypeListPreference;
         private SettingTrayPreferences mPreferences;
         private Dialog mFeedbackDialog;
 
@@ -179,6 +180,8 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     PREF_SET_WALLPAPER_DAY_AUTO_UPDATE);
             mTimePreference = (TimePreference) findPreference(
                     PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME);
+            mAutoUpdateTypeListPreference = (ListPreference) findPreference(
+                    PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_TYPE);
             mAutoUpdatePreference = (CheckBoxPreference) findPreference(PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE);
 
             String[] nameStrings = getResources().getStringArray(R.array.pref_set_wallpaper_auto_mode_name);
@@ -191,6 +194,8 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             mModeTypeListPreference.setSummary(BingWallpaperUtils.getAutoMode(getActivity()));
             mSaveResolutionListPreference.setSummary(BingWallpaperUtils.getSaveResolution(getActivity()));
             mCountryListPreference.setSummary(BingWallpaperUtils.getCountryName(getActivity()));
+
+            mAutoUpdateTypeListPreference.setSummary(BingWallpaperUtils.getAutomaticUpdateTypeName(getActivity()));
 
             LocalTime localTime = BingWallpaperUtils.getDayUpdateTime(getActivity());
 
@@ -238,6 +243,9 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                         BingWallpaperJobManager.disabled(getActivity());
                     }
                     mPreferences.put(PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE, mAutoUpdatePreference.isChecked());
+                    break;
+                case PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_TYPE:
+                    mAutoUpdateTypeListPreference.setSummary(mAutoUpdateTypeListPreference.getEntry());
                     break;
                 case PREF_SET_WALLPAPER_DAY_AUTO_UPDATE:
                     if (mDayUpdatePreference.isChecked()) {

@@ -52,13 +52,15 @@
     </string-array>
 
     <string-array name="pref_set_wallpaper_day_fully_automatic_update_type_names">
-        <item>Auto(google play)</item>
-        <item>Only Android</item>
+        <item>Auto(priority google play)</item>
+        <item>System</item>
+        <item>Daemon service</item>
     </string-array>
 
     <string-array name="pref_set_wallpaper_day_fully_automatic_update_type_values">
         <item>0</item>
         <item>1</item>
+        <item>2</item>
     </string-array>
 
 </resources>

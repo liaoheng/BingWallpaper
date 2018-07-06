@@ -48,7 +48,7 @@ import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
-import me.liaoheng.wallpaper.service.WallpaperBroadcastReceiver;
+import me.liaoheng.wallpaper.service.SetWallpaperStateBroadcastReceiver;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.ExceptionHandle;
@@ -101,7 +101,7 @@ public class WallpaperDetailActivity extends BaseActivity {
     private ProgressDialog mDownLoadProgressDialog;
     private ProgressDialog mSetWallpaperProgressDialog;
     private Subscription mDownLoadSubscription;
-    private WallpaperBroadcastReceiver mWallpaperBroadcastReceiver;
+    private SetWallpaperStateBroadcastReceiver mSetWallpaperStateBroadcastReceiver;
 
     @OnClick(R.id.bing_wallpaper_detail_cover_story_text)
     void openBrowser() {
@@ -116,7 +116,7 @@ public class WallpaperDetailActivity extends BaseActivity {
         ButterKnife.bind(this);
         initStatusBarAddToolbar();
 
-        mWallpaperBroadcastReceiver = new WallpaperBroadcastReceiver(new Callback4.EmptyCallback<BingWallpaperState>() {
+        mSetWallpaperStateBroadcastReceiver = new SetWallpaperStateBroadcastReceiver(new Callback4.EmptyCallback<BingWallpaperState>() {
             @Override
             public void onYes(BingWallpaperState bingWallpaperState) {
                 dismissProgressDialog();
@@ -129,7 +129,7 @@ public class WallpaperDetailActivity extends BaseActivity {
                 UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_failure));
             }
         });
-        registerReceiver(mWallpaperBroadcastReceiver,
+        registerReceiver(mSetWallpaperStateBroadcastReceiver,
                 new IntentFilter(BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE));
 
         mWallpaperImage = getIntent().getParcelableExtra("image");
@@ -436,7 +436,7 @@ public class WallpaperDetailActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        unregisterReceiver(mWallpaperBroadcastReceiver);
+        unregisterReceiver(mSetWallpaperStateBroadcastReceiver);
         super.onDestroy();
     }
 }

@@ -20,12 +20,11 @@ import me.liaoheng.wallpaper.service.AutoSetWallpaperBroadcastReceiver;
 public class BingWallpaperAlarmManager {
 
     private static final String TAG = BingWallpaperAlarmManager.class.getSimpleName();
-    private static final String ACTION = "me.liaoheng.wallpaper.ALARM_TASK_SCHEDULE";
     private static final int REQUEST_CODE = 0x12;
 
     private static PendingIntent getPendingIntent(Context context) {
         Intent intent = new Intent(context, AutoSetWallpaperBroadcastReceiver.class);
-        intent.setAction(ACTION);
+        intent.setAction(AutoSetWallpaperBroadcastReceiver.ACTION);
         return PendingIntent
                 .getBroadcast(context, REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }

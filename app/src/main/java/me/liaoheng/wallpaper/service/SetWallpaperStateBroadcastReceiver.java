@@ -12,10 +12,10 @@ import me.liaoheng.wallpaper.model.BingWallpaperState;
  * @author liaoheng
  * @version 2018-02-07 21:13
  */
-public class WallpaperBroadcastReceiver extends BroadcastReceiver {
+public class SetWallpaperStateBroadcastReceiver extends BroadcastReceiver {
     private Callback4<BingWallpaperState> mCallback;
 
-    public WallpaperBroadcastReceiver(
+    public SetWallpaperStateBroadcastReceiver(
             Callback4<BingWallpaperState> callback) {
         mCallback = callback;
     }

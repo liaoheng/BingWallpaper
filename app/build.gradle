@@ -9,8 +9,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 119
-        versionName "1.1.9"
+        versionCode 120
+        versionName "1.2.0"
     }
 
     def isSigning = true
@@ -69,9 +69,12 @@ dependencies {
     implementation deps.palette_v7
     implementation deps.customtabs
 
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.4'
-    implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.4') {
+        transitive = true
+    }
+    implementation 'com.google.firebase:firebase-core:11.8.0'
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
+    implementation 'com.google.android.gms:play-services-base:11.8.0'
 
     //View "injection" library:https://github.com/JakeWharton/butterknife
     implementation 'com.jakewharton:butterknife:8.6.0'
@@ -93,9 +96,6 @@ dependencies {
 
     //https://github.com/ferrannp/material-preferences
     implementation 'com.fnp:material-preferences:0.1.4'
-
-    //https://github.com/DreaminginCodeZH/SystemUiHelper
-    implementation 'me.zhanghai.android.systemuihelper:library:1.0.0'
 
     //https://github.com/yshrsmz/LicenseAdapter
     implementation 'net.yslibrary.licenseadapter:licenseadapter:2.1.0'
