@@ -1,6 +1,7 @@
 package me.liaoheng.wallpaper;
 
 import android.app.Application;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -49,6 +50,7 @@ public class MApplication extends Application {
                     Constants.FOREGROUND_DAEMON_SERVICE_NOTIFICATION_CHANNEL,
                     getString(R.string.foreground_daemon_service_notification_channel),
                     NotificationManager.IMPORTANCE_MIN);
+            channel2.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
 
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             if (manager == null) {

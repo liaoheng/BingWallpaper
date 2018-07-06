@@ -52,9 +52,9 @@
     </string-array>
 
     <string-array name="pref_set_wallpaper_day_fully_automatic_update_type_names">
-        <item>Auto(priority google play)</item>
-        <item>System</item>
-        <item>Daemon service</item>
+        <item>@string/pref_set_wallpaper_day_fully_automatic_update_type_auto</item>
+        <item>@string/pref_set_wallpaper_day_fully_automatic_update_type_system</item>
+        <item>@string/pref_set_wallpaper_day_fully_automatic_update_type_service</item>
     </string-array>
 
     <string-array name="pref_set_wallpaper_day_fully_automatic_update_type_values">

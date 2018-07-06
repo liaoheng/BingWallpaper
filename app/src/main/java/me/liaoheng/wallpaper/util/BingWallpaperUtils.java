@@ -15,6 +15,7 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.Browser;
 import android.provider.Settings;
+import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.ContextCompat;
@@ -37,6 +38,8 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
 import java.io.File;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 import me.liaoheng.wallpaper.BuildConfig;
@@ -248,6 +251,19 @@ public class BingWallpaperUtils {
                 .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_LOG, false);
     }
 
+    @IntDef(value = {
+            AUTOMATIC_UPDATE_TYPE_AUTO,
+            AUTOMATIC_UPDATE_TYPE_SYSTEM,
+            AUTOMATIC_UPDATE_TYPE_SERVICE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface AutomaticUpdateTypeResult {}
+
+    public final static int AUTOMATIC_UPDATE_TYPE_AUTO = 0;
+    public final static int AUTOMATIC_UPDATE_TYPE_SYSTEM = 1;
+    public final static int AUTOMATIC_UPDATE_TYPE_SERVICE = 2;
+
+    @AutomaticUpdateTypeResult
     public static int getAutomaticUpdateType(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);

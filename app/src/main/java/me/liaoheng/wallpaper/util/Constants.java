@@ -20,8 +20,7 @@ public interface Constants {
     int HTTP_DISK_CACHE_SIZE = 5 * 1024 * 1024;  // 5MB
 
     //long JOB_SCHEDULER_PERIODIC = TimeUnit.HOURS.toSeconds(1);
-    //long JOB_SCHEDULER_PERIODIC = TimeUnit.MINUTES.toSeconds(30);
-    long JOB_SCHEDULER_PERIODIC = 60;
+    long JOB_SCHEDULER_PERIODIC = TimeUnit.MINUTES.toSeconds(30);
 
     String BASE_URL = "https://www.bing.com";
     String CHINA_BASE_URL = "https://www.bing.com";

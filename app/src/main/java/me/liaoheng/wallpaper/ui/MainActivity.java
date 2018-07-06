@@ -130,7 +130,7 @@ public class MainActivity extends BaseActivity
         initStatusBarAddToolbar();
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_drawer_home);
 
-        if (BingWallpaperJobManager.getJobType(this) == 2) {
+        if (BingWallpaperJobManager.getJobType(this) == BingWallpaperJobManager.DAEMON_SERVICE) {
             BingWallpaperJobManager.startDaemonService(this);
         }
 

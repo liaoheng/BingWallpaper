@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.IntDef;
 import android.support.v4.content.ContextCompat;
 
 import com.firebase.jobdispatcher.Constraint;
@@ -18,6 +19,8 @@ import com.firebase.jobdispatcher.Trigger;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.UIUtils;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -35,7 +38,7 @@ public class BingWallpaperJobManager {
     private static final String JOB_TAG = "bing_wallpaper_job_" + JOB_ID;
 
     public static void disabled(Context context) {
-        setJobType(context, -1);
+        setJobType(context, NONE);
         if (BingWallpaperUtils.isGooglePlayServicesAvailable(context)) {
             FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
             dispatcher.cancel(JOB_TAG);
@@ -58,9 +61,7 @@ public class BingWallpaperJobManager {
     }
 
     public static void startDaemonService(Context context) {
-        Intent intent = new Intent(context, WallpaperDaemonService.class);
-        intent.putExtra("time", Constants.JOB_SCHEDULER_PERIODIC);
-        ContextCompat.startForegroundService(context, intent);
+        startDaemonService(context, Constants.JOB_SCHEDULER_PERIODIC);
     }
 
     public static void startDaemonService(Context context, long time) {
@@ -71,7 +72,7 @@ public class BingWallpaperJobManager {
 
     public static void enableDaemonService(Context context, long time) {
         startDaemonService(context, time);
-        setJobType(context, 2);
+        setJobType(context, DAEMON_SERVICE);
         if (BingWallpaperUtils.isEnableLog(context)) {
             LogDebugFileUtils.get()
                     .i(TAG, "Enable daemon service interval time : %s", time);
@@ -93,12 +94,12 @@ public class BingWallpaperJobManager {
                 .build();
         boolean success = dispatcher.schedule(myJob) == FirebaseJobDispatcher.SCHEDULE_RESULT_SUCCESS;
         if (success) {
-            setJobType(context, 1);
+            setJobType(context, GOOGLE_SERVICE);
             if (BingWallpaperUtils.isEnableLog(context)) {
                 LogDebugFileUtils.get()
-                        .i(TAG, "Enable GooglePlay job interval time : %s", time);
+                        .i(TAG, "Enable google service  job interval time : %s", time);
             }
-            L.alog().d(TAG, "Enable GooglePlay job interval time : %s", time);
+            L.alog().d(TAG, "Enable google service job interval time : %s", time);
         }
         return success;
     }
@@ -117,7 +118,7 @@ public class BingWallpaperJobManager {
         }
         boolean success = jobScheduler.schedule(jobInfo) == JobScheduler.RESULT_SUCCESS;
         if (success) {
-            setJobType(context, 0);
+            setJobType(context, SYSTEM);
             if (BingWallpaperUtils.isEnableLog(context)) {
                 LogDebugFileUtils.get()
                         .i(TAG, "Enable system job interval time : %s", time);
@@ -129,7 +130,7 @@ public class BingWallpaperJobManager {
 
     public static void enabled(Context context, long time) {
         int type = BingWallpaperUtils.getAutomaticUpdateType(context);
-        if (type == 0) {
+        if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_AUTO) {
             if (BingWallpaperUtils.isGooglePlayServicesAvailable(context)) {
                 if (!enableGooglePlay(context, time)) {
                     if (!enableSystem(context, time)) {
@@ -141,36 +142,51 @@ public class BingWallpaperJobManager {
                     enableDaemonService(context, time);
                 }
             }
-        } else if (type == 1) {
+        } else if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_SYSTEM) {
             if (!enableSystem(context, time)) {
-                UIUtils.showToast(context, "set auto set wallpaper service failure");
+                UIUtils.showToast(context, "set system mode failure");
             }
-        } else if (type == 2) {
+        } else if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_SERVICE) {
             enableDaemonService(context, time);
         }
     }
 
-    public static void setJobType(Context context, int type) {
+    public static void setJobType(Context context, @JobType int type) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
         sharedPreferences.edit().putInt("bing_wallpaper_job_type", type).apply();
     }
 
+    @JobType
     public static int getJobType(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
         return sharedPreferences.getInt("bing_wallpaper_job_type", -1);
     }
 
+    @IntDef(value = {
+            NONE,
+            GOOGLE_SERVICE,
+            SYSTEM,
+            DAEMON_SERVICE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface JobType {}
+
+    public final static int NONE = -1;
+    public final static int GOOGLE_SERVICE = 0;
+    public final static int SYSTEM = 1;
+    public final static int DAEMON_SERVICE = 2;
+
     public static String check(Context context) {
         int jobType = getJobType(context);
-        if (jobType == 2) {
+        if (jobType == DAEMON_SERVICE) {
             return "Daemon Service";
-        } else if (jobType == 1) {
+        } else if (jobType == GOOGLE_SERVICE) {
             if (BingWallpaperUtils.isGooglePlayServicesAvailable(context)) {
-                return "GooglePlay";
+                return "Google Service";
             } else {
-                return "GooglePlay Error";
+                return "Google Service Error";
             }
         } else {
             JobScheduler jobScheduler = (JobScheduler)
