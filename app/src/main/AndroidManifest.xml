@@ -102,16 +102,18 @@
         <service
                 android:name=".service.WallpaperDaemonService"
                 android:exported="false"
-                android:process=":background" />
+                android:process=":daemon" />
 
         <service
                 android:name=".service.BingWallpaperIntentService"
                 android:exported="false"
                 android:process=":background" />
+
         <service
                 android:name=".service.JobSchedulerDaemonService"
                 android:exported="false"
                 android:permission="android.permission.BIND_JOB_SERVICE" />
+
         <service
                 android:name=".service.FirebaseJobSchedulerDaemonService"
                 android:exported="false">

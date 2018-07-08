@@ -6,6 +6,8 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -68,11 +70,25 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
         appWidgetManager.updateAppWidget(componentName, remoteViews);
     }
 
+    public static boolean getWidgetActive(Context context, String key) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(key, false);
+    }
+
+    @Override
+    public void onDisabled(Context context) {
+        super.onDisabled(context);
+        setWidgetActive(context, false);
+    }
+
     @Override
     public void onEnabled(Context context) {
         super.onEnabled(context);
+        setWidgetActive(context, true);
         getBingWallpaper(context);
     }
+
+    protected abstract void setWidgetActive(Context context, boolean active);
 
     @Override
     public void onReceive(Context context, Intent intent) {

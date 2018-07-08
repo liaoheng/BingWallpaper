@@ -14,6 +14,7 @@ import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.RetryStrategy;
 import com.firebase.jobdispatcher.Trigger;
 import com.github.liaoheng.common.util.L;
@@ -80,17 +81,18 @@ public class BingWallpaperJobManager {
         L.alog().d(TAG, "Enable daemon service interval time : %s", time);
     }
 
-    public static boolean enableGooglePlay(Context context, long time) {
+    public static boolean enableGoogleService(Context context, long time) {
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
         Job myJob = dispatcher.newJobBuilder()
                 .setService(FirebaseJobSchedulerDaemonService.class)
                 .setTag(JOB_TAG)
                 .setRecurring(true)
                 .setReplaceCurrent(true)
+                .setLifetime(Lifetime.FOREVER)
                 .setRetryStrategy(
                         RetryStrategy.DEFAULT_EXPONENTIAL)
                 .setTrigger(Trigger.executionWindow(0, (int) time))
-                .setConstraints(Constraint.ON_ANY_NETWORK)
+                .setConstraints(Constraint.DEVICE_IDLE)
                 .build();
         boolean success = dispatcher.schedule(myJob) == FirebaseJobDispatcher.SCHEDULE_RESULT_SUCCESS;
         if (success) {
@@ -108,7 +110,7 @@ public class BingWallpaperJobManager {
         JobScheduler jobScheduler = (JobScheduler)
                 context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         JobInfo jobInfo = new JobInfo.Builder(JOB_ID, new ComponentName(context,
-                JobSchedulerDaemonService.class)).setPeriodic(TimeUnit.MILLISECONDS.toSeconds(time))
+                JobSchedulerDaemonService.class)).setPeriodic(TimeUnit.SECONDS.toMillis(time))
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                 .setBackoffCriteria(TimeUnit.MINUTES.toMillis(15), JobInfo.BACKOFF_POLICY_EXPONENTIAL)
                 .setPersisted(true)
@@ -132,7 +134,7 @@ public class BingWallpaperJobManager {
         int type = BingWallpaperUtils.getAutomaticUpdateType(context);
         if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_AUTO) {
             if (BingWallpaperUtils.isGooglePlayServicesAvailable(context)) {
-                if (!enableGooglePlay(context, time)) {
+                if (!enableGoogleService(context, time)) {
                     if (!enableSystem(context, time)) {
                         enableDaemonService(context, time);
                     }

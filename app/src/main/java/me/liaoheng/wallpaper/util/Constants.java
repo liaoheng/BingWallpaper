@@ -19,8 +19,7 @@ public interface Constants {
     int IMAGE_DISK_CACHE_SIZE = 100 * 1024 * 1024; // 100MB
     int HTTP_DISK_CACHE_SIZE = 5 * 1024 * 1024;  // 5MB
 
-    //long JOB_SCHEDULER_PERIODIC = TimeUnit.HOURS.toSeconds(1);
-    long JOB_SCHEDULER_PERIODIC = TimeUnit.MINUTES.toSeconds(30);
+    long JOB_SCHEDULER_PERIODIC = TimeUnit.HOURS.toSeconds(3);
 
     String BASE_URL = "https://www.bing.com";
     String CHINA_BASE_URL = "https://www.bing.com";
@@ -41,6 +40,9 @@ public interface Constants {
     class Config {
         public static boolean isPhone = true;
     }
+
+    String PREF_APPWIDGET_5X1_ENABLE="appwidget_5x1_enable";
+    String PREF_APPWIDGET_5X2_ENABLE="appwidget_5x2_enable";
 
     /**
      * 0. both , 1. home , 2. lock

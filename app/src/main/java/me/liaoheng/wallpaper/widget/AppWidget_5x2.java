@@ -3,9 +3,12 @@ package me.liaoheng.wallpaper.widget;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
 
+import com.firebase.jobdispatcher.Constraint;
 import com.github.liaoheng.common.util.L;
 
 import me.liaoheng.wallpaper.R;
@@ -13,6 +16,7 @@ import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.Constants;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
@@ -23,7 +27,15 @@ import rx.functions.Action1;
 public class AppWidget_5x2 extends BaseAppWidget {
 
     public static void start(Context context, BingWallpaperImage bingWallpaperImage) {
+        if (!getWidgetActive(context, Constants.PREF_APPWIDGET_5X2_ENABLE)) {
+            return;
+        }
         start(context, AppWidget_5x2.class, bingWallpaperImage);
+    }
+
+    protected void setWidgetActive(Context context, boolean active) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putBoolean(Constants.PREF_APPWIDGET_5X2_ENABLE, active).apply();
     }
 
     @Override

@@ -31,7 +31,7 @@ public class FirebaseJobSchedulerDaemonService extends JobService {
 
     @Override
     public boolean onStartJob(JobParameters params) {
-        L.Log.d(TAG, "action job tag : %s", params.getTag());
+        L.alog().d(TAG, "action job tag : %s", params.getTag());
         if (BingWallpaperUtils.isEnableLog(getApplicationContext())) {
             LogDebugFileUtils.get()
                     .i(TAG, "action job tag : %s", params.getTag());
