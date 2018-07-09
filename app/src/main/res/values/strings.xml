@@ -19,6 +19,7 @@
     <string name="send_email">Send email</string>
     <string name="foreground_intent_service_notification_channel">Update wallpaper service</string>
     <string name="foreground_daemon_service_notification_channel">Background daemon service</string>
+    <string name="daemon_service_running">daemon service running</string>
 
     <!--setting -->
     <string name="pref_auto_update_wallpaper">Automatic update wallpaper</string>

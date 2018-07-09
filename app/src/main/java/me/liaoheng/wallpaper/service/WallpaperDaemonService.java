@@ -3,7 +3,6 @@ package me.liaoheng.wallpaper.service;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
-import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -21,6 +20,8 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /**
+ * 守护进程服务
+ *
  * @author liaoheng
  * @version 2018-07-06 13:35
  */
@@ -39,9 +40,7 @@ public class WallpaperDaemonService extends Service {
     public void onDestroy() {
         Utils.unsubscribe(action);
         action = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            stopForeground(true);
-        }
+        stopForeground(true);
         super.onDestroy();
     }
 
@@ -52,13 +51,16 @@ public class WallpaperDaemonService extends Service {
         }
 
         long time = intent.getLongExtra("time", -1);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Notification notification = new NotificationCompat.Builder(getApplicationContext(),
-                    Constants.FOREGROUND_DAEMON_SERVICE_NOTIFICATION_CHANNEL).setPriority(
-                    NotificationCompat.PRIORITY_MIN).setVisibility(NotificationCompat.VISIBILITY_SECRET).setSmallIcon(
-                    R.mipmap.ic_launcher_foreground).build();
-            startForeground(0x112, notification);
-        }
+        Notification notification = new NotificationCompat.Builder(getApplicationContext(),
+                Constants.FOREGROUND_DAEMON_SERVICE_NOTIFICATION_CHANNEL).setPriority(
+                NotificationCompat.PRIORITY_MIN)
+                .setVisibility(NotificationCompat.VISIBILITY_SECRET)
+                .setSmallIcon(
+                        R.drawable.ic_notification)
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText(getString(R.string.daemon_service_running))
+                .build();
+        startForeground(0x112, notification);
 
         action = Observable.interval(0, time, TimeUnit.SECONDS)
                 .observeOn(Schedulers.computation())

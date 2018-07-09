@@ -101,7 +101,7 @@ public class BingWallpaperIntentService extends IntentService {
 
         Notification notification = new NotificationCompat.Builder(getApplicationContext(),
                 Constants.FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL).setSmallIcon(
-                R.mipmap.ic_launcher_foreground)
+                R.drawable.ic_notification)
                 .setContentText(getText(R.string.set_wallpaper_running))
                 .setContentTitle(getText(R.string.app_name)).build();
         startForeground(0x111, notification);
@@ -172,7 +172,7 @@ public class BingWallpaperIntentService extends IntentService {
 
         Notification notification = new NotificationCompat.Builder(getApplicationContext(),
                 Constants.FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL).setSmallIcon(
-                R.mipmap.ic_launcher_foreground)
+                R.drawable.ic_notification)
                 .setAutoCancel(true)
                 .setContentText(getText(R.string.set_wallpaper_failure))
                 .setContentTitle(getText(R.string.app_name)).build();

@@ -182,7 +182,9 @@ public class BingWallpaperJobManager {
 
     public static String check(Context context) {
         int jobType = getJobType(context);
-        if (jobType == DAEMON_SERVICE) {
+        if (jobType == NONE) {
+            return "none";
+        } else if (jobType == DAEMON_SERVICE) {
             return "Daemon Service";
         } else if (jobType == GOOGLE_SERVICE) {
             if (BingWallpaperUtils.isGooglePlayServicesAvailable(context)) {
