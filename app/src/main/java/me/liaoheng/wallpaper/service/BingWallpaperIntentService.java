@@ -93,18 +93,28 @@ public class BingWallpaperIntentService extends IntentService {
     }
 
     @Override
-    protected void onHandleIntent(final Intent intent) {
-        int setWallpaperType = intent.getIntExtra(EXTRA_SET_WALLPAPER_MODE, 0);
-        final boolean isBackground = intent.getBooleanExtra(EXTRA_SET_WALLPAPER_BACKGROUND, false);
-        BingWallpaperImage bingWallpaperImage = intent.getParcelableExtra(EXTRA_SET_WALLPAPER_IMAGE);
-        L.alog().d(TAG, " setWallpaperType : " + setWallpaperType);
-
+    public void onCreate() {
         Notification notification = new NotificationCompat.Builder(getApplicationContext(),
                 Constants.FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL).setSmallIcon(
                 R.drawable.ic_notification)
                 .setContentText(getText(R.string.set_wallpaper_running))
                 .setContentTitle(getText(R.string.app_name)).build();
         startForeground(0x111, notification);
+        super.onCreate();
+    }
+
+    @Override
+    public void onDestroy() {
+        stopForeground(true);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onHandleIntent(final Intent intent) {
+        int setWallpaperType = intent.getIntExtra(EXTRA_SET_WALLPAPER_MODE, 0);
+        final boolean isBackground = intent.getBooleanExtra(EXTRA_SET_WALLPAPER_BACKGROUND, false);
+        BingWallpaperImage bingWallpaperImage = intent.getParcelableExtra(EXTRA_SET_WALLPAPER_IMAGE);
+        L.alog().d(TAG, " setWallpaperType : " + setWallpaperType);
 
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
             LogDebugFileUtils.get().i(TAG, "Starting");
@@ -121,11 +131,6 @@ public class BingWallpaperIntentService extends IntentService {
             @Override
             public void onError(Throwable e) {
                 failure(e);
-            }
-
-            @Override
-            public void onFinish() {
-                stopForeground(true);
             }
         };
         String imageUrl;
