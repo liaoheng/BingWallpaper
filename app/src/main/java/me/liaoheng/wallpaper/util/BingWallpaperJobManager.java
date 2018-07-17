@@ -25,6 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.service.FirebaseJobSchedulerDaemonService;
 import me.liaoheng.wallpaper.service.JobSchedulerDaemonService;
 import me.liaoheng.wallpaper.service.WallpaperDaemonService;
@@ -56,9 +57,13 @@ public class BingWallpaperJobManager {
         jobScheduler.cancel(JOB_ID);
     }
 
-    public static void enabled(Context context) {
+    public static boolean enabled(Context context) {
         disabled(context);
-        enabled(context, Constants.JOB_SCHEDULER_PERIODIC);
+        boolean ret = enabled(context, Constants.JOB_SCHEDULER_PERIODIC);
+        if (!ret) {
+            UIUtils.showToast(context, context.getString(R.string.enable_job_error));
+        }
+        return ret;
     }
 
     public static void startDaemonService(Context context) {
@@ -130,27 +135,38 @@ public class BingWallpaperJobManager {
         return success;
     }
 
-    public static void enabled(Context context, long time) {
+    public static boolean enabled(Context context, long time) {
         int type = BingWallpaperUtils.getAutomaticUpdateType(context);
         if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_AUTO) {
             if (BingWallpaperUtils.isGooglePlayServicesAvailable(context)) {
                 if (!enableGoogleService(context, time)) {
                     if (!enableSystem(context, time)) {
-                        enableDaemonService(context, time);
+                        if (Constants.DAEMON_SERVICE_FLAG) {
+                            enableDaemonService(context, time);
+                            return true;
+                        }
+                        return false;
                     }
                 }
             } else {
                 if (!enableSystem(context, time)) {
-                    enableDaemonService(context, time);
+                    if (Constants.DAEMON_SERVICE_FLAG) {
+                        enableDaemonService(context, time);
+                        return true;
+                    }
+                    return false;
                 }
             }
         } else if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_SYSTEM) {
             if (!enableSystem(context, time)) {
-                UIUtils.showToast(context, "set system mode failure");
+                return false;
             }
         } else if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_SERVICE) {
-            enableDaemonService(context, time);
+            if (Constants.DAEMON_SERVICE_FLAG) {
+                enableDaemonService(context, time);
+            }
         }
+        return true;
     }
 
     public static void setJobType(Context context, @JobType int type) {
@@ -185,18 +201,18 @@ public class BingWallpaperJobManager {
         if (jobType == NONE) {
             return "none";
         } else if (jobType == DAEMON_SERVICE) {
-            return "Daemon Service";
+            return "daemon_service";
         } else if (jobType == GOOGLE_SERVICE) {
             if (BingWallpaperUtils.isGooglePlayServicesAvailable(context)) {
-                return "Google Service";
+                return "google_service";
             } else {
-                return "Google Service Error";
+                return "google_service_error";
             }
         } else {
             JobScheduler jobScheduler = (JobScheduler)
                     context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
             if (jobScheduler == null) {
-                return "False";
+                return "false";
             }
             JobInfo myJobInfo = null;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
@@ -209,7 +225,7 @@ public class BingWallpaperJobManager {
                     }
                 }
             }
-            return myJobInfo != null ? "True" : "False";
+            return myJobInfo != null ? "true" : "false";
         }
     }
 

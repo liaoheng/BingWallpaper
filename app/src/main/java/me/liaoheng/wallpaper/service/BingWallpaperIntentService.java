@@ -59,7 +59,6 @@ public class BingWallpaperIntentService extends IntentService {
      */
     public final static String EXTRA_SET_WALLPAPER_MODE = "set_wallpaper_mode";
     public final static String EXTRA_SET_WALLPAPER_BACKGROUND = "set_wallpaper_background";
-    public final static String EXTRA_SET_WALLPAPER_URL = "set_wallpaper_url";
     public final static String EXTRA_SET_WALLPAPER_IMAGE = "set_wallpaper_image";
 
     public BingWallpaperIntentService() {

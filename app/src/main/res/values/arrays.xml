@@ -54,13 +54,13 @@
     <string-array name="pref_set_wallpaper_day_fully_automatic_update_type_names">
         <item>@string/pref_set_wallpaper_day_fully_automatic_update_type_auto</item>
         <item>@string/pref_set_wallpaper_day_fully_automatic_update_type_system</item>
-        <item>@string/pref_set_wallpaper_day_fully_automatic_update_type_service</item>
+        <!--<item>@string/pref_set_wallpaper_day_fully_automatic_update_type_service</item>-->
     </string-array>
 
     <string-array name="pref_set_wallpaper_day_fully_automatic_update_type_values">
         <item>0</item>
         <item>1</item>
-        <item>2</item>
+        <!--<item>2</item>-->
     </string-array>
 
 </resources>

@@ -15,9 +15,7 @@ import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.util.Constants;
 import rx.Observable;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 
 /**
  * 守护进程服务
@@ -63,8 +61,6 @@ public class WallpaperDaemonService extends Service {
         startForeground(0x112, notification);
 
         action = Observable.interval(0, time, TimeUnit.SECONDS)
-                .observeOn(Schedulers.computation())
-                .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Long>() {
 
                     @Override

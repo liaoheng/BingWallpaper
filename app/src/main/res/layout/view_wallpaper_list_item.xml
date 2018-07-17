@@ -10,21 +10,21 @@
                                     app:contentPadding="2dp">
 
     <ImageView
-            android:scaleType="centerCrop"
             android:id="@+id/bing_wallpaper_list_item_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:scaleType="centerCrop"
             android:transitionName="bing_wallpaper_detail_image" />
 
     <TextView
-            android:layout_marginEnd="5dp"
-            android:gravity="end"
             android:id="@+id/bing_wallpaper_list_item_image_date"
-            android:textColor="@android:color/white"
-            android:background="@color/color_3000"
-            android:layout_gravity="bottom"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@color/color_3000"
+            android:gravity="end|center"
+            android:paddingEnd="5dp"
+            android:textColor="@android:color/white" />
 
     <ProgressBar
             android:id="@+id/bing_wallpaper_list_item_loading"

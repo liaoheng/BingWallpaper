@@ -84,7 +84,7 @@
         <Preference
                 android:key="pref_version"
                 android:persistent="false"
-                android:title="@string/pref_version" >
+                android:title="@string/pref_version">
             <intent
                     android:action="android.intent.action.VIEW"
                     android:data="https://github.com/liaoheng/BingWallpaper/releases/latest" />
@@ -92,7 +92,11 @@
         <Preference
                 android:key="pref_issues"
                 android:persistent="false"
-                android:title="@string/pref_feedback"/>
+                android:title="@string/pref_feedback" />
+        <Preference
+                android:key="pref_intro"
+                android:persistent="false"
+                android:title="@string/pref_intro" />
         <Preference
                 android:key="pref_license"
                 android:persistent="false"

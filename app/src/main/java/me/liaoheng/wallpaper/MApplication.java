@@ -5,8 +5,6 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import com.crashlytics.android.Crashlytics;
 import com.github.liaoheng.common.Common;
@@ -43,23 +41,23 @@ public class MApplication extends Application {
         }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    Constants.FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL,
-                    getString(R.string.foreground_intent_service_notification_channel),
-                    NotificationManager.IMPORTANCE_LOW);
-
-            NotificationChannel channel2 = new NotificationChannel(
-                    Constants.FOREGROUND_DAEMON_SERVICE_NOTIFICATION_CHANNEL,
-                    getString(R.string.foreground_daemon_service_notification_channel),
-                    NotificationManager.IMPORTANCE_MIN);
-            channel2.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
-
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             if (manager == null) {
                 return;
             }
+            NotificationChannel channel = new NotificationChannel(
+                    Constants.FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL,
+                    getString(R.string.foreground_intent_service_notification_channel),
+                    NotificationManager.IMPORTANCE_LOW);
             manager.createNotificationChannel(channel);
-            manager.createNotificationChannel(channel2);
+            if (Constants.DAEMON_SERVICE_FLAG) {
+                NotificationChannel channel2 = new NotificationChannel(
+                        Constants.FOREGROUND_DAEMON_SERVICE_NOTIFICATION_CHANNEL,
+                        getString(R.string.foreground_daemon_service_notification_channel),
+                        NotificationManager.IMPORTANCE_MIN);
+                channel2.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
+                manager.createNotificationChannel(channel2);
+            }
         }
     }
 }

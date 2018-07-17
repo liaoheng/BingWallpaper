@@ -108,7 +108,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             mOnlyWifiPreference = (CheckBoxPreference) findPreference(
                     PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI);
 
-            mFeedbackDialog = new AlertDialog.Builder(getActivity()).setTitle(R.string.pref_feedback)
+            mFeedbackDialog = new AlertDialog.Builder(getActivity()).setMessage(R.string.pref_feedback)
                     .setPositiveButton(
                             "E-Mail", new DialogInterface.OnClickListener() {
                                 @Override
@@ -140,6 +140,14 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     UIUtils.showDialog(mFeedbackDialog);
+                    return true;
+                }
+            });
+
+            findPreference("pref_intro").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    UIUtils.startActivity(getActivity(),IntroActivity.class);
                     return true;
                 }
             });
@@ -251,11 +259,14 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     break;
                 case PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE:
                     if (mAutoUpdatePreference.isChecked()) {
-                        mTimePreference.setSummary(R.string.pref_not_set_time);
-                        mDayUpdatePreference.setChecked(false);
+                        if (!BingWallpaperJobManager.enabled(getActivity())) {
+                            mAutoUpdatePreference.setChecked(false);
+                            return;
+                        }
                         BingWallpaperUtils.clearDayUpdateTime(getActivity());
                         BingWallpaperAlarmManager.disabled(getActivity());
-                        BingWallpaperJobManager.enabled(getActivity());
+                        mTimePreference.setSummary(R.string.pref_not_set_time);
+                        mDayUpdatePreference.setChecked(false);
                     } else {
                         BingWallpaperJobManager.disabled(getActivity());
                     }

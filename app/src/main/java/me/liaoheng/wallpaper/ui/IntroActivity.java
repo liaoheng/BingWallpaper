@@ -143,7 +143,9 @@ public class IntroActivity extends AppIntro {
         IntroUpdateFragment fragment = (IntroUpdateFragment) currentFragment;
         switch (fragment.updateFlag) {
             case 1:
-                BingWallpaperJobManager.enabled(this);
+                if (BingWallpaperJobManager.enabled(this)) {
+                    return;
+                }
                 mSharedPreferences.edit()
                         .putBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE, true)
                         .apply();

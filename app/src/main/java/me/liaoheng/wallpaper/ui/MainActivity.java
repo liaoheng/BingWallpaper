@@ -1,7 +1,6 @@
 package me.liaoheng.wallpaper.ui;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -47,7 +46,6 @@ import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.service.SetWallpaperStateBroadcastReceiver;
-import me.liaoheng.wallpaper.service.WallpaperDaemonService;
 import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
@@ -130,7 +128,8 @@ public class MainActivity extends BaseActivity
         initStatusBarAddToolbar();
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_drawer_home);
 
-        if (BingWallpaperJobManager.getJobType(this) == BingWallpaperJobManager.DAEMON_SERVICE) {
+        if (Constants.DAEMON_SERVICE_FLAG
+                && BingWallpaperJobManager.getJobType(this) == BingWallpaperJobManager.DAEMON_SERVICE) {
             BingWallpaperJobManager.startDaemonService(this);
         }
 
@@ -350,6 +349,8 @@ public class MainActivity extends BaseActivity
             UIUtils.startActivity(this, WallpaperHistoryListActivity.class);
         } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_info) {
             BingWallpaperUtils.openBrowser(this, mCurBingWallpaperImage);
+        } else if (item.getItemId() == R.id.menu_main_drawer_help) {
+            BingWallpaperUtils.openBrowser(this, "https://github.com/liaoheng/BingWallpaper/wiki");
         }
         mDrawerLayout.closeDrawers();
         return true;

@@ -38,7 +38,8 @@ public class AutoSetWallpaperBroadcastReceiver extends BroadcastReceiver {
             AppWidget_5x1.start(context, null);
             AppWidget_5x2.start(context, null);
 
-            if (BingWallpaperJobManager.getJobType(context) == BingWallpaperJobManager.DAEMON_SERVICE) {
+            if (Constants.DAEMON_SERVICE_FLAG
+                    && BingWallpaperJobManager.getJobType(context) == BingWallpaperJobManager.DAEMON_SERVICE) {
                 BingWallpaperJobManager.startDaemonService(context, Constants.JOB_SCHEDULER_PERIODIC);
                 return;
             }

@@ -175,17 +175,11 @@ public class BingWallpaperUtils {
         }
     }
 
-    /**
-     * 以所在地区为标准
-     */
     public static boolean isChinaLocale(Context context) {
         Locale locale = getLocale(context);
         return isChinaLocale(locale);
     }
 
-    /**
-     * 以所在地区为标准
-     */
     public static boolean isChinaLocale(Locale locale) {
         return Locale.CHINA.getCountry().equalsIgnoreCase(locale.getCountry());
     }

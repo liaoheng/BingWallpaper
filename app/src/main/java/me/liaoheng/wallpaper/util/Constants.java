@@ -20,7 +20,7 @@ public interface Constants {
     int HTTP_DISK_CACHE_SIZE = 5 * 1024 * 1024;  // 5MB
 
     long JOB_SCHEDULER_PERIODIC = TimeUnit.HOURS.toSeconds(3);
-    //long JOB_SCHEDULER_PERIODIC = TimeUnit.MINUTES.toSeconds(30);
+    boolean DAEMON_SERVICE_FLAG = false;
 
     String BASE_URL = "https://www.bing.com";
     String CHINA_BASE_URL = "https://www.bing.com";
@@ -42,8 +42,8 @@ public interface Constants {
         public static boolean isPhone = true;
     }
 
-    String PREF_APPWIDGET_5X1_ENABLE="appwidget_5x1_enable";
-    String PREF_APPWIDGET_5X2_ENABLE="appwidget_5x2_enable";
+    String PREF_APPWIDGET_5X1_ENABLE = "appwidget_5x1_enable";
+    String PREF_APPWIDGET_5X2_ENABLE = "appwidget_5x2_enable";
 
     /**
      * 0. both , 1. home , 2. lock
