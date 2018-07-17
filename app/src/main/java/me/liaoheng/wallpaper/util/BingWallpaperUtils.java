@@ -270,6 +270,9 @@ public class BingWallpaperUtils {
         int type = getAutomaticUpdateType(context);
         String[] names = context.getResources()
                 .getStringArray(R.array.pref_set_wallpaper_day_fully_automatic_update_type_names);
+        if (type == 2) {
+            return context.getString(R.string.pref_set_wallpaper_day_fully_automatic_update_type_service);
+        }
         return names[type];
     }
 
