@@ -50,14 +50,12 @@ public class MApplication extends Application {
                     getString(R.string.foreground_intent_service_notification_channel),
                     NotificationManager.IMPORTANCE_LOW);
             manager.createNotificationChannel(channel);
-            if (Constants.DAEMON_SERVICE_FLAG) {
-                NotificationChannel channel2 = new NotificationChannel(
-                        Constants.FOREGROUND_DAEMON_SERVICE_NOTIFICATION_CHANNEL,
-                        getString(R.string.foreground_daemon_service_notification_channel),
-                        NotificationManager.IMPORTANCE_MIN);
-                channel2.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
-                manager.createNotificationChannel(channel2);
-            }
+            NotificationChannel channel2 = new NotificationChannel(
+                    Constants.FOREGROUND_DAEMON_SERVICE_NOTIFICATION_CHANNEL,
+                    getString(R.string.foreground_daemon_service_notification_channel),
+                    NotificationManager.IMPORTANCE_MIN);
+            channel2.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
+            manager.createNotificationChannel(channel2);
         }
     }
 }

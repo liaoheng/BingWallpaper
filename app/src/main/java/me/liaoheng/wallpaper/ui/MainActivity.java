@@ -1,6 +1,11 @@
 package me.liaoheng.wallpaper.ui;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -14,6 +19,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.graphics.Palette;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -93,6 +99,8 @@ public class MainActivity extends BaseActivity
     @BindView(R.id.bing_wallpaper_set_menu)
     FloatingActionMenu mSetWallpaperActionMenu;
 
+    private Dialog mFeedbackDialog;
+
     private ImageView mNavigationHeaderImage;
 
     private SetWallpaperStateBroadcastReceiver mSetWallpaperStateBroadcastReceiver;
@@ -128,8 +136,7 @@ public class MainActivity extends BaseActivity
         initStatusBarAddToolbar();
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_drawer_home);
 
-        if (Constants.DAEMON_SERVICE_FLAG
-                && BingWallpaperJobManager.getJobType(this) == BingWallpaperJobManager.DAEMON_SERVICE) {
+        if (BingWallpaperJobManager.isJobTypeDaemonService(this)) {
             BingWallpaperJobManager.startDaemonService(this);
         }
 
@@ -144,6 +151,34 @@ public class MainActivity extends BaseActivity
             menuLayoutParams.bottomMargin = menuLayoutParams.bottomMargin + navigationBarHeight;
             mSetWallpaperActionMenu.setLayoutParams(menuLayoutParams);
         }
+
+        mFeedbackDialog = new AlertDialog.Builder(getActivity()).setMessage(R.string.menu_main_feedback)
+                .setPositiveButton(
+                        "E-Mail", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                BingWallpaperUtils.sendFeedback(getActivity());
+                            }
+                        })
+                .setNegativeButton("Github", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        BingWallpaperUtils.openBrowser(getActivity(),
+                                "https://github.com/liaoheng/BingWallpaper/issues");
+                    }
+                })
+                .setNeutralButton(android.R.string.copy, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ClipboardManager cmb = (ClipboardManager) getActivity().getSystemService(
+                                Context.CLIPBOARD_SERVICE);
+                        if (cmb != null) {
+                            String info = BingWallpaperUtils.getSystemInfo(getActivity());
+                            cmb.setPrimaryClip(ClipData.newPlainText("feedback info", info));
+                        }
+                    }
+                })
+                .create();
 
         mNavigationView.setNavigationItemSelectedListener(this);
 
@@ -351,6 +386,8 @@ public class MainActivity extends BaseActivity
             BingWallpaperUtils.openBrowser(this, mCurBingWallpaperImage);
         } else if (item.getItemId() == R.id.menu_main_drawer_help) {
             BingWallpaperUtils.openBrowser(this, "https://github.com/liaoheng/BingWallpaper/wiki");
+        } else if (item.getItemId() == R.id.menu_main_drawer_feedback) {
+            UIUtils.showDialog(mFeedbackDialog);
         }
         mDrawerLayout.closeDrawers();
         return true;

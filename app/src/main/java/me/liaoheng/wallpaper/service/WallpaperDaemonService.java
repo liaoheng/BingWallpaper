@@ -7,12 +7,16 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
+import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.Utils;
 
 import java.util.concurrent.TimeUnit;
 
 import me.liaoheng.wallpaper.R;
+import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
+import me.liaoheng.wallpaper.util.LogDebugFileUtils;
+import me.liaoheng.wallpaper.util.TasksUtils;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -33,6 +37,7 @@ public class WallpaperDaemonService extends Service {
     }
 
     private Subscription action;
+    private long startTime;
 
     @Override
     public void onDestroy() {
@@ -43,12 +48,12 @@ public class WallpaperDaemonService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(Intent intent, int flags, final int startId) {
         if (action != null) {
-            return super.onStartCommand(intent, flags, startId);
+            return START_REDELIVER_INTENT;
         }
-
-        long time = intent.getLongExtra("time", -1);
+        startTime = 0;
+        final long time = intent.getLongExtra("time", -1);
         Notification notification = new NotificationCompat.Builder(getApplicationContext(),
                 Constants.FOREGROUND_DAEMON_SERVICE_NOTIFICATION_CHANNEL).setPriority(
                 NotificationCompat.PRIORITY_MIN)
@@ -60,14 +65,26 @@ public class WallpaperDaemonService extends Service {
                 .build();
         startForeground(0x112, notification);
 
-        action = Observable.interval(0, time, TimeUnit.SECONDS)
+        action = Observable.interval(0, 2, TimeUnit.MINUTES)
                 .subscribe(new Action1<Long>() {
 
                     @Override
                     public void call(Long aLong) {
-                        SetWallpaperBroadcastReceiver.send(getApplicationContext(), TAG);
+                        startTime += TimeUnit.MINUTES.toSeconds(2);
+                        L.alog().d(TAG, " running...  " + startTime);
+                        if (startTime >= time) {
+                            startTime = 0;
+                            if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+                                LogDebugFileUtils.get().i(TAG, "daemon service action");
+                            }
+                            //每天成功执行一次
+                            if (TasksUtils.isToDaysDoProvider(getApplicationContext(), 1,
+                                    BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
+                                SetWallpaperBroadcastReceiver.send(getApplicationContext(), TAG);
+                            }
+                        }
                     }
                 });
-        return super.onStartCommand(intent, flags, startId);
+        return START_REDELIVER_INTENT;
     }
 }

@@ -1,9 +1,5 @@
 package me.liaoheng.wallpaper.ui;
 
-import android.app.Dialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -13,7 +9,6 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,12 +87,11 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
         private CheckBoxPreference mAutoUpdatePreference;
         private ListPreference mAutoUpdateTypeListPreference;
         private SettingTrayPreferences mPreferences;
-        private Dialog mFeedbackDialog;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            mPreferences = new SettingTrayPreferences(getActivity());
+            mPreferences = SettingTrayPreferences.get(getActivity());
             Preference version = findPreference("pref_version");
             try {
                 String versionName = AppUtils.getVersionInfo(getActivity()).versionName;
@@ -108,46 +102,10 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             mOnlyWifiPreference = (CheckBoxPreference) findPreference(
                     PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI);
 
-            mFeedbackDialog = new AlertDialog.Builder(getActivity()).setMessage(R.string.pref_feedback)
-                    .setPositiveButton(
-                            "E-Mail", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    BingWallpaperUtils.sendFeedback(getActivity());
-                                }
-                            })
-                    .setNegativeButton("Github", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            BingWallpaperUtils.openBrowser(getActivity(),
-                                    "https://github.com/liaoheng/BingWallpaper/issues");
-                        }
-                    })
-                    .setNeutralButton(android.R.string.copy, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            ClipboardManager cmb = (ClipboardManager) getActivity().getSystemService(
-                                    Context.CLIPBOARD_SERVICE);
-                            if (cmb != null) {
-                                String info = BingWallpaperUtils.getSystemInfo(getActivity());
-                                cmb.setPrimaryClip(ClipData.newPlainText("feedback info", info));
-                            }
-                        }
-                    })
-                    .create();
-
-            findPreference("pref_issues").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    UIUtils.showDialog(mFeedbackDialog);
-                    return true;
-                }
-            });
-
             findPreference("pref_intro").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    UIUtils.startActivity(getActivity(),IntroActivity.class);
+                    UIUtils.startActivity(getActivity(), IntroActivity.class);
                     return true;
                 }
             });

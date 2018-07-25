@@ -11,7 +11,6 @@ import org.joda.time.LocalTime;
 import me.liaoheng.wallpaper.util.BingWallpaperAlarmManager;
 import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
-import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.widget.AppWidget_5x1;
 import me.liaoheng.wallpaper.widget.AppWidget_5x2;
@@ -38,9 +37,8 @@ public class AutoSetWallpaperBroadcastReceiver extends BroadcastReceiver {
             AppWidget_5x1.start(context, null);
             AppWidget_5x2.start(context, null);
 
-            if (Constants.DAEMON_SERVICE_FLAG
-                    && BingWallpaperJobManager.getJobType(context) == BingWallpaperJobManager.DAEMON_SERVICE) {
-                BingWallpaperJobManager.startDaemonService(context, Constants.JOB_SCHEDULER_PERIODIC);
+            if (BingWallpaperJobManager.isJobTypeDaemonService(context)) {
+                BingWallpaperJobManager.startDaemonService(context);
                 return;
             }
 

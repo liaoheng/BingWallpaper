@@ -32,8 +32,6 @@ import com.github.liaoheng.common.util.ValidateUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
-import net.grandcentrix.tray.AppPreferences;
-
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
@@ -71,7 +69,7 @@ public class BingWallpaperUtils {
     }
 
     public static String getResolution(Context context) {
-        AppPreferences appPreferences = new AppPreferences(context);
+        SettingTrayPreferences appPreferences = SettingTrayPreferences.get(context);
 
         String[] names = context.getResources()
                 .getStringArray(R.array.pref_set_wallpaper_resolution_name);
@@ -111,7 +109,7 @@ public class BingWallpaperUtils {
     }
 
     public static String getCountryName(Context context) {
-        AppPreferences appPreferences = new AppPreferences(context);
+        SettingTrayPreferences appPreferences = SettingTrayPreferences.get(context);
 
         String[] names = context.getResources()
                 .getStringArray(R.array.pref_country_names);
@@ -123,7 +121,7 @@ public class BingWallpaperUtils {
     }
 
     public static int getCountryValue(Context context) {
-        AppPreferences appPreferences = new AppPreferences(context);
+        SettingTrayPreferences appPreferences = SettingTrayPreferences.get(context);
 
         String country = appPreferences
                 .getString(SettingsActivity.PREF_COUNTRY, "0");
@@ -240,7 +238,7 @@ public class BingWallpaperUtils {
     }
 
     public static boolean isEnableLogProvider(Context context) {
-        AppPreferences appPreferences = new AppPreferences(context);
+        SettingTrayPreferences appPreferences = SettingTrayPreferences.get(context);
         return appPreferences
                 .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_LOG, false);
     }
@@ -502,7 +500,7 @@ public class BingWallpaperUtils {
         String to[] = { "liaohengcn@gmail.com" };
         emailIntent.putExtra(Intent.EXTRA_EMAIL, to);
         emailIntent.putExtra(Intent.EXTRA_SUBJECT,
-                context.getString(R.string.app_name) + " : " + context.getString(R.string.pref_feedback));
+                context.getString(R.string.app_name) + " : " + context.getString(R.string.menu_main_feedback));
         emailIntent.putExtra(Intent.EXTRA_TEXT, BingWallpaperUtils.getSystemInfo(context));
 
         if (BingWallpaperUtils.isEnableLog(context)) {

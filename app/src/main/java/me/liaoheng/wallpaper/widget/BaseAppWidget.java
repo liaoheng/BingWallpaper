@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
@@ -72,7 +73,7 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
 
     public static boolean getWidgetActive(Context context, String key) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getBoolean(key, false);
+        return !prefs.getBoolean(key, false);
     }
 
     @Override
@@ -92,7 +93,10 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        super.onReceive(context, intent);
+        try{
+            super.onReceive(context, intent);
+        }catch (Exception ignored){
+        }
         String action = intent.getAction();
         if ("android.appwidget.action.APPWIDGET_UPDATE".equals(action)) {
             getBingWallpaper(context);

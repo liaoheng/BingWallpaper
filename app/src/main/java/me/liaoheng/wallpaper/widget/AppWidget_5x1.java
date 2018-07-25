@@ -5,11 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v4.content.SharedPreferencesCompat;
 import android.widget.RemoteViews;
 
 import com.github.liaoheng.common.util.L;
-import com.github.liaoheng.common.util.PreferencesUtils;
 
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
@@ -22,7 +20,7 @@ import me.liaoheng.wallpaper.util.Constants;
 public class AppWidget_5x1 extends BaseAppWidget {
 
     public static void start(Context context, BingWallpaperImage bingWallpaperImage) {
-        if (!getWidgetActive(context, Constants.PREF_APPWIDGET_5X1_ENABLE)) {
+        if (getWidgetActive(context, Constants.PREF_APPWIDGET_5X1_ENABLE)) {
             return;
         }
         start(context, AppWidget_5x1.class, bingWallpaperImage);

@@ -8,7 +8,6 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
 
-import com.firebase.jobdispatcher.Constraint;
 import com.github.liaoheng.common.util.L;
 
 import me.liaoheng.wallpaper.R;
@@ -27,7 +26,7 @@ import rx.functions.Action1;
 public class AppWidget_5x2 extends BaseAppWidget {
 
     public static void start(Context context, BingWallpaperImage bingWallpaperImage) {
-        if (!getWidgetActive(context, Constants.PREF_APPWIDGET_5X2_ENABLE)) {
+        if (getWidgetActive(context, Constants.PREF_APPWIDGET_5X2_ENABLE)) {
             return;
         }
         start(context, AppWidget_5x2.class, bingWallpaperImage);

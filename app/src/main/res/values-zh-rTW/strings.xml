@@ -30,7 +30,7 @@
     <string name="pref_set_wallpaper_day_fully_automatic_update_type">選擇每日自動更新運行模式</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_auto">自動(優先使用Google Service)</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_system">Android系統</string>
-    <string name="pref_set_wallpaper_day_fully_automatic_update_type_service">守護行程服務(Test)</string>
+    <string name="pref_set_wallpaper_day_fully_automatic_update_type_service">守護行程服務</string>
     <string name="pref_alarm_update_wallpaper_everyday">每日定時更新</string>
     <string name="pref_alarm_update_wallpaper_time">每日定時更新時間</string>
     <string name="pref_not_set_time">沒有設定時間</string>
@@ -49,13 +49,13 @@
     <string name="pref_clear_cache_success">清除快取成功</string>
     <string name="pref_log_file">啓用活動日誌</string>
     <string name="pref_version">版本</string>
-    <string name="pref_feedback">反饋</string>
 
     <!--menu-->
     <string name="menu_main_drawer_wallpaper_info">桌布信息</string>
     <string name="menu_main_setting">設定</string>
     <string name="menu_main_wallpaper_history_list">桌布历史檔案</string>
     <string name="menu_main_help">幫助</string>
+    <string name="menu_main_feedback">反饋</string>
 
     <!--wallpaper detail-->
     <string name="bing_only_two_week">Bing只提供近兩週記錄</string>

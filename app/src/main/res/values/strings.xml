@@ -30,8 +30,8 @@
     <string name="pref_set_wallpaper_day_fully_automatic_update_type">Choose daily automatic update running mode</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_auto">Auto(Priority Google Service)</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_system">Android System</string>
-    <string name="pref_set_wallpaper_day_fully_automatic_update_type_service">Daemon service(Test)</string>
-    <string name="pref_alarm_update_wallpaper_everyday">Daily update timer</string>
+    <string name="pref_set_wallpaper_day_fully_automatic_update_type_service">Daemon service</string>
+    <string name="pref_alarm_update_wallpaper_everyday">Daily timer update</string>
     <string name="pref_alarm_update_wallpaper_time">Set update time</string>
     <string name="pref_not_set_time">No time</string>
     <string name="pref_choose_auto_set_wallpaper_type">Choose auto set wallpaper mode</string>
@@ -49,7 +49,6 @@
     <string name="pref_clear_cache_success">Clear cache success</string>
     <string name="pref_log_file">Enable action Log</string>
     <string name="pref_version">Version</string>
-    <string name="pref_feedback">Feedback</string>
     <string name="pref_intro">Open intro</string>
 
     <!--menu-->
@@ -57,6 +56,7 @@
     <string name="menu_main_setting">Setting</string>
     <string name="menu_main_wallpaper_history_list">Wallpaper history list</string>
     <string name="menu_main_help">Help</string>
+    <string name="menu_main_feedback">Feedback</string>
 
     <!--wallpaper detail-->
     <string name="bing_only_two_week">Bing is only available for the past two weeks</string>

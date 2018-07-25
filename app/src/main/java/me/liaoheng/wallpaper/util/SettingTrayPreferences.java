@@ -11,7 +11,16 @@ import net.grandcentrix.tray.TrayPreferences;
  */
 public class SettingTrayPreferences extends TrayPreferences {
 
-    public SettingTrayPreferences(@NonNull Context context) {
+    private static SettingTrayPreferences mPreferences;
+
+    public static synchronized SettingTrayPreferences get(Context context) {
+        if (mPreferences == null) {
+            mPreferences = new SettingTrayPreferences(context);
+        }
+        return mPreferences;
+    }
+
+    private SettingTrayPreferences(@NonNull Context context) {
         super(context, context.getPackageName(), 1);
     }
 }
