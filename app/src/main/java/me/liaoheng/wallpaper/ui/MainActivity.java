@@ -385,7 +385,7 @@ public class MainActivity extends BaseActivity
         } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_info) {
             BingWallpaperUtils.openBrowser(this, mCurBingWallpaperImage);
         } else if (item.getItemId() == R.id.menu_main_drawer_help) {
-            BingWallpaperUtils.openBrowser(this, "https://github.com/liaoheng/BingWallpaper/wiki");
+            BingWallpaperUtils.openBrowser(this, "https://github.com/liaoheng/BingWallpaper/blob/image/HELP.md");
         } else if (item.getItemId() == R.id.menu_main_drawer_feedback) {
             UIUtils.showDialog(mFeedbackDialog);
         }
