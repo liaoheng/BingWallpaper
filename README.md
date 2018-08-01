@@ -1,8 +1,31 @@
-# BingWallpaper
+## Starth Bing Wallpaper
 
 [![GitHub release](https://img.shields.io/github/release/liaoheng/BingWallpaper.svg)](https://github.com/liaoheng/BingWallpaper/releases/latest)
 
->支持每日自动获取并设置[Bing](https://www.bing.com)`今日美图`为手机壁纸
+Starth Bing Wallpaper is a free and open source app, change your device background or lock screen with Bing image of the day.
 
-#### 安装
-- 通过 [Google Play](https://play.google.com/store/apps/details?id=me.liaoheng.wallpaper)
+<a href='https://play.google.com/store/apps/details?id=me.liaoheng.wallpaper'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width='150'/></a>
+
+### Features
+
+1. Automatically change your device background or lock screen daily with Bing image.
+2. Browse Bing image from the last two weeks.
+3. You can manually set the Bing image as the background or lock screen.
+4. Save the Bing image without logo.
+5. View daily Bing stories.
+6. Desktop widgets.
+
+### Reporting Bugs
+Bug reports and feature requests can be made via the [public issue tracker][issues].
+
+### Contributing
+Please fork this repository and contribute back using [pull requests][pr].
+
+All contributions, large or small, major features, bug fixes, additional language translations, unit/integration tests are welcomed.
+
+### Translating
+See the [translation page][crowdin] if you would like to contribute.
+
+[pr]: https://github.com/liaoheng/BingWallpaper/pulls
+[issues]: https://github.com/liaoheng/BingWallpaper/issues
+[crowdin]: https://crowdin.com/project/starth-bing-wallpaper
