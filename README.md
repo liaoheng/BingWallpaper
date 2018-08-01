@@ -16,16 +16,12 @@ Starth Bing Wallpaper is a free and open source app, change your device backgrou
 6. Desktop widgets.
 
 ### Reporting Bugs
-Bug reports and feature requests can be made via the [public issue tracker][issues].
+Bug reports and feature requests can be made via the [public issue tracker](https://github.com/liaoheng/BingWallpaper/issues).
 
 ### Contributing
-Please fork this repository and contribute back using [pull requests][pr].
+Please fork this repository and contribute back using [pull requests](https://github.com/liaoheng/BingWallpaper/pulls).
 
-All contributions, large or small, major features, bug fixes, additional language translations, unit/integration tests are welcomed.
+All contributions features, bug fixes, additional language translations are welcomed.
 
 ### Translating
-See the [translation page][crowdin] if you would like to contribute.
-
-[pr]: https://github.com/liaoheng/BingWallpaper/pulls
-[issues]: https://github.com/liaoheng/BingWallpaper/issues
-[crowdin]: https://crowdin.com/project/starth-bing-wallpaper
+See the [translation page](https://crowdin.com/project/starth-bing-wallpaper) if you would like to contribute.
