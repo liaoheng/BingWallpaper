@@ -7,22 +7,22 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.widget.RemoteViews;
 
+import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.NetworkUtils;
+import com.github.liaoheng.common.util.SystemException;
+import com.github.liaoheng.common.util.Utils;
 
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.ui.MainActivity;
 import me.liaoheng.wallpaper.util.Constants;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 
 /**
  * @author liaoheng
@@ -31,6 +31,7 @@ import rx.functions.Action1;
 public abstract class BaseAppWidget extends AppWidgetProvider {
     protected final String TITLE_CLICK = "TITLE_CLICK";
     protected final String CONTENT_CLICK = "CONTENT_CLICK";
+    protected final String CLICK_RETRY = "CLICK_RETRY";
     protected final String TAG = this.getClass().getSimpleName();
 
     protected static void start(Context context, Class<?> cls, BingWallpaperImage bingWallpaperImage) {
@@ -68,6 +69,19 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
 
         ComponentName componentName = new ComponentName(context, cls);
 
+        addTitleClick(context, AppWidget_5x2.class, remoteViews);
+        addContentClick(context, AppWidget_5x2.class, remoteViews);
+
+        appWidgetManager.updateAppWidget(componentName, remoteViews);
+    }
+
+    protected void updateRetry(Context context, Class<?> cls, RemoteViews remoteViews) {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+
+        ComponentName componentName = new ComponentName(context, cls);
+
+        add(context, cls, remoteViews, CLICK_RETRY, R.id.app_widget_title);
+
         appWidgetManager.updateAppWidget(componentName, remoteViews);
     }
 
@@ -86,21 +100,18 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
     public void onEnabled(Context context) {
         super.onEnabled(context);
         setWidgetActive(context, true);
-        getBingWallpaper(context);
     }
 
     protected abstract void setWidgetActive(Context context, boolean active);
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        try{
+        try {
             super.onReceive(context, intent);
-        }catch (Exception ignored){
+        } catch (Exception ignored) {
         }
         String action = intent.getAction();
-        if ("android.appwidget.action.APPWIDGET_UPDATE".equals(action)) {
-            getBingWallpaper(context);
-        } else if (Constants.ACTION_UPDATE_WALLPAPER_COVER_STORY.equals(action)) {
+        if (Constants.ACTION_UPDATE_WALLPAPER_COVER_STORY.equals(action)) {
             BingWallpaperImage image = intent.getParcelableExtra(
                     Constants.EXTRA_UPDATE_WALLPAPER_COVER_STORY);
             if (image == null) {
@@ -112,26 +123,42 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
             Intent openIntent = new Intent(context, MainActivity.class);
             openIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(openIntent);
+        } else if (CLICK_RETRY.equals(action)) {
+            getBingWallpaper(context);
         }
+    }
+
+    @Override
+    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
+        getBingWallpaper(context);
     }
 
     protected void getBingWallpaper(final Context context) {
         if (!NetworkUtils.isConnectedOrConnecting(context)) {
+            setText(context, null);
             return;
         }
-        BingWallpaperNetworkClient.getBingWallpaperSingle(context)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<BingWallpaperImage>() {
+        Utils.addSubscribe(BingWallpaperNetworkClient.getBingWallpaperSingle(context),
+                new Callback.EmptyCallback<BingWallpaperImage>() {
                     @Override
-                    public void call(BingWallpaperImage bingWallpaperImage) {
-                        setText(context, bingWallpaperImage);
+                    public void onPreExecute() {
+                        loadStart(context);
                     }
-                }, new Action1<Throwable>() {
+
                     @Override
-                    public void call(Throwable throwable) {
+                    public void onSuccess(BingWallpaperImage image) {
+                        setText(context, image);
+                    }
+
+                    @Override
+                    public void onError(SystemException e) {
+                        setText(context, null);
                     }
                 });
     }
 
     protected void setText(Context context, BingWallpaperImage image) {}
+
+    protected void loadStart(Context context) {}
 }

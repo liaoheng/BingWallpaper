@@ -67,6 +67,7 @@
                 <action android:name="me.liaoheng.wallpaper.UPDATE_WALLPAPER_COVER_STORY" />
                 <action android:name="TITLE_CLICK" />
                 <action android:name="CONTENT_CLICK" />
+                <action android:name="CLICK_RETRY" />
             </intent-filter>
 
             <meta-data
@@ -79,6 +80,7 @@
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="me.liaoheng.wallpaper.UPDATE_WALLPAPER_COVER_STORY" />
                 <action android:name="TITLE_CLICK" />
+                <action android:name="CLICK_RETRY" />
             </intent-filter>
 
             <meta-data

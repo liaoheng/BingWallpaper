@@ -1,6 +1,5 @@
 package me.liaoheng.wallpaper.widget;
 
-import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -42,7 +41,8 @@ public class AppWidget_5x1 extends BaseAppWidget {
         RemoteViews remoteViews = getRemoteViews(context, R.layout.view_appwidget_5x1);
 
         if (image == null) {
-            remoteViews.setTextViewText(R.id.app_widget_title, "failure !");
+            remoteViews.setTextViewText(R.id.app_widget_title, context.getString(R.string.request_failed_click_retry));
+            updateRetry(context, AppWidget_5x1.class, remoteViews);
             return;
         }
         remoteViews.setTextViewText(R.id.app_widget_title, image.getCopyright());
@@ -50,12 +50,9 @@ public class AppWidget_5x1 extends BaseAppWidget {
     }
 
     @Override
-    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+    protected void loadStart(Context context) {
         RemoteViews remoteViews = getRemoteViews(context, R.layout.view_appwidget_5x1);
-
-        addTitleClick(context, AppWidget_5x1.class, remoteViews);
-
-        appWidgetManager.updateAppWidget(appWidgetIds, remoteViews);
+        remoteViews.setTextViewText(R.id.app_widget_title, context.getString(R.string.loading));
+        update(context, AppWidget_5x1.class, remoteViews);
     }
-
 }

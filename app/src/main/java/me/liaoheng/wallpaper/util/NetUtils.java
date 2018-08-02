@@ -73,7 +73,7 @@ public class NetUtils {
             return;
         }
         try {
-            client.cache().delete();
+            client.cache().evictAll();
         } catch (IOException ignored) {
         }
     }

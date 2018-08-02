@@ -1,6 +1,5 @@
 package me.liaoheng.wallpaper.widget;
 
-import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -48,7 +47,8 @@ public class AppWidget_5x2 extends BaseAppWidget {
         final RemoteViews remoteViews = getRemoteViews(context, R.layout.view_appwidget_5x2);
 
         if (image == null) {
-            remoteViews.setTextViewText(R.id.app_widget_title, "failure !");
+            remoteViews.setTextViewText(R.id.app_widget_title, context.getString(R.string.request_failed_click_retry));
+            updateRetry(context, AppWidget_5x2.class, remoteViews);
             return;
         }
 
@@ -71,7 +71,9 @@ public class AppWidget_5x2 extends BaseAppWidget {
                             }, new Action1<Throwable>() {
                                 @Override
                                 public void call(Throwable throwable) {
-
+                                    remoteViews.setTextViewText(R.id.app_widget_title, image.getCopyright());
+                                    remoteViews.setTextViewText(R.id.app_widget_content, "");
+                                    update(context, AppWidget_5x2.class, remoteViews);
                                 }
                             });
         } else if (!TextUtils.isEmpty(image.getCaption())) {
@@ -86,12 +88,9 @@ public class AppWidget_5x2 extends BaseAppWidget {
     }
 
     @Override
-    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+    protected void loadStart(Context context) {
         RemoteViews remoteViews = getRemoteViews(context, R.layout.view_appwidget_5x2);
-
-        addTitleClick(context, AppWidget_5x2.class, remoteViews);
-        addContentClick(context, AppWidget_5x2.class, remoteViews);
-
-        appWidgetManager.updateAppWidget(appWidgetIds, remoteViews);
+        remoteViews.setTextViewText(R.id.app_widget_title, context.getString(R.string.loading));
+        update(context, AppWidget_5x2.class, remoteViews);
     }
 }
