@@ -1,6 +1,7 @@
 package me.liaoheng.wallpaper.util;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.bumptech.glide.load.engine.GlideException;
 import com.crashlytics.android.Crashlytics;
@@ -47,10 +48,17 @@ public class ExceptionHandle {
     }
 
     public static void collectException(String TAG, Throwable t) {
+        collectException(TAG, null, t);
+    }
+
+    public static void collectException(String TAG, String msg, Throwable t) {
         if (BuildConfig.DEBUG) {
             return;
         }
         Crashlytics.log("TAG: " + TAG);
+        if (!TextUtils.isEmpty(msg)) {
+            Crashlytics.log(msg);
+        }
         Crashlytics.logException(t);
     }
 }

@@ -40,6 +40,8 @@ import com.github.clans.fab.FloatingActionMenu;
 import com.github.liaoheng.common.core.OnCheckedChangeListener;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.Callback4;
+import com.github.liaoheng.common.util.L;
+import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.UIUtils;
 
 import butterknife.BindView;
@@ -239,7 +241,7 @@ public class MainActivity extends BaseActivity
     }
 
     private void getBingWallpaper() {
-        if (!BingWallpaperUtils.isConnectedOrConnecting(getApplicationContext())) {
+        if (!NetworkUtils.isConnectedOrConnecting(getApplicationContext())) {
             mErrorTextView.setText(getString(R.string.network_unavailable));
             return;
         }
@@ -291,6 +293,8 @@ public class MainActivity extends BaseActivity
                             }, new Action1<Throwable>() {
                                 @Override
                                 public void call(Throwable throwable) {
+                                    L.alog().e(TAG, throwable);
+                                    ExceptionHandle.collectException(TAG, "getCoverStory", throwable);
                                     UIUtils.viewGone(mCoverStoryView);
                                 }
                             });
