@@ -150,25 +150,29 @@ public class BingWallpaperJobManager {
     }
 
     public static boolean enabled(Context context, long time) {
-        int type = BingWallpaperUtils.getAutomaticUpdateType(context);
-        if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_AUTO) {
-            if (BingWallpaperUtils.isGooglePlayServicesAvailable(context)) {
-                if (!enableGoogleService(context, time)) {
+        try {
+            int type = BingWallpaperUtils.getAutomaticUpdateType(context);
+            if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_AUTO) {
+                if (BingWallpaperUtils.isGooglePlayServicesAvailable(context)) {
+                    if (!enableGoogleService(context, time)) {
+                        if (!enableSystem(context, time)) {
+                            return enableDaemonService(context);
+                        }
+                    }
+                } else {
                     if (!enableSystem(context, time)) {
                         return enableDaemonService(context);
                     }
                 }
-            } else {
-                if (!enableSystem(context, time)) {
-                    return enableDaemonService(context);
-                }
+            } else if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_SYSTEM) {
+                return enableSystem(context, time);
+            } else if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_SERVICE) {
+                return enableDaemonService(context);
             }
-        } else if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_SYSTEM) {
-            return enableSystem(context, time);
-        } else if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_SERVICE) {
-            return enableDaemonService(context);
+            return true;
+        } catch (Exception ignore) {
+            return false;
         }
-        return true;
     }
 
     public static void setJobType(Context context, @JobType int type) {

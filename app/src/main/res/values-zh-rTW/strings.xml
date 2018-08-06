@@ -61,6 +61,7 @@
     <string name="bing_only_two_week">Bing只提供近兩週記錄</string>
     <string name="menu_save_wallpaper">儲存桌布</string>
     <string name="menu_wallpaper_resolution">選擇壁桌布辨率</string>
+    <string name="detail_wallpaper_resolution_influences">選擇預覽和下載分辨率</string>
     <string name="menu_set_wallpaper_mode_home">設定桌布到主熒幕</string>
     <string name="menu_set_wallpaper_mode_lock">設定桌布到熒幕鎖定</string>
     <string name="menu_set_wallpaper_mode_both">設定桌布</string>

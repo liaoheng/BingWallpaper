@@ -10,13 +10,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.target.ImageViewTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.flyco.systembar.SystemBarHelper;
@@ -156,8 +156,10 @@ public class WallpaperHistoryListActivity extends BaseActivity {
 
         @Override
         public void onHandle(final BingWallpaperImage item, int position) {
-            DateTime dateTime = DateTime.parse(item.getEnddate(), DateTimeFormat.forPattern("YYYYMMdd"));
-            mDate.setText(dateTime.toString("MMMM dd", BingWallpaperUtils.getLocale(getContext())));
+            if (!TextUtils.isEmpty(item.getEnddate())) {
+                DateTime dateTime = DateTime.parse(item.getEnddate(), DateTimeFormat.forPattern("YYYYMMdd"));
+                mDate.setText(dateTime.toString("MMMM dd", BingWallpaperUtils.getLocale(getContext())));
+            }
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -180,9 +182,6 @@ public class WallpaperHistoryListActivity extends BaseActivity {
                     .override(Constants.WallpaperConfig.WALLPAPER_RESOLUTION_WIDTH,
                             Constants.WallpaperConfig.WALLPAPER_RESOLUTION_HEIGHT)
                     .error(R.drawable.lcn_empty_photo)
-                    .transition(
-                            new DrawableTransitionOptions()
-                                    .crossFade())
                     .load(imageUrl)
                     .into(new ProgressImageViewTarget(mImageView, mProgressBar));
         }

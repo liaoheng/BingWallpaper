@@ -64,6 +64,7 @@
     <string name="bing_only_two_week">Bing is only available for the past two weeks</string>
     <string name="menu_save_wallpaper">Save wallpaper</string>
     <string name="menu_wallpaper_resolution">Selected wallpaper resolution</string>
+    <string name="detail_wallpaper_resolution_influences">Selected the preview and download resolution</string>
     <string name="menu_set_wallpaper_mode_home">Set wallpaper to home screen</string>
     <string name="menu_set_wallpaper_mode_lock">Set wallpaper to lock screen</string>
     <string name="menu_set_wallpaper_mode_both">Set wallpaper to both</string>

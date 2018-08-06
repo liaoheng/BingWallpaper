@@ -116,19 +116,20 @@ public class WallpaperDetailActivity extends BaseActivity {
         ButterKnife.bind(this);
         initStatusBarAddToolbar();
 
-        mSetWallpaperStateBroadcastReceiver = new SetWallpaperStateBroadcastReceiver(new Callback4.EmptyCallback<BingWallpaperState>() {
-            @Override
-            public void onYes(BingWallpaperState bingWallpaperState) {
-                dismissProgressDialog();
-                UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_success));
-            }
+        mSetWallpaperStateBroadcastReceiver = new SetWallpaperStateBroadcastReceiver(
+                new Callback4.EmptyCallback<BingWallpaperState>() {
+                    @Override
+                    public void onYes(BingWallpaperState bingWallpaperState) {
+                        dismissProgressDialog();
+                        UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_success));
+                    }
 
-            @Override
-            public void onNo(BingWallpaperState bingWallpaperState) {
-                dismissProgressDialog();
-                UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_failure));
-            }
-        });
+                    @Override
+                    public void onNo(BingWallpaperState bingWallpaperState) {
+                        dismissProgressDialog();
+                        UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_failure));
+                    }
+                });
         registerReceiver(mSetWallpaperStateBroadcastReceiver,
                 new IntentFilter(BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE));
 
@@ -175,7 +176,7 @@ public class WallpaperDetailActivity extends BaseActivity {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_singlechoice);
         arrayAdapter.addAll(mResolutions);
 
-        mResolutionDialog = new AlertDialog.Builder(this).setTitle(R.string.menu_wallpaper_resolution)
+        mResolutionDialog = new AlertDialog.Builder(this).setTitle(R.string.detail_wallpaper_resolution_influences)
                 .setSingleChoiceItems(arrayAdapter, 2, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
