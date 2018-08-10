@@ -167,14 +167,13 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_TYPE);
             mAutoUpdatePreference = (CheckBoxPreference) findPreference(PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE);
 
-            String[] nameStrings = getResources().getStringArray(R.array.pref_set_wallpaper_auto_mode_name);
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                nameStrings = new String[] { getString(R.string.pref_set_wallpaper_auto_mode_both) };
+                mModeTypeListPreference.setEnabled(false);
+            } else {
+                mModeTypeListPreference.setSummary(BingWallpaperUtils.getAutoMode(getActivity()));
             }
-            mModeTypeListPreference.setEntries(nameStrings);
 
             mResolutionListPreference.setSummary(BingWallpaperUtils.getResolution(getActivity()));
-            mModeTypeListPreference.setSummary(BingWallpaperUtils.getAutoMode(getActivity()));
             mSaveResolutionListPreference.setSummary(BingWallpaperUtils.getSaveResolution(getActivity()));
             mCountryListPreference.setSummary(BingWallpaperUtils.getCountryName(getActivity()));
 

@@ -141,32 +141,36 @@ public class IntroActivity extends AppIntro {
 
     @Override
     public void onDonePressed(Fragment currentFragment) {
-        IntroUpdateFragment fragment = (IntroUpdateFragment) currentFragment;
-        switch (fragment.updateFlag) {
-            case 1:
-                if (BingWallpaperJobManager.enabled(this)) {
-                    return;
-                }
-                mSharedPreferences.edit()
-                        .putBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE, true)
-                        .apply();
-                mPreferences.put(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE, true);
-                break;
-            case 2:
-                if (fragment.localTime != null) {
-                    BingWallpaperAlarmManager
-                            .enabled(this, fragment.localTime);
+        if (currentFragment instanceof IntroUpdateFragment) {
+            IntroUpdateFragment fragment = (IntroUpdateFragment) currentFragment;
+            switch (fragment.updateFlag) {
+                case 1:
+                    if (BingWallpaperJobManager.enabled(this)) {
+                        return;
+                    }
                     mSharedPreferences.edit()
-                            .putBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE, true)
+                            .putBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE, true)
                             .apply();
-                    mSharedPreferences.edit()
-                            .putString(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME,
-                                    fragment.localTime.toString())
-                            .apply();
-                    mPreferences.put(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME,
-                            fragment.localTime.toString());
-                }
-                break;
+                    mPreferences.put(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE, true);
+                    break;
+                case 2:
+                    if (fragment.localTime != null) {
+                        BingWallpaperAlarmManager
+                                .enabled(this, fragment.localTime);
+                        mSharedPreferences.edit()
+                                .putBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE, true)
+                                .apply();
+                        mSharedPreferences.edit()
+                                .putString(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME,
+                                        fragment.localTime.toString())
+                                .apply();
+                        mPreferences.put(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME,
+                                fragment.localTime.toString());
+                    }
+                    break;
+            }
+        } else {
+            UIUtils.showToast(getApplicationContext(), "Setting invalid");
         }
         onSkipPressed(null);
     }
