@@ -1,5 +1,5 @@
-- [FQA][#FQA]
-- [Feedback][#Feedback]
+- [FQA](#fqa)
+- [Feedback](#feedback)
 
 ### FQA
 
