@@ -31,7 +31,7 @@
 ### Feedback
 
 - Github
-  1. Open the feedback dialog and click the Copy button,content be in the clipboard.
+  1. Open the feedback dialog and click the Copy button, content be in the clipboard.
   2. Turn on `Enable action Log` option and wait a day, post the log content.
   3. Write your issues.
 - E-Mail
