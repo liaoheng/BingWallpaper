@@ -2,10 +2,12 @@ package me.liaoheng.wallpaper.ui;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -40,6 +42,7 @@ import com.github.clans.fab.FloatingActionMenu;
 import com.github.liaoheng.common.core.OnCheckedChangeListener;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.Callback4;
+import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.UIUtils;
@@ -59,6 +62,7 @@ import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.ExceptionHandle;
 import me.liaoheng.wallpaper.util.GlideApp;
+import me.liaoheng.wallpaper.util.ROM;
 import me.liaoheng.wallpaper.util.TasksUtils;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
 import rx.android.schedulers.AndroidSchedulers;
@@ -111,6 +115,8 @@ public class MainActivity extends BaseActivity
 
     private BingWallpaperCoverStory mCoverStory;
 
+    private int mActionMenuBottomMargin;
+
     @OnClick(R.id.bing_wallpaper_cover_story_text)
     void openMap() {
         if (mCoverStory == null) {
@@ -120,6 +126,34 @@ public class MainActivity extends BaseActivity
         String longitude = mCoverStory.getLongitude();//经度
         String latitude = mCoverStory.getLatitude();//纬度
         BingWallpaperUtils.openMap(this, longitude, latitude);
+    }
+
+    private BroadcastReceiver mNavigationBarBCR;
+
+    public void showBottomView() {
+        int navigationBarHeight = BingWallpaperUtils.getNavigationBarHeight(this);
+        if (navigationBarHeight > 0) {
+            showBottomView(navigationBarHeight);
+        }
+    }
+
+    public void showBottomView(int navigationBarHeight) {
+        UIUtils.viewVisible(mBottomView);
+        ViewGroup.LayoutParams layoutParams = mBottomView.getLayoutParams();
+        layoutParams.height = navigationBarHeight;
+        mBottomView.setLayoutParams(layoutParams);
+
+        ViewGroup.MarginLayoutParams menuLayoutParams = (ViewGroup.MarginLayoutParams) mSetWallpaperActionMenu.getLayoutParams();
+        menuLayoutParams.bottomMargin = mActionMenuBottomMargin + navigationBarHeight;
+        mSetWallpaperActionMenu.setLayoutParams(menuLayoutParams);
+    }
+
+    public void hideBottomView() {
+        UIUtils.viewGone(mBottomView);
+
+        ViewGroup.MarginLayoutParams menuLayoutParams = (ViewGroup.MarginLayoutParams) mSetWallpaperActionMenu.getLayoutParams();
+        menuLayoutParams.bottomMargin = mActionMenuBottomMargin;
+        mSetWallpaperActionMenu.setLayoutParams(menuLayoutParams);
     }
 
     @Override
@@ -142,16 +176,41 @@ public class MainActivity extends BaseActivity
             BingWallpaperJobManager.startDaemonService(this);
         }
 
-        int navigationBarHeight = BingWallpaperUtils.getNavigationBarHeight(this);
-        if (navigationBarHeight > 0) {
-            UIUtils.viewVisible(mBottomView);
-            ViewGroup.LayoutParams layoutParams = mBottomView.getLayoutParams();
-            layoutParams.height = navigationBarHeight;
-            mBottomView.setLayoutParams(layoutParams);
+        mActionMenuBottomMargin = DisplayUtils.dp2px(this, 10);
 
-            ViewGroup.MarginLayoutParams menuLayoutParams = (ViewGroup.MarginLayoutParams) mSetWallpaperActionMenu.getLayoutParams();
-            menuLayoutParams.bottomMargin = menuLayoutParams.bottomMargin + navigationBarHeight;
-            mSetWallpaperActionMenu.setLayoutParams(menuLayoutParams);
+        boolean bar;
+        if (ROM.getROM().isEmui()) {
+            bar = BingWallpaperUtils.emuiNavigationEnabled(this);
+            if (bar) {
+                showBottomView();
+            }
+            mNavigationBarBCR = new BroadcastReceiver() {
+                public void onReceive(Context context, Intent intent) {
+                    if (intent != null && intent.getAction() != null &&
+                            ("com.huawei.navigationbar.statuschange".equals(intent.getAction()))) {
+                        boolean barState = intent.getBooleanExtra("minNavigationBar", false);
+                        if (barState) {
+                            hideBottomView();
+                        } else {
+                            int navigationBarHeight = BingWallpaperUtils.getNavigationBarHeight(getActivity());
+                            if (navigationBarHeight > 0) {
+                                showBottomView(navigationBarHeight);
+                            }
+                        }
+                    }
+                }
+            };
+            IntentFilter intent = new IntentFilter();
+            intent.addAction("com.huawei.navigationbar.statuschange");
+            registerReceiver(mNavigationBarBCR, intent);
+
+        } else if (ROM.getROM().isVivo()) {
+            bar = BingWallpaperUtils.vivoNavigationGestureEnabled(this);
+            if (!bar) {
+                showBottomView();
+            }
+        } else {
+            showBottomView();
         }
 
         mFeedbackDialog = new AlertDialog.Builder(getActivity()).setMessage(R.string.menu_main_feedback)
@@ -528,6 +587,9 @@ public class MainActivity extends BaseActivity
 
     @Override
     protected void onDestroy() {
+        if (mNavigationBarBCR != null) {
+            unregisterReceiver(mNavigationBarBCR);
+        }
         if (mSetWallpaperStateBroadcastReceiver != null) {
             unregisterReceiver(mSetWallpaperStateBroadcastReceiver);
         }

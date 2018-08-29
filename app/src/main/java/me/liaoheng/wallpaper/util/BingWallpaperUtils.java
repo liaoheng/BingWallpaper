@@ -1,5 +1,6 @@
 package me.liaoheng.wallpaper.util;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,9 +24,13 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.AndroidRuntimeException;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
+import android.view.ViewConfiguration;
 
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.DisplayUtils;
+import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
@@ -33,11 +39,14 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
 import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Method;
 import java.util.Locale;
 
 import me.liaoheng.wallpaper.BuildConfig;
@@ -227,7 +236,7 @@ public class BingWallpaperUtils {
             now = now.plusDays(1);
         }
         return new DateTime(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth(),
-                time.getHourOfDay(), time.getMinuteOfHour());
+                time.getHourOfDay(), time.getMinuteOfHour(), DateTimeZone.getDefault());
     }
 
     public static boolean isEnableLog(Context context) {
@@ -334,10 +343,88 @@ public class BingWallpaperUtils {
     }
 
     public static int getNavigationBarHeight(Context context) {
-        if (DisplayUtils.isNavigationBar(context)) {
+        if (hasNavigationBar(context)) {
             return DisplayUtils.getNavigationBarHeight(context);
         }
         return 0;
+    }
+
+    /**
+     * 判断是否存在虚拟导航栏
+     *
+     * @return false if physical, true if virtual
+     * @see <a href="https://stackoverflow.com/questions/16092431/check-for-navigation-bar">stackoverflow</a>
+     * @see <a href="https://windysha.github.io/2018/02/07/Android-APP%E9%80%82%E9%85%8D%E5%85%A8%E9%9D%A2%E5%B1%8F%E6%89%8B%E6%9C%BA%E7%9A%84%E6%8A%80%E6%9C%AF%E8%A6%81%E7%82%B9/">Android-APP适配全面屏手机的技术要点</a>
+     */
+    @SuppressWarnings("unchecked")
+    @SuppressLint("PrivateApi")
+    public static boolean isNavigationBar(Context context) {
+        boolean hasNavigationBar = false;
+        Resources resources = context.getResources();
+        int id = resources.getIdentifier("config_showNavigationBar", "bool", "android");
+        if (id > 0) {
+            hasNavigationBar = resources.getBoolean(id);
+        } else {    // Check for keys
+            try {
+                //反射获取SystemProperties类，并调用它的get方法
+                Class systemPropertiesClass = Class.forName("android.os.SystemProperties");
+                Method m = systemPropertiesClass.getMethod("get", String.class);
+                String navBarOverride = (String) m.invoke(systemPropertiesClass, "qemu.hw.mainkeys");
+                if ("1".equals(navBarOverride)) {
+                    hasNavigationBar = false;
+                } else if ("0".equals(navBarOverride)) {
+                    hasNavigationBar = true;
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        return hasNavigationBar;
+    }
+
+    /**
+     * 判断设备是否存在NavigationBar
+     *
+     * @return true 存在, false 不存在
+     * @see <a href="https://windysha.github.io/2018/02/07/Android-APP%E9%80%82%E9%85%8D%E5%85%A8%E9%9D%A2%E5%B1%8F%E6%89%8B%E6%9C%BA%E7%9A%84%E6%8A%80%E6%9C%AF%E8%A6%81%E7%82%B9/">Android-APP适配全面屏手机的技术要点</a>
+     */
+    @SuppressLint("PrivateApi")
+    public static boolean hasNavigationBar(Context context) {
+        if (DisplayUtils.isEmulator()) {
+            return true;
+        }
+        try {
+            //1.通过WindowManagerGlobal获取windowManagerService
+            // 反射方法：IWindowManager windowManagerService = WindowManagerGlobal.getWindowManagerService();
+            Class<?> windowManagerGlobalClass = Class.forName("android.view.WindowManagerGlobal");
+            Method getWmServiceMethod = windowManagerGlobalClass.getDeclaredMethod("getWindowManagerService");
+            getWmServiceMethod.setAccessible(true);
+            //getWindowManagerService是静态方法，所以invoke null
+            Object iWindowManager = getWmServiceMethod.invoke(null);
+
+            //2.获取windowMangerService的hasNavigationBar方法返回值
+            // 反射方法：haveNav = windowManagerService.hasNavigationBar();
+            Class<?> iWindowManagerClass = iWindowManager.getClass();
+            Method hasNavBarMethod = iWindowManagerClass.getDeclaredMethod("hasNavigationBar");
+            hasNavBarMethod.setAccessible(true);
+            return (Boolean) hasNavBarMethod.invoke(iWindowManager);
+        } catch (Exception ignored) {
+            return isNavigationBar(context);
+        }
+    }
+
+    /**
+     * 获取vivo手机设置中的"navigation_gesture_on"值，判断当前系统是使用导航键还是手势导航操作
+     *
+     * @return false 表示使用的是虚拟导航键(NavigationBar)， true 表示使用的是手势， 默认是false
+     */
+    public static boolean vivoNavigationGestureEnabled(Context context) {
+        int val = Settings.Secure.getInt(context.getContentResolver(), "navigation_gesture_on", 0);
+        return val != 0;
+    }
+
+    public static boolean emuiNavigationEnabled(Context context) {
+        int g = Settings.Global.getInt(context.getContentResolver(), "navigationbar_is_min", 0);
+        return g != 1;
     }
 
     /**
@@ -461,6 +548,7 @@ public class BingWallpaperUtils {
         String job = BingWallpaperJobManager.check(context);
         boolean alarm = isAlarm(context);
         String alarmTime = getAlarmTime(context);
+        String autoSetMode = getAutoMode(context);
 
         return "feedback info ------------------------- \n"
                 + " sdk: "
@@ -487,6 +575,8 @@ public class BingWallpaperUtils {
                 + alarm
                 + " alarm_time: "
                 + alarmTime
+                + " autoSetMode: "
+                + autoSetMode
                 + "\n"
                 + "feedback info ------------------------- \n";
     }

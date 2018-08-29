@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
           package="me.liaoheng.wallpaper">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -16,7 +17,8 @@
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:supportsRtl="true"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            tools:ignore="GoogleAppIndexingWarning">
 
         <activity
                 android:name=".ui.MainActivity"
@@ -142,6 +144,10 @@
         <meta-data
                 android:name="firebase_crashlytics_collection_enabled"
                 android:value="false" />
+
+        <meta-data
+                android:name="android.max_aspect"
+                android:value="2.1" />
     </application>
 
 </manifest>

@@ -116,7 +116,7 @@ public class BingWallpaperIntentService extends IntentService {
         L.alog().d(TAG, " setWallpaperType : " + setWallpaperType);
 
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().i(TAG, "Starting");
+            LogDebugFileUtils.get().i(TAG, "Starting "+setWallpaperType);
         }
 
         sendSetWallpaperBroadcast(BingWallpaperState.BEGIN);
