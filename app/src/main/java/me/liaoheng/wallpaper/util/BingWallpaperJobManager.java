@@ -1,5 +1,6 @@
 package me.liaoheng.wallpaper.util;
 
+import android.app.Notification;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
@@ -9,6 +10,8 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.IntDef;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 
 import com.firebase.jobdispatcher.Constraint;
@@ -20,6 +23,8 @@ import com.firebase.jobdispatcher.RetryStrategy;
 import com.firebase.jobdispatcher.Trigger;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.UIUtils;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -112,7 +117,7 @@ public class BingWallpaperJobManager {
             setJobType(context, GOOGLE_SERVICE);
             if (BingWallpaperUtils.isEnableLog(context)) {
                 LogDebugFileUtils.get()
-                        .i(TAG, "Enable google service  job interval time : %s", time);
+                        .i(TAG, "Enable google service job interval time : %s", time);
             }
             L.alog().d(TAG, "Enable google service job interval time : %s", time);
         }
@@ -153,13 +158,23 @@ public class BingWallpaperJobManager {
         try {
             int type = BingWallpaperUtils.getAutomaticUpdateType(context);
             if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_AUTO) {
-                if (BingWallpaperUtils.isGooglePlayServicesAvailable(context)) {
+                int resultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context);
+                if (resultCode == ConnectionResult.SUCCESS) {
                     if (!enableGoogleService(context, time)) {
                         if (!enableSystem(context, time)) {
                             return enableDaemonService(context);
                         }
                     }
                 } else {
+                    String errorString = GoogleApiAvailability.getInstance().getErrorString(resultCode);
+                    Notification notification = new NotificationCompat.Builder(context,
+                            Constants.GMS_NOTIFICATION_CHANNEL).setSmallIcon(
+                            R.drawable.ic_notification)
+                            .setAutoCancel(true)
+                            .setContentText("Google service error: " + errorString)
+                            .setContentTitle(context.getString(R.string.app_name))
+                            .build();
+                    NotificationManagerCompat.from(context).notify(0x56, notification);
                     if (!enableSystem(context, time)) {
                         return enableDaemonService(context);
                     }
