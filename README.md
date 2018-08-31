@@ -2,7 +2,7 @@
 
 [![GitHub release](https://img.shields.io/github/release/liaoheng/BingWallpaper.svg)](https://github.com/liaoheng/BingWallpaper/releases/latest)
 
-Starth Bing Wallpaper is a free and open source app, change your device background or lock screen with Bing image of the day.
+Starth Bing Wallpaper is a free and open source app, change your device background or lock screen with Bing image of the day. (some non-AOSP systems are not supported lock screen , as MIUI etc)
 
 <a href='https://play.google.com/store/apps/details?id=me.liaoheng.wallpaper'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width='150'/></a>
 
