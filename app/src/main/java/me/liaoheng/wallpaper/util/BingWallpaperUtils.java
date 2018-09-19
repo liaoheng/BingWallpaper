@@ -2,6 +2,7 @@ package me.liaoheng.wallpaper.util;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.WallpaperManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +21,7 @@ import android.provider.Browser;
 import android.provider.Settings;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -39,6 +42,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalTime;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
@@ -49,6 +53,9 @@ import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.ui.SettingsActivity;
+import rx.Observable;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * @author liaoheng
@@ -273,6 +280,12 @@ public class BingWallpaperUtils {
         String[] names = context.getResources()
                 .getStringArray(R.array.pref_set_wallpaper_day_fully_automatic_update_type_names);
         return names[type];
+    }
+
+    public static boolean isMiuiLockScreenSupport(Context context){
+        SettingTrayPreferences appPreferences = SettingTrayPreferences.get(context);
+        return appPreferences
+                .getBoolean(SettingsActivity.PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, false);
     }
 
     public static void disabledReceiver(Context context, String receiver) {
@@ -630,5 +643,37 @@ public class BingWallpaperUtils {
 
     public static boolean isGooglePlayServicesAvailable(Context context) {
         return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static void setBothWallpaper(Context context, Bitmap bitmap) throws IOException {
+        WallpaperManager.getInstance(context)
+                .setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM | WallpaperManager.FLAG_LOCK);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static void setLockScreenWallpaper(Context context, Bitmap bitmap) throws IOException {
+        WallpaperManager.getInstance(context)
+                .setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static void setHomeScreenWallpaper(Context context, Bitmap bitmap) throws IOException {
+        WallpaperManager.getInstance(context)
+                .setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM);
+    }
+
+    public static Observable<Object> clearCache(Context context) {
+        return Observable.just(context)
+                .subscribeOn(Schedulers.io())
+                .map(new Func1<Context, Object>() {
+                    @Override
+                    public Object call(Context context) {
+                        GlideApp.get(context).clearMemory();
+                        GlideApp.get(context).clearDiskCache();
+                        NetUtils.get().clearCache();
+                        return null;
+                    }
+                });
     }
 }

@@ -17,6 +17,7 @@ import com.github.liaoheng.common.util.Callback2;
 import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetException;
+import com.github.liaoheng.common.util.ShellUtils;
 import com.github.liaoheng.common.util.SystemDataException;
 import com.github.liaoheng.common.util.SystemException;
 
@@ -31,9 +32,11 @@ import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
-import me.liaoheng.wallpaper.util.ExceptionHandle;
+import me.liaoheng.wallpaper.util.CrashReportHandle;
+import me.liaoheng.wallpaper.util.EmuiHelper;
 import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
+import me.liaoheng.wallpaper.util.MiuiHelper;
 import me.liaoheng.wallpaper.util.ROM;
 import me.liaoheng.wallpaper.util.TasksUtils;
 import me.liaoheng.wallpaper.widget.AppWidget_5x1;
@@ -116,7 +119,7 @@ public class BingWallpaperIntentService extends IntentService {
         L.alog().d(TAG, " setWallpaperType : " + setWallpaperType);
 
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().i(TAG, "Starting "+setWallpaperType);
+            LogDebugFileUtils.get().i(TAG, "Starting " + setWallpaperType);
         }
 
         sendSetWallpaperBroadcast(BingWallpaperState.BEGIN);
@@ -172,7 +175,7 @@ public class BingWallpaperIntentService extends IntentService {
             LogDebugFileUtils.get().e(TAG, throwable, "Failure");
         }
         sendSetWallpaperBroadcast(BingWallpaperState.FAIL);
-        ExceptionHandle.collectException(TAG, throwable);
+        CrashReportHandle.collectException(TAG, throwable);
 
         Notification notification = new NotificationCompat.Builder(getApplicationContext(),
                 Constants.FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL).setSmallIcon(
@@ -232,20 +235,20 @@ public class BingWallpaperIntentService extends IntentService {
                     .setBitmap(bitmap);
         } else {
             if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-                WallpaperManager.getInstance(getApplicationContext())
-                        .setBitmap(bitmap, null, false, WallpaperManager.FLAG_SYSTEM);
+                BingWallpaperUtils.setHomeScreenWallpaper(getApplicationContext(), bitmap);
             } else if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                WallpaperManager.getInstance(getApplicationContext())
-                        .setBitmap(bitmap, null, false, WallpaperManager.FLAG_LOCK);
+                if (ROM.getROM().isMiui()) {
+                    MiuiHelper.setLockScreenWallpaper(getApplicationContext(), bitmap, absolutePath);
+                } else {
+                    BingWallpaperUtils.setLockScreenWallpaper(getApplicationContext(), bitmap);
+                }
             } else {
                 if (ROM.getROM().isEmui()) {
-                    WallpaperManager.getInstance(getApplicationContext())
-                            .setBitmap(bitmap, null, false, WallpaperManager.FLAG_SYSTEM);
-                    WallpaperManager.getInstance(getApplicationContext())
-                            .setBitmap(bitmap, null, false, WallpaperManager.FLAG_LOCK);
+                    EmuiHelper.setBothWallpaper(getApplicationContext(), bitmap);
+                } else if (ROM.getROM().isMiui()) {
+                    MiuiHelper.setBothWallpaper(getApplicationContext(), bitmap, absolutePath);
                 } else {
-                    WallpaperManager.getInstance(getApplicationContext())
-                            .setBitmap(bitmap);
+                    BingWallpaperUtils.setBothWallpaper(getApplicationContext(), bitmap);
                 }
             }
         }

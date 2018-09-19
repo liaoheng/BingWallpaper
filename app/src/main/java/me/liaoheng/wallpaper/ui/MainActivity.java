@@ -2,12 +2,10 @@ package me.liaoheng.wallpaper.ui;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -45,7 +43,10 @@ import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
+import com.github.liaoheng.common.util.ShellUtils;
 import com.github.liaoheng.common.util.UIUtils;
+
+import java.lang.reflect.Method;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,8 +60,10 @@ import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.service.SetWallpaperStateBroadcastReceiver;
 import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.BottomViewListener;
 import me.liaoheng.wallpaper.util.Constants;
-import me.liaoheng.wallpaper.util.ExceptionHandle;
+import me.liaoheng.wallpaper.util.CrashReportHandle;
+import me.liaoheng.wallpaper.util.EmuiHelper;
 import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.ROM;
 import me.liaoheng.wallpaper.util.TasksUtils;
@@ -75,7 +78,7 @@ import rx.functions.Action1;
  * @version 2017-2-15
  */
 public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, BottomViewListener {
 
     @BindView(R.id.bing_wallpaper_view)
     ImageView mWallpaperView;
@@ -116,6 +119,7 @@ public class MainActivity extends BaseActivity
     private BingWallpaperCoverStory mCoverStory;
 
     private int mActionMenuBottomMargin;
+    private EmuiHelper mEmuiHelper;
 
     @OnClick(R.id.bing_wallpaper_cover_story_text)
     void openMap() {
@@ -128,8 +132,7 @@ public class MainActivity extends BaseActivity
         BingWallpaperUtils.openMap(this, longitude, latitude);
     }
 
-    private BroadcastReceiver mNavigationBarBCR;
-
+    @Override
     public void showBottomView() {
         int navigationBarHeight = BingWallpaperUtils.getNavigationBarHeight(this);
         if (navigationBarHeight > 0) {
@@ -148,6 +151,7 @@ public class MainActivity extends BaseActivity
         mSetWallpaperActionMenu.setLayoutParams(menuLayoutParams);
     }
 
+    @Override
     public void hideBottomView() {
         UIUtils.viewGone(mBottomView);
 
@@ -171,6 +175,7 @@ public class MainActivity extends BaseActivity
         ButterKnife.bind(this);
         initStatusBarAddToolbar();
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_drawer_home);
+        mEmuiHelper = EmuiHelper.with(this);
 
         if (BingWallpaperJobManager.isJobTypeDaemonService(this)) {
             BingWallpaperJobManager.startDaemonService(this);
@@ -180,30 +185,7 @@ public class MainActivity extends BaseActivity
 
         boolean bar;
         if (ROM.getROM().isEmui()) {
-            bar = BingWallpaperUtils.emuiNavigationEnabled(this);
-            if (bar) {
-                showBottomView();
-            }
-            mNavigationBarBCR = new BroadcastReceiver() {
-                public void onReceive(Context context, Intent intent) {
-                    if (intent != null && intent.getAction() != null &&
-                            ("com.huawei.navigationbar.statuschange".equals(intent.getAction()))) {
-                        boolean barState = intent.getBooleanExtra("minNavigationBar", false);
-                        if (barState) {
-                            hideBottomView();
-                        } else {
-                            int navigationBarHeight = BingWallpaperUtils.getNavigationBarHeight(getActivity());
-                            if (navigationBarHeight > 0) {
-                                showBottomView(navigationBarHeight);
-                            }
-                        }
-                    }
-                }
-            };
-            IntentFilter intent = new IntentFilter();
-            intent.addAction("com.huawei.navigationbar.statuschange");
-            registerReceiver(mNavigationBarBCR, intent);
-
+            mEmuiHelper.register(this);
         } else if (ROM.getROM().isVivo()) {
             bar = BingWallpaperUtils.vivoNavigationGestureEnabled(this);
             if (!bar) {
@@ -353,7 +335,7 @@ public class MainActivity extends BaseActivity
                                 @Override
                                 public void call(Throwable throwable) {
                                     L.alog().e(TAG, throwable);
-                                    ExceptionHandle.collectException(TAG, "getCoverStory", throwable);
+                                    CrashReportHandle.collectException(TAG, "getCoverStory", throwable);
                                     UIUtils.viewGone(mCoverStoryView);
                                 }
                             });
@@ -363,7 +345,7 @@ public class MainActivity extends BaseActivity
     @SuppressLint("SetTextI18n")
     private void setBingWallpaperError(Throwable throwable) {
         dismissSwipeRefreshLayout();
-        String error = ExceptionHandle.loadFailed(this, TAG, throwable);
+        String error = CrashReportHandle.loadFailed(this, TAG, throwable);
         mErrorTextView.setText(getString(R.string.pull_refresh) + error);
     }
 
@@ -587,8 +569,8 @@ public class MainActivity extends BaseActivity
 
     @Override
     protected void onDestroy() {
-        if (mNavigationBarBCR != null) {
-            unregisterReceiver(mNavigationBarBCR);
+        if (mEmuiHelper != null) {
+            mEmuiHelper.unregister(this);
         }
         if (mSetWallpaperStateBroadcastReceiver != null) {
             unregisterReceiver(mSetWallpaperStateBroadcastReceiver);

@@ -80,6 +80,14 @@
                 android:title="@string/pref_log_file"
                 android:widgetLayout="@layout/mp_preference_switch" />
 
+        <CheckBoxPreference
+                android:defaultValue="false"
+                android:persistent="false"
+                android:key="pref_set_miui_lock_screen_wallpaper"
+                android:summary="@string/pref_set_miui_lock_screen_wallpaper_note"
+                android:title="@string/pref_set_miui_lock_screen_wallpaper"
+                android:widgetLayout="@layout/mp_preference_switch" />
+
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/about">
         <Preference

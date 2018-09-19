@@ -42,7 +42,7 @@ import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
-import me.liaoheng.wallpaper.util.ExceptionHandle;
+import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.GlideApp;
 import rx.Observable;
 
@@ -136,7 +136,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
     }
 
     private void setBingWallpaperError(Throwable throwable) {
-        String error = ExceptionHandle.loadFailed(this, TAG, throwable);
+        String error = CrashReportHandle.loadFailed(this, TAG, throwable);
         mErrorTextView.setText(error);
     }
 
@@ -158,7 +158,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         public void onHandle(final BingWallpaperImage item, int position) {
             if (!TextUtils.isEmpty(item.getEnddate())) {
                 DateTime dateTime = DateTime.parse(item.getEnddate(), DateTimeFormat.forPattern("YYYYMMdd"));
-                mDate.setText(dateTime.toString("MMMM dd", BingWallpaperUtils.getLocale(getContext())));
+                mDate.setText(dateTime.toString("MM/dd", BingWallpaperUtils.getLocale(getContext())));
             }
 
             itemView.setOnClickListener(new View.OnClickListener() {

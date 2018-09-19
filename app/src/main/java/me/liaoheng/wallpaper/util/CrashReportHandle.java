@@ -17,7 +17,7 @@ import me.liaoheng.wallpaper.R;
  * @author liaoheng
  * @version 2018-04-23 23:25
  */
-public class ExceptionHandle {
+public class CrashReportHandle {
 
     public static String loadFailed(Context context, String TAG, Throwable throwable) {
         String error = context.getString(R.string.network_request_error);

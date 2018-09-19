@@ -16,7 +16,7 @@ public interface Constants {
 
     String DISK_CACHE_DIR = "imgCache";
     String HTTP_CACHE_DIR = "httpCache";
-    int IMAGE_DISK_CACHE_SIZE = 100 * 1024 * 1024; // 100MB
+    int IMAGE_DISK_CACHE_SIZE = 20 * 1024 * 1024; // 20MB
     int HTTP_DISK_CACHE_SIZE = 5 * 1024 * 1024;  // 5MB
 
     long JOB_SCHEDULER_PERIODIC = TimeUnit.HOURS.toSeconds(3);

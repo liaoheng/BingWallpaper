@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.PreferenceCategory;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import com.flyco.systembar.SystemBarHelper;
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.L;
+import com.github.liaoheng.common.util.ShellUtils;
 import com.github.liaoheng.common.util.SystemException;
 import com.github.liaoheng.common.util.UIUtils;
 
@@ -30,6 +32,7 @@ import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.NetUtils;
+import me.liaoheng.wallpaper.util.ROM;
 import me.liaoheng.wallpaper.util.SettingTrayPreferences;
 import me.liaoheng.wallpaper.widget.TimePreference;
 import rx.Observable;
@@ -64,9 +67,12 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
     public static final String PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME = "pref_set_wallpaper_day_auto_update_time";
     public static final String PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI = "pref_set_wallpaper_day_auto_update_only_wifi";
     public static final String PREF_SET_WALLPAPER_LOG = "pref_set_wallpaper_debug_log";
+    public static final String PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER = "pref_set_miui_lock_screen_wallpaper";
 
     public static class MyPreferenceFragment extends com.fnp.materialpreferences.PreferenceFragment
             implements SharedPreferences.OnSharedPreferenceChangeListener {
+        private SettingTrayPreferences mPreferences;
+
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             return super.onCreateView(inflater, container, savedInstanceState);
@@ -86,7 +92,8 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
         private CheckBoxPreference mDayUpdatePreference;
         private CheckBoxPreference mAutoUpdatePreference;
         private ListPreference mAutoUpdateTypeListPreference;
-        private SettingTrayPreferences mPreferences;
+        private CheckBoxPreference mLogPreference;
+        private CheckBoxPreference mMIuiLockScreenPreference;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -126,17 +133,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                                     new Callback4.EmptyCallback<DialogInterface>() {
                                         @Override
                                         public void onYes(DialogInterface dialogInterface) {
-                                            GlideApp.get(getActivity()).clearMemory();
-                                            Observable.just("")
-                                                    .subscribeOn(Schedulers.io())
-                                                    .map(new Func1<String, Object>() {
-                                                        @Override
-                                                        public Object call(String s) {
-                                                            GlideApp.get(getActivity()).clearDiskCache();
-                                                            NetUtils.get().clearCache();
-                                                            return null;
-                                                        }
-                                                    })
+                                            BingWallpaperUtils.clearCache(getActivity())
                                                     .observeOn(AndroidSchedulers.mainThread())
                                                     .subscribe(new Action1<Object>() {
                                                         @Override
@@ -166,6 +163,30 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             mAutoUpdateTypeListPreference = (ListPreference) findPreference(
                     PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_TYPE);
             mAutoUpdatePreference = (CheckBoxPreference) findPreference(PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE);
+            mLogPreference = (CheckBoxPreference) findPreference(PREF_SET_WALLPAPER_LOG);
+            mMIuiLockScreenPreference = (CheckBoxPreference) findPreference(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER);
+
+            if (!ROM.getROM().isMiui()) {
+                ((PreferenceCategory) findPreference("pref_other_group")).removePreference(mMIuiLockScreenPreference);
+            } else {
+                mMIuiLockScreenPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        if (mMIuiLockScreenPreference.isChecked()) {
+                            if (ShellUtils.hasRootPermission()) {
+                                mPreferences.put(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, true);
+                            } else {
+                                mMIuiLockScreenPreference.setChecked(false);
+                                UIUtils.showToast(getActivity(), R.string.unable_root_permission);
+                            }
+                        } else {
+                            mPreferences.put(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, false);
+                        }
+                        return false;
+                    }
+                });
+                mMIuiLockScreenPreference.setChecked(BingWallpaperUtils.isMiuiLockScreenSupport(getActivity()));
+            }
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                 mModeTypeListPreference.setEnabled(false);
@@ -209,6 +230,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                 case PREF_COUNTRY:
                     mCountryListPreference.setSummary(mCountryListPreference.getEntry());
                     mPreferences.put(PREF_COUNTRY, mCountryListPreference.getValue());
+                    BingWallpaperUtils.clearCache(getActivity()).subscribe();
                     break;
                 case PREF_SET_WALLPAPER_AUTO_MODE:
                     mModeTypeListPreference.setSummary(mModeTypeListPreference.getEntry());
@@ -253,12 +275,8 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     }
                     break;
                 case PREF_SET_WALLPAPER_LOG:
-                    CheckBoxPreference logPreference = (CheckBoxPreference) findPreference(
-                            PREF_SET_WALLPAPER_LOG);
-
-                    mPreferences.put(PREF_SET_WALLPAPER_LOG, logPreference.isChecked());
-
-                    if (logPreference.isChecked()) {
+                    mPreferences.put(PREF_SET_WALLPAPER_LOG, mLogPreference.isChecked());
+                    if (mLogPreference.isChecked()) {
                         LogDebugFileUtils.get().init();
                         LogDebugFileUtils.get().open();
                     } else {

@@ -51,7 +51,7 @@ import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.service.SetWallpaperStateBroadcastReceiver;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
-import me.liaoheng.wallpaper.util.ExceptionHandle;
+import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.NetUtils;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
@@ -206,7 +206,6 @@ public class WallpaperDetailActivity extends BaseActivity {
         loadImage(
                 BingWallpaperUtils.getImageUrl(getApplicationContext(), Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
                         mWallpaperImage));
-
     }
 
     private void toggleToolbar() {
@@ -259,7 +258,7 @@ public class WallpaperDetailActivity extends BaseActivity {
                             boolean isFirstResource) {
                         UIUtils.viewGone(mProgressBar);
                         UIUtils.viewVisible(mErrorTextView);
-                        String error = ExceptionHandle.loadFailed(getApplicationContext(), TAG, e);
+                        String error = CrashReportHandle.loadFailed(getApplicationContext(), TAG, e);
                         mErrorTextView.setText(error);
                         return false;
                     }
