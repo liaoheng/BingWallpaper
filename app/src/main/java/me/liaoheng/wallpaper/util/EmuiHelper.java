@@ -1,6 +1,5 @@
 package me.liaoheng.wallpaper.util;
 
-import android.app.WallpaperManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;

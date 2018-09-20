@@ -51,6 +51,9 @@ import java.lang.reflect.Method;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import dalvik.system.BaseDexClassLoader;
+import dalvik.system.DexClassLoader;
+import dalvik.system.PathClassLoader;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
@@ -177,9 +180,7 @@ public class MainActivity extends BaseActivity
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_drawer_home);
         mEmuiHelper = EmuiHelper.with(this);
 
-        if (BingWallpaperJobManager.isJobTypeDaemonService(this)) {
-            BingWallpaperJobManager.startDaemonService(this);
-        }
+        BingWallpaperJobManager.restore(this);
 
         mActionMenuBottomMargin = DisplayUtils.dp2px(this, 10);
 

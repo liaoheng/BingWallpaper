@@ -23,8 +23,6 @@ import com.firebase.jobdispatcher.RetryStrategy;
 import com.firebase.jobdispatcher.Trigger;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.UIUtils;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -158,15 +156,14 @@ public class BingWallpaperJobManager {
         try {
             int type = BingWallpaperUtils.getAutomaticUpdateType(context);
             if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_AUTO) {
-                int resultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context);
-                if (resultCode == ConnectionResult.SUCCESS) {
+                if (BingWallpaperUtils.isGooglePlayServicesAvailable(context)) {
                     if (!enableGoogleService(context, time)) {
                         if (!enableSystem(context, time)) {
                             return enableDaemonService(context);
                         }
                     }
                 } else {
-                    String errorString = GoogleApiAvailability.getInstance().getErrorString(resultCode);
+                    String errorString = BingWallpaperUtils.getGooglePlayServicesAvailableErrorString(context);
                     Notification notification = new NotificationCompat.Builder(context,
                             Constants.GMS_NOTIFICATION_CHANNEL).setSmallIcon(
                             R.drawable.ic_notification)
@@ -204,7 +201,7 @@ public class BingWallpaperJobManager {
     }
 
     public static boolean isJobTypeDaemonService(Context context) {
-        return BingWallpaperJobManager.getJobType(context) == DAEMON_SERVICE;
+        return getJobType(context) == DAEMON_SERVICE;
     }
 
     @IntDef(value = {
@@ -234,23 +231,37 @@ public class BingWallpaperJobManager {
                 return "google_service_error";
             }
         } else {
-            JobScheduler jobScheduler = (JobScheduler)
-                    context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-            if (jobScheduler == null) {
-                return "false";
-            }
-            JobInfo myJobInfo = null;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                myJobInfo = jobScheduler.getPendingJob(JOB_ID);
-            } else {
-                List<JobInfo> allPendingJobs = jobScheduler.getAllPendingJobs();
-                for (JobInfo allPendingJob : allPendingJobs) {
-                    if (allPendingJob.getId() == JOB_ID) {
-                        myJobInfo = allPendingJob;
-                    }
+            return checkSystemJobStatus(context) ? "true" : "false";
+        }
+    }
+
+    public static boolean checkSystemJobStatus(Context context) {
+        JobScheduler jobScheduler = (JobScheduler)
+                context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        if (jobScheduler == null) {
+            return false;
+        }
+        JobInfo myJobInfo = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            myJobInfo = jobScheduler.getPendingJob(JOB_ID);
+        } else {
+            List<JobInfo> allPendingJobs = jobScheduler.getAllPendingJobs();
+            for (JobInfo allPendingJob : allPendingJobs) {
+                if (allPendingJob.getId() == JOB_ID) {
+                    myJobInfo = allPendingJob;
                 }
             }
-            return myJobInfo != null ? "true" : "false";
+        }
+        return myJobInfo != null;
+    }
+
+    public static void restore(Context context) {
+        if (isJobTypeDaemonService(context)) {
+            startDaemonService(context);
+        } else if (getJobType(context) == BingWallpaperJobManager.SYSTEM) {
+            if (!checkSystemJobStatus(context)) {
+                enableSystem(context, Constants.JOB_SCHEDULER_PERIODIC);
+            }
         }
     }
 

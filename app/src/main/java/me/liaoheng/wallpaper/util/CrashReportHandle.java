@@ -6,10 +6,12 @@ import android.text.TextUtils;
 import com.bumptech.glide.load.engine.GlideException;
 import com.crashlytics.android.Crashlytics;
 import com.github.liaoheng.common.util.L;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.net.SocketTimeoutException;
 import java.util.List;
 
+import io.fabric.sdk.android.Fabric;
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
 
@@ -18,6 +20,13 @@ import me.liaoheng.wallpaper.R;
  * @version 2018-04-23 23:25
  */
 public class CrashReportHandle {
+
+    public static void init(Context context) {
+        if (!BuildConfig.DEBUG) {
+            Fabric.with(context, new Crashlytics());
+            FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(true);
+        }
+    }
 
     public static String loadFailed(Context context, String TAG, Throwable throwable) {
         String error = context.getString(R.string.network_request_error);

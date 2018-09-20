@@ -282,7 +282,7 @@ public class BingWallpaperUtils {
         return names[type];
     }
 
-    public static boolean isMiuiLockScreenSupport(Context context){
+    public static boolean isMiuiLockScreenSupport(Context context) {
         SettingTrayPreferences appPreferences = SettingTrayPreferences.get(context);
         return appPreferences
                 .getBoolean(SettingsActivity.PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, false);
@@ -642,7 +642,19 @@ public class BingWallpaperUtils {
     }
 
     public static boolean isGooglePlayServicesAvailable(Context context) {
-        return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS;
+        return getGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS;
+    }
+
+    public static int getGooglePlayServicesAvailable(Context context) {
+        return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context);
+    }
+
+    public static String getGooglePlayServicesAvailableErrorString(int resultCode) {
+        return GoogleApiAvailability.getInstance().getErrorString(resultCode);
+    }
+
+    public static String getGooglePlayServicesAvailableErrorString(Context context) {
+        return getGooglePlayServicesAvailableErrorString(getGooglePlayServicesAvailable(context));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
