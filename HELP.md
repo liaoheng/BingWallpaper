@@ -1,7 +1,7 @@
-- [FQA](#fqa)
+- [FAQ](#faq)
 - [Feedback](#feedback)
 
-## FQA
+## FAQ
 
 ### Use `Daily automatic update` option, it not works fine. 
 #### 1. Can try adding a desktop widget.
