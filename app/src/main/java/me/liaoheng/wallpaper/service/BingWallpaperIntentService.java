@@ -17,7 +17,6 @@ import com.github.liaoheng.common.util.Callback2;
 import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetException;
-import com.github.liaoheng.common.util.ShellUtils;
 import com.github.liaoheng.common.util.SystemDataException;
 import com.github.liaoheng.common.util.SystemException;
 
@@ -175,7 +174,7 @@ public class BingWallpaperIntentService extends IntentService {
             LogDebugFileUtils.get().e(TAG, throwable, "Failure");
         }
         sendSetWallpaperBroadcast(BingWallpaperState.FAIL);
-        CrashReportHandle.collectException(TAG, throwable);
+        CrashReportHandle.collectException(getApplicationContext(), TAG, throwable);
 
         Notification notification = new NotificationCompat.Builder(getApplicationContext(),
                 Constants.FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL).setSmallIcon(

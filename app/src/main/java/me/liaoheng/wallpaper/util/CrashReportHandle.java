@@ -22,9 +22,22 @@ import me.liaoheng.wallpaper.R;
 public class CrashReportHandle {
 
     public static void init(Context context) {
+        if (BingWallpaperUtils.isCrashReport(context) && !BuildConfig.DEBUG) {
+            Fabric.with(context, new Crashlytics());
+            FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(true);
+        }
+    }
+
+    public static void enable(Context context) {
         if (!BuildConfig.DEBUG) {
             Fabric.with(context, new Crashlytics());
             FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(true);
+        }
+    }
+
+    public static void disable(Context context) {
+        if (!BuildConfig.DEBUG) {
+            FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(false);
         }
     }
 
@@ -51,17 +64,17 @@ public class CrashReportHandle {
                 }
             }
             L.alog().e(TAG, throwable);
-            collectException(TAG, throwable);
+            collectException(context, TAG, throwable);
         }
         return error;
     }
 
-    public static void collectException(String TAG, Throwable t) {
-        collectException(TAG, null, t);
+    public static void collectException(Context context, String TAG, Throwable t) {
+        collectException(context, TAG, null, t);
     }
 
-    public static void collectException(String TAG, String msg, Throwable t) {
-        if (BuildConfig.DEBUG) {
+    public static void collectException(Context context, String TAG, String msg, Throwable t) {
+        if (!BingWallpaperUtils.isCrashReport(context) && BuildConfig.DEBUG) {
             return;
         }
         Crashlytics.log("TAG: " + TAG);

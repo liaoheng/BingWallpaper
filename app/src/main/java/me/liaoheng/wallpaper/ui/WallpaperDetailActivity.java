@@ -37,6 +37,7 @@ import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.SystemException;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
+import com.github.liaoheng.common.util.ValidateUtils;
 
 import java.io.File;
 
@@ -394,7 +395,8 @@ public class WallpaperDetailActivity extends BaseActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
             @NonNull int[] grantResults) {
         if (requestCode == 111) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults != null && grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 saveWallpaper();
             } else {
                 UIUtils.showToast(this, "no permission");

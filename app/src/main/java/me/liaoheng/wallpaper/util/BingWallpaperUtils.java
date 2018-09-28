@@ -63,6 +63,11 @@ import rx.schedulers.Schedulers;
  */
 public class BingWallpaperUtils {
 
+    public static boolean isCrashReport(Context context) {
+        SettingTrayPreferences preferences = SettingTrayPreferences.get(context);
+        return preferences.getBoolean(SettingsActivity.PREF_CRASH_REPORT, true);
+    }
+
     public static String getResolutionImageUrl(Context context, BingWallpaperImage image) {
         return getImageUrl(context, getResolution(context), image);
     }

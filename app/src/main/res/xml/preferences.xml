@@ -82,12 +82,18 @@
 
         <CheckBoxPreference
                 android:defaultValue="false"
-                android:persistent="false"
                 android:key="pref_set_miui_lock_screen_wallpaper"
+                android:persistent="false"
                 android:summary="@string/pref_set_miui_lock_screen_wallpaper_note"
                 android:title="@string/pref_set_miui_lock_screen_wallpaper"
                 android:widgetLayout="@layout/mp_preference_switch" />
 
+        <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="pref_crash_report"
+                android:summary="@string/pref_crash_report_note"
+                android:title="@string/pref_crash_report"
+                android:widgetLayout="@layout/mp_preference_switch" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/about">
         <Preference
@@ -120,5 +126,13 @@
                 android:key="pref_license"
                 android:persistent="false"
                 android:title="@string/open_source_license" />
+        <Preference
+                android:key="pref_privacy_policy"
+                android:persistent="false"
+                android:title="@string/privacy_policy" >
+            <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="https://github.com/liaoheng/BingWallpaper/blob/image/PRIVACY_POLICY.md" />
+        </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

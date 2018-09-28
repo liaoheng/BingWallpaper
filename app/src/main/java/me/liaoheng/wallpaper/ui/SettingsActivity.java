@@ -29,17 +29,13 @@ import me.liaoheng.wallpaper.service.AutoSetWallpaperBroadcastReceiver;
 import me.liaoheng.wallpaper.util.BingWallpaperAlarmManager;
 import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
-import me.liaoheng.wallpaper.util.GlideApp;
+import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
-import me.liaoheng.wallpaper.util.NetUtils;
 import me.liaoheng.wallpaper.util.ROM;
 import me.liaoheng.wallpaper.util.SettingTrayPreferences;
 import me.liaoheng.wallpaper.widget.TimePreference;
-import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * @author liaoheng
@@ -68,6 +64,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
     public static final String PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI = "pref_set_wallpaper_day_auto_update_only_wifi";
     public static final String PREF_SET_WALLPAPER_LOG = "pref_set_wallpaper_debug_log";
     public static final String PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER = "pref_set_miui_lock_screen_wallpaper";
+    public static final String PREF_CRASH_REPORT = "pref_crash_report";
 
     public static class MyPreferenceFragment extends com.fnp.materialpreferences.PreferenceFragment
             implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -92,7 +89,6 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
         private CheckBoxPreference mDayUpdatePreference;
         private CheckBoxPreference mAutoUpdatePreference;
         private ListPreference mAutoUpdateTypeListPreference;
-        private CheckBoxPreference mLogPreference;
         private CheckBoxPreference mMIuiLockScreenPreference;
 
         @Override
@@ -163,7 +159,6 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             mAutoUpdateTypeListPreference = (ListPreference) findPreference(
                     PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_TYPE);
             mAutoUpdatePreference = (CheckBoxPreference) findPreference(PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE);
-            mLogPreference = (CheckBoxPreference) findPreference(PREF_SET_WALLPAPER_LOG);
             mMIuiLockScreenPreference = (CheckBoxPreference) findPreference(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER);
 
             if (!ROM.getROM().isMiui()) {
@@ -275,12 +270,22 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     }
                     break;
                 case PREF_SET_WALLPAPER_LOG:
-                    mPreferences.put(PREF_SET_WALLPAPER_LOG, mLogPreference.isChecked());
-                    if (mLogPreference.isChecked()) {
+                    CheckBoxPreference logPreference = (CheckBoxPreference) sharedPreferences;
+                    mPreferences.put(PREF_SET_WALLPAPER_LOG, logPreference.isChecked());
+                    if (logPreference.isChecked()) {
                         LogDebugFileUtils.get().init();
                         LogDebugFileUtils.get().open();
                     } else {
                         LogDebugFileUtils.get().clearFile();
+                    }
+                    break;
+                case PREF_CRASH_REPORT:
+                    CheckBoxPreference crashPreference = (CheckBoxPreference) sharedPreferences;
+                    mPreferences.put(PREF_CRASH_REPORT, crashPreference.isChecked());
+                    if (crashPreference.isChecked()) {
+                        CrashReportHandle.enable(getActivity());
+                    } else {
+                        CrashReportHandle.disable(getActivity());
                     }
                     break;
             }

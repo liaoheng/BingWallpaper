@@ -43,17 +43,11 @@ import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
-import com.github.liaoheng.common.util.ShellUtils;
 import com.github.liaoheng.common.util.UIUtils;
-
-import java.lang.reflect.Method;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import dalvik.system.BaseDexClassLoader;
-import dalvik.system.DexClassLoader;
-import dalvik.system.PathClassLoader;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
@@ -336,7 +330,8 @@ public class MainActivity extends BaseActivity
                                 @Override
                                 public void call(Throwable throwable) {
                                     L.alog().e(TAG, throwable);
-                                    CrashReportHandle.collectException(TAG, "getCoverStory", throwable);
+                                    CrashReportHandle.collectException(getApplicationContext(), TAG, "getCoverStory",
+                                            throwable);
                                     UIUtils.viewGone(mCoverStoryView);
                                 }
                             });

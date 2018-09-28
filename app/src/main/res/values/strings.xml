@@ -16,6 +16,7 @@
     <string name="unable_open_url">Unable to open URL</string>
     <string name="about">About</string>
     <string name="open_source_license">Open source licenses</string>
+    <string name="privacy_policy">Privacy Policy</string>
     <string name="send_email">Send email</string>
     <string name="foreground_intent_service_notification_channel">Update wallpaper service</string>
     <string name="foreground_daemon_service_notification_channel">Background daemon service</string>
@@ -24,6 +25,7 @@
     <string name="request_failed_click_retry">Request failed, please click retry</string>
     <string name="loading">Loading&#8230;</string>
     <string name="unable_root_permission">Unable root permission</string>
+    <string name="unable_required_permission">Unable required permissions</string>
 
     <!--setting -->
     <string name="pref_auto_update_wallpaper">Automatic update wallpaper</string>
@@ -47,12 +49,14 @@
     <string name="pref_country">Choose Server regions</string>
     <string name="pref_country_auto">Auto</string>
     <string name="pref_country_china">China</string>
-    <string name="pref_country_usa">USA</string>
+    <string name="pref_country_usa">Global</string>
     <string name="pref_clear_cache">Clear cache</string>
     <string name="pref_clear_cache_success">Clear cache success</string>
     <string name="pref_log_file">Enable action Log</string>
-    <string name="pref_set_miui_lock_screen_wallpaper">MIUI lock screen support(Test)</string>
+    <string name="pref_set_miui_lock_screen_wallpaper">MIUI lock screen support</string>
     <string name="pref_set_miui_lock_screen_wallpaper_note">Need root permission, please use cautious</string>
+    <string name="pref_crash_report">Crash report</string>
+    <string name="pref_crash_report_note">Used to collect crash reports</string>
     <string name="pref_version">Version</string>
     <string name="pref_intro">Open intro</string>
 
