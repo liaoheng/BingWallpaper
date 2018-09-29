@@ -49,7 +49,7 @@
     <string name="pref_country">选择服务器区域</string>
     <string name="pref_country_auto">自动</string>
     <string name="pref_country_china">中国</string>
-    <string name="pref_country_usa">全球</string>
+    <string name="pref_country_usa">美国</string>
     <string name="pref_clear_cache">清除缓存</string>
     <string name="pref_clear_cache_success">清除缓存成功</string>
     <string name="pref_log_file">启用活动日志</string>
