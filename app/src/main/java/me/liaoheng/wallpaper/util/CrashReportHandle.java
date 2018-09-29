@@ -22,9 +22,10 @@ import me.liaoheng.wallpaper.R;
 public class CrashReportHandle {
 
     public static void init(Context context) {
-        if (BingWallpaperUtils.isCrashReport(context) && !BuildConfig.DEBUG) {
-            Fabric.with(context, new Crashlytics());
-            FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(true);
+        if (BingWallpaperUtils.isCrashReport(context)) {
+            enable(context);
+        } else {
+            disable(context);
         }
     }
 

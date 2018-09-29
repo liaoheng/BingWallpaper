@@ -88,6 +88,8 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
         private TimePreference mTimePreference;
         private CheckBoxPreference mDayUpdatePreference;
         private CheckBoxPreference mAutoUpdatePreference;
+        private CheckBoxPreference mLogPreference;
+        private CheckBoxPreference mCrashPreference;
         private ListPreference mAutoUpdateTypeListPreference;
         private CheckBoxPreference mMIuiLockScreenPreference;
 
@@ -100,10 +102,8 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                 String versionName = AppUtils.getVersionInfo(getActivity()).versionName;
                 version.setSummary(versionName);
             } catch (SystemException e) {
-                L.Log.w(TAG, e);
+                L.alog().w(TAG, e);
             }
-            mOnlyWifiPreference = (CheckBoxPreference) findPreference(
-                    PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI);
 
             findPreference("pref_intro").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
@@ -158,8 +158,12 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME);
             mAutoUpdateTypeListPreference = (ListPreference) findPreference(
                     PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_TYPE);
+
+            mOnlyWifiPreference = (CheckBoxPreference) findPreference(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI);
             mAutoUpdatePreference = (CheckBoxPreference) findPreference(PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE);
             mMIuiLockScreenPreference = (CheckBoxPreference) findPreference(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER);
+            mLogPreference = (CheckBoxPreference) findPreference(PREF_SET_WALLPAPER_LOG);
+            mCrashPreference = (CheckBoxPreference) findPreference(PREF_CRASH_REPORT);
 
             if (!ROM.getROM().isMiui()) {
                 ((PreferenceCategory) findPreference("pref_other_group")).removePreference(mMIuiLockScreenPreference);
@@ -270,9 +274,8 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     }
                     break;
                 case PREF_SET_WALLPAPER_LOG:
-                    CheckBoxPreference logPreference = (CheckBoxPreference) sharedPreferences;
-                    mPreferences.put(PREF_SET_WALLPAPER_LOG, logPreference.isChecked());
-                    if (logPreference.isChecked()) {
+                    mPreferences.put(PREF_SET_WALLPAPER_LOG, mLogPreference.isChecked());
+                    if (mLogPreference.isChecked()) {
                         LogDebugFileUtils.get().init();
                         LogDebugFileUtils.get().open();
                     } else {
@@ -280,9 +283,8 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     }
                     break;
                 case PREF_CRASH_REPORT:
-                    CheckBoxPreference crashPreference = (CheckBoxPreference) sharedPreferences;
-                    mPreferences.put(PREF_CRASH_REPORT, crashPreference.isChecked());
-                    if (crashPreference.isChecked()) {
+                    mPreferences.put(PREF_CRASH_REPORT, mCrashPreference.isChecked());
+                    if (mCrashPreference.isChecked()) {
                         CrashReportHandle.enable(getActivity());
                     } else {
                         CrashReportHandle.disable(getActivity());

@@ -626,7 +626,7 @@ public class BingWallpaperUtils {
     }
 
     public static int checkRunningService(Context context) {
-        if (NetworkUtils.isConnectedOrConnecting(context)) {
+        if (NetworkUtils.isConnected(context)) {//TODO  need  multiple device test
             if (BingWallpaperUtils.getOnlyWifi(context)) {
                 if (!NetworkUtils.isWifiConnected(context)) {
                     return 2;
