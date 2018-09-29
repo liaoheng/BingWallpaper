@@ -29,6 +29,7 @@ import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.util.BingWallpaperAlarmManager;
 import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.ISettingTrayPreferences;
 import me.liaoheng.wallpaper.util.SettingTrayPreferences;
 import me.liaoheng.wallpaper.util.TasksUtils;
 
@@ -37,7 +38,7 @@ import me.liaoheng.wallpaper.util.TasksUtils;
  * @version 2018-03-05 17:29
  */
 public class IntroActivity extends AppIntro {
-    private SettingTrayPreferences mPreferences;
+    private ISettingTrayPreferences mPreferences;
     private SharedPreferences mSharedPreferences;
 
     @Override

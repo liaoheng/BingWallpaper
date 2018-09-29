@@ -64,8 +64,7 @@ import rx.schedulers.Schedulers;
 public class BingWallpaperUtils {
 
     public static boolean isCrashReport(Context context) {
-        SettingTrayPreferences preferences = SettingTrayPreferences.get(context);
-        return preferences.getBoolean(SettingsActivity.PREF_CRASH_REPORT, true);
+        return SettingTrayPreferences.get(context).getBoolean(SettingsActivity.PREF_CRASH_REPORT, true);
     }
 
     public static String getResolutionImageUrl(Context context, BingWallpaperImage image) {
@@ -85,12 +84,10 @@ public class BingWallpaperUtils {
     }
 
     public static String getResolution(Context context) {
-        SettingTrayPreferences appPreferences = SettingTrayPreferences.get(context);
-
         String[] names = context.getResources()
                 .getStringArray(R.array.pref_set_wallpaper_resolution_name);
 
-        String resolution = appPreferences
+        String resolution = SettingTrayPreferences.get(context)
                 .getString(SettingsActivity.PREF_SET_WALLPAPER_RESOLUTION, "0");
         return names[Integer.parseInt(resolution)];
     }
@@ -125,21 +122,17 @@ public class BingWallpaperUtils {
     }
 
     public static String getCountryName(Context context) {
-        SettingTrayPreferences appPreferences = SettingTrayPreferences.get(context);
-
         String[] names = context.getResources()
                 .getStringArray(R.array.pref_country_names);
 
-        String country = appPreferences
+        String country = SettingTrayPreferences.get(context)
                 .getString(SettingsActivity.PREF_COUNTRY, "0");
 
         return names[Integer.parseInt(country)];
     }
 
     public static int getCountryValue(Context context) {
-        SettingTrayPreferences appPreferences = SettingTrayPreferences.get(context);
-
-        String country = appPreferences
+        String country = SettingTrayPreferences.get(context)
                 .getString(SettingsActivity.PREF_COUNTRY, "0");
 
         return Integer.parseInt(country);
@@ -254,8 +247,7 @@ public class BingWallpaperUtils {
     }
 
     public static boolean isEnableLogProvider(Context context) {
-        SettingTrayPreferences appPreferences = SettingTrayPreferences.get(context);
-        return appPreferences
+        return SettingTrayPreferences.get(context)
                 .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_LOG, false);
     }
 
@@ -288,8 +280,7 @@ public class BingWallpaperUtils {
     }
 
     public static boolean isMiuiLockScreenSupport(Context context) {
-        SettingTrayPreferences appPreferences = SettingTrayPreferences.get(context);
-        return appPreferences
+        return SettingTrayPreferences.get(context)
                 .getBoolean(SettingsActivity.PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, false);
     }
 
@@ -443,7 +434,8 @@ public class BingWallpaperUtils {
     /**
      * 打开忽略电池优化系统设置界面
      *
-     * @see <a href="https://developer.android.com/reference/android/provider/Settings#ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS">android doc</a>
+     * @see <a href="https://developer.android.com/reference/android/provider/Settings#ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS">android
+     * doc</a>
      */
     public static void showIgnoreBatteryOptimizationSetting(Context context) {
         if (context == null) {
@@ -463,7 +455,8 @@ public class BingWallpaperUtils {
     /**
      * 判断应用是否在忽略电池优化中
      *
-     * @see <a href="https://developer.android.com/reference/android/provider/Settings#ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS">android doc</a>
+     * @see <a href="https://developer.android.com/reference/android/provider/Settings#ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS">android
+     * doc</a>
      */
     public static boolean isIgnoreBatteryOptimization(Context context) {
         if (context == null) {

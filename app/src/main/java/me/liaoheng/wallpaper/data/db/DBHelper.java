@@ -5,12 +5,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.preference.PreferenceManager;
 
-
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.provider.TasksContract;
 import me.liaoheng.wallpaper.ui.SettingsActivity;
 import me.liaoheng.wallpaper.util.Constants;
+import me.liaoheng.wallpaper.util.ISettingTrayPreferences;
 import me.liaoheng.wallpaper.util.SettingTrayPreferences;
 
 /**
@@ -37,7 +37,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        SettingTrayPreferences appPreferences = SettingTrayPreferences.get(mContext);
+        ISettingTrayPreferences appPreferences = SettingTrayPreferences.get(mContext);
 
         String[] names = mContext.getResources()
                 .getStringArray(R.array.pref_set_wallpaper_resolution_name);

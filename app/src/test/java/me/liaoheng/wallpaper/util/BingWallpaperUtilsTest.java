@@ -9,7 +9,7 @@ import org.robolectric.annotation.Config;
 import me.liaoheng.wallpaper.BaseTest;
 import me.liaoheng.wallpaper.BuildConfig;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author liaoheng
@@ -23,6 +23,6 @@ public class BingWallpaperUtilsTest extends BaseTest {
     public void checkTimeTest() {
         DateTime dateTime = DateTime.now().minusHours(1);
         DateTime dateTime1 = BingWallpaperUtils.checkTime(dateTime.toLocalTime());
-        assertTrue(dateTime1.getDayOfMonth() == dateTime.getDayOfMonth() + 1);
+        assertEquals(dateTime1.getDayOfMonth(), dateTime.plusDays(1).getDayOfMonth());
     }
 }

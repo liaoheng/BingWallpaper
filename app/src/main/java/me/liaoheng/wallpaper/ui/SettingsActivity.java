@@ -30,6 +30,7 @@ import me.liaoheng.wallpaper.util.BingWallpaperAlarmManager;
 import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
+import me.liaoheng.wallpaper.util.ISettingTrayPreferences;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.ROM;
 import me.liaoheng.wallpaper.util.SettingTrayPreferences;
@@ -68,7 +69,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
 
     public static class MyPreferenceFragment extends com.fnp.materialpreferences.PreferenceFragment
             implements SharedPreferences.OnSharedPreferenceChangeListener {
-        private SettingTrayPreferences mPreferences;
+        private ISettingTrayPreferences mPreferences;
 
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
