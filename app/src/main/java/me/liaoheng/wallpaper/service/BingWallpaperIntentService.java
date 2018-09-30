@@ -5,8 +5,6 @@ import android.app.Notification;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -17,10 +15,10 @@ import com.github.liaoheng.common.util.Callback2;
 import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetException;
-import com.github.liaoheng.common.util.SystemDataException;
 import com.github.liaoheng.common.util.SystemException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
@@ -218,36 +216,28 @@ public class BingWallpaperIntentService extends IntentService {
                 .get(2, TimeUnit.MINUTES);
 
         if (wallpaper == null) {
-            throw new SystemDataException("download wallpaper failure");
-        }
-
-        String absolutePath = wallpaper.getAbsolutePath();
-
-        Bitmap bitmap = BitmapFactory.decodeFile(absolutePath);
-
-        if (bitmap == null) {
-            throw new SystemDataException("wallpaper file not found");
+            throw new IOException("download wallpaper failure");
         }
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             WallpaperManager.getInstance(getApplicationContext())
-                    .setBitmap(bitmap);
+                    .setStream(FileUtils.openInputStream(wallpaper));
         } else {
             if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-                BingWallpaperUtils.setHomeScreenWallpaper(getApplicationContext(), bitmap);
+                BingWallpaperUtils.setHomeScreenWallpaper(getApplicationContext(), wallpaper);
             } else if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
                 if (ROM.getROM().isMiui()) {
-                    MiuiHelper.setLockScreenWallpaper(getApplicationContext(), bitmap, absolutePath);
+                    MiuiHelper.setLockScreenWallpaper(getApplicationContext(), wallpaper);
                 } else {
-                    BingWallpaperUtils.setLockScreenWallpaper(getApplicationContext(), bitmap);
+                    BingWallpaperUtils.setLockScreenWallpaper(getApplicationContext(), wallpaper);
                 }
             } else {
                 if (ROM.getROM().isEmui()) {
-                    EmuiHelper.setBothWallpaper(getApplicationContext(), bitmap);
+                    EmuiHelper.setBothWallpaper(getApplicationContext(), wallpaper);
                 } else if (ROM.getROM().isMiui()) {
-                    MiuiHelper.setBothWallpaper(getApplicationContext(), bitmap, absolutePath);
+                    MiuiHelper.setBothWallpaper(getApplicationContext(), wallpaper);
                 } else {
-                    BingWallpaperUtils.setBothWallpaper(getApplicationContext(), bitmap);
+                    BingWallpaperUtils.setBothWallpaper(getApplicationContext(), wallpaper);
                 }
             }
         }
@@ -255,10 +245,6 @@ public class BingWallpaperIntentService extends IntentService {
         L.alog().i(TAG, "setBingWallpaper Success");
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
             LogDebugFileUtils.get().i(TAG, "setBingWallpaper Success");
-        }
-
-        if (!bitmap.isRecycled()) {
-            bitmap.recycle();
         }
         return wallpaper;
     }

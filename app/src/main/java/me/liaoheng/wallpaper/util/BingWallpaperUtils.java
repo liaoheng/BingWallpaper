@@ -30,6 +30,7 @@ import android.util.AndroidRuntimeException;
 
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.DisplayUtils;
+import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
@@ -43,6 +44,7 @@ import org.joda.time.LocalTime;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
@@ -656,21 +658,21 @@ public class BingWallpaperUtils {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public static void setBothWallpaper(Context context, Bitmap bitmap) throws IOException {
+    public static void setBothWallpaper(Context context, File bitmap) throws IOException {
         WallpaperManager.getInstance(context)
-                .setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM | WallpaperManager.FLAG_LOCK);
+                .setStream(FileUtils.openInputStream(bitmap), null, true, WallpaperManager.FLAG_SYSTEM | WallpaperManager.FLAG_LOCK);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public static void setLockScreenWallpaper(Context context, Bitmap bitmap) throws IOException {
+    public static void setLockScreenWallpaper(Context context, File bitmap) throws IOException {
         WallpaperManager.getInstance(context)
-                .setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK);
+                .setStream(FileUtils.openInputStream(bitmap), null, true, WallpaperManager.FLAG_LOCK);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public static void setHomeScreenWallpaper(Context context, Bitmap bitmap) throws IOException {
+    public static void setHomeScreenWallpaper(Context context, File bitmap) throws IOException {
         WallpaperManager.getInstance(context)
-                .setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM);
+                .setStream(FileUtils.openInputStream(bitmap), null, true, WallpaperManager.FLAG_SYSTEM);
     }
 
     public static Observable<Object> clearCache(Context context) {

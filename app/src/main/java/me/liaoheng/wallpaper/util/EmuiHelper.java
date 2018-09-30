@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -58,7 +59,7 @@ public class EmuiHelper {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public static void setBothWallpaper(Context context, Bitmap bitmap) throws IOException {
+    public static void setBothWallpaper(Context context, File bitmap) throws IOException {
         try {
             BingWallpaperUtils.setHomeScreenWallpaper(context, bitmap);
             BingWallpaperUtils.setLockScreenWallpaper(context, bitmap);
