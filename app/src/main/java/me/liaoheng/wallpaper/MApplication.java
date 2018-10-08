@@ -27,10 +27,10 @@ public class MApplication extends Application {
         Common.init(this, Constants.PROJECT_NAME, BuildConfig.DEBUG);
         TasksUtils.init(this);
         if (BingWallpaperUtils.isEnableLog(this)) {
-            LogDebugFileUtils.get().init();
+            LogDebugFileUtils.get().init(getApplicationContext());
             LogDebugFileUtils.get().open();
         }
-        NetUtils.get().init();
+        NetUtils.get().init(getApplicationContext());
         Constants.Config.isPhone = getString(R.string.screen_type).equals("phone");
 
         CrashReportHandle.init(this);

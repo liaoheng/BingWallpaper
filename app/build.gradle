@@ -110,7 +110,13 @@ dependencies {
     //https://github.com/apl-devs/AppIntro
     implementation 'com.github.apl-devs:appintro:v4.2.3'
 
+//    implementation group: "com.github.liaoheng", name: "common-core", version: "0.0.6-SNAPSHOT", changing: true
+//    implementation group: "com.github.liaoheng", name: "common-adapter", version: "0.0.6-SNAPSHOT", changing: true
     implementation 'com.github.liaoheng:common-core:0.0.6-SNAPSHOT'
     implementation 'com.github.liaoheng:common-adapter:0.0.6-SNAPSHOT'
 }
+//configurations.all {
+//  // check for updates every build
+//  resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+//}
 apply plugin: 'com.google.gms.google-services'

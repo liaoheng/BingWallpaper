@@ -280,7 +280,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                 case PREF_SET_WALLPAPER_LOG:
                     mPreferences.put(PREF_SET_WALLPAPER_LOG, mLogPreference.isChecked());
                     if (mLogPreference.isChecked()) {
-                        LogDebugFileUtils.get().init();
+                        LogDebugFileUtils.get().init(getActivity());
                         LogDebugFileUtils.get().open();
                     } else {
                         LogDebugFileUtils.get().clearFile();

@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
  * @version 2018-01-21 17:29
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class)
+@Config(constants = BuildConfig.class, sdk = 27)
 public class BingWallpaperUtilsTest extends BaseTest {
 
     @Test

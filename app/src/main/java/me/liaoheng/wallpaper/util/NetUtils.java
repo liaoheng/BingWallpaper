@@ -78,7 +78,7 @@ public class NetUtils {
         }
     }
 
-    public void init() {
+    public void init(Context context) {
         Retrofit.Builder factory = new Retrofit.Builder().baseUrl(Constants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create());
@@ -92,7 +92,7 @@ public class NetUtils {
 
         simpleBuilder.dispatcher(new Dispatcher()).addInterceptor(new LogInterceptor("NetUtils"));
         try {
-            File cacheFile = FileUtils.createCacheSDAndroidDirectory(Constants.HTTP_CACHE_DIR);
+            File cacheFile = FileUtils.getProjectSpaceCacheDirectory(context, Constants.HTTP_CACHE_DIR);
             simpleBuilder.cache(new Cache(cacheFile, Constants.HTTP_DISK_CACHE_SIZE));
         } catch (SystemException ignored) {
         }
@@ -213,7 +213,7 @@ public class NetUtils {
                         try {
                             String name = FilenameUtils.getName(url);
                             File p = new File(Environment.DIRECTORY_PICTURES, Common.getProjectName());
-                            File file = new File(FileUtils.getSDPath(), p.getAbsolutePath());
+                            File file = new File(FileUtils.getExternalStoragePath(), p.getAbsolutePath());
                             File outFile = FileUtils.createFile(file, name);
                             temp = GlideApp.with(context)
                                     .asFile()

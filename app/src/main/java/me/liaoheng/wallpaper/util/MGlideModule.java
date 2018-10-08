@@ -32,7 +32,7 @@ public class MGlideModule extends AppGlideModule {
     @Override
     public void applyOptions(@NonNull Context context, @NonNull GlideBuilder builder) {
         try {
-            File imgCache = FileUtils.createCacheSDAndroidDirectory(Constants.DISK_CACHE_DIR);
+            File imgCache = FileUtils.getProjectSpaceCacheDirectory(context, Constants.DISK_CACHE_DIR);
             builder.setDiskCache(new DiskLruCacheFactory(imgCache.getAbsolutePath(),
                     Constants.IMAGE_DISK_CACHE_SIZE));
         } catch (SystemException ignored) {

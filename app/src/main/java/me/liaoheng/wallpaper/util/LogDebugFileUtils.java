@@ -1,5 +1,6 @@
 package me.liaoheng.wallpaper.util;
 
+import android.content.Context;
 import android.os.Environment;
 import android.support.annotation.StringDef;
 import android.text.TextUtils;
@@ -58,8 +59,8 @@ public class LogDebugFileUtils {
         return instance;
     }
 
-    public void init() {
-        init("");
+    public void init(Context context) {
+        init(context, "");
     }
 
     public void init(File logFile) {
@@ -67,37 +68,20 @@ public class LogDebugFileUtils {
             return;
         }
         mLogFile = logFile;
-        L.Log.d(TAG, "init log file : %s ", mLogFile.getAbsoluteFile());
+        L.alog().d(TAG, "init log file : %s ", mLogFile.getAbsoluteFile());
     }
 
     public File getLogFile() {
         return mLogFile;
     }
 
-    public static File createFile(File path, String fileName) throws SystemException {
+    public void init(Context context, String fileName) {
         try {
-            File tempPath = new File(path, fileName);
-            if (!tempPath.exists()) {
-                if (!tempPath.createNewFile()) {
-                    throw new IOException(tempPath.getAbsolutePath());
-                } else {
-                    L.Log.d(TAG, "create file :" + tempPath.getAbsolutePath());
-                }
-            }
-            return tempPath;
-        } catch (IOException e) {
-            throw new SystemException("create file failure", e);
-        }
-    }
-
-    public void init(String fileName) {
-        try {
-            File log = FileUtils.createCacheSDAndroidDirectory("log");
+            File log = FileUtils.createProjectSpaceDir(context, "log");
             if (TextUtils.isEmpty(fileName)) {
                 fileName = DEFAULT_FILE_NAME;
             }
-            mLogFile = createFile(log, fileName);
-            L.Log.d(TAG, "init log file : %s ", mLogFile.getAbsoluteFile());
+            init(FileUtils.createFile(log, fileName));
         } catch (SystemException ignored) {
         }
     }
