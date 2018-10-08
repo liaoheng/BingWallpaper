@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -44,7 +43,6 @@ import org.joda.time.LocalTime;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
@@ -56,6 +54,7 @@ import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.ui.SettingsActivity;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -657,10 +656,19 @@ public class BingWallpaperUtils {
         return getGooglePlayServicesAvailableErrorString(getGooglePlayServicesAvailable(context));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public static void setBothWallpaper(Context context, File bitmap) throws IOException {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            WallpaperManager.getInstance(context)
+                    .setStream(FileUtils.openInputStream(bitmap), null, true,
+                            WallpaperManager.FLAG_SYSTEM | WallpaperManager.FLAG_LOCK);
+        } else {
+            setWallpaper(context, bitmap);
+        }
+    }
+
+    public static void setWallpaper(Context context, File bitmap) throws IOException {
         WallpaperManager.getInstance(context)
-                .setStream(FileUtils.openInputStream(bitmap), null, true, WallpaperManager.FLAG_SYSTEM | WallpaperManager.FLAG_LOCK);
+                .setStream(FileUtils.openInputStream(bitmap));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -678,12 +686,17 @@ public class BingWallpaperUtils {
     public static Observable<Object> clearCache(Context context) {
         return Observable.just(context)
                 .subscribeOn(Schedulers.io())
-                .map(new Func1<Context, Object>() {
+                .map(new Func1<Context, Context>() {
+                    @Override
+                    public Context call(Context context) {
+                        GlideApp.get(context).clearDiskCache();
+                        NetUtils.get().clearCache();
+                        return context;
+                    }
+                }).observeOn(AndroidSchedulers.mainThread()).map(new Func1<Context, Object>() {
                     @Override
                     public Object call(Context context) {
                         GlideApp.get(context).clearMemory();
-                        GlideApp.get(context).clearDiskCache();
-                        NetUtils.get().clearCache();
                         return null;
                     }
                 });

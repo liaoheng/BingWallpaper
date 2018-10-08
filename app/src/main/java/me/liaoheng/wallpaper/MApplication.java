@@ -55,7 +55,7 @@ public class MApplication extends Application {
 
             NotificationChannel gms = new NotificationChannel(
                     Constants.GMS_NOTIFICATION_CHANNEL,
-                    "GMS Notification",
+                    "Google Service Notification",
                     NotificationManager.IMPORTANCE_DEFAULT);
             manager.createNotificationChannel(gms);
         }

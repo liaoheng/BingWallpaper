@@ -2,5 +2,8 @@ apply from: rootProject.file('./gradle/dependencies.gradle')
 
 def supportVersion = '27.1.1'
 ext.minSdkVersion =21
+ext.targetSdkVersion = 28
+ext.compileSdkVersion = 28
+ext.buildToolsVersion= '28.0.2'
 ext.deps.put("palette_v7","com.android.support:palette-v7:$supportVersion")
 ext.deps.put("customtabs","com.android.support:customtabs:$supportVersion")

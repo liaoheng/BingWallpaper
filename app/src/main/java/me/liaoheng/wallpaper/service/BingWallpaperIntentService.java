@@ -2,7 +2,6 @@ package me.liaoheng.wallpaper.service;
 
 import android.app.IntentService;
 import android.app.Notification;
-import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -219,23 +218,18 @@ public class BingWallpaperIntentService extends IntentService {
             throw new IOException("download wallpaper failure");
         }
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            WallpaperManager.getInstance(getApplicationContext())
-                    .setStream(FileUtils.openInputStream(wallpaper));
+        if (ROM.getROM().isMiui()) {
+            MiuiHelper.setWallpaper(getApplicationContext(), setWallpaperType, wallpaper);
+        } else if (ROM.getROM().isEmui()) {
+            EmuiHelper.setWallpaper(getApplicationContext(), setWallpaperType, wallpaper);
         } else {
-            if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-                BingWallpaperUtils.setHomeScreenWallpaper(getApplicationContext(), wallpaper);
-            } else if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                if (ROM.getROM().isMiui()) {
-                    MiuiHelper.setLockScreenWallpaper(getApplicationContext(), wallpaper);
-                } else {
-                    BingWallpaperUtils.setLockScreenWallpaper(getApplicationContext(), wallpaper);
-                }
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                BingWallpaperUtils.setWallpaper(getApplicationContext(), wallpaper);
             } else {
-                if (ROM.getROM().isEmui()) {
-                    EmuiHelper.setBothWallpaper(getApplicationContext(), wallpaper);
-                } else if (ROM.getROM().isMiui()) {
-                    MiuiHelper.setBothWallpaper(getApplicationContext(), wallpaper);
+                if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
+                    BingWallpaperUtils.setHomeScreenWallpaper(getApplicationContext(), wallpaper);
+                } else if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
+                    BingWallpaperUtils.setLockScreenWallpaper(getApplicationContext(), wallpaper);
                 } else {
                     BingWallpaperUtils.setBothWallpaper(getApplicationContext(), wallpaper);
                 }

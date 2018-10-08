@@ -35,7 +35,6 @@ import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.ROM;
 import me.liaoheng.wallpaper.util.SettingTrayPreferences;
 import me.liaoheng.wallpaper.widget.TimePreference;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
 /**
@@ -131,7 +130,6 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                                         @Override
                                         public void onYes(DialogInterface dialogInterface) {
                                             BingWallpaperUtils.clearCache(getActivity())
-                                                    .observeOn(AndroidSchedulers.mainThread())
                                                     .subscribe(new Action1<Object>() {
                                                         @Override
                                                         public void call(Object o) {
@@ -189,7 +187,12 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             }
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                mModeTypeListPreference.setEnabled(false);
+                if (ROM.getROM().isMiui()) {
+                    mModeTypeListPreference.setSummary(BingWallpaperUtils.getAutoMode(getActivity()));
+                } else {
+                    ((PreferenceCategory) findPreference("pref_wallpaper_group")).removePreference(
+                            mModeTypeListPreference);
+                }
             } else {
                 mModeTypeListPreference.setSummary(BingWallpaperUtils.getAutoMode(getActivity()));
             }

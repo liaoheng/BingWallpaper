@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 
@@ -65,6 +64,24 @@ public class EmuiHelper {
             BingWallpaperUtils.setLockScreenWallpaper(context, bitmap);
         } catch (IOException e) {
             BingWallpaperUtils.setBothWallpaper(context, bitmap);
+        }
+    }
+
+    public static void setWallpaper(Context context, @Constants.setWallpaperMode int mode, File wallpaper)
+            throws Exception {
+        if (!ROM.getROM().isEmui()) {
+            return;
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            BingWallpaperUtils.setWallpaper(context, wallpaper);
+        } else {
+            if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
+                BingWallpaperUtils.setHomeScreenWallpaper(context, wallpaper);
+            } else if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
+                BingWallpaperUtils.setLockScreenWallpaper(context, wallpaper);
+            } else {
+                setBothWallpaper(context, wallpaper);
+            }
         }
     }
 

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="@string/pref_auto_update_wallpaper">
+    <PreferenceCategory
+            android:key="pref_wallpaper_group"
+            android:persistent="false"
+            android:title="@string/pref_auto_update_wallpaper">
         <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="pref_set_wallpaper_day_auto_update_only_wifi"
@@ -129,7 +132,7 @@
         <Preference
                 android:key="pref_privacy_policy"
                 android:persistent="false"
-                android:title="@string/privacy_policy" >
+                android:title="@string/privacy_policy">
             <intent
                     android:action="android.intent.action.VIEW"
                     android:data="https://github.com/liaoheng/BingWallpaper/blob/image/PRIVACY_POLICY.md" />

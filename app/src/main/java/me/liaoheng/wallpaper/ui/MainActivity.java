@@ -495,43 +495,19 @@ public class MainActivity extends BaseActivity
                                         mSetWallpaperActionMenu.setMenuButtonColorRipple(lightVibrantSwatch);
 
                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                            addActionButton(lightMutedSwatch, lightVibrantSwatch,
-                                                    getString(R.string.pref_set_wallpaper_auto_mode_home),
-                                                    R.drawable.ic_home_white_24dp, new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            setWallpaper(1);
-                                                            mSetWallpaperActionMenu.close(true);
-                                                        }
-                                                    });
-
-                                            addActionButton(lightMutedSwatch, lightVibrantSwatch,
-                                                    getString(R.string.pref_set_wallpaper_auto_mode_lock),
-                                                    R.drawable.ic_lock_white_24dp, new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            setWallpaper(2);
-                                                            mSetWallpaperActionMenu.close(true);
-                                                        }
-                                                    });
-
-                                            addActionButton(lightMutedSwatch, lightVibrantSwatch,
-                                                    getString(R.string.pref_set_wallpaper_auto_mode_both),
-                                                    R.drawable.ic_smartphone_white_24dp, new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            setWallpaper(0);
-                                                            mSetWallpaperActionMenu.close(true);
-                                                        }
-                                                    });
+                                            AddBothActionButton(lightMutedSwatch, lightVibrantSwatch);
                                         } else {
-                                            mSetWallpaperActionMenu.setOnMenuButtonClickListener(
-                                                    new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            setWallpaper(0);
-                                                        }
-                                                    });
+                                            if (ROM.getROM().isMiui()) {
+                                                AddBothActionButton(lightMutedSwatch, lightVibrantSwatch);
+                                            } else {
+                                                mSetWallpaperActionMenu.setOnMenuButtonClickListener(
+                                                        new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View v) {
+                                                                setWallpaper(0);
+                                                            }
+                                                        });
+                                            }
                                         }
 
                                         mSetWallpaperActionMenu.showMenu(true);
@@ -547,6 +523,38 @@ public class MainActivity extends BaseActivity
                     }
                 });
 
+    }
+
+    private void AddBothActionButton(int lightMutedSwatch, int lightVibrantSwatch) {
+        addActionButton(lightMutedSwatch, lightVibrantSwatch,
+                getString(R.string.pref_set_wallpaper_auto_mode_home),
+                R.drawable.ic_home_white_24dp, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setWallpaper(1);
+                        mSetWallpaperActionMenu.close(true);
+                    }
+                });
+
+        addActionButton(lightMutedSwatch, lightVibrantSwatch,
+                getString(R.string.pref_set_wallpaper_auto_mode_lock),
+                R.drawable.ic_lock_white_24dp, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setWallpaper(2);
+                        mSetWallpaperActionMenu.close(true);
+                    }
+                });
+
+        addActionButton(lightMutedSwatch, lightVibrantSwatch,
+                getString(R.string.pref_set_wallpaper_auto_mode_both),
+                R.drawable.ic_smartphone_white_24dp, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setWallpaper(0);
+                        mSetWallpaperActionMenu.close(true);
+                    }
+                });
     }
 
     private void addActionButton(@ColorInt int lightMutedSwatch, @ColorInt int lightVibrantSwatch, String text,
