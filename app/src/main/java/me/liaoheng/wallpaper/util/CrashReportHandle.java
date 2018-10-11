@@ -75,7 +75,7 @@ public class CrashReportHandle {
     }
 
     public static void collectException(Context context, String TAG, String msg, Throwable t) {
-        if (!BingWallpaperUtils.isCrashReport(context) && BuildConfig.DEBUG) {
+        if (!BingWallpaperUtils.isCrashReport(context) || BuildConfig.DEBUG) {
             return;
         }
         Crashlytics.log("TAG: " + TAG);

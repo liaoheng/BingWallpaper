@@ -1,6 +1,5 @@
 package me.liaoheng.wallpaper.util;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.WallpaperManager;
 import android.content.ComponentName;
@@ -10,11 +9,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.Browser;
 import android.provider.Settings;
@@ -25,8 +22,8 @@ import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
-import android.util.AndroidRuntimeException;
 
+import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.FileUtils;
@@ -45,7 +42,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.reflect.Method;
 import java.util.Locale;
 
 import me.liaoheng.wallpaper.BuildConfig;
@@ -348,73 +344,10 @@ public class BingWallpaperUtils {
     }
 
     public static int getNavigationBarHeight(Context context) {
-        if (hasNavigationBar(context)) {
+        if (DisplayUtils.hasNavigationBar(context)) {
             return DisplayUtils.getNavigationBarHeight(context);
         }
         return 0;
-    }
-
-    /**
-     * 判断是否存在虚拟导航栏
-     *
-     * @return false if physical, true if virtual
-     * @see <a href="https://stackoverflow.com/questions/16092431/check-for-navigation-bar">stackoverflow</a>
-     * @see <a href="https://windysha.github.io/2018/02/07/Android-APP%E9%80%82%E9%85%8D%E5%85%A8%E9%9D%A2%E5%B1%8F%E6%89%8B%E6%9C%BA%E7%9A%84%E6%8A%80%E6%9C%AF%E8%A6%81%E7%82%B9/">Android-APP适配全面屏手机的技术要点</a>
-     */
-    @SuppressWarnings("unchecked")
-    @SuppressLint("PrivateApi")
-    public static boolean isNavigationBar(Context context) {
-        boolean hasNavigationBar = false;
-        Resources resources = context.getResources();
-        int id = resources.getIdentifier("config_showNavigationBar", "bool", "android");
-        if (id > 0) {
-            hasNavigationBar = resources.getBoolean(id);
-        } else {    // Check for keys
-            try {
-                //反射获取SystemProperties类，并调用它的get方法
-                Class systemPropertiesClass = Class.forName("android.os.SystemProperties");
-                Method m = systemPropertiesClass.getMethod("get", String.class);
-                String navBarOverride = (String) m.invoke(systemPropertiesClass, "qemu.hw.mainkeys");
-                if ("1".equals(navBarOverride)) {
-                    hasNavigationBar = false;
-                } else if ("0".equals(navBarOverride)) {
-                    hasNavigationBar = true;
-                }
-            } catch (Exception ignored) {
-            }
-        }
-        return hasNavigationBar;
-    }
-
-    /**
-     * 判断设备是否存在NavigationBar
-     *
-     * @return true 存在, false 不存在
-     * @see <a href="https://windysha.github.io/2018/02/07/Android-APP%E9%80%82%E9%85%8D%E5%85%A8%E9%9D%A2%E5%B1%8F%E6%89%8B%E6%9C%BA%E7%9A%84%E6%8A%80%E6%9C%AF%E8%A6%81%E7%82%B9/">Android-APP适配全面屏手机的技术要点</a>
-     */
-    @SuppressLint("PrivateApi")
-    public static boolean hasNavigationBar(Context context) {
-        if (DisplayUtils.isEmulator()) {
-            return true;
-        }
-        try {
-            //1.通过WindowManagerGlobal获取windowManagerService
-            // 反射方法：IWindowManager windowManagerService = WindowManagerGlobal.getWindowManagerService();
-            Class<?> windowManagerGlobalClass = Class.forName("android.view.WindowManagerGlobal");
-            Method getWmServiceMethod = windowManagerGlobalClass.getDeclaredMethod("getWindowManagerService");
-            getWmServiceMethod.setAccessible(true);
-            //getWindowManagerService是静态方法，所以invoke null
-            Object iWindowManager = getWmServiceMethod.invoke(null);
-
-            //2.获取windowMangerService的hasNavigationBar方法返回值
-            // 反射方法：haveNav = windowManagerService.hasNavigationBar();
-            Class<?> iWindowManagerClass = iWindowManager.getClass();
-            Method hasNavBarMethod = iWindowManagerClass.getDeclaredMethod("hasNavigationBar");
-            hasNavBarMethod.setAccessible(true);
-            return (Boolean) hasNavBarMethod.invoke(iWindowManager);
-        } catch (Exception ignored) {
-            return isNavigationBar(context);
-        }
     }
 
     /**
@@ -439,35 +372,9 @@ public class BingWallpaperUtils {
      * doc</a>
      */
     public static void showIgnoreBatteryOptimizationSetting(Context context) {
-        if (context == null) {
-            return;
-        }
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
-            return;
-        }
-        Intent intent = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
-        if (intent.resolveActivity(context.getPackageManager()) != null) {
-            context.startActivity(intent);
-        } else {
+        if (!AppUtils.showIgnoreBatteryOptimizationSetting(context)) {
             UIUtils.showToast(context, "No support !");
         }
-    }
-
-    /**
-     * 判断应用是否在忽略电池优化中
-     *
-     * @see <a href="https://developer.android.com/reference/android/provider/Settings#ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS">android
-     * doc</a>
-     */
-    public static boolean isIgnoreBatteryOptimization(Context context) {
-        if (context == null) {
-            return true;
-        }
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
-            return true;
-        }
-        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        return powerManager == null || powerManager.isIgnoringBatteryOptimizations(context.getPackageName());
     }
 
     public static void setPhoneScreen(Activity context) {
@@ -486,36 +393,27 @@ public class BingWallpaperUtils {
      * @param latitude 纬度
      */
     public static void openMap(Context context, String longitude, String latitude) {
-        if (TextUtils.isEmpty(latitude) || TextUtils.isEmpty(longitude)) {
-            return;
-        }
-        Uri uri = Uri.parse("geo:" + latitude + "," + longitude);
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(uri);
-        if (intent.resolveActivity(context.getPackageManager()) == null) {
-            return;
-        }
-        context.startActivity(intent);
+        AppUtils.openMap(context,longitude,latitude);
     }
 
     public static void openBrowser(Context context, BingWallpaperImage image) {
         if (image == null) {
             return;
         }
-        try {
-            String url = image.getCopyrightlink();
-            if (TextUtils.isEmpty(url) || "javascript:void(0)".equals(url)) {
-                url = Constants.BASE_URL;
-            } else {
-                if (!ValidateUtils.isWebUrl(url)) {
-                    url = Constants.BASE_URL + url;
-                }
-                if (!ValidateUtils.isWebUrl(url)) {
-                    url = Constants.BASE_URL;
-                }
+        String url = image.getCopyrightlink();
+        if (TextUtils.isEmpty(url) || "javascript:void(0)".equals(url)) {
+            url = Constants.BASE_URL;
+        } else {
+            if (!ValidateUtils.isWebUrl(url)) {
+                url = Constants.BASE_URL + url;
             }
-            String locale = BingWallpaperUtils.getAutoLocale(context);
-            url = Utils.appendUrlParameter(url, "mkt", locale);
+            if (!ValidateUtils.isWebUrl(url)) {
+                url = Constants.BASE_URL;
+            }
+        }
+        String locale = BingWallpaperUtils.getAutoLocale(context);
+        url = Utils.appendUrlParameter(url, "mkt", locale);
+        try {
             CustomTabsIntent build = new CustomTabsIntent.Builder()
                     .setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary)).build();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
@@ -526,8 +424,9 @@ public class BingWallpaperUtils {
             headers.putString("Cookie", String.format(Constants.MKT_HEADER, locale));
             build.intent.putExtra(Browser.EXTRA_HEADERS, headers);
             build.launchUrl(context, Uri.parse(url));
-        } catch (AndroidRuntimeException e) {
-            UIUtils.showToast(context, context.getString(R.string.unable_open_url));
+        } catch (Exception ignore) {
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            //UIUtils.showToast(context, context.getString(R.string.unable_open_url));
         }
     }
 
@@ -537,9 +436,8 @@ public class BingWallpaperUtils {
                     .setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary))
                     .build()
                     .launchUrl(context, Uri.parse(url));
-        } catch (AndroidRuntimeException e) {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            context.startActivity(browserIntent);
+        } catch (Exception ignore) {
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
         }
     }
 
@@ -589,13 +487,10 @@ public class BingWallpaperUtils {
     }
 
     public static void sendFeedback(Context context) {
-        Intent emailIntent = new Intent(Intent.ACTION_SEND);
-        emailIntent.setType("message/rfc822");
         String to[] = { "liaohengcn@gmail.com" };
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, to);
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT,
-                context.getString(R.string.app_name) + " : " + context.getString(R.string.menu_main_feedback));
-        emailIntent.putExtra(Intent.EXTRA_TEXT, BingWallpaperUtils.getSystemInfo(context));
+        Intent emailIntent = AppUtils.sendEmail(to,
+                context.getString(R.string.app_name) + " : " + context.getString(R.string.menu_main_feedback),
+                BingWallpaperUtils.getSystemInfo(context));
 
         if (BingWallpaperUtils.isEnableLog(context)) {
             File logFile = LogDebugFileUtils.get().getLogFile();
@@ -626,7 +521,7 @@ public class BingWallpaperUtils {
                     return 2;
                 }
             }
-            //每天成功执行一次
+            //Run only once a day
             if (TasksUtils.isToDaysDoProvider(context, 1,
                     BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
                 BingWallpaperIntentService.start(context,
