@@ -10,6 +10,7 @@ import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +60,8 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
     public static final String PREF_SET_WALLPAPER_AUTO_MODE = "pref_set_wallpaper_auto_mode";
     public static final String PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE = "pref_set_wallpaper_day_fully_automatic_update";
     public static final String PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_TYPE = "pref_set_wallpaper_day_fully_automatic_update_type";
+    public static final String PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_NOTIFICATION = "pref_set_wallpaper_day_fully_automatic_update_notification";
+    public static final String PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_INTERVAL = "pref_set_wallpaper_day_fully_automatic_update_interval";
     public static final String PREF_SET_WALLPAPER_DAY_AUTO_UPDATE = "pref_set_wallpaper_day_auto_update";
     public static final String PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME = "pref_set_wallpaper_day_auto_update_time";
     public static final String PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI = "pref_set_wallpaper_day_auto_update_only_wifi";
@@ -88,6 +91,8 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
         private TimePreference mTimePreference;
         private CheckBoxPreference mDayUpdatePreference;
         private CheckBoxPreference mAutoUpdatePreference;
+        private CheckBoxPreference mAutoUpdateNotificationPreference;
+        private ListPreference mAutoUpdateIntervalPreference;
         private CheckBoxPreference mLogPreference;
         private CheckBoxPreference mCrashPreference;
         private ListPreference mAutoUpdateTypeListPreference;
@@ -143,6 +148,19 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                         }
                     });
 
+            Preference translation = findPreference("pref_translation");
+            String translator = BingWallpaperUtils.getTranslator(getActivity());
+            if (!TextUtils.isEmpty(translator)) {
+                translation.setSummary(translator);
+            }
+            translation.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    BingWallpaperUtils.openBrowser(getActivity(), "https://crowdin.com/project/starth-bing-wallpaper");
+                    return false;
+                }
+            });
+
             mCountryListPreference = (ListPreference) findPreference(
                     PREF_COUNTRY);
             mResolutionListPreference = (ListPreference) findPreference(
@@ -160,6 +178,10 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
 
             mOnlyWifiPreference = (CheckBoxPreference) findPreference(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI);
             mAutoUpdatePreference = (CheckBoxPreference) findPreference(PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE);
+            mAutoUpdateIntervalPreference = (ListPreference) findPreference(
+                    PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_INTERVAL);
+            mAutoUpdateNotificationPreference = (CheckBoxPreference) findPreference(
+                    PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_NOTIFICATION);
             mMIuiLockScreenPreference = (CheckBoxPreference) findPreference(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER);
             mLogPreference = (CheckBoxPreference) findPreference(PREF_SET_WALLPAPER_LOG);
             mCrashPreference = (CheckBoxPreference) findPreference(PREF_CRASH_REPORT);
@@ -203,6 +225,8 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
 
             mAutoUpdateTypeListPreference.setSummary(BingWallpaperUtils.getAutomaticUpdateTypeName(getActivity()));
 
+            updateCheckTime();
+
             LocalTime localTime = BingWallpaperUtils.getDayUpdateTime(getActivity());
 
             if (localTime != null) {
@@ -214,6 +238,11 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                 mDayUpdatePreference.setChecked(false);
             }
             mTimePreference.setEnabled(mDayUpdatePreference.isChecked());
+        }
+
+        private void updateCheckTime() {
+            mAutoUpdatePreference.setSummary(getString(R.string.pref_auto_update_check_time,
+                    BingWallpaperUtils.getAutomaticUpdateInterval(getActivity())));
         }
 
         @Override
@@ -268,6 +297,15 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     }
                     mTimePreference.setEnabled(mDayUpdatePreference.isChecked());
                     mPreferences.put(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE, mDayUpdatePreference.isChecked());
+                    break;
+                case PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_NOTIFICATION:
+                    mPreferences.put(PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_NOTIFICATION,
+                            mAutoUpdateNotificationPreference.isChecked());
+                    break;
+                case PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_INTERVAL:
+                    mPreferences.put(PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_INTERVAL,
+                            mAutoUpdateIntervalPreference.getValue());
+                    updateCheckTime();
                     break;
                 case PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME:
                     if (mTimePreference.isEnabled()) {

@@ -482,13 +482,19 @@ public class MainActivity extends BaseActivity
                                     @Override
                                     public void onGenerated(@NonNull Palette palette) {
 
-                                        int lightMutedSwatch = palette.getMutedColor(ContextCompat
-                                                .getColor(getActivity(), R.color.colorPrimaryDark));
+                                        int defMuted = ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark);
+                                        int defVibrant = ContextCompat.getColor(getActivity(), R.color.colorAccent);
 
-                                        int lightVibrantSwatch = palette.getVibrantColor(ContextCompat
-                                                .getColor(getActivity(), R.color.colorAccent));
+                                        int lightMutedSwatch = palette.getMutedColor(defMuted);
+                                        int lightVibrantSwatch = palette.getVibrantColor(defVibrant);
 
                                         mSetWallpaperActionMenu.removeAllMenuButtons();
+
+                                        if (lightMutedSwatch == defMuted) {
+                                            if (lightVibrantSwatch != defVibrant) {
+                                                lightMutedSwatch = lightVibrantSwatch;
+                                            }
+                                        }
 
                                         mSetWallpaperActionMenu.setMenuButtonColorNormal(lightMutedSwatch);
                                         mSetWallpaperActionMenu.setMenuButtonColorPressed(lightMutedSwatch);

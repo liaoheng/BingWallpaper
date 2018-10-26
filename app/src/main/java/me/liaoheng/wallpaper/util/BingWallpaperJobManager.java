@@ -63,7 +63,8 @@ public class BingWallpaperJobManager {
 
     public static boolean enabled(Context context) {
         disabled(context);
-        boolean ret = enabled(context, Constants.JOB_SCHEDULER_PERIODIC);
+        boolean ret = enabled(context,
+                TimeUnit.HOURS.toSeconds(BingWallpaperUtils.getAutomaticUpdateInterval(context)));
         if (!ret) {
             UIUtils.showToast(context, context.getString(R.string.enable_job_error));
         }
@@ -152,6 +153,9 @@ public class BingWallpaperJobManager {
         return success;
     }
 
+    /**
+     * @param time seconds
+     */
     public static boolean enabled(Context context, long time) {
         try {
             int type = BingWallpaperUtils.getAutomaticUpdateType(context);

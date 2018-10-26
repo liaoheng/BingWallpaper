@@ -2,6 +2,7 @@ package me.liaoheng.wallpaper.service;
 
 import android.app.IntentService;
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -26,6 +27,7 @@ import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
+import me.liaoheng.wallpaper.ui.MainActivity;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
@@ -194,6 +196,25 @@ public class BingWallpaperIntentService extends IntentService {
 
         sendSetWallpaperBroadcast(BingWallpaperState.SUCCESS);
         if (isBackground) {
+
+            if (BingWallpaperUtils.isAutomaticUpdateNotification(getApplicationContext())) {
+                Intent resultIntent = new Intent(this, MainActivity.class);
+                PendingIntent resultPendingIntent =
+                        PendingIntent.getActivity(getApplicationContext(), 12, resultIntent,
+                                PendingIntent.FLAG_UPDATE_CURRENT);
+
+                Notification notification = new NotificationCompat.Builder(getApplicationContext(),
+                        Constants.FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL).setSmallIcon(
+                        R.drawable.ic_notification)
+                        .setAutoCancel(true)
+                        .setContentText(bingWallpaperImage.getCopyright())
+                        .setContentTitle(getText(R.string.set_wallpaper_success))
+                        .setContentIntent(resultPendingIntent).build();
+
+                NotificationManagerCompat manager = NotificationManagerCompat.from(this);
+                manager.notify(12, notification);
+            }
+
             //标记成功，每天只在后台执行一次
             if (TasksUtils.isToDaysDoProvider(getApplicationContext(), 1, FLAG_SET_WALLPAPER_STATE)) {
                 L.Log.i(TAG, "Today markDone");

@@ -32,10 +32,15 @@
     <string name="pref_update_only_on_wifi">Wi-Fi only</string>
     <string name="pref_auto_update_everyday">Daily automatic update</string>
     <string name="pref_auto_update_check_every_hour">Check every three hours</string>
+    <string name="pref_auto_update_check_time">Check every %1$d hours</string>
+    <string name="pref_auto_update_everyday_notification">Daily automatic update notification</string>
+    <string name="pref_auto_update_everyday_notification_note">Notification after successful automatic update in the background</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type">Choose daily automatic update running mode</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_auto">Auto(Priority Google Service)</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_system">Android System</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_service">Daemon service</string>
+    <string name="pref_set_wallpaper_day_fully_automatic_update_interval">Choose daily automatic update check interval</string>
+    <string name="pref_set_wallpaper_day_fully_automatic_update_interval_note">Unit hours, please reset after change</string>
     <string name="pref_alarm_update_wallpaper_everyday">Daily timer update</string>
     <string name="pref_alarm_update_wallpaper_time">Set update time</string>
     <string name="pref_not_set_time">No time</string>

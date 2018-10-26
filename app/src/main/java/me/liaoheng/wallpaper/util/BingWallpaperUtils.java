@@ -276,6 +276,18 @@ public class BingWallpaperUtils {
         return names[type];
     }
 
+    public static boolean isAutomaticUpdateNotification(Context context) {
+        return SettingTrayPreferences.get(context)
+                .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_NOTIFICATION, false);
+    }
+
+    public static int getAutomaticUpdateInterval(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        return Integer.parseInt(sharedPreferences
+                .getString(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_INTERVAL, "3"));
+    }
+
     public static boolean isMiuiLockScreenSupport(Context context) {
         return SettingTrayPreferences.get(context)
                 .getBoolean(SettingsActivity.PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, false);
@@ -392,8 +404,9 @@ public class BingWallpaperUtils {
      * @param longitude 经度
      * @param latitude 纬度
      */
+    @Deprecated
     public static void openMap(Context context, String longitude, String latitude) {
-        AppUtils.openMap(context,longitude,latitude);
+        AppUtils.openMap(context, longitude, latitude);
     }
 
     public static void openBrowser(Context context, BingWallpaperImage image) {
@@ -425,8 +438,7 @@ public class BingWallpaperUtils {
             build.intent.putExtra(Browser.EXTRA_HEADERS, headers);
             build.launchUrl(context, Uri.parse(url));
         } catch (Exception ignore) {
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-            //UIUtils.showToast(context, context.getString(R.string.unable_open_url));
+            startBrowser(context, url);
         }
     }
 
@@ -437,7 +449,19 @@ public class BingWallpaperUtils {
                     .build()
                     .launchUrl(context, Uri.parse(url));
         } catch (Exception ignore) {
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            startBrowser(context, url);
+        }
+    }
+
+    public static void startBrowser(Context context, String url) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            if (intent.resolveActivity(context.getPackageManager()) == null) {
+                throw new IllegalArgumentException("Unknown component");
+            }
+            context.startActivity(intent);
+        } catch (Exception ignore) {
+            UIUtils.showToast(context, context.getString(R.string.unable_open_url));
         }
     }
 
@@ -454,9 +478,10 @@ public class BingWallpaperUtils {
         boolean alarm = isAlarm(context);
         String alarmTime = getAlarmTime(context);
         String autoSetMode = getAutoMode(context);
+        int interval = getAutomaticUpdateInterval(context);
 
         return "feedback info ------------------------- \n"
-                + " sdk: "
+                + "sdk: "
                 + sdk
                 + " device: "
                 + device
@@ -482,6 +507,8 @@ public class BingWallpaperUtils {
                 + alarmTime
                 + " autoSetMode: "
                 + autoSetMode
+                + " interval: "
+                + interval
                 + "\n"
                 + "feedback info ------------------------- \n";
     }
@@ -595,5 +622,13 @@ public class BingWallpaperUtils {
                         return null;
                     }
                 });
+    }
+
+    public static String getTranslator(Context context) {
+        Locale locale = getLocale(context);
+        if (locale.getLanguage().equals(new Locale("pl").getLanguage())) {
+            return "Translator : @dekar16";
+        }
+        return "";
     }
 }
