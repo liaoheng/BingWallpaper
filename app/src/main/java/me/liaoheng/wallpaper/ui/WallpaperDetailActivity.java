@@ -122,13 +122,13 @@ public class WallpaperDetailActivity extends BaseActivity {
                     @Override
                     public void onYes(BingWallpaperState bingWallpaperState) {
                         dismissProgressDialog();
-                        UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_success));
+                        UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_success);
                     }
 
                     @Override
                     public void onNo(BingWallpaperState bingWallpaperState) {
                         dismissProgressDialog();
-                        UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_failure));
+                        UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_failure);
                     }
                 });
         registerReceiver(mSetWallpaperStateBroadcastReceiver,
@@ -381,7 +381,7 @@ public class WallpaperDetailActivity extends BaseActivity {
 
             @Override
             public void onSuccess(File file) {
-                UIUtils.showToast(getApplicationContext(), getString(R.string.alert_save_wallpaper_success));
+                UIUtils.showToast(getApplicationContext(), R.string.alert_save_wallpaper_success);
             }
 
             @Override
@@ -399,7 +399,7 @@ public class WallpaperDetailActivity extends BaseActivity {
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 saveWallpaper();
             } else {
-                UIUtils.showToast(this, "no permission");
+                UIUtils.showToast(getApplicationContext(), "no permission");
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

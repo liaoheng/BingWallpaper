@@ -90,7 +90,7 @@ public class NetUtils {
         Dispatcher dispatcher = new Dispatcher(threadPoolExecutor);
         mSingleRetrofit = factory.client(simpleBuilder.dispatcher(dispatcher).build()).build();
 
-        simpleBuilder.dispatcher(new Dispatcher()).addInterceptor(new LogInterceptor("NetUtils"));
+        simpleBuilder.dispatcher(new Dispatcher()).addNetworkInterceptor(new LogInterceptor("NetUtils"));
         try {
             File cacheFile = FileUtils.getProjectSpaceCacheDirectory(context, Constants.HTTP_CACHE_DIR);
             simpleBuilder.cache(new Cache(cacheFile, Constants.HTTP_DISK_CACHE_SIZE));

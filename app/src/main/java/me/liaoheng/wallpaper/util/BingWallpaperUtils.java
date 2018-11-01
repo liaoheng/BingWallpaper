@@ -332,7 +332,7 @@ public class BingWallpaperUtils {
             @Constants.setWallpaperMode final int mode,
             @Nullable final Callback4<Boolean> callback) {
         if (!NetworkUtils.isConnectedOrConnecting(context)) {
-            UIUtils.showToast(context, context.getString(R.string.network_unavailable));
+            BingWallpaperUtils.showToast(context, R.string.network_unavailable);
             return;
         }
         // use mobile network show alert
@@ -385,7 +385,7 @@ public class BingWallpaperUtils {
      */
     public static void showIgnoreBatteryOptimizationSetting(Context context) {
         if (!AppUtils.showIgnoreBatteryOptimizationSetting(context)) {
-            UIUtils.showToast(context, "No support !");
+            BingWallpaperUtils.showToast(context, "No support !");
         }
     }
 
@@ -461,7 +461,7 @@ public class BingWallpaperUtils {
             }
             context.startActivity(intent);
         } catch (Exception ignore) {
-            UIUtils.showToast(context, context.getString(R.string.unable_open_url));
+            BingWallpaperUtils.showToast(context, R.string.unable_open_url);
         }
     }
 
@@ -534,7 +534,7 @@ public class BingWallpaperUtils {
         }
 
         if (emailIntent.resolveActivity(context.getPackageManager()) == null) {
-            UIUtils.showToast(context, "No support !");
+            BingWallpaperUtils.showToast(context, "No support !");
             return;
         }
 
@@ -630,5 +630,13 @@ public class BingWallpaperUtils {
             return "Translator : @dekar16";
         }
         return "";
+    }
+
+    public static void showToast(Context context, String hint) {
+        UIUtils.showToast(context.getApplicationContext(), hint);
+    }
+
+    public static void showToast(Context context, int hint) {
+        UIUtils.showToast(context.getApplicationContext(), hint);
     }
 }

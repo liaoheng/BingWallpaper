@@ -30,7 +30,7 @@ public class ShortcutActivity extends Activity {
             Toast.makeText(getApplicationContext(), getString(R.string.set_wallpaper_running), Toast.LENGTH_SHORT)
                     .show();
         } else {
-            UIUtils.showToast(getApplicationContext(), getString(R.string.network_unavailable));
+            UIUtils.showToast(getApplicationContext(), R.string.network_unavailable);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             getSystemService(ShortcutManager.class).reportShortcutUsed("toggle");

@@ -31,7 +31,9 @@ public class CrashReportHandle {
 
     public static void enable(Context context) {
         if (!BuildConfig.DEBUG) {
-            Fabric.with(context, new Crashlytics());
+            if (!Fabric.isInitialized()) {
+                Fabric.with(context, new Crashlytics());
+            }
             FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(true);
         }
     }

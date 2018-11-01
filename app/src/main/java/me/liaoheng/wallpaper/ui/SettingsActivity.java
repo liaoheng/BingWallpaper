@@ -138,7 +138,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                                                     .subscribe(new Action1<Object>() {
                                                         @Override
                                                         public void call(Object o) {
-                                                            UIUtils.showToast(getActivity(),
+                                                            BingWallpaperUtils.showToast(getActivity(),
                                                                     getString(R.string.pref_clear_cache_success));
                                                         }
                                                     });
@@ -197,7 +197,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                                 mPreferences.put(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, true);
                             } else {
                                 mMIuiLockScreenPreference.setChecked(false);
-                                UIUtils.showToast(getActivity(), R.string.unable_root_permission);
+                                BingWallpaperUtils.showToast(getActivity(), R.string.unable_root_permission);
                             }
                         } else {
                             mPreferences.put(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, false);

@@ -2,10 +2,6 @@ package me.liaoheng.wallpaper.ui;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -19,7 +15,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.graphics.Palette;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -64,6 +59,7 @@ import me.liaoheng.wallpaper.util.EmuiHelper;
 import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.ROM;
 import me.liaoheng.wallpaper.util.TasksUtils;
+import me.liaoheng.wallpaper.widget.FeedbackDialog;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -190,33 +186,7 @@ public class MainActivity extends BaseActivity
             showBottomView();
         }
 
-        mFeedbackDialog = new AlertDialog.Builder(getActivity()).setMessage(R.string.menu_main_feedback)
-                .setPositiveButton(
-                        "E-Mail", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                BingWallpaperUtils.sendFeedback(getActivity());
-                            }
-                        })
-                .setNegativeButton("Github", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        BingWallpaperUtils.openBrowser(getActivity(),
-                                "https://github.com/liaoheng/BingWallpaper/issues");
-                    }
-                })
-                .setNeutralButton(android.R.string.copy, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ClipboardManager cmb = (ClipboardManager) getActivity().getSystemService(
-                                Context.CLIPBOARD_SERVICE);
-                        if (cmb != null) {
-                            String info = BingWallpaperUtils.getSystemInfo(getActivity());
-                            cmb.setPrimaryClip(ClipData.newPlainText("feedback info", info));
-                        }
-                    }
-                })
-                .create();
+        mFeedbackDialog = FeedbackDialog.create(this);
 
         mNavigationView.setNavigationItemSelectedListener(this);
 
@@ -245,13 +215,13 @@ public class MainActivity extends BaseActivity
                     @Override
                     public void onYes(BingWallpaperState bingWallpaperState) {
                         dismissProgressDialog();
-                        UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_success));
+                        UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_success);
                     }
 
                     @Override
                     public void onNo(BingWallpaperState bingWallpaperState) {
                         dismissProgressDialog();
-                        UIUtils.showToast(getApplicationContext(), getString(R.string.set_wallpaper_failure));
+                        UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_failure);
                     }
                 });
 
@@ -262,7 +232,7 @@ public class MainActivity extends BaseActivity
             @Override
             public void onRefresh() {
                 if (isRun) {
-                    UIUtils.showToast(getActivity(), getString(R.string.set_wallpaper_running));
+                    UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_running);
                 } else {
                     getBingWallpaper();
                 }
@@ -350,7 +320,7 @@ public class MainActivity extends BaseActivity
      */
     private void setWallpaper(int type) {
         if (isRun) {
-            UIUtils.showToast(this, getString(R.string.set_wallpaper_running));
+            UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_running);
             return;
         }
         if (mCurBingWallpaperImage == null) {

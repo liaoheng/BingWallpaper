@@ -66,7 +66,7 @@ public class BingWallpaperJobManager {
         boolean ret = enabled(context,
                 TimeUnit.HOURS.toSeconds(BingWallpaperUtils.getAutomaticUpdateInterval(context)));
         if (!ret) {
-            UIUtils.showToast(context, context.getString(R.string.enable_job_error));
+            BingWallpaperUtils.showToast(context, R.string.enable_job_error);
         }
         return ret;
     }
