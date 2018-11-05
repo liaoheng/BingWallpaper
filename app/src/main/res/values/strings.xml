@@ -60,8 +60,7 @@
     <string name="pref_log_file">Enable action Log</string>
     <string name="pref_set_miui_lock_screen_wallpaper">MIUI lock screen support</string>
     <string name="pref_set_miui_lock_screen_wallpaper_note">Need root permission, please use cautious</string>
-    <string name="pref_crash_report">Crash report</string>
-    <string name="pref_crash_report_note">Used to collect crash reports</string>
+    <string name="pref_crash_report">Usage statistics and crash reports</string>
     <string name="pref_version">Version</string>
     <string name="pref_intro">Open intro</string>
 

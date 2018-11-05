@@ -1,5 +1,6 @@
 package me.liaoheng.wallpaper.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -29,9 +30,6 @@ import com.github.liaoheng.common.util.Callback2;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 import com.github.liaoheng.common.util.ValidateUtils;
-
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 
 import java.util.List;
 
@@ -154,11 +152,18 @@ public class WallpaperHistoryListActivity extends BaseActivity {
             ButterKnife.bind(this, itemView);
         }
 
+        @SuppressLint("SetTextI18n")
         @Override
         public void onHandle(final BingWallpaperImage item, int position) {
             if (!TextUtils.isEmpty(item.getEnddate())) {
-                DateTime dateTime = DateTime.parse(item.getEnddate(), DateTimeFormat.forPattern("YYYYMMdd"));
-                mDate.setText(dateTime.toString("MM/dd", BingWallpaperUtils.getLocale(getContext())));
+                String endDate = item.getEnddate();// YYYYMMDD
+                try {
+                    String m = endDate.substring(4, 6);
+                    String d = endDate.substring(6, 8);
+                    mDate.setText(m + "/" + d);
+                } catch (Exception e) {
+                    mDate.setText(endDate);
+                }
             }
 
             itemView.setOnClickListener(new View.OnClickListener() {

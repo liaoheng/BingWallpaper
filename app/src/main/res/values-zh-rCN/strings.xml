@@ -60,8 +60,7 @@
     <string name="pref_log_file">启用活动日志</string>
     <string name="pref_set_miui_lock_screen_wallpaper">MIUI锁定屏幕支持</string>
     <string name="pref_set_miui_lock_screen_wallpaper_note">需要Root权限，请谨慎使用</string>
-    <string name="pref_crash_report">崩溃报告</string>
-    <string name="pref_crash_report_note">用于收集崩溃报告</string>
+    <string name="pref_crash_report">情况统计信息和崩溃报告</string>
     <string name="pref_version">版本</string>
     <string name="pref_intro">打开引导页</string>
 
