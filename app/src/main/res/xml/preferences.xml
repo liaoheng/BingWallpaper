@@ -107,7 +107,6 @@
         <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="pref_crash_report"
-                android:summary="@string/pref_crash_report_note"
                 android:title="@string/pref_crash_report"
                 android:widgetLayout="@layout/mp_preference_switch" />
     </PreferenceCategory>
