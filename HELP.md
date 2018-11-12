@@ -3,7 +3,7 @@
 
 ## FAQ
 
-### Use `Daily automatic update` option, it not works fine. 
+### Use `Daily automatic update` or `Daily timer update` option, it not works fine. 
 #### 1. Can try adding a desktop widget.
 #### 2. Added to the battery optimization white list.
   - **AOSP** System, Open app settings, Follow the steps below:
@@ -31,7 +31,6 @@
       5. <img alt='emui_3' src='https://raw.githubusercontent.com/liaoheng/BingWallpaper/image/emui_3.png' width='300'/>
 
 #### 3. Can try choose `Android System` or `Daemon service` option at `Running mode`.
-#### 4. The above is not works fine，try use `Daily update timer` option.
 
 ## Feedback
 
