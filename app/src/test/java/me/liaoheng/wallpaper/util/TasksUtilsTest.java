@@ -7,7 +7,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import me.liaoheng.wallpaper.BaseTest;
-import me.liaoheng.wallpaper.BuildConfig;
+import me.liaoheng.wallpaper.TestApplication;
 
 import static org.junit.Assert.assertTrue;
 
@@ -16,7 +16,7 @@ import static org.junit.Assert.assertTrue;
  * @version 2018-01-21 16:58
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 27)
+@Config(application = TestApplication.class)
 public class TasksUtilsTest extends BaseTest {
     @Test
     public void isToDaysDoTest() {

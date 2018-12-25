@@ -1,5 +1,7 @@
 package me.liaoheng.wallpaper;
 
+import android.util.Log;
+
 import org.junit.Before;
 import org.robolectric.shadows.ShadowLog;
 
@@ -17,6 +19,6 @@ public class BaseTest {
     }
 
     public void log(String msg, Object... o) {
-        ShadowLog.d(TAG, String.format(msg, o));
+        Log.d(TAG, String.format(msg, o));
     }
 }
