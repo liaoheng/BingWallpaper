@@ -1,5 +1,6 @@
 package me.liaoheng.wallpaper.ui;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -8,8 +9,6 @@ import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +24,9 @@ import com.github.liaoheng.common.util.UIUtils;
 
 import org.joda.time.LocalTime;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import io.reactivex.functions.Consumer;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.service.AutoSetWallpaperBroadcastReceiver;
 import me.liaoheng.wallpaper.util.BingWallpaperAlarmManager;
@@ -36,7 +38,6 @@ import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.ROM;
 import me.liaoheng.wallpaper.util.SettingTrayPreferences;
 import me.liaoheng.wallpaper.widget.TimePreference;
-import rx.functions.Action1;
 
 /**
  * @author liaoheng
@@ -132,12 +133,13 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                         public boolean onPreferenceClick(Preference preference) {
                             UIUtils.showYNAlertDialog(getActivity(), getString(R.string.pref_clear_cache) + "?",
                                     new Callback4.EmptyCallback<DialogInterface>() {
+                                        @SuppressLint("CheckResult")
                                         @Override
                                         public void onYes(DialogInterface dialogInterface) {
                                             BingWallpaperUtils.clearCache(getActivity())
-                                                    .subscribe(new Action1<Object>() {
+                                                    .subscribe(new Consumer<Object>() {
                                                         @Override
-                                                        public void call(Object o) {
+                                                        public void accept(Object o) throws Exception {
                                                             BingWallpaperUtils.showToast(getActivity(),
                                                                     getString(R.string.pref_clear_cache_success));
                                                         }
@@ -318,7 +320,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                 case PREF_SET_WALLPAPER_LOG:
                     mPreferences.put(PREF_SET_WALLPAPER_LOG, mLogPreference.isChecked());
                     if (mLogPreference.isChecked()) {
-                        LogDebugFileUtils.get().init(getActivity());
+                        LogDebugFileUtils.init(getActivity());
                         LogDebugFileUtils.get().open();
                     } else {
                         LogDebugFileUtils.get().clearFile();

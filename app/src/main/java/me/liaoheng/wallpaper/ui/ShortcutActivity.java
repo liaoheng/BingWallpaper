@@ -4,11 +4,11 @@ import android.app.Activity;
 import android.content.pm.ShortcutManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import com.github.liaoheng.common.util.UIUtils;
 
+import androidx.annotation.Nullable;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;

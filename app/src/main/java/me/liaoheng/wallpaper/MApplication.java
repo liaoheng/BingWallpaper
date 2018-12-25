@@ -27,7 +27,7 @@ public class MApplication extends Application {
         Common.init(this, Constants.PROJECT_NAME, BuildConfig.DEBUG);
         TasksUtils.init(this);
         if (BingWallpaperUtils.isEnableLog(this)) {
-            LogDebugFileUtils.get().init(getApplicationContext());
+            LogDebugFileUtils.init(getApplicationContext());
             LogDebugFileUtils.get().open();
         }
         NetUtils.get().init(getApplicationContext());

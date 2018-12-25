@@ -4,22 +4,22 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
 
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.Utils;
 
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.TasksUtils;
-import rx.Observable;
-import rx.Subscription;
-import rx.functions.Action1;
 
 /**
  * 守护进程服务
@@ -36,12 +36,12 @@ public class WallpaperDaemonService extends Service {
         return null;
     }
 
-    private Subscription action;
+    private Disposable action;
     private long startTime;
 
     @Override
     public void onDestroy() {
-        Utils.unsubscribe(action);
+        Utils.dispose(action);
         action = null;
         stopForeground(true);
         super.onDestroy();
@@ -66,10 +66,10 @@ public class WallpaperDaemonService extends Service {
         startForeground(0x112, notification);
 
         action = Observable.interval(0, 2, TimeUnit.MINUTES)
-                .subscribe(new Action1<Long>() {
+                .subscribe(new Consumer<Long>() {
 
                     @Override
-                    public void call(Long aLong) {
+                    public void accept(Long aLong) throws Exception {
                         startTime += TimeUnit.MINUTES.toSeconds(2);
                         L.alog().d(TAG, " running...  " + startTime);
                         if (startTime >= time) {

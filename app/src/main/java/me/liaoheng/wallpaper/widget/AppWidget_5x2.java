@@ -9,14 +9,14 @@ import android.widget.RemoteViews;
 
 import com.github.liaoheng.common.util.L;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 
 /**
  * @author liaoheng
@@ -56,10 +56,10 @@ public class AppWidget_5x2 extends BaseAppWidget {
             BingWallpaperNetworkClient.getCoverStory()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            new Action1<BingWallpaperCoverStory>() {
+                            new Consumer<BingWallpaperCoverStory>() {
 
                                 @Override
-                                public void call(BingWallpaperCoverStory bingWallpaperCoverStory) {
+                                public void accept(BingWallpaperCoverStory bingWallpaperCoverStory) throws Exception {
                                     remoteViews.setTextViewText(R.id.app_widget_title,
                                             bingWallpaperCoverStory.getTitle());
                                     remoteViews.setTextViewText(R.id.app_widget_content,
@@ -68,9 +68,9 @@ public class AppWidget_5x2 extends BaseAppWidget {
 
                                     update(context, AppWidget_5x2.class, remoteViews);
                                 }
-                            }, new Action1<Throwable>() {
+                            }, new Consumer<Throwable>() {
                                 @Override
-                                public void call(Throwable throwable) {
+                                public void accept(Throwable throwable) throws Exception {
                                     remoteViews.setTextViewText(R.id.app_widget_title, image.getCopyright());
                                     remoteViews.setTextViewText(R.id.app_widget_content, "");
                                     update(context, AppWidget_5x2.class, remoteViews);

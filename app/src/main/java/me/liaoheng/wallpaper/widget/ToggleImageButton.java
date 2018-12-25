@@ -3,12 +3,12 @@ package me.liaoheng.wallpaper.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.support.v7.widget.AppCompatImageButton;
 import android.util.AttributeSet;
 import android.widget.Checkable;
 
 import com.github.liaoheng.common.core.OnCheckedChangeListener;
 
+import androidx.appcompat.widget.AppCompatImageButton;
 import me.liaoheng.wallpaper.R;
 
 /**

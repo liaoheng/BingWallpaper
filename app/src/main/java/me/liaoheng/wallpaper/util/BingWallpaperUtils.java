@@ -15,12 +15,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Browser;
 import android.provider.Settings;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.customtabs.CustomTabsIntent;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 
 import com.github.liaoheng.common.util.AppUtils;
@@ -44,15 +38,21 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.ui.SettingsActivity;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * @author liaoheng
@@ -398,17 +398,6 @@ public class BingWallpaperUtils {
         }
     }
 
-    /**
-     * open map application
-     *
-     * @param longitude 经度
-     * @param latitude 纬度
-     */
-    @Deprecated
-    public static void openMap(Context context, String longitude, String latitude) {
-        AppUtils.openMap(context, longitude, latitude);
-    }
-
     public static void openBrowser(Context context, BingWallpaperImage image) {
         if (image == null) {
             return;
@@ -605,19 +594,19 @@ public class BingWallpaperUtils {
                 .setStream(FileUtils.openInputStream(bitmap), null, true, WallpaperManager.FLAG_SYSTEM);
     }
 
-    public static Observable<Object> clearCache(Context context) {
+    public static Observable<Object> clearCache(final Context context) {
         return Observable.just(context)
                 .subscribeOn(Schedulers.io())
-                .map(new Func1<Context, Context>() {
+                .map(new Function<Context, Context>() {
                     @Override
-                    public Context call(Context context) {
+                    public Context apply(Context context) throws Exception {
                         GlideApp.get(context).clearDiskCache();
                         NetUtils.get().clearCache();
                         return context;
                     }
-                }).observeOn(AndroidSchedulers.mainThread()).map(new Func1<Context, Object>() {
+                }).observeOn(AndroidSchedulers.mainThread()).map(new Function<Context, Object>() {
                     @Override
-                    public Object call(Context context) {
+                    public Object apply(Context context) throws Exception {
                         GlideApp.get(context).clearMemory();
                         return null;
                     }

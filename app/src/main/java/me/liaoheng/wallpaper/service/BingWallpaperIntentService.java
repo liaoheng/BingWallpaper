@@ -5,10 +5,6 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.ContextCompat;
 
 import com.bumptech.glide.request.target.Target;
 import com.github.liaoheng.common.util.Callback2;
@@ -21,8 +17,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Nullable;
-
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
@@ -31,12 +29,11 @@ import me.liaoheng.wallpaper.ui.MainActivity;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
-import me.liaoheng.wallpaper.util.EmuiHelper;
 import me.liaoheng.wallpaper.util.GlideApp;
+import me.liaoheng.wallpaper.util.IUIHelper;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
-import me.liaoheng.wallpaper.util.MiuiHelper;
-import me.liaoheng.wallpaper.util.ROM;
 import me.liaoheng.wallpaper.util.TasksUtils;
+import me.liaoheng.wallpaper.util.UIHelper;
 import me.liaoheng.wallpaper.widget.AppWidget_5x1;
 import me.liaoheng.wallpaper.widget.AppWidget_5x2;
 
@@ -61,6 +58,7 @@ public class BingWallpaperIntentService extends IntentService {
     public final static String EXTRA_SET_WALLPAPER_MODE = "set_wallpaper_mode";
     public final static String EXTRA_SET_WALLPAPER_BACKGROUND = "set_wallpaper_background";
     public final static String EXTRA_SET_WALLPAPER_IMAGE = "set_wallpaper_image";
+    private IUIHelper mUiHelper;
 
     public BingWallpaperIntentService() {
         super("BingWallpaperIntentService");
@@ -100,6 +98,7 @@ public class BingWallpaperIntentService extends IntentService {
                 .setContentText(getText(R.string.set_wallpaper_running))
                 .setContentTitle(getText(R.string.app_name)).build();
         startForeground(0x111, notification);
+        mUiHelper = new UIHelper();
         super.onCreate();
     }
 
@@ -111,7 +110,7 @@ public class BingWallpaperIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(final Intent intent) {
-        int setWallpaperType = intent.getIntExtra(EXTRA_SET_WALLPAPER_MODE, 0);
+        @Constants.setWallpaperMode int setWallpaperType = intent.getIntExtra(EXTRA_SET_WALLPAPER_MODE, 0);
         final boolean isBackground = intent.getBooleanExtra(EXTRA_SET_WALLPAPER_BACKGROUND, false);
         BingWallpaperImage bingWallpaperImage = intent.getParcelableExtra(EXTRA_SET_WALLPAPER_IMAGE);
         L.alog().d(TAG, " setWallpaperType : " + setWallpaperType);
@@ -217,7 +216,7 @@ public class BingWallpaperIntentService extends IntentService {
 
             //标记成功，每天只在后台执行一次
             if (TasksUtils.isToDaysDoProvider(getApplicationContext(), 1, FLAG_SET_WALLPAPER_STATE)) {
-                L.Log.i(TAG, "Today markDone");
+                L.alog().i(TAG, "Today markDone");
                 if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
                     LogDebugFileUtils.get().i(TAG, "Today markDone");
                 }
@@ -226,7 +225,7 @@ public class BingWallpaperIntentService extends IntentService {
         }
     }
 
-    private File downloadAndSetWallpaper(String url, int setWallpaperType)
+    private File downloadAndSetWallpaper(String url, @Constants.setWallpaperMode int setWallpaperType)
             throws Exception {
         L.alog().i(TAG, "wallpaper image url: " + url);
         File wallpaper = GlideApp.with(getApplicationContext())
@@ -239,23 +238,7 @@ public class BingWallpaperIntentService extends IntentService {
             throw new IOException("download wallpaper failure");
         }
 
-        if (ROM.getROM().isMiui()) {
-            MiuiHelper.setWallpaper(getApplicationContext(), setWallpaperType, wallpaper);
-        } else if (ROM.getROM().isEmui()) {
-            EmuiHelper.setWallpaper(getApplicationContext(), setWallpaperType, wallpaper);
-        } else {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                BingWallpaperUtils.setWallpaper(getApplicationContext(), wallpaper);
-            } else {
-                if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-                    BingWallpaperUtils.setHomeScreenWallpaper(getApplicationContext(), wallpaper);
-                } else if (setWallpaperType == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                    BingWallpaperUtils.setLockScreenWallpaper(getApplicationContext(), wallpaper);
-                } else {
-                    BingWallpaperUtils.setBothWallpaper(getApplicationContext(), wallpaper);
-                }
-            }
-        }
+        mUiHelper.setWallpaper(getApplicationContext(), setWallpaperType, wallpaper);
 
         L.alog().i(TAG, "setBingWallpaper Success");
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {

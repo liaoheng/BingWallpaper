@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.bumptech.glide.request.target.Target;
@@ -25,6 +24,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkService;
 import okhttp3.Cache;
 import okhttp3.Dispatcher;
@@ -38,12 +42,8 @@ import okhttp3.internal.Util;
 import okio.Buffer;
 import okio.BufferedSource;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import rx.Observable;
-import rx.Subscription;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * @author liaoheng
@@ -81,7 +81,7 @@ public class NetUtils {
     public void init(Context context) {
         Retrofit.Builder factory = new Retrofit.Builder().baseUrl(Constants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create());
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
 
         OkHttpClient.Builder simpleBuilder = new OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS)
                 .connectTimeout(60, TimeUnit.SECONDS);
@@ -204,11 +204,11 @@ public class NetUtils {
         }
     }
 
-    public Subscription downloadImageToFile(final Context context, String url, Callback<File> callback) {
+    public Disposable downloadImageToFile(final Context context, String url, Callback<File> callback) {
         Observable<File> observable = Observable.just(url).subscribeOn(Schedulers.io())
-                .map(new Func1<String, File>() {
+                .map(new Function<String, File>() {
                     @Override
-                    public File call(String url) {
+                    public File apply(String url) throws Exception {
                         File temp = null;
                         try {
                             String name = FilenameUtils.getName(url);

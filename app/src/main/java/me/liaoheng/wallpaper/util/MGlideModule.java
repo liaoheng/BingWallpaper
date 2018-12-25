@@ -1,7 +1,6 @@
 package me.liaoheng.wallpaper.util;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.bumptech.glide.Glide;
@@ -19,6 +18,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
 import me.liaoheng.wallpaper.BuildConfig;
 import okhttp3.OkHttpClient;
 

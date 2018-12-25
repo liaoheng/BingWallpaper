@@ -1,10 +1,11 @@
 package me.liaoheng.wallpaper.util;
 
-import android.support.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.TimeUnit;
+
+import androidx.annotation.IntDef;
 
 /**
  * @author liaoheng

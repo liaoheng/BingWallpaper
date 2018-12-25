@@ -1,27 +1,27 @@
 package me.liaoheng.wallpaper.ui;
 
 import android.os.Bundle;
-import android.support.annotation.CallSuper;
-import android.support.annotation.CheckResult;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 
 import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.UIUtils;
-import com.trello.rxlifecycle.LifecycleProvider;
-import com.trello.rxlifecycle.LifecycleTransformer;
-import com.trello.rxlifecycle.RxLifecycle;
-import com.trello.rxlifecycle.android.ActivityEvent;
-import com.trello.rxlifecycle.android.RxLifecycleAndroid;
+import com.trello.rxlifecycle3.LifecycleProvider;
+import com.trello.rxlifecycle3.LifecycleTransformer;
+import com.trello.rxlifecycle3.RxLifecycle;
+import com.trello.rxlifecycle3.android.ActivityEvent;
+import com.trello.rxlifecycle3.android.RxLifecycleAndroid;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.CheckResult;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import io.reactivex.Observable;
+import io.reactivex.subjects.BehaviorSubject;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
-import rx.Observable;
-import rx.subjects.BehaviorSubject;
 
 /**
  * 基础通用 RxJava Lifecycle Activity
@@ -55,7 +55,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     @NonNull
     @CheckResult
     public final Observable<ActivityEvent> lifecycle() {
-        return lifecycleSubject.asObservable();
+        return lifecycleSubject.hide();
     }
 
     @Override

@@ -9,10 +9,6 @@ import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,17 +30,20 @@ import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
-import com.github.liaoheng.common.util.SystemException;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
-import com.github.liaoheng.common.util.ValidateUtils;
 
 import java.io.File;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
 import butterknife.BindArray;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.disposables.Disposable;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
@@ -56,7 +55,6 @@ import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.NetUtils;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
-import rx.Subscription;
 
 /**
  * 壁纸详情
@@ -101,7 +99,7 @@ public class WallpaperDetailActivity extends BaseActivity {
     private BingWallpaperImage mWallpaperImage;
     private ProgressDialog mDownLoadProgressDialog;
     private ProgressDialog mSetWallpaperProgressDialog;
-    private Subscription mDownLoadSubscription;
+    private Disposable mDownLoadSubscription;
     private SetWallpaperStateBroadcastReceiver mSetWallpaperStateBroadcastReceiver;
 
     @OnClick(R.id.bing_wallpaper_detail_cover_story_text)
@@ -195,7 +193,7 @@ public class WallpaperDetailActivity extends BaseActivity {
 
             @Override
             public void onDismiss(DialogInterface dialog) {
-                Utils.unsubscribe(mDownLoadSubscription);
+                Utils.dispose(mDownLoadSubscription);
             }
         });
         mImageView.setOnClickListener(new View.OnClickListener() {
@@ -385,7 +383,7 @@ public class WallpaperDetailActivity extends BaseActivity {
             }
 
             @Override
-            public void onError(SystemException e) {
+            public void onError(Throwable e) {
                 L.getToast().e(TAG, getApplicationContext(), getString(R.string.alert_save_wallpaper_failure), e);
             }
         });

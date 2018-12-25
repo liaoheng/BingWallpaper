@@ -5,10 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 
 import java.io.File;
 import java.io.IOException;
+
+import androidx.annotation.RequiresApi;
 
 /**
  * @author liaoheng

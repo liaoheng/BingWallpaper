@@ -1,5 +1,6 @@
 package me.liaoheng.wallpaper.data;
 
+import io.reactivex.Observable;
 import me.liaoheng.wallpaper.model.BingWallpaper;
 import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import retrofit2.Call;
@@ -7,7 +8,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.Url;
-import rx.Observable;
 
 /**
  * @author liaoheng

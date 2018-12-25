@@ -1,8 +1,6 @@
 package me.liaoheng.wallpaper.util;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import net.grandcentrix.tray.TrayPreferences;
 import net.grandcentrix.tray.core.ItemNotFoundException;
@@ -11,6 +9,9 @@ import net.grandcentrix.tray.core.TrayRuntimeException;
 import net.grandcentrix.tray.core.WrongTypeException;
 
 import java.util.Collection;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * @author liaoheng

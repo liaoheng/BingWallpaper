@@ -9,10 +9,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.annotation.IntDef;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.ContextCompat;
 
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
@@ -29,6 +25,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.IntDef;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.service.FirebaseJobSchedulerDaemonService;
 import me.liaoheng.wallpaper.service.JobSchedulerDaemonService;

@@ -3,13 +3,14 @@ package me.liaoheng.wallpaper.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.preference.DialogPreference;
-import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TimePicker;
 
 import org.joda.time.LocalTime;
+
+import androidx.annotation.NonNull;
 
 /**
  * 设置时间选择框

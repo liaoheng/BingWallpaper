@@ -6,16 +6,6 @@ import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.ColorInt;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.graphics.Palette;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,17 +22,28 @@ import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-import com.github.liaoheng.common.core.OnCheckedChangeListener;
+import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.UIUtils;
+import com.google.android.material.navigation.NavigationView;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.palette.graphics.Palette;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
@@ -61,8 +62,6 @@ import me.liaoheng.wallpaper.util.ROM;
 import me.liaoheng.wallpaper.util.TasksUtils;
 import me.liaoheng.wallpaper.widget.FeedbackDialog;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 
 /**
  * 壁纸主界面
@@ -122,7 +121,7 @@ public class MainActivity extends BaseActivity
         }
         String longitude = mCoverStory.getLongitude();//经度
         String latitude = mCoverStory.getLatitude();//纬度
-        BingWallpaperUtils.openMap(this, longitude, latitude);
+        AppUtils.openMap(this, longitude, latitude);
     }
 
     @Override
@@ -190,24 +189,16 @@ public class MainActivity extends BaseActivity
 
         mNavigationView.setNavigationItemSelectedListener(this);
 
-        ((View) mCoverStoryToggle.getParent()).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCoverStoryToggle.toggle();
-            }
-        });
-        mCoverStoryToggle.setOnCheckedChangeListener(new OnCheckedChangeListener<ToggleImageButton>() {
-            @Override
-            public void onCheckedChanged(ToggleImageButton view, boolean isChecked) {
-                if (mCurBingWallpaperImage != null) {
-                    if (mCoverStoryContent.getVisibility() == View.VISIBLE) {
-                        setTitle(mCurBingWallpaperImage.getCopyright());
-                    } else {
-                        setTitle("");
-                    }
+        ((View) mCoverStoryToggle.getParent()).setOnClickListener(v -> mCoverStoryToggle.toggle());
+        mCoverStoryToggle.setOnCheckedChangeListener((view, isChecked) -> {
+            if (mCurBingWallpaperImage != null) {
+                if (mCoverStoryContent.getVisibility() == View.VISIBLE) {
+                    setTitle(mCurBingWallpaperImage.getCopyright());
+                } else {
+                    setTitle("");
                 }
-                UIUtils.toggleVisibility(mCoverStoryContent);
             }
+            UIUtils.toggleVisibility(mCoverStoryContent);
         });
 
         mSetWallpaperStateBroadcastReceiver = new SetWallpaperStateBroadcastReceiver(
@@ -228,14 +219,11 @@ public class MainActivity extends BaseActivity
         registerReceiver(mSetWallpaperStateBroadcastReceiver,
                 new IntentFilter(BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE));
 
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if (isRun) {
-                    UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_running);
-                } else {
-                    getBingWallpaper();
-                }
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            if (isRun) {
+                UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_running);
+            } else {
+                getBingWallpaper();
             }
         });
 
@@ -246,6 +234,7 @@ public class MainActivity extends BaseActivity
         getBingWallpaper();
     }
 
+    @SuppressLint({ "SetTextI18n", "CheckResult" })
     private void getBingWallpaper() {
         if (!NetworkUtils.isConnectedOrConnecting(getApplicationContext())) {
             mErrorTextView.setText(getString(R.string.network_unavailable));
@@ -254,56 +243,40 @@ public class MainActivity extends BaseActivity
         showSwipeRefreshLayout();
 
         BingWallpaperNetworkClient.getBingWallpaper(this)
-                .compose(this.<BingWallpaperImage>bindToLifecycle())
+                .compose(this.bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<BingWallpaperImage>() {
-                    @SuppressLint("SetTextI18n")
-                    @Override
-                    public void call(BingWallpaperImage bingWallpaperImage) {
-                        mCurBingWallpaperImage = bingWallpaperImage;
-                        if (!TextUtils.isEmpty(bingWallpaperImage.getCaption())) {
-                            UIUtils.viewVisible(mCoverStoryView);
-                            mCoverStoryTitleView.setText(
-                                    bingWallpaperImage.getCaption() + bingWallpaperImage.getCopyrightonly());
-                            mCoverStoryTextView.setText(bingWallpaperImage.getDesc());
-                        } else {
-                            if (!BingWallpaperUtils.isChinaLocale(getApplicationContext())) {
-                                UIUtils.viewGone(mCoverStoryView);
-                            }
+                .subscribe(bingWallpaperImage -> {
+                    mCurBingWallpaperImage = bingWallpaperImage;
+                    if (!TextUtils.isEmpty(bingWallpaperImage.getCaption())) {
+                        UIUtils.viewVisible(mCoverStoryView);
+                        mCoverStoryTitleView.setText(
+                                bingWallpaperImage.getCaption() + bingWallpaperImage.getCopyrightonly());
+                        mCoverStoryTextView.setText(bingWallpaperImage.getDesc());
+                    } else {
+                        if (!BingWallpaperUtils.isChinaLocale(getApplicationContext())) {
+                            UIUtils.viewGone(mCoverStoryView);
                         }
+                    }
 
-                        setImage(bingWallpaperImage);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        setBingWallpaperError(throwable);
-                    }
-                });
+                    setImage(bingWallpaperImage);
+                }, this::setBingWallpaperError);
 
         if (BingWallpaperUtils.isChinaLocale(this)) {
             BingWallpaperNetworkClient.getCoverStory()
-                    .compose(this.<BingWallpaperCoverStory>bindToLifecycle())
+                    .compose(this.bindToLifecycle())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            new Action1<BingWallpaperCoverStory>() {
-                                @SuppressLint("SetTextI18n")
-                                @Override
-                                public void call(BingWallpaperCoverStory bingWallpaperCoverStory) {
-                                    UIUtils.viewVisible(mCoverStoryView);
-                                    mCoverStory = bingWallpaperCoverStory;
-                                    mCoverStoryTitleView.setText(bingWallpaperCoverStory.getTitle());
-                                    mCoverStoryTextView.setText(
-                                            bingWallpaperCoverStory.getPara1() + bingWallpaperCoverStory.getPara2());
-                                }
-                            }, new Action1<Throwable>() {
-                                @Override
-                                public void call(Throwable throwable) {
-                                    L.alog().e(TAG, throwable);
-                                    CrashReportHandle.collectException(getApplicationContext(), TAG, "getCoverStory",
-                                            throwable);
-                                    UIUtils.viewGone(mCoverStoryView);
-                                }
+                            bingWallpaperCoverStory -> {
+                                UIUtils.viewVisible(mCoverStoryView);
+                                mCoverStory = bingWallpaperCoverStory;
+                                mCoverStoryTitleView.setText(bingWallpaperCoverStory.getTitle());
+                                mCoverStoryTextView.setText(
+                                        bingWallpaperCoverStory.getPara1() + bingWallpaperCoverStory.getPara2());
+                            }, throwable -> {
+                                L.alog().e(TAG, throwable);
+                                CrashReportHandle.collectException(getApplicationContext(), TAG, "getCoverStory",
+                                        throwable);
+                                UIUtils.viewGone(mCoverStoryView);
                             });
         }
     }
@@ -347,44 +320,24 @@ public class MainActivity extends BaseActivity
     }
 
     private void dismissSwipeRefreshLayout() {
-        mSwipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-        });
+        mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(false));
     }
 
     private void dismissProgressDialog() {
         isRun = false;
         mSetWallpaperActionMenu.showMenu(true);
-        mSwipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-        });
+        mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(false));
     }
 
     private void showSwipeRefreshLayout() {
         mErrorTextView.setText("");
-        mSwipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                mSwipeRefreshLayout.setRefreshing(true);
-            }
-        });
+        mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(true));
     }
 
     private void showProgressDialog() {
         isRun = true;
         mSetWallpaperActionMenu.hideMenu(true);
-        mSwipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                mSwipeRefreshLayout.setRefreshing(true);
-            }
-        });
+        mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(true));
     }
 
     @Override
@@ -448,46 +401,37 @@ public class MainActivity extends BaseActivity
                         mNavigationHeaderImage.setImageDrawable(resource);
 
                         Palette.from(BitmapUtils.drawableToBitmap(resource))
-                                .generate(new Palette.PaletteAsyncListener() {
-                                    @Override
-                                    public void onGenerated(@NonNull Palette palette) {
+                                .generate(palette -> {
 
-                                        int defMuted = ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark);
-                                        int defVibrant = ContextCompat.getColor(getActivity(), R.color.colorAccent);
+                                    int defMuted = ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark);
+                                    int defVibrant = ContextCompat.getColor(getActivity(), R.color.colorAccent);
 
-                                        int lightMutedSwatch = palette.getMutedColor(defMuted);
-                                        int lightVibrantSwatch = palette.getVibrantColor(defVibrant);
+                                    int lightMutedSwatch = palette.getMutedColor(defMuted);
+                                    int lightVibrantSwatch = palette.getVibrantColor(defVibrant);
 
-                                        mSetWallpaperActionMenu.removeAllMenuButtons();
+                                    mSetWallpaperActionMenu.removeAllMenuButtons();
 
-                                        if (lightMutedSwatch == defMuted) {
-                                            if (lightVibrantSwatch != defVibrant) {
-                                                lightMutedSwatch = lightVibrantSwatch;
-                                            }
+                                    if (lightMutedSwatch == defMuted) {
+                                        if (lightVibrantSwatch != defVibrant) {
+                                            lightMutedSwatch = lightVibrantSwatch;
                                         }
+                                    }
 
-                                        mSetWallpaperActionMenu.setMenuButtonColorNormal(lightMutedSwatch);
-                                        mSetWallpaperActionMenu.setMenuButtonColorPressed(lightMutedSwatch);
-                                        mSetWallpaperActionMenu.setMenuButtonColorRipple(lightVibrantSwatch);
+                                    mSetWallpaperActionMenu.setMenuButtonColorNormal(lightMutedSwatch);
+                                    mSetWallpaperActionMenu.setMenuButtonColorPressed(lightMutedSwatch);
+                                    mSetWallpaperActionMenu.setMenuButtonColorRipple(lightVibrantSwatch);
 
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                        AddBothActionButton(lightMutedSwatch, lightVibrantSwatch);
+                                    } else {
+                                        if (ROM.getROM().isMiui()) {
                                             AddBothActionButton(lightMutedSwatch, lightVibrantSwatch);
                                         } else {
-                                            if (ROM.getROM().isMiui()) {
-                                                AddBothActionButton(lightMutedSwatch, lightVibrantSwatch);
-                                            } else {
-                                                mSetWallpaperActionMenu.setOnMenuButtonClickListener(
-                                                        new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                setWallpaper(0);
-                                                            }
-                                                        });
-                                            }
+                                            mSetWallpaperActionMenu.setOnMenuButtonClickListener(v -> setWallpaper(0));
                                         }
-
-                                        mSetWallpaperActionMenu.showMenu(true);
                                     }
+
+                                    mSetWallpaperActionMenu.showMenu(true);
                                 });
 
                         isRun = false;
@@ -504,32 +448,23 @@ public class MainActivity extends BaseActivity
     private void AddBothActionButton(int lightMutedSwatch, int lightVibrantSwatch) {
         addActionButton(lightMutedSwatch, lightVibrantSwatch,
                 getString(R.string.pref_set_wallpaper_auto_mode_home),
-                R.drawable.ic_home_white_24dp, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        setWallpaper(1);
-                        mSetWallpaperActionMenu.close(true);
-                    }
+                R.drawable.ic_home_white_24dp, v -> {
+                    setWallpaper(1);
+                    mSetWallpaperActionMenu.close(true);
                 });
 
         addActionButton(lightMutedSwatch, lightVibrantSwatch,
                 getString(R.string.pref_set_wallpaper_auto_mode_lock),
-                R.drawable.ic_lock_white_24dp, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        setWallpaper(2);
-                        mSetWallpaperActionMenu.close(true);
-                    }
+                R.drawable.ic_lock_white_24dp, v -> {
+                    setWallpaper(2);
+                    mSetWallpaperActionMenu.close(true);
                 });
 
         addActionButton(lightMutedSwatch, lightVibrantSwatch,
                 getString(R.string.pref_set_wallpaper_auto_mode_both),
-                R.drawable.ic_smartphone_white_24dp, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        setWallpaper(0);
-                        mSetWallpaperActionMenu.close(true);
-                    }
+                R.drawable.ic_smartphone_white_24dp, v -> {
+                    setWallpaper(0);
+                    mSetWallpaperActionMenu.close(true);
                 });
     }
 

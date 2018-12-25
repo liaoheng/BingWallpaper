@@ -5,12 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.GridLayoutManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,15 +20,21 @@ import com.github.liaoheng.common.adapter.core.HandleView;
 import com.github.liaoheng.common.adapter.core.RecyclerViewHelper;
 import com.github.liaoheng.common.adapter.holder.BaseRecyclerViewHolder;
 import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.Callback2;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 import com.github.liaoheng.common.util.ValidateUtils;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
@@ -42,7 +42,6 @@ import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.GlideApp;
-import rx.Observable;
 
 /**
  * 壁纸历史列表
@@ -97,7 +96,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         Observable<List<BingWallpaperImage>> listObservable = BingWallpaperNetworkClient.getBingWallpaper(this, index,
                 count)
                 .compose(this.<List<BingWallpaperImage>>bindToLifecycle());
-        Utils.addSubscribe2(listObservable, new Callback2.EmptyCallback<List<BingWallpaperImage>>() {
+        Utils.addSubscribe(listObservable, new Callback.EmptyCallback<List<BingWallpaperImage>>() {
             @Override
             public void onPreExecute() {
                 mRecyclerViewHelper.setLoadMoreLoading(true);

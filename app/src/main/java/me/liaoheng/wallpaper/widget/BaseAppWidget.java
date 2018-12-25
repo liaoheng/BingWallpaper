@@ -8,9 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
 import android.widget.RemoteViews;
 
 import com.github.liaoheng.common.util.Callback;
@@ -18,6 +15,9 @@ import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.SystemException;
 import com.github.liaoheng.common.util.Utils;
 
+import androidx.annotation.IdRes;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
@@ -152,7 +152,7 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
                     }
 
                     @Override
-                    public void onError(SystemException e) {
+                    public void onError(Throwable e) {
                         setText(context, null);
                     }
                 });
