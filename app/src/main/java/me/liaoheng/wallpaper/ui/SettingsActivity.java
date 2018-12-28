@@ -1,6 +1,5 @@
 package me.liaoheng.wallpaper.ui;
 
-import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -13,31 +12,16 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.flyco.systembar.SystemBarHelper;
-import com.github.liaoheng.common.util.AppUtils;
-import com.github.liaoheng.common.util.Callback4;
-import com.github.liaoheng.common.util.L;
-import com.github.liaoheng.common.util.ShellUtils;
-import com.github.liaoheng.common.util.SystemException;
-import com.github.liaoheng.common.util.UIUtils;
-
-import org.joda.time.LocalTime;
-
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import io.reactivex.functions.Consumer;
+import com.flyco.systembar.SystemBarHelper;
+import com.github.liaoheng.common.util.*;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.service.AutoSetWallpaperBroadcastReceiver;
-import me.liaoheng.wallpaper.util.BingWallpaperAlarmManager;
-import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
-import me.liaoheng.wallpaper.util.BingWallpaperUtils;
-import me.liaoheng.wallpaper.util.CrashReportHandle;
-import me.liaoheng.wallpaper.util.ISettingTrayPreferences;
-import me.liaoheng.wallpaper.util.LogDebugFileUtils;
+import me.liaoheng.wallpaper.util.*;
 import me.liaoheng.wallpaper.util.ROM;
-import me.liaoheng.wallpaper.util.SettingTrayPreferences;
 import me.liaoheng.wallpaper.widget.TimePreference;
+import org.joda.time.LocalTime;
 
 /**
  * @author liaoheng
@@ -111,43 +95,33 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                 L.alog().w(TAG, e);
             }
 
-            findPreference("pref_intro").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    UIUtils.startActivity(getActivity(), IntroActivity.class);
-                    return true;
-                }
+            findPreference("pref_intro").setOnPreferenceClickListener(preference -> {
+                UIUtils.startActivity(getActivity(), IntroActivity.class);
+                return true;
             });
 
-            findPreference("pref_license").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    UIUtils.startActivity(getActivity(), LicenseActivity.class);
-                    return true;
-                }
+            findPreference("pref_license").setOnPreferenceClickListener(preference -> {
+                UIUtils.startActivity(getActivity(), LicenseActivity.class);
+                return true;
             });
 
             findPreference("pref_clear_cache").setOnPreferenceClickListener(
-                    new Preference.OnPreferenceClickListener() {
-                        @Override
-                        public boolean onPreferenceClick(Preference preference) {
-                            UIUtils.showYNAlertDialog(getActivity(), getString(R.string.pref_clear_cache) + "?",
-                                    new Callback4.EmptyCallback<DialogInterface>() {
-                                        @SuppressLint("CheckResult")
-                                        @Override
-                                        public void onYes(DialogInterface dialogInterface) {
-                                            BingWallpaperUtils.clearCache(getActivity())
-                                                    .subscribe(new Consumer<Object>() {
-                                                        @Override
-                                                        public void accept(Object o) throws Exception {
-                                                            BingWallpaperUtils.showToast(getActivity(),
-                                                                    getString(R.string.pref_clear_cache_success));
-                                                        }
-                                                    });
-                                        }
-                                    });
-                            return true;
-                        }
+                    preference -> {
+                        UIUtils.showYNAlertDialog(getActivity(), getString(R.string.pref_clear_cache) + "?",
+                                new Callback4.EmptyCallback<DialogInterface>() {
+                                    @Override
+                                    public void onYes(DialogInterface dialogInterface) {
+                                        Utils.addSubscribe(BingWallpaperUtils.clearCache(getActivity()),
+                                                new Callback.EmptyCallback<Object>() {
+                                                    @Override
+                                                    public void onSuccess(Object o) {
+                                                        UIUtils.showToast(getActivity(),
+                                                                getString(R.string.pref_clear_cache_success));
+                                                    }
+                                                });
+                                    }
+                                });
+                        return true;
                     });
 
             Preference translation = findPreference("pref_translation");
@@ -155,12 +129,9 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             if (!TextUtils.isEmpty(translator)) {
                 translation.setSummary(translator);
             }
-            translation.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    BingWallpaperUtils.openBrowser(getActivity(), "https://crowdin.com/project/starth-bing-wallpaper");
-                    return false;
-                }
+            translation.setOnPreferenceClickListener(preference -> {
+                BingWallpaperUtils.openBrowser(getActivity(), "https://crowdin.com/project/starth-bing-wallpaper");
+                return false;
             });
 
             mCountryListPreference = (ListPreference) findPreference(
@@ -191,21 +162,18 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             if (!ROM.getROM().isMiui()) {
                 ((PreferenceCategory) findPreference("pref_other_group")).removePreference(mMIuiLockScreenPreference);
             } else {
-                mMIuiLockScreenPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        if (mMIuiLockScreenPreference.isChecked()) {
-                            if (ShellUtils.hasRootPermission()) {
-                                mPreferences.put(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, true);
-                            } else {
-                                mMIuiLockScreenPreference.setChecked(false);
-                                BingWallpaperUtils.showToast(getActivity(), R.string.unable_root_permission);
-                            }
+                mMIuiLockScreenPreference.setOnPreferenceClickListener(preference -> {
+                    if (mMIuiLockScreenPreference.isChecked()) {
+                        if (ShellUtils.hasRootPermission()) {
+                            mPreferences.put(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, true);
                         } else {
-                            mPreferences.put(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, false);
+                            mMIuiLockScreenPreference.setChecked(false);
+                            UIUtils.showToast(getActivity(), R.string.unable_root_permission);
                         }
-                        return false;
+                    } else {
+                        mPreferences.put(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, false);
                     }
+                    return false;
                 });
                 mMIuiLockScreenPreference.setChecked(BingWallpaperUtils.isMiuiLockScreenSupport(getActivity()));
             }

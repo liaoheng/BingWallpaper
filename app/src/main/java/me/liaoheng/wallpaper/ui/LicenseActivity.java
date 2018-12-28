@@ -35,7 +35,7 @@ public class LicenseActivity extends BaseActivity {
                 .tintStatusBar(this, ContextCompat.getColor(this, R.color.colorPrimaryDark), 0);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         mRecyclerView.setHasFixedSize(true);
 
         List<Library> licenses = new ArrayList<>();

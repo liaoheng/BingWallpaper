@@ -2,11 +2,7 @@ package me.liaoheng.wallpaper.util;
 
 import android.app.Activity;
 import android.app.WallpaperManager;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -16,20 +12,24 @@ import android.preference.PreferenceManager;
 import android.provider.Browser;
 import android.provider.Settings;
 import android.text.TextUtils;
-
-import com.github.liaoheng.common.util.AppUtils;
-import com.github.liaoheng.common.util.Callback4;
-import com.github.liaoheng.common.util.DisplayUtils;
-import com.github.liaoheng.common.util.FileUtils;
-import com.github.liaoheng.common.util.NetworkUtils;
-import com.github.liaoheng.common.util.UIUtils;
-import com.github.liaoheng.common.util.Utils;
-import com.github.liaoheng.common.util.ValidateUtils;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import com.github.liaoheng.common.util.*;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import me.liaoheng.wallpaper.BuildConfig;
+import me.liaoheng.wallpaper.R;
+import me.liaoheng.wallpaper.model.BingWallpaperImage;
+import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
+import me.liaoheng.wallpaper.ui.SettingsActivity;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalTime;
 
 import java.io.File;
@@ -37,22 +37,6 @@ import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
-
-import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
-import me.liaoheng.wallpaper.BuildConfig;
-import me.liaoheng.wallpaper.R;
-import me.liaoheng.wallpaper.model.BingWallpaperImage;
-import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
-import me.liaoheng.wallpaper.ui.SettingsActivity;
 
 /**
  * @author liaoheng
@@ -227,13 +211,7 @@ public class BingWallpaperUtils {
      * @return Local
      */
     public static DateTime checkTime(LocalTime time) {
-        DateTime now = DateTime.now();
-        DateTime set = DateTime.now().withTime(time);
-        if (set.toLocalTime().isBefore(now.toLocalTime())) {
-            now = now.plusDays(1);
-        }
-        return new DateTime(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth(),
-                time.getHourOfDay(), time.getMinuteOfHour(), DateTimeZone.getDefault());
+        return DateTimeUtils.checkTimeToNextDay(time);
     }
 
     public static boolean isEnableLog(Context context) {
@@ -308,31 +286,13 @@ public class BingWallpaperUtils {
     }
 
     /**
-     * 判断有无网络正在连接中（查找网络、校验、获取IP等）。
-     *
-     * @return boolean 不管wifi，还是mobile net，只有当前在连接状态（可有效传输数据）才返回true,反之false。
-     */
-    @Deprecated
-    public static boolean isConnectedOrConnecting(Context context) {
-        return NetworkUtils.isConnectedOrConnecting(context);
-    }
-
-    /**
-     * @param mode 0. both , 1. home , 2. lock
-     */
-    public static void setWallpaper(final Context context, @Constants.setWallpaperMode final int mode,
-            @Nullable final Callback4<Boolean> callback) {
-        setWallpaper(context, null, mode, callback);
-    }
-
-    /**
      * @param mode 0. both , 1. home , 2. lock
      */
     public static void setWallpaper(final Context context, final @Nullable BingWallpaperImage image,
             @Constants.setWallpaperMode final int mode,
             @Nullable final Callback4<Boolean> callback) {
         if (!NetworkUtils.isConnectedOrConnecting(context)) {
-            BingWallpaperUtils.showToast(context, R.string.network_unavailable);
+            UIUtils.showToast(context, R.string.network_unavailable);
             return;
         }
         // use mobile network show alert
@@ -385,7 +345,7 @@ public class BingWallpaperUtils {
      */
     public static void showIgnoreBatteryOptimizationSetting(Context context) {
         if (!AppUtils.showIgnoreBatteryOptimizationSetting(context)) {
-            BingWallpaperUtils.showToast(context, "No support !");
+            UIUtils.showToast(context, "No support !");
         }
     }
 
@@ -450,7 +410,7 @@ public class BingWallpaperUtils {
             }
             context.startActivity(intent);
         } catch (Exception ignore) {
-            BingWallpaperUtils.showToast(context, R.string.unable_open_url);
+            UIUtils.showToast(context, R.string.unable_open_url);
         }
     }
 
@@ -523,7 +483,7 @@ public class BingWallpaperUtils {
         }
 
         if (emailIntent.resolveActivity(context.getPackageManager()) == null) {
-            BingWallpaperUtils.showToast(context, "No support !");
+            UIUtils.showToast(context, "No support !");
             return;
         }
 
@@ -594,22 +554,16 @@ public class BingWallpaperUtils {
                 .setStream(FileUtils.openInputStream(bitmap), null, true, WallpaperManager.FLAG_SYSTEM);
     }
 
-    public static Observable<Object> clearCache(final Context context) {
+    public static Observable<Object> clearCache(Context context) {
         return Observable.just(context)
                 .subscribeOn(Schedulers.io())
-                .map(new Function<Context, Context>() {
-                    @Override
-                    public Context apply(Context context) throws Exception {
-                        GlideApp.get(context).clearDiskCache();
-                        NetUtils.get().clearCache();
-                        return context;
-                    }
-                }).observeOn(AndroidSchedulers.mainThread()).map(new Function<Context, Object>() {
-                    @Override
-                    public Object apply(Context context) throws Exception {
-                        GlideApp.get(context).clearMemory();
-                        return null;
-                    }
+                .map(c -> {
+                    GlideApp.get(c).clearDiskCache();
+                    NetUtils.get().clearCache();
+                    return c;
+                }).observeOn(AndroidSchedulers.mainThread()).map(c -> {
+                    GlideApp.get(c).clearMemory();
+                    return null;
                 });
     }
 
@@ -619,13 +573,5 @@ public class BingWallpaperUtils {
             return "Translator : @dekar16";
         }
         return "";
-    }
-
-    public static void showToast(Context context, String hint) {
-        UIUtils.showToast(context.getApplicationContext(), hint);
-    }
-
-    public static void showToast(Context context, int hint) {
-        UIUtils.showToast(context.getApplicationContext(), hint);
     }
 }

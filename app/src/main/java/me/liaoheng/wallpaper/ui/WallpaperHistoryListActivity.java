@@ -94,8 +94,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
 
     private void getBingWallpaperList(final Callback callback) {
         Observable<List<BingWallpaperImage>> listObservable = BingWallpaperNetworkClient.getBingWallpaper(this, index,
-                count)
-                .compose(this.<List<BingWallpaperImage>>bindToLifecycle());
+                count).compose(this.bindToLifecycle());
         Utils.addSubscribe(listObservable, new Callback.EmptyCallback<List<BingWallpaperImage>>() {
             @Override
             public void onPreExecute() {
@@ -165,16 +164,13 @@ public class WallpaperHistoryListActivity extends BaseActivity {
                 }
             }
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(getActivity(), WallpaperDetailActivity.class);
-                    intent.putExtra("image", item);
-                    ActivityOptionsCompat options =
-                            ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
-                                    mImageView, "bing_wallpaper_detail_image");
-                    ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
-                }
+            itemView.setOnClickListener(v -> {
+                Intent intent = new Intent(getActivity(), WallpaperDetailActivity.class);
+                intent.putExtra("image", item);
+                ActivityOptionsCompat options =
+                        ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
+                                mImageView, "bing_wallpaper_detail_image");
+                ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
             });
 
             String imageUrl = BingWallpaperUtils.getImageUrl(getApplicationContext(),
@@ -245,7 +241,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
 
         @NonNull
         @Override
-        public WallpaperViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public WallpaperViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View itemView = inflate(R.layout.view_wallpaper_list_item, parent);
             GridLayoutManager.LayoutParams lp = (GridLayoutManager.LayoutParams) itemView.getLayoutParams();
             lp.height = (int) (parent.getMeasuredHeight() / 2.5);
@@ -254,7 +250,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         }
 
         @Override
-        public void onBindViewHolderItem(WallpaperViewHolder holder, BingWallpaperImage item,
+        public void onBindViewHolderItem(@NonNull WallpaperViewHolder holder, BingWallpaperImage item,
                 int position) {
             holder.onHandle(item, position);
         }

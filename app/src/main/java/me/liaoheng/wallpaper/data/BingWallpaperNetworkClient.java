@@ -1,18 +1,8 @@
 package me.liaoheng.wallpaper.data;
 
 import android.content.Context;
-
-import com.github.liaoheng.common.util.NetException;
-import com.github.liaoheng.common.util.NetLocalException;
-import com.github.liaoheng.common.util.NetServerException;
-import com.github.liaoheng.common.util.SystemDataException;
-import com.github.liaoheng.common.util.SystemRuntimeException;
-
-import java.io.IOException;
-import java.util.List;
-
+import com.github.liaoheng.common.util.*;
 import io.reactivex.Observable;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import me.liaoheng.wallpaper.model.BingWallpaper;
 import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
@@ -22,6 +12,9 @@ import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.NetUtils;
 import retrofit2.Response;
 
+import java.io.IOException;
+import java.util.List;
+
 /**
  * @author liaoheng
  * @version 2016-09-20 11:27
@@ -29,26 +22,18 @@ import retrofit2.Response;
 public class BingWallpaperNetworkClient {
 
     public static Observable<BingWallpaperImage> getBingWallpaper(Context context) {
-        return getBingWallpaper(context, 0, 1).map(new Function<List<BingWallpaperImage>, BingWallpaperImage>() {
-            @Override
-            public BingWallpaperImage apply(List<BingWallpaperImage> bingWallpaperImages) throws Exception {
-                return bingWallpaperImages.get(0);
-            }
-        });
+        return getBingWallpaper(context, 0, 1).map(bingWallpaperImages -> bingWallpaperImages.get(0));
     }
 
     public static Observable<List<BingWallpaperImage>> getBingWallpaper(Context context, int index,
             int count) {
         String url = BingWallpaperUtils.getUrl(context, index, count);
         String locale = BingWallpaperUtils.getAutoLocale(context);
-        return getBingWallpaper(url, locale).map(new Function<BingWallpaper, List<BingWallpaperImage>>() {
-            @Override
-            public List<BingWallpaperImage> apply(BingWallpaper bingWallpaper) throws Exception {
-                if (bingWallpaper == null || bingWallpaper.getImages() == null || bingWallpaper.getImages().isEmpty()) {
-                    throw new SystemRuntimeException(new SystemDataException("bing wallpaper is not data"));
-                }
-                return bingWallpaper.getImages();
+        return getBingWallpaper(url, locale).map(bingWallpaper -> {
+            if (bingWallpaper == null || bingWallpaper.getImages() == null || bingWallpaper.getImages().isEmpty()) {
+                throw new SystemRuntimeException(new SystemDataException("bing wallpaper is not data"));
             }
+            return bingWallpaper.getImages();
         });
     }
 
@@ -66,15 +51,12 @@ public class BingWallpaperNetworkClient {
     public static Observable<BingWallpaperImage> getBingWallpaperSingle(String url, String locale) {
         return NetUtils.get().getBingWallpaperSingleNetworkService()
                 .getBingWallpaper(url, getMkt(locale)).subscribeOn(Schedulers.io())
-                .map(new Function<BingWallpaper, BingWallpaperImage>() {
-                    @Override
-                    public BingWallpaperImage apply(BingWallpaper bingWallpaper) throws Exception {
-                        if (bingWallpaper == null || bingWallpaper.getImages() == null
-                                || bingWallpaper.getImages().isEmpty()) {
-                            throw new SystemRuntimeException(new SystemDataException("bing wallpaper is not data"));
-                        }
-                        return bingWallpaper.getImages().get(0);
+                .map(bingWallpaper -> {
+                    if (bingWallpaper == null || bingWallpaper.getImages() == null
+                            || bingWallpaper.getImages().isEmpty()) {
+                        throw new SystemRuntimeException(new SystemDataException("bing wallpaper is not data"));
                     }
+                    return bingWallpaper.getImages().get(0);
                 });
     }
 

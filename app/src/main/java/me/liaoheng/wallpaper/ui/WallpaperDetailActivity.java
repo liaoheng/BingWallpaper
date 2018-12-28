@@ -18,23 +18,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.ImageViewTarget;
-import com.bumptech.glide.request.target.Target;
-import com.bumptech.glide.request.transition.Transition;
-import com.github.liaoheng.common.core.OnCheckedChangeListener;
-import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.Callback4;
-import com.github.liaoheng.common.util.L;
-import com.github.liaoheng.common.util.NetworkUtils;
-import com.github.liaoheng.common.util.UIUtils;
-import com.github.liaoheng.common.util.Utils;
-
-import java.io.File;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -43,18 +26,23 @@ import butterknife.BindArray;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.ImageViewTarget;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
+import com.github.liaoheng.common.util.*;
 import io.reactivex.disposables.Disposable;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.service.SetWallpaperStateBroadcastReceiver;
-import me.liaoheng.wallpaper.util.BingWallpaperUtils;
-import me.liaoheng.wallpaper.util.Constants;
-import me.liaoheng.wallpaper.util.CrashReportHandle;
-import me.liaoheng.wallpaper.util.GlideApp;
-import me.liaoheng.wallpaper.util.NetUtils;
+import me.liaoheng.wallpaper.util.*;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
+
+import java.io.File;
 
 /**
  * 壁纸详情
@@ -139,24 +127,16 @@ public class WallpaperDetailActivity extends BaseActivity {
             return;
         }
 
-        ((View) mCoverStoryToggle.getParent()).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCoverStoryToggle.toggle();
-            }
-        });
-        mCoverStoryToggle.setOnCheckedChangeListener(new OnCheckedChangeListener<ToggleImageButton>() {
-            @Override
-            public void onCheckedChanged(ToggleImageButton view, boolean isChecked) {
-                if (mWallpaperImage != null) {
-                    if (mCoverStoryContent.getVisibility() == View.VISIBLE) {
-                        UIUtils.viewVisible(mBottomTextView);
-                    } else {
-                        UIUtils.viewGone(mBottomTextView);
-                    }
+        ((View) mCoverStoryToggle.getParent()).setOnClickListener(v -> mCoverStoryToggle.toggle());
+        mCoverStoryToggle.setOnCheckedChangeListener((view, isChecked) -> {
+            if (mWallpaperImage != null) {
+                if (mCoverStoryContent.getVisibility() == View.VISIBLE) {
+                    UIUtils.viewVisible(mBottomTextView);
+                } else {
+                    UIUtils.viewGone(mBottomTextView);
                 }
-                UIUtils.toggleVisibility(mCoverStoryContent);
             }
+            UIUtils.toggleVisibility(mCoverStoryContent);
         });
 
         mBottomTextView.setText(mWallpaperImage.getCopyright());
@@ -176,32 +156,18 @@ public class WallpaperDetailActivity extends BaseActivity {
         arrayAdapter.addAll(mResolutions);
 
         mResolutionDialog = new AlertDialog.Builder(this).setTitle(R.string.detail_wallpaper_resolution_influences)
-                .setSingleChoiceItems(arrayAdapter, 2, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mSelectedResolution = mResolutions[which];
-                        mResolutionDialog.dismiss();
-                        loadImage(getUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION));
-                    }
+                .setSingleChoiceItems(arrayAdapter, 2, (dialog, which) -> {
+                    mSelectedResolution = mResolutions[which];
+                    mResolutionDialog.dismiss();
+                    loadImage(getUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION));
                 })
                 .create();
 
         mSetWallpaperProgressDialog = UIUtils.createProgressDialog(this, getString(R.string.set_wallpaper_running));
         mSetWallpaperProgressDialog.setCancelable(false);
         mDownLoadProgressDialog = UIUtils.createProgressDialog(this, getString(R.string.download));
-        mDownLoadProgressDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                Utils.dispose(mDownLoadSubscription);
-            }
-        });
-        mImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toggleToolbar();
-            }
-        });
+        mDownLoadProgressDialog.setOnDismissListener(dialog -> Utils.dispose(mDownLoadSubscription));
+        mImageView.setOnClickListener(v -> toggleToolbar());
         loadImage(
                 BingWallpaperUtils.getImageUrl(getApplicationContext(), Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
                         mWallpaperImage));
@@ -393,8 +359,7 @@ public class WallpaperDetailActivity extends BaseActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
             @NonNull int[] grantResults) {
         if (requestCode == 111) {
-            if (grantResults != null && grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 saveWallpaper();
             } else {
                 UIUtils.showToast(getApplicationContext(), "no permission");

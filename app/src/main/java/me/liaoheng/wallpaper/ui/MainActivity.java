@@ -13,24 +13,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.ImageViewTarget;
-import com.bumptech.glide.request.target.Target;
-import com.bumptech.glide.request.transition.Transition;
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
-import com.github.liaoheng.common.util.AppUtils;
-import com.github.liaoheng.common.util.BitmapUtils;
-import com.github.liaoheng.common.util.Callback4;
-import com.github.liaoheng.common.util.DisplayUtils;
-import com.github.liaoheng.common.util.L;
-import com.github.liaoheng.common.util.NetworkUtils;
-import com.github.liaoheng.common.util.UIUtils;
-import com.google.android.material.navigation.NavigationView;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -43,6 +25,16 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.ImageViewTarget;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
+import com.github.liaoheng.common.util.*;
+import com.google.android.material.navigation.NavigationView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
@@ -51,13 +43,7 @@ import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.service.SetWallpaperStateBroadcastReceiver;
-import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
-import me.liaoheng.wallpaper.util.BingWallpaperUtils;
-import me.liaoheng.wallpaper.util.BottomViewListener;
-import me.liaoheng.wallpaper.util.Constants;
-import me.liaoheng.wallpaper.util.CrashReportHandle;
-import me.liaoheng.wallpaper.util.EmuiHelper;
-import me.liaoheng.wallpaper.util.GlideApp;
+import me.liaoheng.wallpaper.util.*;
 import me.liaoheng.wallpaper.util.ROM;
 import me.liaoheng.wallpaper.util.TasksUtils;
 import me.liaoheng.wallpaper.widget.FeedbackDialog;
@@ -243,9 +229,13 @@ public class MainActivity extends BaseActivity
         showSwipeRefreshLayout();
 
         BingWallpaperNetworkClient.getBingWallpaper(this)
-                .compose(this.bindToLifecycle())
+                .compose(bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(bingWallpaperImage -> {
+                    if (bingWallpaperImage == null) {
+                        setBingWallpaperError(new SystemDataException("Bing not data"));
+                        return;
+                    }
                     mCurBingWallpaperImage = bingWallpaperImage;
                     if (!TextUtils.isEmpty(bingWallpaperImage.getCaption())) {
                         UIUtils.viewVisible(mCoverStoryView);
@@ -263,7 +253,7 @@ public class MainActivity extends BaseActivity
 
         if (BingWallpaperUtils.isChinaLocale(this)) {
             BingWallpaperNetworkClient.getCoverStory()
-                    .compose(this.bindToLifecycle())
+                    .compose(bindToLifecycle())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             bingWallpaperCoverStory -> {

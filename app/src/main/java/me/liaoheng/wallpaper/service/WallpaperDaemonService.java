@@ -66,22 +66,18 @@ public class WallpaperDaemonService extends Service {
         startForeground(0x112, notification);
 
         action = Observable.interval(0, 2, TimeUnit.MINUTES)
-                .subscribe(new Consumer<Long>() {
-
-                    @Override
-                    public void accept(Long aLong) throws Exception {
-                        startTime += TimeUnit.MINUTES.toSeconds(2);
-                        L.alog().d(TAG, " running...  " + startTime);
-                        if (startTime >= time) {
-                            startTime = 0;
-                            if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-                                LogDebugFileUtils.get().i(TAG, "daemon service action");
-                            }
-                            //每天成功执行一次
-                            if (TasksUtils.isToDaysDoProvider(getApplicationContext(), 1,
-                                    BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
-                                SetWallpaperBroadcastReceiver.send(getApplicationContext(), TAG);
-                            }
+                .subscribe(aLong -> {
+                    startTime += TimeUnit.MINUTES.toSeconds(2);
+                    L.alog().d(TAG, " running...  " + startTime);
+                    if (startTime >= time) {
+                        startTime = 0;
+                        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+                            LogDebugFileUtils.get().i(TAG, "daemon service action");
+                        }
+                        //每天成功执行一次
+                        if (TasksUtils.isToDaysDoProvider(getApplicationContext(), 1,
+                                BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
+                            SetWallpaperBroadcastReceiver.send(getApplicationContext(), TAG);
                         }
                     }
                 });

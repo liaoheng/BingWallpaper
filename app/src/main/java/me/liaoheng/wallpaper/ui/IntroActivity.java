@@ -1,7 +1,6 @@
 package me.liaoheng.wallpaper.ui;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -12,12 +11,6 @@ import android.view.ViewGroup;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.TimePicker;
-
-import com.github.liaoheng.common.util.UIUtils;
-import com.github.paolorotolo.appintro.AppIntro;
-
-import org.joda.time.LocalTime;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -25,13 +18,11 @@ import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.github.liaoheng.common.util.UIUtils;
+import com.github.paolorotolo.appintro.AppIntro;
 import me.liaoheng.wallpaper.R;
-import me.liaoheng.wallpaper.util.BingWallpaperAlarmManager;
-import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
-import me.liaoheng.wallpaper.util.BingWallpaperUtils;
-import me.liaoheng.wallpaper.util.ISettingTrayPreferences;
-import me.liaoheng.wallpaper.util.SettingTrayPreferences;
-import me.liaoheng.wallpaper.util.TasksUtils;
+import me.liaoheng.wallpaper.util.*;
+import org.joda.time.LocalTime;
 
 /**
  * @author liaoheng
@@ -84,10 +75,11 @@ public class IntroActivity extends AppIntro {
             mAlertDialog.show();
         }
 
-        public int updateFlag;
-        public LocalTime localTime;
-        AlertDialog mAlertDialog;
+        int updateFlag;
+        LocalTime localTime;
+        private AlertDialog mAlertDialog;
 
+        @SuppressLint("SetTextI18n")
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -96,15 +88,11 @@ public class IntroActivity extends AppIntro {
             mAlertDialog = new AlertDialog.Builder(getContext())
                     .setCustomTitle(picker)
                     .setNegativeButton(android.R.string.no, null)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @SuppressLint("SetTextI18n")
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            localTime = new LocalTime(picker.getCurrentHour(), picker.getCurrentMinute());
-                            UIUtils.viewVisible(mTimingTime);
-                            mTimingTime.setText(
-                                    getString(R.string.intro_update_set_timing_time) + localTime.toString("HH:mm"));
-                        }
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                        localTime = new LocalTime(picker.getCurrentHour(), picker.getCurrentMinute());
+                        UIUtils.viewVisible(mTimingTime);
+                        mTimingTime.setText(
+                                getString(R.string.intro_update_set_timing_time) + localTime.toString("HH:mm"));
                     })
                     .create();
         }
@@ -115,25 +103,21 @@ public class IntroActivity extends AppIntro {
                 @Nullable Bundle savedInstanceState) {
             View contentView = inflater.inflate(R.layout.fragment_intro_update, container, false);
             ButterKnife.bind(this, contentView);
-            mSelectGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-
-                @Override
-                public void onCheckedChanged(RadioGroup group, int checkedId) {
-                    switch (checkedId) {
-                        case R.id.intro_update_select_group_item_auto:
-                            updateFlag = 1;
-                            localTime = null;
-                            UIUtils.viewGone(mTimingTime);
-                            break;
-                        case R.id.intro_update_select_group_item_timing:
-                            updateFlag = 2;
-                            break;
-                        case R.id.intro_update_select_group_item_skip:
-                            updateFlag = 0;
-                            localTime = null;
-                            UIUtils.viewGone(mTimingTime);
-                            break;
-                    }
+            mSelectGroup.setOnCheckedChangeListener((group, checkedId) -> {
+                switch (checkedId) {
+                    case R.id.intro_update_select_group_item_auto:
+                        updateFlag = 1;
+                        localTime = null;
+                        UIUtils.viewGone(mTimingTime);
+                        break;
+                    case R.id.intro_update_select_group_item_timing:
+                        updateFlag = 2;
+                        break;
+                    case R.id.intro_update_select_group_item_skip:
+                        updateFlag = 0;
+                        localTime = null;
+                        UIUtils.viewGone(mTimingTime);
+                        break;
                 }
             });
             return contentView;
