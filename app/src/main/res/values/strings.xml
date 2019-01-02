@@ -18,8 +18,9 @@
     <string name="open_source_license">Open source licenses</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="send_email">Send email</string>
-    <string name="foreground_intent_service_notification_channel">Update wallpaper service</string>
-    <string name="foreground_daemon_service_notification_channel">Background daemon service</string>
+    <string name="foreground_intent_service_notification_channel">Update wallpaper service notification</string>
+    <string name="foreground_intent_service_success_notification_channel">Update wallpaper success notification</string>
+    <string name="foreground_daemon_service_notification_channel">Background daemon service notification</string>
     <string name="daemon_service_running">Daemon service running</string>
     <string name="enable_job_error">Cannot enable daily automatic update</string>
     <string name="request_failed_click_retry">Request failed, please click retry</string>

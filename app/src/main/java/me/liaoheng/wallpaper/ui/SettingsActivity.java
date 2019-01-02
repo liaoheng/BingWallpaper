@@ -16,10 +16,10 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import com.flyco.systembar.SystemBarHelper;
 import com.github.liaoheng.common.util.*;
+import com.github.liaoheng.common.util.ROM;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.service.AutoSetWallpaperBroadcastReceiver;
 import me.liaoheng.wallpaper.util.*;
-import me.liaoheng.wallpaper.util.ROM;
 import me.liaoheng.wallpaper.widget.TimePreference;
 import org.joda.time.LocalTime;
 

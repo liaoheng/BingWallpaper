@@ -1,41 +1,23 @@
 package me.liaoheng.wallpaper.service;
 
 import android.app.IntentService;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import com.bumptech.glide.request.target.Target;
-import com.github.liaoheng.common.util.Callback2;
-import com.github.liaoheng.common.util.FileUtils;
-import com.github.liaoheng.common.util.L;
-import com.github.liaoheng.common.util.NetException;
-import com.github.liaoheng.common.util.SystemException;
+import com.github.liaoheng.common.util.*;
+import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
+import me.liaoheng.wallpaper.model.BingWallpaperImage;
+import me.liaoheng.wallpaper.model.BingWallpaperState;
+import me.liaoheng.wallpaper.util.*;
+import me.liaoheng.wallpaper.util.TasksUtils;
+import me.liaoheng.wallpaper.widget.AppWidget_5x1;
+import me.liaoheng.wallpaper.widget.AppWidget_5x2;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
-import me.liaoheng.wallpaper.R;
-import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
-import me.liaoheng.wallpaper.model.BingWallpaperImage;
-import me.liaoheng.wallpaper.model.BingWallpaperState;
-import me.liaoheng.wallpaper.ui.MainActivity;
-import me.liaoheng.wallpaper.util.BingWallpaperUtils;
-import me.liaoheng.wallpaper.util.Constants;
-import me.liaoheng.wallpaper.util.CrashReportHandle;
-import me.liaoheng.wallpaper.util.GlideApp;
-import me.liaoheng.wallpaper.util.IUIHelper;
-import me.liaoheng.wallpaper.util.LogDebugFileUtils;
-import me.liaoheng.wallpaper.util.TasksUtils;
-import me.liaoheng.wallpaper.util.UIHelper;
-import me.liaoheng.wallpaper.widget.AppWidget_5x1;
-import me.liaoheng.wallpaper.widget.AppWidget_5x2;
 
 /**
  * 设置壁纸操作IntentService
@@ -92,12 +74,7 @@ public class BingWallpaperIntentService extends IntentService {
 
     @Override
     public void onCreate() {
-        Notification notification = new NotificationCompat.Builder(getApplicationContext(),
-                Constants.FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL).setSmallIcon(
-                R.drawable.ic_notification)
-                .setContentText(getText(R.string.set_wallpaper_running))
-                .setContentTitle(getText(R.string.app_name)).build();
-        startForeground(0x111, notification);
+        NotificationUtils.showStartNotification(this);
         mUiHelper = new UIHelper();
         super.onCreate();
     }
@@ -121,7 +98,7 @@ public class BingWallpaperIntentService extends IntentService {
 
         sendSetWallpaperBroadcast(BingWallpaperState.BEGIN);
 
-        Callback2<BingWallpaperImage> callback = new Callback2.EmptyCallback<BingWallpaperImage>() {
+        Callback<BingWallpaperImage> callback = new Callback.EmptyCallback<BingWallpaperImage>() {
             @Override
             public void onSuccess(BingWallpaperImage bingWallpaperImage) {
                 success(isBackground, bingWallpaperImage);
@@ -174,14 +151,7 @@ public class BingWallpaperIntentService extends IntentService {
         sendSetWallpaperBroadcast(BingWallpaperState.FAIL);
         CrashReportHandle.collectException(getApplicationContext(), TAG, throwable);
 
-        Notification notification = new NotificationCompat.Builder(getApplicationContext(),
-                Constants.FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL).setSmallIcon(
-                R.drawable.ic_notification)
-                .setAutoCancel(true)
-                .setContentText(getText(R.string.set_wallpaper_failure))
-                .setContentTitle(getText(R.string.app_name)).build();
-        NotificationManagerCompat manager = NotificationManagerCompat.from(this);
-        manager.notify(11, notification);
+        NotificationUtils.showFailureNotification(getApplicationContext());
     }
 
     private void success(boolean isBackground, BingWallpaperImage bingWallpaperImage) {
@@ -192,26 +162,11 @@ public class BingWallpaperIntentService extends IntentService {
 
         AppWidget_5x2.start(this, bingWallpaperImage);
         AppWidget_5x1.start(this, bingWallpaperImage);
-
         sendSetWallpaperBroadcast(BingWallpaperState.SUCCESS);
         if (isBackground) {
 
             if (BingWallpaperUtils.isAutomaticUpdateNotification(getApplicationContext())) {
-                Intent resultIntent = new Intent(this, MainActivity.class);
-                PendingIntent resultPendingIntent =
-                        PendingIntent.getActivity(getApplicationContext(), 12, resultIntent,
-                                PendingIntent.FLAG_UPDATE_CURRENT);
-
-                Notification notification = new NotificationCompat.Builder(getApplicationContext(),
-                        Constants.FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL).setSmallIcon(
-                        R.drawable.ic_notification)
-                        .setAutoCancel(true)
-                        .setContentText(bingWallpaperImage.getCopyright())
-                        .setContentTitle(getText(R.string.set_wallpaper_success))
-                        .setContentIntent(resultPendingIntent).build();
-
-                NotificationManagerCompat manager = NotificationManagerCompat.from(this);
-                manager.notify(12, notification);
+                NotificationUtils.showSuccessNotification(getApplicationContext(), bingWallpaperImage.getCopyright());
             }
 
             //标记成功，每天只在后台执行一次

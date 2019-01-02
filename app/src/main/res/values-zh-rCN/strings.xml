@@ -19,6 +19,7 @@
     <string name="privacy_policy">隐私政策</string>
     <string name="send_email">发送邮件</string>
     <string name="foreground_intent_service_notification_channel">更新壁纸服务通知</string>
+    <string name="foreground_intent_service_success_notification_channel">更新壁纸成功通知</string>
     <string name="foreground_daemon_service_notification_channel">后台服务通知</string>
     <string name="daemon_service_running">后台服务运行中</string>
     <string name="enable_job_error">无法开启每日自动更新</string>

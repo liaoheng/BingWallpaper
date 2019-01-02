@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 import androidx.annotation.RequiresApi;
+import com.github.liaoheng.common.util.ROM;
 
 /**
  * @author liaoheng

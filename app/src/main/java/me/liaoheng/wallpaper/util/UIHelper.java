@@ -2,6 +2,7 @@ package me.liaoheng.wallpaper.util;
 
 import android.content.Context;
 import android.os.Build;
+import com.github.liaoheng.common.util.ROM;
 
 import java.io.File;
 

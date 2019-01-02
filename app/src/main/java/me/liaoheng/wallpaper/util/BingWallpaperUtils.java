@@ -414,12 +414,13 @@ public class BingWallpaperUtils {
         }
     }
 
+    //TODO
     public static String getSystemInfo(Context context) {
         int sdk = Build.VERSION.SDK_INT;
         String device = Build.DEVICE;
         String model = Build.MODEL;
         String product = Build.PRODUCT;
-        String romName = ROM.getROM().getName();
+        //String romName = ROM.getROM().getName();
         String romVersion = ROM.getROM().getVersion();
         Locale locale = Locale.getDefault();
         Locale autoLocale = getLocale(context);
@@ -438,8 +439,8 @@ public class BingWallpaperUtils {
                 + model
                 + " product: "
                 + product
-                + " rom_name: "
-                + romName
+                //+ " rom_name: "
+                //+ romName
                 + " rom_version: "
                 + romVersion
                 + " locale: "
@@ -561,9 +562,9 @@ public class BingWallpaperUtils {
                     GlideApp.get(c).clearDiskCache();
                     NetUtils.get().clearCache();
                     return c;
-                }).observeOn(AndroidSchedulers.mainThread()).map(c -> {
+                }).observeOn(AndroidSchedulers.mainThread()).flatMap(c -> {
                     GlideApp.get(c).clearMemory();
-                    return null;
+                    return Observable.empty();
                 });
     }
 
