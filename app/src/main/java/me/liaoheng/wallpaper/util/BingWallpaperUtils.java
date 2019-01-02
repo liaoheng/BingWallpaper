@@ -2,7 +2,11 @@ package me.liaoheng.wallpaper.util;
 
 import android.app.Activity;
 import android.app.WallpaperManager;
-import android.content.*;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -12,23 +16,20 @@ import android.preference.PreferenceManager;
 import android.provider.Browser;
 import android.provider.Settings;
 import android.text.TextUtils;
-import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-import com.github.liaoheng.common.util.*;
+
+import com.github.liaoheng.common.util.AppUtils;
+import com.github.liaoheng.common.util.Callback4;
+import com.github.liaoheng.common.util.DateTimeUtils;
+import com.github.liaoheng.common.util.DisplayUtils;
+import com.github.liaoheng.common.util.FileUtils;
+import com.github.liaoheng.common.util.NetworkUtils;
+import com.github.liaoheng.common.util.ROM;
+import com.github.liaoheng.common.util.UIUtils;
+import com.github.liaoheng.common.util.Utils;
+import com.github.liaoheng.common.util.ValidateUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-import me.liaoheng.wallpaper.BuildConfig;
-import me.liaoheng.wallpaper.R;
-import me.liaoheng.wallpaper.model.BingWallpaperImage;
-import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
-import me.liaoheng.wallpaper.ui.SettingsActivity;
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
@@ -37,6 +38,21 @@ import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import me.liaoheng.wallpaper.BuildConfig;
+import me.liaoheng.wallpaper.R;
+import me.liaoheng.wallpaper.model.BingWallpaperImage;
+import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
+import me.liaoheng.wallpaper.ui.SettingsActivity;
 
 /**
  * @author liaoheng
@@ -414,13 +430,12 @@ public class BingWallpaperUtils {
         }
     }
 
-    //TODO
     public static String getSystemInfo(Context context) {
         int sdk = Build.VERSION.SDK_INT;
         String device = Build.DEVICE;
         String model = Build.MODEL;
         String product = Build.PRODUCT;
-        //String romName = ROM.getROM().getName();
+        String romName = ROM.getROM().getName();
         String romVersion = ROM.getROM().getVersion();
         Locale locale = Locale.getDefault();
         Locale autoLocale = getLocale(context);
@@ -439,8 +454,8 @@ public class BingWallpaperUtils {
                 + model
                 + " product: "
                 + product
-                //+ " rom_name: "
-                //+ romName
+                + " rom_name: "
+                + romName
                 + " rom_version: "
                 + romVersion
                 + " locale: "
@@ -492,7 +507,7 @@ public class BingWallpaperUtils {
     }
 
     public static int checkRunningService(Context context) {
-        if (NetworkUtils.isConnected(context)) {//TODO  need  multiple device test
+        if (NetworkUtils.isConnected(context)) {
             if (BingWallpaperUtils.getOnlyWifi(context)) {
                 if (!NetworkUtils.isWifiConnected(context)) {
                     return 2;

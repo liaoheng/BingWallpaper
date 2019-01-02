@@ -1,14 +1,18 @@
 package me.liaoheng.wallpaper;
 
 import android.app.Application;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
+
 import com.github.liaoheng.common.Common;
 import com.github.liaoheng.common.util.L;
+
 import io.reactivex.plugins.RxJavaPlugins;
-import me.liaoheng.wallpaper.util.*;
+import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.Constants;
+import me.liaoheng.wallpaper.util.CrashReportHandle;
+import me.liaoheng.wallpaper.util.LogDebugFileUtils;
+import me.liaoheng.wallpaper.util.NetUtils;
+import me.liaoheng.wallpaper.util.NotificationUtils;
+import me.liaoheng.wallpaper.util.TasksUtils;
 
 /**
  * @author liaoheng
