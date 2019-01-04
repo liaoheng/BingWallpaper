@@ -207,11 +207,4 @@ public class BingWallpaperIntentService extends IntentService {
         intent.putExtra(EXTRA_GET_WALLPAPER_STATE, state.getState());
         sendBroadcast(intent);
     }
-
-    @Override
-    public void onTrimMemory(int level) {
-        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().i(TAG, "onTrimMemory  " + level);
-        }
-    }
 }
