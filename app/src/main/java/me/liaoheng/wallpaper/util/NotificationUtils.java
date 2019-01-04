@@ -30,7 +30,7 @@ public class NotificationUtils {
             NotificationChannel channel1 = new NotificationChannel(
                     Constants.FOREGROUND_INTENT_SERVICE_SUCCESS_NOTIFICATION_CHANNEL,
                     context.getString(R.string.foreground_intent_service_success_notification_channel),
-                    NotificationManager.IMPORTANCE_DEFAULT);
+                    NotificationManager.IMPORTANCE_LOW);
             channel1.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
             manager.createNotificationChannel(channel1);
 
