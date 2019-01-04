@@ -5,12 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
+import androidx.annotation.RequiresApi;
+import com.github.liaoheng.common.util.ROM;
 
 import java.io.File;
 import java.io.IOException;
-
-import androidx.annotation.RequiresApi;
-import com.github.liaoheng.common.util.ROM;
 
 /**
  * @author liaoheng
@@ -31,8 +30,7 @@ public class EmuiHelper {
     }
 
     public void register(Context context) {
-        boolean bar = BingWallpaperUtils.emuiNavigationEnabled(context);
-        if (bar) {
+        if (BingWallpaperUtils.emuiNavigationEnabled(context)) {
             mListener.showBottomView();
         }
         mNavigationBarBCR = new BroadcastReceiver() {

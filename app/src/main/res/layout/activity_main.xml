@@ -45,6 +45,7 @@
                     android:background="@color/color_3000"
                     android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                     app:layout_scrollFlags="scroll|enterAlways"
+                    app:navigationIcon="@drawable/ic_drawer_home"
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
             <LinearLayout

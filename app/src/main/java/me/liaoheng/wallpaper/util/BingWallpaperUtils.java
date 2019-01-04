@@ -2,11 +2,7 @@ package me.liaoheng.wallpaper.util;
 
 import android.app.Activity;
 import android.app.WallpaperManager;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -16,35 +12,15 @@ import android.preference.PreferenceManager;
 import android.provider.Browser;
 import android.provider.Settings;
 import android.text.TextUtils;
-
-import com.github.liaoheng.common.util.AppUtils;
-import com.github.liaoheng.common.util.Callback4;
-import com.github.liaoheng.common.util.DateTimeUtils;
-import com.github.liaoheng.common.util.DisplayUtils;
-import com.github.liaoheng.common.util.FileUtils;
-import com.github.liaoheng.common.util.NetworkUtils;
-import com.github.liaoheng.common.util.ROM;
-import com.github.liaoheng.common.util.UIUtils;
-import com.github.liaoheng.common.util.Utils;
-import com.github.liaoheng.common.util.ValidateUtils;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-
-import org.joda.time.DateTime;
-import org.joda.time.LocalTime;
-
-import java.io.File;
-import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.Locale;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import com.github.liaoheng.common.util.*;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -53,6 +29,14 @@ import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.ui.SettingsActivity;
+import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.Locale;
 
 /**
  * @author liaoheng
@@ -339,18 +323,30 @@ public class BingWallpaperUtils {
     }
 
     /**
-     * 获取vivo手机设置中的"navigation_gesture_on"值，判断当前系统是使用导航键还是手势导航操作
+     * Check if vivo is enabled for gestures
      *
-     * @return false 表示使用的是虚拟导航键(NavigationBar)， true 表示使用的是手势， 默认是false
+     * @return true gestures
      */
     public static boolean vivoNavigationGestureEnabled(Context context) {
-        int val = Settings.Secure.getInt(context.getContentResolver(), "navigation_gesture_on", 0);
-        return val != 0;
+        return Settings.Secure.getInt(context.getContentResolver(), "navigation_gesture_on", 0) != 0;
     }
 
+    /**
+     * Check if MIUI is enabled for gestures
+     *
+     * @return true gestures
+     */
+    public static boolean miuiNavigationGestureEnabled(Context context) {
+        return Settings.Global.getInt(context.getContentResolver(), "force_fsg_nav_bar", 0) != 0;
+    }
+
+    /**
+     * Check if MIUI is enabled for navigation
+     *
+     * @return true navigation
+     */
     public static boolean emuiNavigationEnabled(Context context) {
-        int g = Settings.Global.getInt(context.getContentResolver(), "navigationbar_is_min", 0);
-        return g != 1;
+        return Settings.Global.getInt(context.getContentResolver(), "navigationbar_is_min", 0) != 1;
     }
 
     /**

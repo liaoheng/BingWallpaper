@@ -34,7 +34,6 @@ import com.bumptech.glide.request.transition.Transition;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.liaoheng.common.util.*;
-import com.github.liaoheng.common.util.ROM;
 import com.google.android.material.navigation.NavigationView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import me.liaoheng.wallpaper.R;
@@ -152,19 +151,20 @@ public class MainActivity extends BaseActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         initStatusBarAddToolbar();
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_drawer_home);
         mEmuiHelper = EmuiHelper.with(this);
 
         BingWallpaperJobManager.restore(this);
 
         mActionMenuBottomMargin = DisplayUtils.dp2px(this, 10);
 
-        boolean bar;
         if (ROM.getROM().isEmui()) {
             mEmuiHelper.register(this);
         } else if (ROM.getROM().isVivo()) {
-            bar = BingWallpaperUtils.vivoNavigationGestureEnabled(this);
-            if (!bar) {
+            if (!BingWallpaperUtils.vivoNavigationGestureEnabled(this)) {
+                showBottomView();
+            }
+        } else if (ROM.getROM().isMiui()) {
+            if (!BingWallpaperUtils.miuiNavigationGestureEnabled(this)) {
                 showBottomView();
             }
         } else {
@@ -392,21 +392,22 @@ public class MainActivity extends BaseActivity
 
                         Palette.from(BitmapUtils.drawableToBitmap(resource))
                                 .generate(palette -> {
-
                                     int defMuted = ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark);
                                     int defVibrant = ContextCompat.getColor(getActivity(), R.color.colorAccent);
+                                    int lightMutedSwatch = defMuted;
+                                    int lightVibrantSwatch = defVibrant;
 
-                                    int lightMutedSwatch = palette.getMutedColor(defMuted);
-                                    int lightVibrantSwatch = palette.getVibrantColor(defVibrant);
-
-                                    mSetWallpaperActionMenu.removeAllMenuButtons();
-
-                                    if (lightMutedSwatch == defMuted) {
-                                        if (lightVibrantSwatch != defVibrant) {
-                                            lightMutedSwatch = lightVibrantSwatch;
+                                    if (palette != null) {
+                                        lightMutedSwatch = palette.getMutedColor(defMuted);
+                                        lightVibrantSwatch = palette.getVibrantColor(defVibrant);
+                                        if (lightMutedSwatch == defMuted) {
+                                            if (lightVibrantSwatch != defVibrant) {
+                                                lightMutedSwatch = lightVibrantSwatch;
+                                            }
                                         }
                                     }
 
+                                    mSetWallpaperActionMenu.removeAllMenuButtons();
                                     mSetWallpaperActionMenu.setMenuButtonColorNormal(lightMutedSwatch);
                                     mSetWallpaperActionMenu.setMenuButtonColorPressed(lightMutedSwatch);
                                     mSetWallpaperActionMenu.setMenuButtonColorRipple(lightVibrantSwatch);
