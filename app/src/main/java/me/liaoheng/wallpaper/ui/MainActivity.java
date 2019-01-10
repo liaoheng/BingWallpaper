@@ -289,14 +289,24 @@ public class MainActivity extends BaseActivity
         if (mCurBingWallpaperImage == null) {
             return;
         }
-        String url = BingWallpaperUtils.getResolutionImageUrl(this, mCurBingWallpaperImage);
-        BingWallpaperUtils.setWallpaper(this, mCurBingWallpaperImage.copy(url), type,
-                new Callback4.EmptyCallback<Boolean>() {
-                    @Override
-                    public void onYes(Boolean aBoolean) {
-                        showProgressDialog();
-                    }
-                });
+        if (BingWallpaperUtils.isPixabaySupport(getApplicationContext())) {
+            BingWallpaperUtils.setWallpaper(this, null, type,
+                    new Callback4.EmptyCallback<Boolean>() {
+                        @Override
+                        public void onYes(Boolean aBoolean) {
+                            showProgressDialog();
+                        }
+                    });
+        } else {
+            String url = BingWallpaperUtils.getResolutionImageUrl(this, mCurBingWallpaperImage);
+            BingWallpaperUtils.setWallpaper(this, mCurBingWallpaperImage.copy(url), type,
+                    new Callback4.EmptyCallback<Boolean>() {
+                        @Override
+                        public void onYes(Boolean aBoolean) {
+                            showProgressDialog();
+                        }
+                    });
+        }
     }
 
     @Override

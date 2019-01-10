@@ -1,5 +1,6 @@
 package me.liaoheng.wallpaper.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -42,6 +43,7 @@ public class AppWidget_5x2 extends BaseAppWidget {
         super.onReceive(context, intent);
     }
 
+    @SuppressLint("CheckResult")
     @Override
     protected void setText(final Context context, final BingWallpaperImage image) {
         final RemoteViews remoteViews = getRemoteViews(context, R.layout.view_appwidget_5x2);
@@ -56,25 +58,18 @@ public class AppWidget_5x2 extends BaseAppWidget {
             BingWallpaperNetworkClient.getCoverStory()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            new Consumer<BingWallpaperCoverStory>() {
+                            bingWallpaperCoverStory -> {
+                                remoteViews.setTextViewText(R.id.app_widget_title,
+                                        bingWallpaperCoverStory.getTitle());
+                                remoteViews.setTextViewText(R.id.app_widget_content,
+                                        bingWallpaperCoverStory.getPara1()
+                                                + bingWallpaperCoverStory.getPara2());
 
-                                @Override
-                                public void accept(BingWallpaperCoverStory bingWallpaperCoverStory) throws Exception {
-                                    remoteViews.setTextViewText(R.id.app_widget_title,
-                                            bingWallpaperCoverStory.getTitle());
-                                    remoteViews.setTextViewText(R.id.app_widget_content,
-                                            bingWallpaperCoverStory.getPara1()
-                                                    + bingWallpaperCoverStory.getPara2());
-
-                                    update(context, AppWidget_5x2.class, remoteViews);
-                                }
-                            }, new Consumer<Throwable>() {
-                                @Override
-                                public void accept(Throwable throwable) throws Exception {
-                                    remoteViews.setTextViewText(R.id.app_widget_title, image.getCopyright());
-                                    remoteViews.setTextViewText(R.id.app_widget_content, "");
-                                    update(context, AppWidget_5x2.class, remoteViews);
-                                }
+                                update(context, AppWidget_5x2.class, remoteViews);
+                            }, throwable -> {
+                                remoteViews.setTextViewText(R.id.app_widget_title, image.getCopyright());
+                                remoteViews.setTextViewText(R.id.app_widget_content, "");
+                                update(context, AppWidget_5x2.class, remoteViews);
                             });
         } else if (!TextUtils.isEmpty(image.getCaption())) {
             remoteViews.setTextViewText(R.id.app_widget_title, image.getCaption());

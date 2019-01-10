@@ -4,26 +4,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
-import androidx.annotation.NonNull;
 import com.bumptech.glide.request.target.Target;
 import com.github.liaoheng.common.Common;
-import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.*;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkService;
-import okhttp3.*;
+import okhttp3.Cache;
+import okhttp3.Dispatcher;
+import okhttp3.OkHttpClient;
 import okhttp3.internal.Util;
-import okio.Buffer;
-import okio.BufferedSource;
+import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.commons.io.FilenameUtils;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -75,7 +72,13 @@ public class NetUtils {
         Dispatcher dispatcher = new Dispatcher(threadPoolExecutor);
         mSingleRetrofit = factory.client(simpleBuilder.dispatcher(dispatcher).build()).build();
 
-        simpleBuilder.dispatcher(new Dispatcher()).addNetworkInterceptor(new LogInterceptor("NetUtils"));
+        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor(
+                message -> {
+                    L.alog().d("NetUtils", message);
+                });
+        httpLoggingInterceptor.setLevel(
+                L.isPrint() ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
+        simpleBuilder.dispatcher(new Dispatcher()).addNetworkInterceptor(httpLoggingInterceptor);
         try {
             File cacheFile = FileUtils.getProjectSpaceCacheDirectory(context, Constants.HTTP_CACHE_DIR);
             simpleBuilder.cache(new Cache(cacheFile, Constants.HTTP_DISK_CACHE_SIZE));
@@ -100,93 +103,6 @@ public class NetUtils {
             mBingWallpaperSingleNetworkService = mSingleRetrofit.create(BingWallpaperNetworkService.class);
         }
         return mBingWallpaperSingleNetworkService;
-    }
-
-    /**
-     * http log
-     *
-     * @see <a href="https://github.com/square/okhttp/blob/master/okhttp-logging-interceptor/src/main/java/okhttp3/logging/HttpLoggingInterceptor.java">HttpLoggingInterceptor</a>
-     */
-    public static class LogInterceptor implements Interceptor {
-
-        private String tag;
-
-        public LogInterceptor() {
-            tag = LogInterceptor.class.getSimpleName();
-        }
-
-        public LogInterceptor(String tag) {
-            this.tag = tag;
-        }
-
-        /**
-         * Returns true if the body in question probably contains human readable text. Uses a small sample
-         * of code points to detect unicode control characters commonly used in binary file signatures.
-         */
-        private static boolean isPlaintext(Buffer buffer) {
-            try {
-                Buffer prefix = new Buffer();
-                long byteCount = buffer.size() < 64 ? buffer.size() : 64;
-                buffer.copyTo(prefix, 0, byteCount);
-                for (int i = 0; i < 16; i++) {
-                    if (prefix.exhausted()) {
-                        break;
-                    }
-                    int codePoint = prefix.readUtf8CodePoint();
-                    if (Character.isISOControl(codePoint) && !Character.isWhitespace(codePoint)) {
-                        return false;
-                    }
-                }
-                return true;
-            } catch (EOFException e) {
-                return false; // Truncated UTF-8 sequence.
-            }
-        }
-
-        @Override
-        public Response intercept(@NonNull Chain chain) throws IOException {
-
-            Request request = chain.request();
-            long t1 = System.nanoTime();
-            L.alog().d(tag, "Sending request %s on %s%n%s", request.url(), request.method(),
-                    request.headers());
-
-            try {
-                if (request.body() != null) {
-                    if (!request.body().contentType()
-                            .equals(MediaType.parse("multipart/form-data"))) {
-                        final Buffer buffer = new Buffer();
-                        request.body().writeTo(buffer);
-                        if (isPlaintext(buffer)) {
-                            L.Log.d(tag, buffer.clone().readUtf8());
-                        }
-                    }
-                }
-            } catch (Exception ignored) {
-            }
-
-            Response response = chain.proceed(request);
-
-            long t2 = System.nanoTime();
-            L.alog().d(tag, "Received response(%s) for %s in %.1fms%n%s", response.code(),
-                    response.request().url(), (t2 - t1) / 1e6d, response.headers());
-
-            try {
-                if (response.body() != null) {
-                    ResponseBody responseBody = response.body();
-                    BufferedSource source = responseBody.source();
-                    source.request(Long.MAX_VALUE); // Buffer the entire body.
-                    Buffer buffer = source.buffer();
-                    if (isPlaintext(buffer)) {
-                        if (L.isPrint()) {
-                            Log.d(tag, buffer.clone().readUtf8());
-                        }
-                    }
-                }
-            } catch (Exception ignored) {
-            }
-            return response;
-        }
     }
 
     public Disposable downloadImageToFile(final Context context, String url, Callback<File> callback) {

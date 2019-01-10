@@ -271,6 +271,11 @@ public class BingWallpaperUtils {
                 .getBoolean(SettingsActivity.PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, false);
     }
 
+    public static boolean isPixabaySupport(Context context) {
+        return SettingTrayPreferences.get(context)
+                .getBoolean(SettingsActivity.PREF_PREF_PIXABAY_SUPPORT, false);
+    }
+
     public static void disabledReceiver(Context context, String receiver) {
         settingReceiver(context, receiver, PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
     }

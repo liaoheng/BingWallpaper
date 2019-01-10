@@ -10,6 +10,7 @@ import com.github.liaoheng.common.util.*;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
+import me.liaoheng.wallpaper.model.PixabayImage;
 import me.liaoheng.wallpaper.util.*;
 import me.liaoheng.wallpaper.util.TasksUtils;
 import me.liaoheng.wallpaper.widget.AppWidget_5x1;
@@ -111,15 +112,26 @@ public class BingWallpaperIntentService extends IntentService {
         };
         String imageUrl;
         if (bingWallpaperImage == null) {
-            try {
-                String locale = BingWallpaperUtils.getAutoLocale(getApplicationContext());
-                String url = BingWallpaperUtils.getUrl(getApplicationContext());
-                bingWallpaperImage = BingWallpaperNetworkClient.getBingWallpaperSingleCall(url, locale);
-                imageUrl = BingWallpaperUtils.getResolutionImageUrl(getApplicationContext(),
-                        bingWallpaperImage);
-            } catch (NetException e) {
-                callback.onError(e);
-                return;
+            if (BingWallpaperUtils.isPixabaySupport(getApplicationContext())) {
+                try {
+                    PixabayImage image = BingWallpaperNetworkClient.getPixabayEditorsChoiceExecute();
+                    imageUrl = image.getLargeImageURL();
+                    bingWallpaperImage = new BingWallpaperImage("Photo by " + image.getUser() + " on Pixabay");
+                } catch (NetException e) {
+                    callback.onError(e);
+                    return;
+                }
+            } else {
+                try {
+                    String locale = BingWallpaperUtils.getAutoLocale(getApplicationContext());
+                    String url = BingWallpaperUtils.getUrl(getApplicationContext());
+                    bingWallpaperImage = BingWallpaperNetworkClient.getBingWallpaperSingleCall(url, locale);
+                    imageUrl = BingWallpaperUtils.getResolutionImageUrl(getApplicationContext(),
+                            bingWallpaperImage);
+                } catch (NetException e) {
+                    callback.onError(e);
+                    return;
+                }
             }
         } else {
             imageUrl = bingWallpaperImage.getImageUrl();

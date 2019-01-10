@@ -27,8 +27,8 @@
                 android:defaultValue="3"
                 android:entries="@array/pref_set_wallpaper_day_fully_automatic_update_interval"
                 android:entryValues="@array/pref_set_wallpaper_day_fully_automatic_update_interval"
-                android:summary="@string/pref_set_wallpaper_day_fully_automatic_update_interval_note"
                 android:key="pref_set_wallpaper_day_fully_automatic_update_interval"
+                android:summary="@string/pref_set_wallpaper_day_fully_automatic_update_interval_note"
                 android:title="@string/pref_set_wallpaper_day_fully_automatic_update_interval" />
 
         <CheckBoxPreference
@@ -56,6 +56,13 @@
                 android:key="pref_set_wallpaper_day_fully_automatic_update_notification"
                 android:summary="@string/pref_auto_update_everyday_notification_note"
                 android:title="@string/pref_auto_update_everyday_notification"
+                android:widgetLayout="@layout/mp_preference_switch" />
+
+        <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="pref_pixabay_support"
+                android:summary="@string/pref_pixabay_support_note"
+                android:title="@string/pref_pixabay_support"
                 android:widgetLayout="@layout/mp_preference_switch" />
     </PreferenceCategory>
 

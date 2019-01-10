@@ -84,6 +84,7 @@ dependencies {
     annotationProcessor deps.glide_compiler
     implementation deps.glide_okhttp3_integration
     implementation deps.okhttp
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.0'
     implementation deps.retrofit
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
     implementation deps.retrofit_adapter_rxjava2

@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import com.flyco.systembar.SystemBarHelper;
 import com.github.liaoheng.common.util.*;
-import com.github.liaoheng.common.util.ROM;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.service.AutoSetWallpaperBroadcastReceiver;
 import me.liaoheng.wallpaper.util.*;
@@ -52,6 +51,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
     public static final String PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI = "pref_set_wallpaper_day_auto_update_only_wifi";
     public static final String PREF_SET_WALLPAPER_LOG = "pref_set_wallpaper_debug_log";
     public static final String PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER = "pref_set_miui_lock_screen_wallpaper";
+    public static final String PREF_PREF_PIXABAY_SUPPORT = "pref_pixabay_support";
     public static final String PREF_CRASH_REPORT = "pref_crash_report";
 
     public static class MyPreferenceFragment extends com.fnp.materialpreferences.PreferenceFragment
@@ -82,6 +82,8 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
         private CheckBoxPreference mCrashPreference;
         private ListPreference mAutoUpdateTypeListPreference;
         private CheckBoxPreference mMIuiLockScreenPreference;
+        private CheckBoxPreference mPixabaySupportPreference;
+        private int openLogCount;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -94,6 +96,19 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             } catch (SystemException e) {
                 L.alog().w(TAG, e);
             }
+
+            mPixabaySupportPreference = (CheckBoxPreference) findPreference(PREF_PREF_PIXABAY_SUPPORT);
+            version.setOnPreferenceClickListener(preference -> {
+                openLogCount++;
+                if (openLogCount >= 3) {
+                    openLogCount = 0;
+                    ((PreferenceCategory) findPreference("pref_wallpaper_group")).addPreference(
+                            mPixabaySupportPreference);
+                }
+                return true;
+            });
+
+            ((PreferenceCategory) findPreference("pref_wallpaper_group")).removePreference(mPixabaySupportPreference);
 
             findPreference("pref_intro").setOnPreferenceClickListener(preference -> {
                 UIUtils.startActivity(getActivity(), IntroActivity.class);
@@ -233,6 +248,9 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     mCountryListPreference.setSummary(mCountryListPreference.getEntry());
                     mPreferences.put(PREF_COUNTRY, mCountryListPreference.getValue());
                     BingWallpaperUtils.clearCache(getActivity()).subscribe();
+                    break;
+                case PREF_PREF_PIXABAY_SUPPORT:
+                    mPreferences.put(PREF_PREF_PIXABAY_SUPPORT, mPixabaySupportPreference.isChecked());
                     break;
                 case PREF_SET_WALLPAPER_AUTO_MODE:
                     mModeTypeListPreference.setSummary(mModeTypeListPreference.getEntry());

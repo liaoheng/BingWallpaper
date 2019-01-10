@@ -33,6 +33,10 @@ public class BingWallpaperImage implements Parcelable {
                 hsh, drk, top, bot, caption, copyrightonly, desc, imageUrl);
     }
 
+    public BingWallpaperImage(String copyright) {
+        this.copyright = copyright;
+    }
+
     public BingWallpaperImage(String startdate, String fullstartdate, String enddate, String url, String urlbase,
             String copyright, String copyrightlink, boolean wp, String hsh, int drk, int top, int bot,
             String caption, String copyrightonly, String desc, String imageUrl) {

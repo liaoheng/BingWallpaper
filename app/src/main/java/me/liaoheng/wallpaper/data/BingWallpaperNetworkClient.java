@@ -4,9 +4,7 @@ import android.content.Context;
 import com.github.liaoheng.common.util.*;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
-import me.liaoheng.wallpaper.model.BingWallpaper;
-import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
-import me.liaoheng.wallpaper.model.BingWallpaperImage;
+import me.liaoheng.wallpaper.model.*;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.NetUtils;
@@ -87,4 +85,26 @@ public class BingWallpaperNetworkClient {
         return String.format(Constants.MKT_HEADER, locale);
     }
 
+    public static PixabayImage getPixabayEditorsChoiceExecute() throws NetException {
+        try {
+            Response<Pixabay> execute = NetUtils.get()
+                    .getBingWallpaperSingleNetworkService()
+                    .getPixabayEditorsChoice()
+                    .execute();
+            if (execute.isSuccessful()) {
+                Pixabay bingWallpaper = execute.body();
+                if (bingWallpaper == null || bingWallpaper.getHits() == null
+                        || bingWallpaper.getHits().isEmpty()) {
+                    throw new NetServerException("pixabay is not data");
+                }
+                int size = bingWallpaper.getHits().size();
+                int num = (int) (Math.random() * size);
+                return bingWallpaper.getHits().get(num);
+            } else {
+                throw new NetServerException("pixabay server response failure");
+            }
+        } catch (IOException e) {
+            throw new NetLocalException(e);
+        }
+    }
 }
