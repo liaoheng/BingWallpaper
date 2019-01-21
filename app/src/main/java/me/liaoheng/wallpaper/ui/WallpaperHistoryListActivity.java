@@ -11,7 +11,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.bumptech.glide.request.target.ImageViewTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.flyco.systembar.SystemBarHelper;
@@ -23,17 +30,6 @@ import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 import com.github.liaoheng.common.util.ValidateUtils;
-
-import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
@@ -42,6 +38,8 @@ import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.GlideApp;
+
+import java.util.List;
 
 /**
  * 壁纸历史列表
@@ -69,16 +67,26 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mWallpaperAdapter = new WallpaperAdapter(this);
-
-        mRecyclerViewHelper = new RecyclerViewHelper.Builder(this,
+        RecyclerViewHelper.Builder builder = new RecyclerViewHelper.Builder(this,
                 new GridLayoutManager(this, 3))
-                .addLoadMoreFooterView(R.layout.view_wallpaper_list_footer, new HandleView.EmptyHandleView() {
-                    @Override
-                    public void handle(View view) {
-                    }
-                })
-                .setMergedIntoLineSpanSizeLookup()
-                .setAdapter(mWallpaperAdapter).build();
+                .setAdapter(mWallpaperAdapter);
+        //if (BingWallpaperUtils.isPixabaySupport(this)) {
+        //    builder.setLoadMoreListener(this::getPixabayList).addLoadMoreFooterView();
+        //} else {
+            builder.addLoadMoreFooterView(R.layout.view_wallpaper_list_footer, new HandleView.EmptyHandleView() {
+                @Override
+                public void handle(View view) {
+                }
+            });
+        //}
+        mRecyclerViewHelper = builder.setMergedIntoLineSpanSizeLookup().build();
+
+        //if (BingWallpaperUtils.isPixabaySupport(this)) {
+        //    index++;
+        //    getPixabayList();
+        //    return;
+        //}
+
         getBingWallpaperList(new Callback.EmptyCallback() {
             @Override
             public void onFinish() {
@@ -91,6 +99,35 @@ public class WallpaperHistoryListActivity extends BaseActivity {
             }
         });
     }
+
+    //private void getPixabayList() {
+    //    Observable<List<BingWallpaperImage>> listObservable = BingWallpaperNetworkClient.getPixabayEditorsChoiceList(
+    //            index)
+    //            .compose(this.bindToLifecycle());
+    //    Utils.addSubscribe(listObservable, new Callback.EmptyCallback<List<BingWallpaperImage>>() {
+    //        @Override
+    //        public void onPreExecute() {
+    //            mRecyclerViewHelper.setLoadMoreLoading(true);
+    //        }
+    //
+    //        @Override
+    //        public void onPostExecute() {
+    //            mRecyclerViewHelper.setLoadMoreLoading(false);
+    //        }
+    //
+    //        @Override
+    //        public void onSuccess(List<BingWallpaperImage> images) {
+    //            mRecyclerViewHelper.setLoadMoreHasLoadedAllItems(images.size() == 0);
+    //            index++;
+    //            mWallpaperAdapter.addAll(images);
+    //        }
+    //
+    //        @Override
+    //        public void onError(Throwable e) {
+    //            setBingWallpaperError(e);
+    //        }
+    //    });
+    //}
 
     private void getBingWallpaperList(final Callback callback) {
         Observable<List<BingWallpaperImage>> listObservable = BingWallpaperNetworkClient.getBingWallpaper(this, index,
@@ -172,15 +209,22 @@ public class WallpaperHistoryListActivity extends BaseActivity {
                                 mImageView, "bing_wallpaper_detail_image");
                 ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
             });
-
-            String imageUrl = BingWallpaperUtils.getImageUrl(getApplicationContext(),
-                    Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
-                    item);
+            String imageUrl;
+            int width = Constants.WallpaperConfig.WALLPAPER_RESOLUTION_WIDTH;
+            int height = Constants.WallpaperConfig.WALLPAPER_RESOLUTION_HEIGHT;
+            //if (BingWallpaperUtils.isPixabaySupport(getContext())) {
+            //    imageUrl = item.getUrlbase();
+            //    width = Target.SIZE_ORIGINAL;
+            //    height = Target.SIZE_ORIGINAL;
+            //} else {
+                imageUrl = BingWallpaperUtils.getImageUrl(getContext(),
+                        Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
+                        item);
+            //}
             GlideApp.with(getContext())
                     .asDrawable()
                     .thumbnail(0.3f)
-                    .override(Constants.WallpaperConfig.WALLPAPER_RESOLUTION_WIDTH,
-                            Constants.WallpaperConfig.WALLPAPER_RESOLUTION_HEIGHT)
+                    .override(width, height)
                     .error(R.drawable.lcn_empty_photo)
                     .load(imageUrl)
                     .into(new ProgressImageViewTarget(mImageView, mProgressBar));

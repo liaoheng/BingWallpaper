@@ -5,10 +5,7 @@ import me.liaoheng.wallpaper.model.BingWallpaper;
 import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import me.liaoheng.wallpaper.model.Pixabay;
 import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Header;
-import retrofit2.http.Headers;
-import retrofit2.http.Url;
+import retrofit2.http.*;
 
 /**
  * @author liaoheng
@@ -31,4 +28,7 @@ public interface BingWallpaperNetworkService {
 
     @GET("https://pixabay.com/api/?key=11234205-21f02ee751cd3cd4f1fa49b70&editors_choice=true&image_type=photo")
     Call<Pixabay> getPixabayEditorsChoice();
+
+    @GET("https://pixabay.com/api/?key=11234205-21f02ee751cd3cd4f1fa49b70&editors_choice=true&image_type=photo")
+    Observable<Pixabay> getPixabayEditorsChoice(@Query("page") int page, @Query("per_page") int perPage);
 }

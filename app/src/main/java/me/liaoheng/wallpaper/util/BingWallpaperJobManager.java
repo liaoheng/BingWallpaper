@@ -1,6 +1,5 @@
 package me.liaoheng.wallpaper.util;
 
-import android.app.Notification;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
@@ -9,30 +8,20 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
-
-import com.firebase.jobdispatcher.Constraint;
-import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-import com.firebase.jobdispatcher.GooglePlayDriver;
-import com.firebase.jobdispatcher.Job;
-import com.firebase.jobdispatcher.Lifetime;
-import com.firebase.jobdispatcher.RetryStrategy;
-import com.firebase.jobdispatcher.Trigger;
+import androidx.annotation.IntDef;
+import androidx.core.content.ContextCompat;
+import com.firebase.jobdispatcher.*;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.UIUtils;
+import me.liaoheng.wallpaper.R;
+import me.liaoheng.wallpaper.service.FirebaseJobSchedulerDaemonService;
+import me.liaoheng.wallpaper.service.JobSchedulerDaemonService;
+import me.liaoheng.wallpaper.service.WallpaperDaemonService;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import androidx.annotation.IntDef;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
-import me.liaoheng.wallpaper.R;
-import me.liaoheng.wallpaper.service.FirebaseJobSchedulerDaemonService;
-import me.liaoheng.wallpaper.service.JobSchedulerDaemonService;
-import me.liaoheng.wallpaper.service.WallpaperDaemonService;
 
 /**
  * @author liaoheng
@@ -167,15 +156,8 @@ public class BingWallpaperJobManager {
                         }
                     }
                 } else {
-                    String errorString = BingWallpaperUtils.getGooglePlayServicesAvailableErrorString(context);
-                    Notification notification = new NotificationCompat.Builder(context,
-                            Constants.GMS_NOTIFICATION_CHANNEL).setSmallIcon(
-                            R.drawable.ic_notification)
-                            .setAutoCancel(true)
-                            .setContentText("Google service error: " + errorString)
-                            .setContentTitle(context.getString(R.string.app_name))
-                            .build();
-                    NotificationManagerCompat.from(context).notify(0x56, notification);
+                    NotificationUtils.showGMSErrorNotification(context,
+                            BingWallpaperUtils.getGooglePlayServicesAvailableErrorString(context));
                     if (!enableSystem(context, time)) {
                         return enableDaemonService(context);
                     }

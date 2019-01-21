@@ -35,6 +35,7 @@ import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.liaoheng.common.util.*;
 import com.google.android.material.navigation.NavigationView;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
@@ -209,7 +210,11 @@ public class MainActivity extends BaseActivity
             if (isRun) {
                 UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_running);
             } else {
-                getBingWallpaper();
+                if (BingWallpaperUtils.isPixabaySupport(this)) {
+                    getPixabay();
+                } else {
+                    getBingWallpaper();
+                }
             }
         });
 
@@ -217,7 +222,35 @@ public class MainActivity extends BaseActivity
         mHeaderCoverStoryTitleView = mNavigationView.getHeaderView(0)
                 .findViewById(R.id.navigation_header_cover_story_title);
 
-        getBingWallpaper();
+        if (BingWallpaperUtils.isPixabaySupport(this)) {
+            getPixabay();
+        } else {
+            getBingWallpaper();
+        }
+    }
+
+    private void getPixabay() {
+        if (!NetworkUtils.isConnectedOrConnecting(getApplicationContext())) {
+            mErrorTextView.setText(getString(R.string.network_unavailable));
+            return;
+        }
+        showSwipeRefreshLayout();
+
+        Observable<BingWallpaperImage> listObservable = BingWallpaperNetworkClient.randomPixabayEditorsChoice()
+                .compose(this.bindToLifecycle());
+        Utils.addSubscribe(listObservable, new Callback.EmptyCallback<BingWallpaperImage>() {
+            @Override
+            public void onSuccess(BingWallpaperImage bingWallpaper) {
+                mCurBingWallpaperImage = bingWallpaper;
+                UIUtils.viewGone(mCoverStoryView);
+                setImage(bingWallpaper);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                setBingWallpaperError(e);
+            }
+        });
     }
 
     @SuppressLint({ "SetTextI18n", "CheckResult" })
@@ -289,24 +322,20 @@ public class MainActivity extends BaseActivity
         if (mCurBingWallpaperImage == null) {
             return;
         }
+        String url;
         if (BingWallpaperUtils.isPixabaySupport(getApplicationContext())) {
-            BingWallpaperUtils.setWallpaper(this, null, type,
-                    new Callback4.EmptyCallback<Boolean>() {
-                        @Override
-                        public void onYes(Boolean aBoolean) {
-                            showProgressDialog();
-                        }
-                    });
+            url = mCurBingWallpaperImage.getUrl();
         } else {
-            String url = BingWallpaperUtils.getResolutionImageUrl(this, mCurBingWallpaperImage);
-            BingWallpaperUtils.setWallpaper(this, mCurBingWallpaperImage.copy(url), type,
-                    new Callback4.EmptyCallback<Boolean>() {
-                        @Override
-                        public void onYes(Boolean aBoolean) {
-                            showProgressDialog();
-                        }
-                    });
+            url = BingWallpaperUtils.getResolutionImageUrl(this, mCurBingWallpaperImage);
         }
+
+        BingWallpaperUtils.setWallpaper(this, mCurBingWallpaperImage.copy(url), type,
+                new Callback4.EmptyCallback<Boolean>() {
+                    @Override
+                    public void onYes(Boolean aBoolean) {
+                        showProgressDialog();
+                    }
+                });
     }
 
     @Override
@@ -320,7 +349,7 @@ public class MainActivity extends BaseActivity
     }
 
     private void dismissSwipeRefreshLayout() {
-        mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(false));
+        dismissProgressDialog();
     }
 
     private void dismissProgressDialog() {
@@ -331,7 +360,7 @@ public class MainActivity extends BaseActivity
 
     private void showSwipeRefreshLayout() {
         mErrorTextView.setText("");
-        mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(true));
+        showProgressDialog();
     }
 
     private void showProgressDialog() {
@@ -347,7 +376,11 @@ public class MainActivity extends BaseActivity
         } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_history_list) {
             UIUtils.startActivity(this, WallpaperHistoryListActivity.class);
         } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_info) {
-            BingWallpaperUtils.openBrowser(this, mCurBingWallpaperImage);
+            if (BingWallpaperUtils.isPixabaySupport(this)) {
+                BingWallpaperUtils.openBrowser(this, mCurBingWallpaperImage.getCopyrightlink());
+            } else {
+                BingWallpaperUtils.openBrowser(this, mCurBingWallpaperImage);
+            }
         } else if (item.getItemId() == R.id.menu_main_drawer_help) {
             BingWallpaperUtils.openBrowser(this, "https://github.com/liaoheng/BingWallpaper/blob/image/HELP.md");
         } else if (item.getItemId() == R.id.menu_main_drawer_feedback) {
@@ -360,10 +393,14 @@ public class MainActivity extends BaseActivity
     private void setImage(BingWallpaperImage bingWallpaperImage) {
         setTitle(bingWallpaperImage.getCopyright());
         mHeaderCoverStoryTitleView.setText(bingWallpaperImage.getCopyright());
-
-        String url = BingWallpaperUtils.getImageUrl(getApplicationContext(),
-                Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION,
-                bingWallpaperImage);
+        String url;
+        if (BingWallpaperUtils.isPixabaySupport(this)) {
+            url = bingWallpaperImage.getUrl();
+        } else {
+            url = BingWallpaperUtils.getImageUrl(getApplicationContext(),
+                    Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION,
+                    bingWallpaperImage);
+        }
 
         GlideApp.with(getActivity())
                 .load(url)

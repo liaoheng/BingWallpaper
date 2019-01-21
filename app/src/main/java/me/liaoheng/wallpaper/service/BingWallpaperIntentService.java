@@ -10,7 +10,6 @@ import com.github.liaoheng.common.util.*;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
-import me.liaoheng.wallpaper.model.PixabayImage;
 import me.liaoheng.wallpaper.util.*;
 import me.liaoheng.wallpaper.util.TasksUtils;
 import me.liaoheng.wallpaper.widget.AppWidget_5x1;
@@ -75,7 +74,6 @@ public class BingWallpaperIntentService extends IntentService {
 
     @Override
     public void onCreate() {
-        NotificationUtils.showStartNotification(this);
         mUiHelper = new UIHelper();
         super.onCreate();
     }
@@ -88,6 +86,7 @@ public class BingWallpaperIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(final Intent intent) {
+        NotificationUtils.showStartNotification(this);
         @Constants.setWallpaperMode int setWallpaperType = intent.getIntExtra(EXTRA_SET_WALLPAPER_MODE, 0);
         final boolean isBackground = intent.getBooleanExtra(EXTRA_SET_WALLPAPER_BACKGROUND, false);
         BingWallpaperImage bingWallpaperImage = intent.getParcelableExtra(EXTRA_SET_WALLPAPER_IMAGE);
@@ -114,9 +113,8 @@ public class BingWallpaperIntentService extends IntentService {
         if (bingWallpaperImage == null) {
             if (BingWallpaperUtils.isPixabaySupport(getApplicationContext())) {
                 try {
-                    PixabayImage image = BingWallpaperNetworkClient.getPixabayEditorsChoiceExecute();
-                    imageUrl = image.getLargeImageURL();
-                    bingWallpaperImage = new BingWallpaperImage("Photo by " + image.getUser() + " on Pixabay");
+                    bingWallpaperImage = BingWallpaperNetworkClient.getPixabayEditorsChoiceExecute();
+                    imageUrl = bingWallpaperImage.getUrl();
                 } catch (NetException e) {
                     callback.onError(e);
                     return;

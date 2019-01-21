@@ -3,26 +3,18 @@ package me.liaoheng.wallpaper.data.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.preference.PreferenceManager;
-
 import me.liaoheng.wallpaper.BuildConfig;
-import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.provider.TasksContract;
-import me.liaoheng.wallpaper.ui.SettingsActivity;
 import me.liaoheng.wallpaper.util.Constants;
-import me.liaoheng.wallpaper.util.ISettingTrayPreferences;
-import me.liaoheng.wallpaper.util.SettingTrayPreferences;
 
 /**
  * @author liaoheng
  * @version 2018-01-16 15:44
  */
 public class DBHelper extends SQLiteOpenHelper {
-    private Context mContext;
 
     public DBHelper(Context context) {
         super(context, Constants.PROJECT_NAME + ".db", null, BuildConfig.VERSION_CODE);
-        mContext = context;
     }
 
     private static final String DB_CREATE = "create table " + TasksContract.TaskEntry.TABLE_NAME +
@@ -36,24 +28,5 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        ISettingTrayPreferences appPreferences = SettingTrayPreferences.get(mContext);
-
-        String[] names = mContext.getResources()
-                .getStringArray(R.array.pref_set_wallpaper_resolution_name);
-
-        String resolution = appPreferences
-                .getString(SettingsActivity.PREF_SET_WALLPAPER_RESOLUTION, "0");
-        try {
-            String name = names[Integer.parseInt(resolution)];
-        } catch (Exception e) {
-            PreferenceManager.getDefaultSharedPreferences(mContext)
-                    .edit()
-                    .putString(SettingsActivity.PREF_SET_WALLPAPER_RESOLUTION, "0")
-                    .putString(SettingsActivity.PREF_SAVE_WALLPAPER_RESOLUTION, "0")
-                    .apply();
-            appPreferences.put(SettingsActivity.PREF_SET_WALLPAPER_RESOLUTION, "0");
-            appPreferences.put(SettingsActivity.PREF_SAVE_WALLPAPER_RESOLUTION, "0");
-        }
-    }
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
 }

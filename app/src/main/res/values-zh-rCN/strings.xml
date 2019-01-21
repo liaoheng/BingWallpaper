@@ -59,6 +59,8 @@
     <string name="pref_clear_cache">清除缓存</string>
     <string name="pref_clear_cache_success">清除缓存成功</string>
     <string name="pref_log_file">启用活动日志</string>
+    <string name="pref_pixabay_support">Pixabay 支持(测试)</string>
+    <string name="pref_pixabay_support_note">从Pixabay中随机生成一张图片作为壁纸</string>
     <string name="pref_set_miui_lock_screen_wallpaper">MIUI锁定屏幕支持</string>
     <string name="pref_set_miui_lock_screen_wallpaper_note">需要Root权限，请谨慎使用</string>
     <string name="pref_crash_report">情况统计信息和崩溃报告</string>

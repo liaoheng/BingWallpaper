@@ -129,24 +129,22 @@ public class WallpaperDetailActivity extends BaseActivity {
 
         ((View) mCoverStoryToggle.getParent()).setOnClickListener(v -> mCoverStoryToggle.toggle());
         mCoverStoryToggle.setOnCheckedChangeListener((view, isChecked) -> {
-            if (mWallpaperImage != null) {
-                if (mCoverStoryContent.getVisibility() == View.VISIBLE) {
-                    UIUtils.viewVisible(mBottomTextView);
-                } else {
-                    UIUtils.viewGone(mBottomTextView);
-                }
+            if (mCoverStoryContent.getVisibility() == View.VISIBLE) {
+                UIUtils.viewVisible(mBottomTextView);
+            } else {
+                UIUtils.viewGone(mBottomTextView);
             }
             UIUtils.toggleVisibility(mCoverStoryContent);
         });
 
         mBottomTextView.setText(mWallpaperImage.getCopyright());
 
-        if (!TextUtils.isEmpty(mWallpaperImage.getCaption())) {
+        if (TextUtils.isEmpty(mWallpaperImage.getCaption())) {
+            UIUtils.viewParentGone(mCoverStoryToggle.getParent());
+        } else {
             UIUtils.viewParentVisible(mCoverStoryToggle.getParent());
             mCoverStoryTitleView.setText(mWallpaperImage.getCaption());
             mCoverStoryTextView.setText(mWallpaperImage.getDesc());
-        } else {
-            UIUtils.viewParentGone(mCoverStoryToggle.getParent());
         }
 
         mBottomView.setPadding(mBottomView.getPaddingLeft(), mBottomView.getPaddingTop(),
@@ -168,9 +166,14 @@ public class WallpaperDetailActivity extends BaseActivity {
         mDownLoadProgressDialog = UIUtils.createProgressDialog(this, getString(R.string.download));
         mDownLoadProgressDialog.setOnDismissListener(dialog -> Utils.dispose(mDownLoadSubscription));
         mImageView.setOnClickListener(v -> toggleToolbar());
-        loadImage(
-                BingWallpaperUtils.getImageUrl(getApplicationContext(), Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
-                        mWallpaperImage));
+        //if (BingWallpaperUtils.isPixabaySupport(this)) {
+        //    loadImage(mWallpaperImage.getUrl());
+        //} else {
+            loadImage(
+                    BingWallpaperUtils.getImageUrl(getApplicationContext(),
+                            Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
+                            mWallpaperImage));
+        //}
     }
 
     private void toggleToolbar() {
@@ -201,7 +204,11 @@ public class WallpaperDetailActivity extends BaseActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        loadImage(getUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION));
+        //if (BingWallpaperUtils.isPixabaySupport(this)) {
+        //    loadImage(mWallpaperImage.getUrl());
+        //}else{
+            loadImage(getUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION));
+        //}
     }
 
     private String getUrl(String def) {
@@ -276,6 +283,9 @@ public class WallpaperDetailActivity extends BaseActivity {
             menu.removeItem(R.id.menu_wallpaper_lock);
             menu.removeItem(R.id.menu_wallpaper_home);
         }
+        //if (BingWallpaperUtils.isPixabaySupport(this)) {
+        //    menu.removeItem(R.id.menu_wallpaper_resolution);
+        //}
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -331,7 +341,12 @@ public class WallpaperDetailActivity extends BaseActivity {
     }
 
     private void downloadSaveWallpaper() {
-        String url = getUrl(BingWallpaperUtils.getSaveResolution(this));
+        String url;
+        //if (BingWallpaperUtils.isPixabaySupport(this)) {
+        //    url = mWallpaperImage.getUrl();
+        //} else {
+            url = getUrl(BingWallpaperUtils.getSaveResolution(this));
+        //}
         mDownLoadSubscription = NetUtils.get().downloadImageToFile(this, url, new Callback.EmptyCallback<File>() {
             @Override
             public void onPreExecute() {

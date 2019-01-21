@@ -78,7 +78,7 @@ public class NetUtils {
                 });
         httpLoggingInterceptor.setLevel(
                 L.isPrint() ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
-        simpleBuilder.dispatcher(new Dispatcher()).addNetworkInterceptor(httpLoggingInterceptor);
+        simpleBuilder.dispatcher(new Dispatcher()).addInterceptor(httpLoggingInterceptor);
         try {
             File cacheFile = FileUtils.getProjectSpaceCacheDirectory(context, Constants.HTTP_CACHE_DIR);
             simpleBuilder.cache(new Cache(cacheFile, Constants.HTTP_DISK_CACHE_SIZE));

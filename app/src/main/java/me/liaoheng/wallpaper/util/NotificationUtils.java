@@ -64,9 +64,7 @@ public class NotificationUtils {
                 .setContentText(content)
                 .setContentTitle(context.getText(R.string.set_wallpaper_success))
                 .setContentIntent(resultPendingIntent).build();
-
-        NotificationManagerCompat manager = NotificationManagerCompat.from(context);
-        manager.notify(12, notification);
+        NotificationManagerCompat.from(context).notify(12, notification);
     }
 
     public static void showFailureNotification(Context context) {
@@ -76,8 +74,7 @@ public class NotificationUtils {
                 .setAutoCancel(true)
                 .setContentText(context.getText(R.string.set_wallpaper_failure))
                 .setContentTitle(context.getText(R.string.app_name)).build();
-        NotificationManagerCompat manager = NotificationManagerCompat.from(context);
-        manager.notify(11, notification);
+        NotificationManagerCompat.from(context).notify(11, notification);
     }
 
     public static void showStartNotification(Service service) {
@@ -86,7 +83,7 @@ public class NotificationUtils {
                 R.drawable.ic_notification)
                 .setContentText(service.getText(R.string.set_wallpaper_running))
                 .setContentTitle(service.getText(R.string.app_name)).build();
-        service.startForeground(0x111, notification);
+        service.startForeground(111 + (int) (Math.random() * 10), notification);// Multiple services
     }
 
     public static void showRunningNotification(Service service) {
@@ -97,6 +94,17 @@ public class NotificationUtils {
                 .setContentTitle(service.getString(R.string.app_name))
                 .setContentText(service.getString(R.string.daemon_service_running))
                 .build();
-        service.startForeground(0x112, notification);
+        service.startForeground(112, notification);
+    }
+
+    public static void showGMSErrorNotification(Context context, String errorString) {
+        Notification notification = new NotificationCompat.Builder(context,
+                Constants.GMS_NOTIFICATION_CHANNEL).setSmallIcon(
+                R.drawable.ic_notification)
+                .setAutoCancel(true)
+                .setContentText("Google service error: " + errorString)
+                .setContentTitle(context.getString(R.string.app_name))
+                .build();
+        NotificationManagerCompat.from(context).notify(56, notification);
     }
 }

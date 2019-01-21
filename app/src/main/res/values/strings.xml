@@ -10,7 +10,7 @@
     <string name="load_image_error">Loading image error</string>
     <string name="download">Download&#8230;</string>
     <string name="pull_refresh">"Please pull refresh, "</string>
-    <string name="alert_mobile_data">you\'re using mobile data,Would you like to proceed?</string>
+    <string name="alert_mobile_data">You\'re using mobile data,would you like to proceed?</string>
     <string name="alert_save_wallpaper_success">Save wallpaper success</string>
     <string name="alert_save_wallpaper_failure">Save wallpaper failure</string>
     <string name="unable_open_url">Unable to open URL</string>

@@ -410,10 +410,14 @@ public class BingWallpaperUtils {
 
     public static void openBrowser(Context context, String url) {
         try {
-            new CustomTabsIntent.Builder()
+            CustomTabsIntent build = new CustomTabsIntent.Builder()
                     .setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary))
-                    .build()
-                    .launchUrl(context, Uri.parse(url));
+                    .build();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                build.intent.putExtra(Intent.EXTRA_REFERRER,
+                        Uri.parse(Intent.URI_ANDROID_APP_SCHEME + "//" + context.getPackageName()));
+            }
+            build.launchUrl(context, Uri.parse(url));
         } catch (Exception ignore) {
             startBrowser(context, url);
         }
