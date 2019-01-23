@@ -5,6 +5,8 @@ import android.app.WallpaperManager;
 import android.content.*;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -548,13 +550,18 @@ public class BingWallpaperUtils {
         return getGooglePlayServicesAvailableErrorString(getGooglePlayServicesAvailable(context));
     }
 
-    public static void setBothWallpaper(Context context, File bitmap) throws IOException {
+    public static void setBothWallpaper(Context context, File file) throws IOException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            WallpaperManager.getInstance(context)
-                    .setStream(FileUtils.openInputStream(bitmap), null, true,
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+            WallpaperManager.getInstance(context).suggestDesiredDimensions(options.outWidth, options.outHeight);
+            int i = WallpaperManager.getInstance(context)
+                    .setStream(FileUtils.openInputStream(file), null, false,
                             WallpaperManager.FLAG_SYSTEM | WallpaperManager.FLAG_LOCK);
+            L.alog().d("xxx", " %s", i);
         } else {
-            setWallpaper(context, bitmap);
+            setWallpaper(context, file);
         }
     }
 
@@ -566,13 +573,13 @@ public class BingWallpaperUtils {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static void setLockScreenWallpaper(Context context, File bitmap) throws IOException {
         WallpaperManager.getInstance(context)
-                .setStream(FileUtils.openInputStream(bitmap), null, true, WallpaperManager.FLAG_LOCK);
+                .setStream(FileUtils.openInputStream(bitmap), null, false, WallpaperManager.FLAG_LOCK);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static void setHomeScreenWallpaper(Context context, File bitmap) throws IOException {
         WallpaperManager.getInstance(context)
-                .setStream(FileUtils.openInputStream(bitmap), null, true, WallpaperManager.FLAG_SYSTEM);
+                .setStream(FileUtils.openInputStream(bitmap), null, false, WallpaperManager.FLAG_SYSTEM);
     }
 
     public static Observable<Object> clearCache(Context context) {

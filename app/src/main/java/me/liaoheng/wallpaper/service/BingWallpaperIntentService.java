@@ -6,12 +6,14 @@ import android.content.Intent;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import com.bumptech.glide.request.target.Target;
-import com.github.liaoheng.common.util.*;
+import com.github.liaoheng.common.util.Callback;
+import com.github.liaoheng.common.util.L;
+import com.github.liaoheng.common.util.NetException;
+import com.github.liaoheng.common.util.SystemException;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.util.*;
-import me.liaoheng.wallpaper.util.TasksUtils;
 import me.liaoheng.wallpaper.widget.AppWidget_5x1;
 import me.liaoheng.wallpaper.widget.AppWidget_5x2;
 
@@ -27,8 +29,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class BingWallpaperIntentService extends IntentService {
 
-    private final String TAG = BingWallpaperIntentService.class
-            .getSimpleName();
+    private final String TAG = BingWallpaperIntentService.class.getSimpleName();
     public final static String ACTION_GET_WALLPAPER_STATE = "me.liaoheng.wallpaper.BING_WALLPAPER_STATE";
     public final static String EXTRA_GET_WALLPAPER_STATE = "GET_WALLPAPER_STATE";
     public final static String FLAG_SET_WALLPAPER_STATE = "SET_WALLPAPER_STATE";
@@ -80,6 +81,7 @@ public class BingWallpaperIntentService extends IntentService {
 
     @Override
     public void onDestroy() {
+        mUiHelper = null;
         stopForeground(true);
         super.onDestroy();
     }
@@ -113,7 +115,7 @@ public class BingWallpaperIntentService extends IntentService {
         if (bingWallpaperImage == null) {
             if (BingWallpaperUtils.isPixabaySupport(getApplicationContext())) {
                 try {
-                    bingWallpaperImage = BingWallpaperNetworkClient.getPixabayEditorsChoiceExecute();
+                    bingWallpaperImage = BingWallpaperNetworkClient.getPixabaysExecute();
                     imageUrl = bingWallpaperImage.getUrl();
                 } catch (NetException e) {
                     callback.onError(e);
@@ -139,17 +141,12 @@ public class BingWallpaperIntentService extends IntentService {
             LogDebugFileUtils.get().i(TAG, "imageUrl : %s", imageUrl);
         }
 
-        File wallpaper = null;
         try {
-            wallpaper = downloadAndSetWallpaper(imageUrl, setWallpaperType);
+            downloadAndSetWallpaper(imageUrl, setWallpaperType);
             callback.onSuccess(bingWallpaperImage);
             callback.onFinish();
         } catch (Exception e) {
             callback.onError(new SystemException(e));
-        } finally {
-            if (wallpaper != null) {
-                FileUtils.delete(wallpaper);
-            }
         }
     }
 
@@ -190,7 +187,7 @@ public class BingWallpaperIntentService extends IntentService {
         }
     }
 
-    private File downloadAndSetWallpaper(String url, @Constants.setWallpaperMode int setWallpaperType)
+    private void downloadAndSetWallpaper(String url, @Constants.setWallpaperMode int setWallpaperType)
             throws Exception {
         L.alog().i(TAG, "wallpaper image url: " + url);
         File wallpaper = GlideApp.with(getApplicationContext())
@@ -199,7 +196,7 @@ public class BingWallpaperIntentService extends IntentService {
                 .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
                 .get(2, TimeUnit.MINUTES);
 
-        if (wallpaper == null) {
+        if (wallpaper == null || !wallpaper.exists()) {
             throw new IOException("download wallpaper failure");
         }
 
@@ -209,7 +206,6 @@ public class BingWallpaperIntentService extends IntentService {
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
             LogDebugFileUtils.get().i(TAG, "setBingWallpaper Success");
         }
-        return wallpaper;
     }
 
     private void sendSetWallpaperBroadcast(BingWallpaperState state) {

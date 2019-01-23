@@ -23,7 +23,8 @@ public class MApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Common.init(this, Constants.PROJECT_NAME, BuildConfig.DEBUG);
+        Common.baseInit(this, Constants.PROJECT_NAME, BuildConfig.DEBUG);
+        L.init(Constants.PROJECT_NAME, BuildConfig.DEBUG);
         TasksUtils.init(this);
         if (BingWallpaperUtils.isEnableLog(this)) {
             LogDebugFileUtils.init(getApplicationContext());

@@ -236,7 +236,7 @@ public class MainActivity extends BaseActivity
         }
         showSwipeRefreshLayout();
 
-        Observable<BingWallpaperImage> listObservable = BingWallpaperNetworkClient.randomPixabayEditorsChoice()
+        Observable<BingWallpaperImage> listObservable = BingWallpaperNetworkClient.randomPixabayImage()
                 .compose(this.bindToLifecycle());
         Utils.addSubscribe(listObservable, new Callback.EmptyCallback<BingWallpaperImage>() {
             @Override

@@ -5,11 +5,8 @@ import android.content.pm.ShortcutManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
-
-import com.github.liaoheng.common.util.NetworkUtils;
-import com.github.liaoheng.common.util.UIUtils;
-
 import androidx.annotation.Nullable;
+import com.github.liaoheng.common.util.NetworkUtils;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 
@@ -25,12 +22,13 @@ public class ShortcutActivity extends Activity {
         if (mode < 0) {
             return;
         }
-        if (NetworkUtils.isConnectedOrConnecting(this)) {
-            BingWallpaperIntentService.start(this, mode, false);
+        if (NetworkUtils.isConnected(this)) {
+            BingWallpaperIntentService.start(getApplicationContext(), mode, false);
             Toast.makeText(getApplicationContext(), getString(R.string.set_wallpaper_running), Toast.LENGTH_SHORT)
                     .show();
         } else {
-            UIUtils.showToast(getApplicationContext(), R.string.network_unavailable);
+            Toast.makeText(getApplicationContext(), getString(R.string.network_unavailable), Toast.LENGTH_SHORT)
+                    .show();
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             getSystemService(ShortcutManager.class).reportShortcutUsed("toggle");

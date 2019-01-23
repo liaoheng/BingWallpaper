@@ -1,12 +1,14 @@
 package me.liaoheng.wallpaper.util;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
-import com.github.liaoheng.common.util.ROM;
-import com.github.liaoheng.common.util.ShellUtils;
+import com.github.liaoheng.common.util.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * @author liaoheng
@@ -14,17 +16,52 @@ import java.io.IOException;
  */
 public class MiuiHelper {
 
-    public static void setLockScreenWallpaper(Context context, File bitmap) throws IOException {
+    // https://github.com/codepath/android_guides/wiki/Working-with-the-ImageView
+    public static Bitmap scaleToFitWidth(Bitmap b, int width)
+    {
+        float factor = width / (float) b.getWidth();
+        return Bitmap.createScaledBitmap(b, width, (int) (b.getHeight() * factor), true);
+    }
+
+    public static void setLockScreenWallpaper(Context context, File file) throws IOException {
         if (BingWallpaperUtils.isMiuiLockScreenSupport(context) && ShellUtils.hasRootPermission()) {
-            ShellUtils.CommandResult commandResult = ShellUtils.execCommand(
-                    "cp " + bitmap.getAbsolutePath() + " /data/system/theme/lock_wallpaper", true, true);
-            if (commandResult.result == 0) {
-                ShellUtils.execCommand("chmod 755 /data/system/theme/lock_wallpaper", true);
-            }
+            //int width = DisplayUtils.getScreenInfo(context).widthPixels;
+            //int height = DisplayUtils.getScreenInfo(context).heightPixels;
+            //BitmapFactory.Options options = new BitmapFactory.Options();
+            //File wallpaperFile = null;
+            //try {
+            //    Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+            //    if (bitmap == null) {
+            //        throw new IllegalArgumentException("bitmap is null");
+            //    }
+            //    Bitmap newBitmap = scaleToFitWidth(bitmap, width);
+            //    BitmapUtils.recycle(bitmap);
+            //    wallpaperFile = new File(FileUtils.getProjectSpaceTempDirectory(context),
+            //            UUID.randomUUID().toString());
+            //    FileUtils.copyToFile(BitmapUtils.bitmapToStream(newBitmap, Bitmap.CompressFormat.JPEG),
+            //            wallpaperFile);
+            //    BitmapUtils.recycle(newBitmap);
+            //    setImage(wallpaperFile);
+            //} catch (Exception e) {
+            //    L.alog().e("MiuiHelper", e);
+            //} finally {
+            //    if (wallpaperFile != null) {
+            //        FileUtils.delete(wallpaperFile);
+            //    }
+            //}
+            setImage(file);
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                BingWallpaperUtils.setLockScreenWallpaper(context, bitmap);
+                BingWallpaperUtils.setLockScreenWallpaper(context, file);
             }
+        }
+    }
+
+    private static void setImage(File file) {
+        ShellUtils.CommandResult commandResult = ShellUtils.execCommand(
+                "cp " + file.getAbsolutePath() + " /data/system/theme/lock_wallpaper", true, true);
+        if (commandResult.result == 0) {
+            ShellUtils.execCommand("chmod 755 /data/system/theme/lock_wallpaper", true);
         }
     }
 

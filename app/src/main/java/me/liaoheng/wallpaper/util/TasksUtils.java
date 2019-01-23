@@ -21,8 +21,7 @@ public class TasksUtils {
     private static PreferencesUtils mTaskPreferencesUtils;
 
     public static void init(Context context) {
-        PreferencesUtils.init(context);
-        mTaskPreferencesUtils = PreferencesUtils.from(TASK_FILE_NAME);
+        mTaskPreferencesUtils = PreferencesUtils.from(context, TASK_FILE_NAME);
     }
 
     private final static String TASK_FILE_NAME = "com.github.liaoheng.common_tasks";
@@ -96,8 +95,8 @@ public class TasksUtils {
      * 上一次操作与现在操作的距离，单位天
      *
      * @param next local date
-     * @param now local date
-     * @param day 距离，天
+     * @param now  local date
+     * @param day  距离，天
      * @return true，超过或等于@param day
      */
     public static boolean isToDaysDo(DateTime next, DateTime now, int day) {

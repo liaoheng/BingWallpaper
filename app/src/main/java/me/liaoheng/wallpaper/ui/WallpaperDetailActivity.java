@@ -166,14 +166,14 @@ public class WallpaperDetailActivity extends BaseActivity {
         mDownLoadProgressDialog = UIUtils.createProgressDialog(this, getString(R.string.download));
         mDownLoadProgressDialog.setOnDismissListener(dialog -> Utils.dispose(mDownLoadSubscription));
         mImageView.setOnClickListener(v -> toggleToolbar());
-        //if (BingWallpaperUtils.isPixabaySupport(this)) {
-        //    loadImage(mWallpaperImage.getUrl());
-        //} else {
+        if (BingWallpaperUtils.isPixabaySupport(this)) {
+            loadImage(mWallpaperImage.getUrl());
+        } else {
             loadImage(
                     BingWallpaperUtils.getImageUrl(getApplicationContext(),
                             Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
                             mWallpaperImage));
-        //}
+        }
     }
 
     private void toggleToolbar() {
@@ -204,11 +204,11 @@ public class WallpaperDetailActivity extends BaseActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        //if (BingWallpaperUtils.isPixabaySupport(this)) {
-        //    loadImage(mWallpaperImage.getUrl());
-        //}else{
+        if (BingWallpaperUtils.isPixabaySupport(this)) {
+            loadImage(mWallpaperImage.getUrl());
+        }else{
             loadImage(getUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION));
-        //}
+        }
     }
 
     private String getUrl(String def) {
@@ -283,9 +283,9 @@ public class WallpaperDetailActivity extends BaseActivity {
             menu.removeItem(R.id.menu_wallpaper_lock);
             menu.removeItem(R.id.menu_wallpaper_home);
         }
-        //if (BingWallpaperUtils.isPixabaySupport(this)) {
-        //    menu.removeItem(R.id.menu_wallpaper_resolution);
-        //}
+        if (BingWallpaperUtils.isPixabaySupport(this)) {
+            menu.removeItem(R.id.menu_wallpaper_resolution);
+        }
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -342,11 +342,11 @@ public class WallpaperDetailActivity extends BaseActivity {
 
     private void downloadSaveWallpaper() {
         String url;
-        //if (BingWallpaperUtils.isPixabaySupport(this)) {
-        //    url = mWallpaperImage.getUrl();
-        //} else {
+        if (BingWallpaperUtils.isPixabaySupport(this)) {
+            url = mWallpaperImage.getUrl();
+        } else {
             url = getUrl(BingWallpaperUtils.getSaveResolution(this));
-        //}
+        }
         mDownLoadSubscription = NetUtils.get().downloadImageToFile(this, url, new Callback.EmptyCallback<File>() {
             @Override
             public void onPreExecute() {
@@ -397,8 +397,12 @@ public class WallpaperDetailActivity extends BaseActivity {
         } else if (type == 2) {
             message = getString(R.string.menu_set_wallpaper_mode_lock);
         }
-
-        final String url = getUrl(BingWallpaperUtils.getResolution(this));
+        String url;
+        if (BingWallpaperUtils.isPixabaySupport(getApplicationContext())) {
+            url = mWallpaperImage.getUrl();
+        } else {
+            url = getUrl(BingWallpaperUtils.getResolution(this));
+        }
         UIUtils.showYNAlertDialog(this, message + "?",
                 new Callback4.EmptyCallback<DialogInterface>() {
                     @Override

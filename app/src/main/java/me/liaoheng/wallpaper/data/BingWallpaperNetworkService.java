@@ -26,9 +26,9 @@ public interface BingWallpaperNetworkService {
     @GET("https://www.bing.com/cnhp/coverstory")
     Observable<BingWallpaperCoverStory> getCoverStory();
 
-    @GET("https://pixabay.com/api/?key=11234205-21f02ee751cd3cd4f1fa49b70&editors_choice=true&image_type=photo")
-    Call<Pixabay> getPixabayEditorsChoice();
+    @GET("https://pixabay.com/api/?key=11234205-21f02ee751cd3cd4f1fa49b70&orientation=horizontal&order=latest&image_type=photo")
+    Call<Pixabay> getPixabays(@Query("per_page") int perPage);
 
-    @GET("https://pixabay.com/api/?key=11234205-21f02ee751cd3cd4f1fa49b70&editors_choice=true&image_type=photo")
-    Observable<Pixabay> getPixabayEditorsChoice(@Query("page") int page, @Query("per_page") int perPage);
+    @GET("https://pixabay.com/api/?key=11234205-21f02ee751cd3cd4f1fa49b70&orientation=horizontal&order=latest&image_type=photo")
+    Observable<Pixabay> getPixabays(@Query("page") int page, @Query("per_page") int perPage);
 }
