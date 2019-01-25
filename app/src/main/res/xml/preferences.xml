@@ -126,11 +126,7 @@
                 android:key="pref_github"
                 android:persistent="false"
                 android:summary="github.com/liaoheng/BingWallpaper"
-                android:title="Github">
-            <intent
-                    android:action="android.intent.action.VIEW"
-                    android:data="https://github.com/liaoheng/BingWallpaper" />
-        </Preference>
+                android:title="Github" />
         <Preference
                 android:key="pref_translation"
                 android:persistent="false"

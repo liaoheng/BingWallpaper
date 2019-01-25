@@ -96,6 +96,11 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                 L.alog().w(TAG, e);
             }
 
+            findPreference("pref_github").setOnPreferenceClickListener(preference -> {
+                BingWallpaperUtils.openBrowser(getActivity(),"https://github.com/liaoheng/BingWallpaper");
+                return true;
+            });
+
             findPreference("pref_intro").setOnPreferenceClickListener(preference -> {
                 UIUtils.startActivity(getActivity(), IntroActivity.class);
                 return true;
