@@ -78,6 +78,7 @@
     <string name="bing_only_two_week">Bing只提供近两周记录</string>
     <string name="menu_save_wallpaper">保存壁纸</string>
     <string name="menu_wallpaper_resolution">选择壁纸分辨率</string>
+    <string name="menu_wallpaper_info">壁纸信息</string>
     <string name="detail_wallpaper_resolution_influences">选择预览和下载分辨率</string>
     <string name="menu_set_wallpaper_mode_home">设置壁纸到主屏幕</string>
     <string name="menu_set_wallpaper_mode_lock">设置壁纸到锁定屏幕</string>

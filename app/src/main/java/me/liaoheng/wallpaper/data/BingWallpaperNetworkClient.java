@@ -119,7 +119,7 @@ public class BingWallpaperNetworkClient {
     private static BingWallpaperImage createBingWallpaperImage(PixabayImage image) {
         BingWallpaperImage bingWallpaper = new BingWallpaperImage(
                 "Photo by " + image.getUser() + " on Pixabay");
-        bingWallpaper.setUrl(image.getLargeImageURL().replace("_1280", "_960"));
+        bingWallpaper.setUrl(image.getLargeImageURL());
         bingWallpaper.setUrlbase(image.getPreviewURL());
         bingWallpaper.setCopyrightlink(image.getPageURL());
         return bingWallpaper;

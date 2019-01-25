@@ -82,6 +82,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         }
         mRecyclerViewHelper = builder.setMergedIntoLineSpanSizeLookup().build();
 
+        mRecyclerViewHelper.changeToLoadMoreLoading();
         if (BingWallpaperUtils.isPixabaySupport(this)) {
             index++;
             getPixabayList();
@@ -120,6 +121,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
                 mRecyclerViewHelper.setLoadMoreHasLoadedAllItems(images.size() == 0);
                 index++;
                 mWallpaperAdapter.addAll(images);
+                mWallpaperAdapter.notifyItemRangeInserted(mWallpaperAdapter.getItemCount(), images.size());
             }
 
             @Override
@@ -190,7 +192,10 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         @SuppressLint("SetTextI18n")
         @Override
         public void onHandle(final BingWallpaperImage item, int position) {
-            if (!TextUtils.isEmpty(item.getEnddate())) {
+            if (TextUtils.isEmpty(item.getEnddate())) {
+                UIUtils.viewGone(mDate);
+            } else {
+                UIUtils.viewVisible(mDate);
                 String endDate = item.getEnddate();// YYYYMMDD
                 try {
                     String m = endDate.substring(4, 6);

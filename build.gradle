@@ -33,9 +33,4 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-//依赖库树
-subprojects {
-    task allDeps(type: DependencyReportTask) {}
-}
-
 apply from: rootProject.file('dependencies.gradle')

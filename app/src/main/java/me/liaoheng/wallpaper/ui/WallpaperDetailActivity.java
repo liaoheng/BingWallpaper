@@ -90,11 +90,6 @@ public class WallpaperDetailActivity extends BaseActivity {
     private Disposable mDownLoadSubscription;
     private SetWallpaperStateBroadcastReceiver mSetWallpaperStateBroadcastReceiver;
 
-    @OnClick(R.id.bing_wallpaper_detail_cover_story_text)
-    void openBrowser() {
-        BingWallpaperUtils.openBrowser(this, mWallpaperImage);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         normalScreen();
@@ -206,7 +201,7 @@ public class WallpaperDetailActivity extends BaseActivity {
         super.onConfigurationChanged(newConfig);
         if (BingWallpaperUtils.isPixabaySupport(this)) {
             loadImage(mWallpaperImage.getUrl());
-        }else{
+        } else {
             loadImage(getUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION));
         }
     }
@@ -321,6 +316,13 @@ public class WallpaperDetailActivity extends BaseActivity {
                 break;
             case R.id.menu_wallpaper_resolution:
                 mResolutionDialog.show();
+                break;
+            case R.id.menu_wallpaper_info:
+                if (BingWallpaperUtils.isPixabaySupport(this)) {
+                    BingWallpaperUtils.openBrowser(this, mWallpaperImage.getCopyrightlink());
+                } else {
+                    BingWallpaperUtils.openBrowser(this, mWallpaperImage);
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);

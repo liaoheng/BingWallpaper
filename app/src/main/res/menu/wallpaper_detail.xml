@@ -5,22 +5,30 @@
             android:id="@+id/menu_wallpaper_save"
             android:icon="@drawable/ic_save_white_24dp"
             android:title="@string/menu_save_wallpaper"
-            app:showAsAction="ifRoom" />
+            app:showAsAction="always" />
     <item
-            app:showAsAction="ifRoom"
             android:id="@+id/menu_wallpaper_resolution"
             android:icon="@drawable/ic_aspect_ratio_white_24dp"
-            android:title="@string/menu_wallpaper_resolution" />
+            android:title="@string/menu_wallpaper_resolution"
+            app:showAsAction="always" />
+    <item
+            android:id="@+id/menu_wallpaper_info"
+            android:icon="@drawable/ic_info_outline_24"
+            android:title="@string/menu_wallpaper_info"
+            app:showAsAction="ifRoom" />
     <item
             android:id="@+id/menu_wallpaper_both"
             android:icon="@drawable/ic_smartphone_white_24dp"
-            android:title="@string/menu_set_wallpaper_mode_both" />
+            android:title="@string/menu_set_wallpaper_mode_both"
+            app:showAsAction="ifRoom" />
     <item
             android:id="@+id/menu_wallpaper_home"
             android:icon="@drawable/ic_home_white_24dp"
-            android:title="@string/menu_set_wallpaper_mode_home" />
+            android:title="@string/menu_set_wallpaper_mode_home"
+            app:showAsAction="ifRoom" />
     <item
             android:id="@+id/menu_wallpaper_lock"
             android:icon="@drawable/ic_lock_white_24dp"
-            android:title="@string/menu_set_wallpaper_mode_lock" />
+            android:title="@string/menu_set_wallpaper_mode_lock"
+            app:showAsAction="ifRoom" />
 </menu>

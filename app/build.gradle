@@ -50,13 +50,15 @@ android {
         exclude 'META-INF/NOTICE'
     }
     android.applicationVariants.all { variant ->
-        variant.outputs.all {
-            outputFileName = "${variant.name}-${variant.versionName}.apk"
+        if (variant.buildType.name == 'release') {
+            variant.outputs.all {
+                outputFileName = "${variant.name}-${variant.versionName}.apk"
+            }
         }
     }
     compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 

@@ -83,7 +83,6 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
         private ListPreference mAutoUpdateTypeListPreference;
         private CheckBoxPreference mMIuiLockScreenPreference;
         private CheckBoxPreference mPixabaySupportPreference;
-        private int openLogCount;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -96,19 +95,6 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             } catch (SystemException e) {
                 L.alog().w(TAG, e);
             }
-
-            mPixabaySupportPreference = (CheckBoxPreference) findPreference(PREF_PREF_PIXABAY_SUPPORT);
-            version.setOnPreferenceClickListener(preference -> {
-                openLogCount++;
-                if (openLogCount >= 3) {
-                    openLogCount = 0;
-                    ((PreferenceCategory) findPreference("pref_wallpaper_group")).addPreference(
-                            mPixabaySupportPreference);
-                }
-                return true;
-            });
-
-            ((PreferenceCategory) findPreference("pref_wallpaper_group")).removePreference(mPixabaySupportPreference);
 
             findPreference("pref_intro").setOnPreferenceClickListener(preference -> {
                 UIUtils.startActivity(getActivity(), IntroActivity.class);
@@ -171,6 +157,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             mAutoUpdateNotificationPreference = (CheckBoxPreference) findPreference(
                     PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_NOTIFICATION);
             mMIuiLockScreenPreference = (CheckBoxPreference) findPreference(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER);
+            mPixabaySupportPreference = (CheckBoxPreference) findPreference(PREF_PREF_PIXABAY_SUPPORT);
             mLogPreference = (CheckBoxPreference) findPreference(PREF_SET_WALLPAPER_LOG);
             mCrashPreference = (CheckBoxPreference) findPreference(PREF_CRASH_REPORT);
 

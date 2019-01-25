@@ -395,7 +395,7 @@ public class MainActivity extends BaseActivity
         mHeaderCoverStoryTitleView.setText(bingWallpaperImage.getCopyright());
         String url;
         if (BingWallpaperUtils.isPixabaySupport(this)) {
-            url = bingWallpaperImage.getUrl();
+            url = bingWallpaperImage.getUrl().replace("_1280", "_960");
         } else {
             url = BingWallpaperUtils.getImageUrl(getApplicationContext(),
                     Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION,
