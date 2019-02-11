@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * @author liaoheng
@@ -71,7 +72,7 @@ public class BingWallpaperUtils {
 
         String resolution = SettingTrayPreferences.get(context)
                 .getString(SettingsActivity.PREF_SET_WALLPAPER_RESOLUTION, "0");
-        return names[Integer.parseInt(resolution)];
+        return names[Integer.parseInt(Objects.requireNonNull(resolution))];
     }
 
     public static String getSaveResolution(Context context) {
@@ -245,7 +246,7 @@ public class BingWallpaperUtils {
                 .getDefaultSharedPreferences(context);
         String type = sharedPreferences
                 .getString(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_TYPE, "0");
-        return Integer.parseInt(type);
+        return Integer.parseInt(Objects.requireNonNull(type));
     }
 
     public static String getAutomaticUpdateTypeName(Context context) {
@@ -263,8 +264,9 @@ public class BingWallpaperUtils {
     public static int getAutomaticUpdateInterval(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
-        return Integer.parseInt(sharedPreferences
-                .getString(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_INTERVAL, "3"));
+        return Integer.parseInt(Objects.requireNonNull(sharedPreferences
+                .getString(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_INTERVAL,
+                        String.valueOf(Constants.JOB_SCHEDULER_PERIODIC))));
     }
 
     public static boolean isMiuiLockScreenSupport(Context context) {
@@ -328,6 +330,24 @@ public class BingWallpaperUtils {
         return 0;
     }
 
+    public static int getNavigationBarPadding(Context context) {
+        int bottomPadding = BingWallpaperUtils.getNavigationBarHeight(context);
+        if (ROM.getROM().isEmui()) {
+            if (!BingWallpaperUtils.emuiNavigationEnabled(context)) {
+                bottomPadding = 0;
+            }
+        } else if (ROM.getROM().isVivo()) {
+            if (BingWallpaperUtils.vivoNavigationGestureEnabled(context)) {
+                bottomPadding = 0;
+            }
+        } else if (ROM.getROM().isMiui()) {
+            if (BingWallpaperUtils.miuiNavigationGestureEnabled(context)) {
+                bottomPadding = 0;
+            }
+        }
+        return bottomPadding;
+    }
+
     /**
      * Check if vivo is enabled for gestures
      *
@@ -347,7 +367,7 @@ public class BingWallpaperUtils {
     }
 
     /**
-     * Check if MIUI is enabled for navigation
+     * Check if EMUI is enabled for navigation
      *
      * @return true navigation
      */
@@ -584,9 +604,9 @@ public class BingWallpaperUtils {
                     GlideApp.get(c).clearDiskCache();
                     NetUtils.get().clearCache();
                     return c;
-                }).observeOn(AndroidSchedulers.mainThread()).flatMap(c -> {
+                }).observeOn(AndroidSchedulers.mainThread()).map(c -> {
                     GlideApp.get(c).clearMemory();
-                    return Observable.empty();
+                    return "ok";
                 });
     }
 

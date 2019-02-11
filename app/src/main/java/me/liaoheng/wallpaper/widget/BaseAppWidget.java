@@ -12,7 +12,6 @@ import android.widget.RemoteViews;
 
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.NetworkUtils;
-import com.github.liaoheng.common.util.SystemException;
 import com.github.liaoheng.common.util.Utils;
 
 import androidx.annotation.IdRes;
@@ -69,8 +68,8 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
 
         ComponentName componentName = new ComponentName(context, cls);
 
-        addTitleClick(context, AppWidget_5x2.class, remoteViews);
-        addContentClick(context, AppWidget_5x2.class, remoteViews);
+        addTitleClick(context, cls, remoteViews);
+        addContentClick(context, cls, remoteViews);
 
         appWidgetManager.updateAppWidget(componentName, remoteViews);
     }

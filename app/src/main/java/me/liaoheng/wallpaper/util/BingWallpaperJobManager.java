@@ -246,7 +246,7 @@ public class BingWallpaperJobManager {
             startDaemonService(context);
         } else if (getJobType(context) == BingWallpaperJobManager.SYSTEM) {
             if (!checkSystemJobStatus(context)) {
-                enableSystem(context, Constants.JOB_SCHEDULER_PERIODIC);
+                enableSystem(context, TimeUnit.HOURS.toSeconds(BingWallpaperUtils.getAutomaticUpdateInterval(context)));
             }
         }
     }

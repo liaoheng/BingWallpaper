@@ -21,6 +21,11 @@ public class MiuiHelper {
         if (BingWallpaperUtils.isMiuiLockScreenSupport(context) && ShellUtils.hasRootPermission()) {
             int width = DisplayUtils.getScreenInfo(context).widthPixels;
             int height = DisplayUtils.getScreenInfo(context).heightPixels;
+            if (width > height) {
+                int temp = width;
+                width = height;
+                height = temp;
+            }
             File wallpaperFile = null;
             try {
                 Bitmap newBitmap = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(file.getAbsolutePath()),

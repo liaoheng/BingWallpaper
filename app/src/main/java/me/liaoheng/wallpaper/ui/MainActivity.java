@@ -91,6 +91,7 @@ public class MainActivity extends BaseActivity
     private ImageView mNavigationHeaderImage;
 
     private SetWallpaperStateBroadcastReceiver mSetWallpaperStateBroadcastReceiver;
+    @Nullable
     private BingWallpaperImage mCurBingWallpaperImage;
     private boolean isRun;
 
@@ -376,10 +377,12 @@ public class MainActivity extends BaseActivity
         } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_history_list) {
             UIUtils.startActivity(this, WallpaperHistoryListActivity.class);
         } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_info) {
-            if (BingWallpaperUtils.isPixabaySupport(this)) {
-                BingWallpaperUtils.openBrowser(this, mCurBingWallpaperImage.getCopyrightlink());
-            } else {
-                BingWallpaperUtils.openBrowser(this, mCurBingWallpaperImage);
+            if (mCurBingWallpaperImage != null) {
+                if (BingWallpaperUtils.isPixabaySupport(this)) {
+                    BingWallpaperUtils.openBrowser(this, mCurBingWallpaperImage.getCopyrightlink());
+                } else {
+                    BingWallpaperUtils.openBrowser(this, mCurBingWallpaperImage);
+                }
             }
         } else if (item.getItemId() == R.id.menu_main_drawer_help) {
             BingWallpaperUtils.openBrowser(this, "https://github.com/liaoheng/BingWallpaper/blob/image/HELP.md");
@@ -483,7 +486,7 @@ public class MainActivity extends BaseActivity
 
     }
 
-    private void AddBothActionButton(int lightMutedSwatch, int lightVibrantSwatch) {
+    private void AddBothActionButton(@ColorInt int lightMutedSwatch, @ColorInt int lightVibrantSwatch) {
         addActionButton(lightMutedSwatch, lightVibrantSwatch,
                 getString(R.string.pref_set_wallpaper_auto_mode_home),
                 R.drawable.ic_home_white_24dp, v -> {
@@ -514,7 +517,7 @@ public class MainActivity extends BaseActivity
         actionButton.setColorPressed(lightMutedSwatch);
         actionButton.setColorRipple(lightVibrantSwatch);
         actionButton.setImageResource(resId);
-        actionButton.setButtonSize(com.github.clans.fab.FloatingActionButton.SIZE_MINI);
+        actionButton.setButtonSize(FloatingActionButton.SIZE_MINI);
         mSetWallpaperActionMenu.addMenuButton(actionButton);
         actionButton.setLabelColors(lightMutedSwatch, lightMutedSwatch, lightVibrantSwatch);
         actionButton.setOnClickListener(listener);

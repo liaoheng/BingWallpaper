@@ -25,7 +25,6 @@ import androidx.core.app.ActivityCompat;
 import butterknife.BindArray;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
@@ -143,7 +142,7 @@ public class WallpaperDetailActivity extends BaseActivity {
         }
 
         mBottomView.setPadding(mBottomView.getPaddingLeft(), mBottomView.getPaddingTop(),
-                mBottomView.getPaddingRight(), BingWallpaperUtils.getNavigationBarHeight(this));
+                mBottomView.getPaddingRight(), BingWallpaperUtils.getNavigationBarPadding(this));
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_singlechoice);
         arrayAdapter.addAll(mResolutions);

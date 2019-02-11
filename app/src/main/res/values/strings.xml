@@ -27,6 +27,7 @@
     <string name="loading">Loading&#8230;</string>
     <string name="unable_root_permission">Unable root permission</string>
     <string name="unable_required_permission">Unable required permissions</string>
+    <string name="feedback_copied">Feedback is copied to the clipboard.</string>
 
     <!--setting -->
     <string name="pref_auto_update_wallpaper">Automatic update wallpaper</string>
