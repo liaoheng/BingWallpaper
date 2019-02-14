@@ -35,6 +35,7 @@ import org.joda.time.LocalTime;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
@@ -576,15 +577,19 @@ public class BingWallpaperUtils {
 
     public static void setWallpaper(Context context, File file, int which) throws IOException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            WallpaperManager.getInstance(context)
-                    .setStream(FileUtils.openInputStream(file), null, true, which);
+            try (InputStream fileInputStream = FileUtils.openInputStream(file)) {
+                WallpaperManager.getInstance(context)
+                        .setStream(fileInputStream, null, true, which);
+            }
         } else {
             setWallpaper(context, file);
         }
     }
 
     public static void setWallpaper(Context context, File file) throws IOException {
-        WallpaperManager.getInstance(context).setStream(FileUtils.openInputStream(file));
+        try (InputStream fileInputStream = FileUtils.openInputStream(file)) {
+            WallpaperManager.getInstance(context).setStream(fileInputStream);
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
