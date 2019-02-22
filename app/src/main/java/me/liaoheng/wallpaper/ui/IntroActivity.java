@@ -1,19 +1,14 @@
 package me.liaoheng.wallpaper.ui;
 
-import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
-import android.widget.TextView;
-import android.widget.TimePicker;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,7 +17,6 @@ import com.github.liaoheng.common.util.UIUtils;
 import com.github.paolorotolo.appintro.AppIntro;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.util.*;
-import org.joda.time.LocalTime;
 
 /**
  * @author liaoheng
@@ -67,35 +61,8 @@ public class IntroActivity extends AppIntro {
 
         @BindView(R.id.intro_update_select_group)
         RadioGroup mSelectGroup;
-        @BindView(R.id.intro_update_select_group_item_timing_time)
-        TextView mTimingTime;
-
-        @OnClick(R.id.intro_update_select_group_item_timing)
-        void onTiming() {
-            mAlertDialog.show();
-        }
 
         int updateFlag;
-        LocalTime localTime;
-        private AlertDialog mAlertDialog;
-
-        @SuppressLint("SetTextI18n")
-        @Override
-        public void onCreate(@Nullable Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            final TimePicker picker = new TimePicker(getContext());
-            picker.setIs24HourView(DateFormat.is24HourFormat(getContext()));
-            mAlertDialog = new AlertDialog.Builder(getContext())
-                    .setCustomTitle(picker)
-                    .setNegativeButton(android.R.string.no, null)
-                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                        localTime = new LocalTime(picker.getCurrentHour(), picker.getCurrentMinute());
-                        UIUtils.viewVisible(mTimingTime);
-                        mTimingTime.setText(
-                                getString(R.string.intro_update_set_timing_time) + localTime.toString("HH:mm"));
-                    })
-                    .create();
-        }
 
         @Nullable
         @Override
@@ -107,16 +74,9 @@ public class IntroActivity extends AppIntro {
                 switch (checkedId) {
                     case R.id.intro_update_select_group_item_auto:
                         updateFlag = 1;
-                        localTime = null;
-                        UIUtils.viewGone(mTimingTime);
-                        break;
-                    case R.id.intro_update_select_group_item_timing:
-                        updateFlag = 2;
                         break;
                     case R.id.intro_update_select_group_item_skip:
                         updateFlag = 0;
-                        localTime = null;
-                        UIUtils.viewGone(mTimingTime);
                         break;
                 }
             });
@@ -137,21 +97,6 @@ public class IntroActivity extends AppIntro {
                             .putBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE, true)
                             .apply();
                     mPreferences.put(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE, true);
-                    break;
-                case 2:
-                    if (fragment.localTime != null) {
-                        BingWallpaperAlarmManager
-                                .enabled(this, fragment.localTime);
-                        mSharedPreferences.edit()
-                                .putBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE, true)
-                                .apply();
-                        mSharedPreferences.edit()
-                                .putString(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME,
-                                        fragment.localTime.toString())
-                                .apply();
-                        mPreferences.put(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME,
-                                fragment.localTime.toString());
-                    }
                     break;
             }
         } else {

@@ -31,19 +31,6 @@
                 android:text="@string/pref_auto_update_check_every_hour" />
 
         <RadioButton
-                android:id="@+id/intro_update_select_group_item_timing"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/pref_alarm_update_wallpaper_everyday" />
-
-        <TextView
-                android:id="@+id/intro_update_select_group_item_timing_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:visibility="gone" />
-
-        <RadioButton
                 android:id="@+id/intro_update_select_group_item_skip"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
