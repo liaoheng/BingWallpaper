@@ -56,7 +56,6 @@ public class WallpaperDaemonService extends Service {
                         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
                             LogDebugFileUtils.get().i(TAG, "daemon service action");
                         }
-                        //每天成功执行一次
                         if (TasksUtils.isToDaysDoProvider(getApplicationContext(), 1,
                                 BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
                             SetWallpaperBroadcastReceiver.send(getApplicationContext(), TAG);

@@ -540,11 +540,15 @@ public class BingWallpaperUtils {
                     return 2;
                 }
             }
-            //Run only once a day
             if (TasksUtils.isToDaysDoProvider(context, 1,
                     BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
-                BingWallpaperIntentService.start(context,
-                        BingWallpaperUtils.getAutoModeValue(context));
+                int hourOfDay = DateTime.now().getHourOfDay();
+                if (hourOfDay == 0) {//skip
+                    return 4;
+                } else {
+                    BingWallpaperIntentService.start(context,
+                            BingWallpaperUtils.getAutoModeValue(context));
+                }
                 return 0;
             } else {
                 return 3;

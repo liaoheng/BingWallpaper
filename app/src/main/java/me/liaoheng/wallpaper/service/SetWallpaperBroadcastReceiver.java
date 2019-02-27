@@ -3,9 +3,7 @@ package me.liaoheng.wallpaper.service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-
 import com.github.liaoheng.common.util.L;
-
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 
@@ -55,6 +53,12 @@ public class SetWallpaperBroadcastReceiver extends BroadcastReceiver {
                 if (enableLog) {
                     LogDebugFileUtils.get()
                             .i(TAG, "Already executed");
+                }
+            } else if (state == 4) {
+                L.alog().d(TAG, "Zero hour skip");
+                if (enableLog) {
+                    LogDebugFileUtils.get()
+                            .i(TAG, "Zero hour skip");
                 }
             }
         }
