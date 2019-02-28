@@ -36,9 +36,9 @@
 
 ### Github
   1. Open the feedback dialog and click the Copy button, content be in the clipboard.
-  2. Turn on `Enable action Log` option and wait a day, post the log content.
+  2. Turn on `Enable debug Log` option and wait a day, post the log content.
   3. Write your issues.
 ### E-Mail
-  1. Turn on `Enable action Log` option and wait a day.
+  1. Turn on `Enable debug Log` option and wait a day.
   2. Open the feedback dialog and click the E-Mail button. (auto add log files and feedback info)
   3. Write your issues.
