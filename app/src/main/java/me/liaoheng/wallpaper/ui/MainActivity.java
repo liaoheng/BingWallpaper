@@ -277,32 +277,35 @@ public class MainActivity extends BaseActivity
                                 bingWallpaperImage.getCaption() + bingWallpaperImage.getCopyrightonly());
                         mCoverStoryTextView.setText(bingWallpaperImage.getDesc());
                     } else {
-                        if (!BingWallpaperUtils.isChinaLocale(getApplicationContext())) {
-                            UIUtils.viewGone(mCoverStoryView);
-                        }
+                        //TODO remove china daily story
+                        //if (!BingWallpaperUtils.isChinaLocale(getApplicationContext())) {
+                        //    UIUtils.viewGone(mCoverStoryView);
+                        //}
+                        UIUtils.viewGone(mCoverStoryView);
                     }
 
                     setImage(bingWallpaperImage);
                 }, this::setBingWallpaperError);
 
-        if (BingWallpaperUtils.isChinaLocale(this)) {
-            BingWallpaperNetworkClient.getCoverStory()
-                    .compose(bindToLifecycle())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            bingWallpaperCoverStory -> {
-                                UIUtils.viewVisible(mCoverStoryView);
-                                mCoverStory = bingWallpaperCoverStory;
-                                mCoverStoryTitleView.setText(bingWallpaperCoverStory.getTitle());
-                                mCoverStoryTextView.setText(
-                                        bingWallpaperCoverStory.getPara1() + bingWallpaperCoverStory.getPara2());
-                            }, throwable -> {
-                                L.alog().e(TAG, throwable);
-                                CrashReportHandle.collectException(getApplicationContext(), TAG, "getCoverStory",
-                                        throwable);
-                                UIUtils.viewGone(mCoverStoryView);
-                            });
-        }
+        //TODO remove china daily story
+        //if (BingWallpaperUtils.isChinaLocale(this)) {
+        //    BingWallpaperNetworkClient.getCoverStory()
+        //            .compose(bindToLifecycle())
+        //            .observeOn(AndroidSchedulers.mainThread())
+        //            .subscribe(
+        //                    bingWallpaperCoverStory -> {
+        //                        UIUtils.viewVisible(mCoverStoryView);
+        //                        mCoverStory = bingWallpaperCoverStory;
+        //                        mCoverStoryTitleView.setText(bingWallpaperCoverStory.getTitle());
+        //                        mCoverStoryTextView.setText(
+        //                                bingWallpaperCoverStory.getPara1() + bingWallpaperCoverStory.getPara2());
+        //                    }, throwable -> {
+        //                        L.alog().e(TAG, throwable);
+        //                        CrashReportHandle.collectException(getApplicationContext(), TAG, "getCoverStory",
+        //                                throwable);
+        //                        UIUtils.viewGone(mCoverStoryView);
+        //                    });
+        //}
     }
 
     @SuppressLint("SetTextI18n")

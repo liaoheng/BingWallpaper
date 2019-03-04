@@ -62,6 +62,7 @@ public class NetUtils {
 
     public void init(Context context) {
         Retrofit.Builder factory = new Retrofit.Builder().baseUrl(Constants.BASE_URL)
+                .addConverterFactory(NullOnEmptyConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
 

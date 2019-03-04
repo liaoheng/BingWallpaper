@@ -54,24 +54,26 @@ public class AppWidget_5x2 extends BaseAppWidget {
             return;
         }
 
-        if (BingWallpaperUtils.isChinaLocale(context)) {
-            BingWallpaperNetworkClient.getCoverStory()
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            bingWallpaperCoverStory -> {
-                                remoteViews.setTextViewText(R.id.app_widget_title,
-                                        bingWallpaperCoverStory.getTitle());
-                                remoteViews.setTextViewText(R.id.app_widget_content,
-                                        bingWallpaperCoverStory.getPara1()
-                                                + bingWallpaperCoverStory.getPara2());
-
-                                update(context, AppWidget_5x2.class, remoteViews);
-                            }, throwable -> {
-                                remoteViews.setTextViewText(R.id.app_widget_title, image.getCopyright());
-                                remoteViews.setTextViewText(R.id.app_widget_content, "");
-                                update(context, AppWidget_5x2.class, remoteViews);
-                            });
-        } else if (!TextUtils.isEmpty(image.getCaption())) {
+        //TODO remove china daily story
+        //if (BingWallpaperUtils.isChinaLocale(context)) {
+        //    BingWallpaperNetworkClient.getCoverStory()
+        //            .observeOn(AndroidSchedulers.mainThread())
+        //            .subscribe(
+        //                    bingWallpaperCoverStory -> {
+        //                        remoteViews.setTextViewText(R.id.app_widget_title,
+        //                                bingWallpaperCoverStory.getTitle());
+        //                        remoteViews.setTextViewText(R.id.app_widget_content,
+        //                                bingWallpaperCoverStory.getPara1()
+        //                                        + bingWallpaperCoverStory.getPara2());
+        //
+        //                        update(context, AppWidget_5x2.class, remoteViews);
+        //                    }, throwable -> {
+        //                        remoteViews.setTextViewText(R.id.app_widget_title, image.getCopyright());
+        //                        remoteViews.setTextViewText(R.id.app_widget_content, "");
+        //                        update(context, AppWidget_5x2.class, remoteViews);
+        //                    });
+        //} else
+            if (!TextUtils.isEmpty(image.getCaption())) {
             remoteViews.setTextViewText(R.id.app_widget_title, image.getCaption());
             remoteViews.setTextViewText(R.id.app_widget_content, image.getDesc());
             update(context, AppWidget_5x2.class, remoteViews);

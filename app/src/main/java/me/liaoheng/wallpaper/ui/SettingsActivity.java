@@ -97,7 +97,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             }
 
             findPreference("pref_github").setOnPreferenceClickListener(preference -> {
-                BingWallpaperUtils.openBrowser(getActivity(),"https://github.com/liaoheng/BingWallpaper");
+                BingWallpaperUtils.openBrowser(getActivity(), "https://github.com/liaoheng/BingWallpaper");
                 return true;
             });
 
@@ -137,7 +137,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
             }
             translation.setOnPreferenceClickListener(preference -> {
                 BingWallpaperUtils.openBrowser(getActivity(), "https://crowdin.com/project/starth-bing-wallpaper");
-                return false;
+                return true;
             });
 
             mCountryListPreference = (ListPreference) findPreference(
