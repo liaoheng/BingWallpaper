@@ -77,6 +77,10 @@ public class NotificationUtils {
         NotificationManagerCompat.from(context).notify(11, notification);
     }
 
+    public static void clearFailureNotification(Context context) {
+        NotificationManagerCompat.from(context).cancel(11);
+    }
+
     public static void showStartNotification(Service service) {
         Notification notification = new NotificationCompat.Builder(service.getApplicationContext(),
                 Constants.FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL).setSmallIcon(

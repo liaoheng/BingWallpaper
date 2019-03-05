@@ -49,6 +49,8 @@ import me.liaoheng.wallpaper.util.TasksUtils;
 import me.liaoheng.wallpaper.widget.FeedbackDialog;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
 
+import java.io.EOFException;
+
 /**
  * 壁纸主界面
  *
@@ -277,35 +279,35 @@ public class MainActivity extends BaseActivity
                                 bingWallpaperImage.getCaption() + bingWallpaperImage.getCopyrightonly());
                         mCoverStoryTextView.setText(bingWallpaperImage.getDesc());
                     } else {
-                        //TODO remove china daily story
-                        //if (!BingWallpaperUtils.isChinaLocale(getApplicationContext())) {
-                        //    UIUtils.viewGone(mCoverStoryView);
-                        //}
-                        UIUtils.viewGone(mCoverStoryView);
+                        if (!BingWallpaperUtils.isChinaLocale(getApplicationContext())) {
+                            UIUtils.viewGone(mCoverStoryView);
+                        }
                     }
 
                     setImage(bingWallpaperImage);
                 }, this::setBingWallpaperError);
 
-        //TODO remove china daily story
-        //if (BingWallpaperUtils.isChinaLocale(this)) {
-        //    BingWallpaperNetworkClient.getCoverStory()
-        //            .compose(bindToLifecycle())
-        //            .observeOn(AndroidSchedulers.mainThread())
-        //            .subscribe(
-        //                    bingWallpaperCoverStory -> {
-        //                        UIUtils.viewVisible(mCoverStoryView);
-        //                        mCoverStory = bingWallpaperCoverStory;
-        //                        mCoverStoryTitleView.setText(bingWallpaperCoverStory.getTitle());
-        //                        mCoverStoryTextView.setText(
-        //                                bingWallpaperCoverStory.getPara1() + bingWallpaperCoverStory.getPara2());
-        //                    }, throwable -> {
-        //                        L.alog().e(TAG, throwable);
-        //                        CrashReportHandle.collectException(getApplicationContext(), TAG, "getCoverStory",
-        //                                throwable);
-        //                        UIUtils.viewGone(mCoverStoryView);
-        //                    });
-        //}
+        if (BingWallpaperUtils.isChinaLocale(this)) {
+            BingWallpaperNetworkClient.getCoverStory()
+                    .compose(bindToLifecycle())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            bingWallpaperCoverStory -> {
+                                UIUtils.viewVisible(mCoverStoryView);
+                                mCoverStory = bingWallpaperCoverStory;
+                                mCoverStoryTitleView.setText(bingWallpaperCoverStory.getTitle());
+                                mCoverStoryTextView.setText(
+                                        bingWallpaperCoverStory.getPara1() + bingWallpaperCoverStory.getPara2());
+                            }, throwable -> {
+                                UIUtils.viewGone(mCoverStoryView);
+                                L.alog().e(TAG, throwable);
+                                if (throwable instanceof EOFException) {
+                                    return;
+                                }
+                                CrashReportHandle.collectException(getApplicationContext(), TAG, "getCoverStory",
+                                        throwable);
+                            });
+        }
     }
 
     @SuppressLint("SetTextI18n")

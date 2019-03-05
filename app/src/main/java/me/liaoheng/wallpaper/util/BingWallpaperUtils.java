@@ -543,8 +543,10 @@ public class BingWallpaperUtils {
             }
             if (TasksUtils.isToDaysDoProvider(context, 1,
                     BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
-                int hourOfDay = DateTime.now().getHourOfDay();
-                if (hourOfDay == 0) {//skip
+                DateTime now = DateTime.now();
+                int hourOfDay = now.getHourOfDay();
+                int minuteOfHour = now.getMinuteOfHour();
+                if (hourOfDay == 0 && minuteOfHour < 30) {//skip
                     return 4;
                 } else {
                     BingWallpaperIntentService.start(context,

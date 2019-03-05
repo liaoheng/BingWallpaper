@@ -7,14 +7,10 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
-
 import com.github.liaoheng.common.util.L;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
-import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
@@ -54,26 +50,24 @@ public class AppWidget_5x2 extends BaseAppWidget {
             return;
         }
 
-        //TODO remove china daily story
-        //if (BingWallpaperUtils.isChinaLocale(context)) {
-        //    BingWallpaperNetworkClient.getCoverStory()
-        //            .observeOn(AndroidSchedulers.mainThread())
-        //            .subscribe(
-        //                    bingWallpaperCoverStory -> {
-        //                        remoteViews.setTextViewText(R.id.app_widget_title,
-        //                                bingWallpaperCoverStory.getTitle());
-        //                        remoteViews.setTextViewText(R.id.app_widget_content,
-        //                                bingWallpaperCoverStory.getPara1()
-        //                                        + bingWallpaperCoverStory.getPara2());
-        //
-        //                        update(context, AppWidget_5x2.class, remoteViews);
-        //                    }, throwable -> {
-        //                        remoteViews.setTextViewText(R.id.app_widget_title, image.getCopyright());
-        //                        remoteViews.setTextViewText(R.id.app_widget_content, "");
-        //                        update(context, AppWidget_5x2.class, remoteViews);
-        //                    });
-        //} else
-            if (!TextUtils.isEmpty(image.getCaption())) {
+        if (BingWallpaperUtils.isChinaLocale(context)) {
+            BingWallpaperNetworkClient.getCoverStory()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            bingWallpaperCoverStory -> {
+                                remoteViews.setTextViewText(R.id.app_widget_title,
+                                        bingWallpaperCoverStory.getTitle());
+                                remoteViews.setTextViewText(R.id.app_widget_content,
+                                        bingWallpaperCoverStory.getPara1()
+                                                + bingWallpaperCoverStory.getPara2());
+
+                                update(context, AppWidget_5x2.class, remoteViews);
+                            }, throwable -> {
+                                remoteViews.setTextViewText(R.id.app_widget_title, image.getCopyright());
+                                remoteViews.setTextViewText(R.id.app_widget_content, "");
+                                update(context, AppWidget_5x2.class, remoteViews);
+                            });
+        } else if (!TextUtils.isEmpty(image.getCaption())) {
             remoteViews.setTextViewText(R.id.app_widget_title, image.getCaption());
             remoteViews.setTextViewText(R.id.app_widget_content, image.getDesc());
             update(context, AppWidget_5x2.class, remoteViews);

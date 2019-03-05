@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import androidx.annotation.IntDef;
+import androidx.annotation.MainThread;
 import androidx.core.content.ContextCompat;
 import com.firebase.jobdispatcher.*;
 import com.github.liaoheng.common.util.L;
@@ -241,6 +242,7 @@ public class BingWallpaperJobManager {
         return myJobInfo != null;
     }
 
+    @MainThread
     public static void restore(Context context) {
         if (isJobTypeDaemonService(context)) {
             startDaemonService(context);

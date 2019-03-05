@@ -181,8 +181,8 @@ public class BingWallpaperIntentService extends IntentService {
             if (BingWallpaperUtils.isAutomaticUpdateNotification(getApplicationContext())) {
                 NotificationUtils.showSuccessNotification(getApplicationContext(), bingWallpaperImage.getCopyright());
             }
+            NotificationUtils.clearFailureNotification(getApplicationContext());
 
-            //标记成功，每天只在后台执行一次
             if (TasksUtils.isToDaysDoProvider(getApplicationContext(), 1, FLAG_SET_WALLPAPER_STATE)) {
                 L.alog().i(TAG, "Today markDone");
                 if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
