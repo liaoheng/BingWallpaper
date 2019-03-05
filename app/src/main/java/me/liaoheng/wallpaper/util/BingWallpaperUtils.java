@@ -449,7 +449,8 @@ public class BingWallpaperUtils {
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             if (intent.resolveActivity(context.getPackageManager()) == null) {
-                throw new IllegalArgumentException("Unknown component");
+                UIUtils.showToast(context, R.string.unable_open_url);
+                return;
             }
             context.startActivity(intent);
         } catch (Exception ignore) {
@@ -623,6 +624,8 @@ public class BingWallpaperUtils {
         Locale locale = getLocale(context);
         if (locale.getLanguage().equals(new Locale("pl").getLanguage())) {
             return "Translator : @dekar16";
+        } else if (locale.getLanguage().equals(new Locale("ru").getLanguage())) {
+            return "Translator : @tullev2";
         }
         return "";
     }

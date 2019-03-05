@@ -102,7 +102,7 @@ public class NotificationUtils {
                 Constants.GMS_NOTIFICATION_CHANNEL).setSmallIcon(
                 R.drawable.ic_notification)
                 .setAutoCancel(true)
-                .setContentText("Google service error: " + errorString)
+                .setContentText(String.format("Google service error: %s", errorString))
                 .setContentTitle(context.getString(R.string.app_name))
                 .build();
         NotificationManagerCompat.from(context).notify(56, notification);

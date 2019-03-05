@@ -86,11 +86,17 @@ public class BingWallpaperIntentService extends IntentService {
         super.onDestroy();
     }
 
+    //https://issuetracker.google.com/issues/76112072
+    @Override
+    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+        NotificationUtils.showStartNotification(this);
+        return super.onStartCommand(intent, flags, startId);
+    }
+
     @Override
     protected void onHandleIntent(final Intent intent) {
-        NotificationUtils.showStartNotification(this);
-        @Constants.setWallpaperMode int setWallpaperType = intent.getIntExtra(EXTRA_SET_WALLPAPER_MODE, 0);
-        final boolean isBackground = intent.getBooleanExtra(EXTRA_SET_WALLPAPER_BACKGROUND, false);
+        int setWallpaperType = intent.getIntExtra(EXTRA_SET_WALLPAPER_MODE, 0);
+        boolean isBackground = intent.getBooleanExtra(EXTRA_SET_WALLPAPER_BACKGROUND, false);
         BingWallpaperImage bingWallpaperImage = intent.getParcelableExtra(EXTRA_SET_WALLPAPER_IMAGE);
         L.alog().d(TAG, " setWallpaperType : " + setWallpaperType);
 
