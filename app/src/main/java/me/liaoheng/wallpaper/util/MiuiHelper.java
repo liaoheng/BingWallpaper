@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
-import android.os.Build;
 import com.github.liaoheng.common.util.*;
 
 import java.io.File;
@@ -17,7 +16,7 @@ import java.util.UUID;
  */
 public class MiuiHelper {
 
-    public static void setLockScreenWallpaper(Context context, File file) throws IOException {
+    public static boolean setLockScreenWallpaper(Context context, File file) throws IOException {
         if (BingWallpaperUtils.isMiuiLockScreenSupport(context) && ShellUtils.hasRootPermission()) {
             int width = DisplayUtils.getScreenInfo(context).widthPixels;
             int height = DisplayUtils.getScreenInfo(context).heightPixels;
@@ -35,7 +34,7 @@ public class MiuiHelper {
                 FileUtils.copyToFile(BitmapUtils.bitmapToStream(newBitmap, Bitmap.CompressFormat.JPEG),
                         wallpaperFile);
                 BitmapUtils.recycle(newBitmap);
-                setImage(wallpaperFile);
+                return setImage(wallpaperFile);
             } catch (Exception e) {
                 L.alog().e("MiuiHelper", e);
             } finally {
@@ -43,33 +42,30 @@ public class MiuiHelper {
                     FileUtils.delete(wallpaperFile);
                 }
             }
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                BingWallpaperUtils.setLockScreenWallpaper(context, file);
-            }
         }
+        return false;
     }
 
-    private static void setImage(File file) {
+    private static boolean setImage(File file) {
         ShellUtils.CommandResult commandResult = ShellUtils.execCommand(
                 "cp " + file.getAbsolutePath() + " /data/system/theme/lock_wallpaper", true, true);
         if (commandResult.result == 0) {
             ShellUtils.execCommand("chmod 755 /data/system/theme/lock_wallpaper", true);
+            return true;
+        } else {
+            return false;
         }
     }
 
-    public static void setWallpaper(Context context, @Constants.setWallpaperMode int mode, File wallpaper)
+    public static boolean setWallpaper(Context context, @Constants.setWallpaperMode int mode, File wallpaper)
             throws Exception {
-        if (!ROM.getROM().isMiui()) {
-            return;
-        }
         if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-            BingWallpaperUtils.setWallpaper(context, wallpaper);
+            return BingWallpaperUtils.setWallpaper(context, wallpaper);
         } else if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-            setLockScreenWallpaper(context, wallpaper);
+            return setLockScreenWallpaper(context, wallpaper);
         } else {
-            BingWallpaperUtils.setWallpaper(context, wallpaper);
             setLockScreenWallpaper(context, wallpaper);
+            return BingWallpaperUtils.setWallpaper(context, wallpaper);
         }
     }
 }

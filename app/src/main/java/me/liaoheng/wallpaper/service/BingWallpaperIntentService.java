@@ -101,7 +101,7 @@ public class BingWallpaperIntentService extends IntentService {
         L.alog().d(TAG, " setWallpaperType : " + setWallpaperType);
 
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().i(TAG, "Starting " + setWallpaperType);
+            LogDebugFileUtils.get().i(TAG, "Starting type: %s , background: %s", setWallpaperType, isBackground);
         }
 
         sendSetWallpaperBroadcast(BingWallpaperState.BEGIN);
@@ -157,6 +157,7 @@ public class BingWallpaperIntentService extends IntentService {
     }
 
     private void failure(Throwable throwable) {
+        throwable = throwable.getCause() != null ? throwable.getCause() : throwable;
         L.alog().e(TAG, throwable, "Failure");
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
             LogDebugFileUtils.get().e(TAG, throwable, "Failure");
@@ -206,7 +207,9 @@ public class BingWallpaperIntentService extends IntentService {
             throw new IOException("download wallpaper failure");
         }
 
-        mUiHelper.setWallpaper(getApplicationContext(), setWallpaperType, wallpaper);
+        if (!mUiHelper.setWallpaper(getApplicationContext(), setWallpaperType, wallpaper)) {
+            throw new IOException("set wallpaper failure");
+        }
 
         L.alog().i(TAG, "setBingWallpaper Success");
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {

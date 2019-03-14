@@ -578,35 +578,36 @@ public class BingWallpaperUtils {
     }
 
     @SuppressLint("InlinedApi")
-    public static void setBothWallpaper(Context context, File file) throws IOException {
-        setWallpaper(context, file, WallpaperManager.FLAG_SYSTEM | WallpaperManager.FLAG_LOCK);
+    public static boolean setBothWallpaper(Context context, File file) throws IOException {
+        return setWallpaper(context, file, WallpaperManager.FLAG_SYSTEM | WallpaperManager.FLAG_LOCK);
     }
 
-    public static void setWallpaper(Context context, File file, int which) throws IOException {
+    public static boolean setWallpaper(Context context, File file, int which) throws IOException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             try (InputStream fileInputStream = FileUtils.openInputStream(file)) {
-                WallpaperManager.getInstance(context)
-                        .setStream(fileInputStream, null, true, which);
+                return WallpaperManager.getInstance(context)
+                        .setStream(fileInputStream, null, true, which) != 0;
             }
         } else {
-            setWallpaper(context, file);
+            return setWallpaper(context, file);
         }
     }
 
-    public static void setWallpaper(Context context, File file) throws IOException {
+    public static boolean setWallpaper(Context context, File file) throws IOException {
         try (InputStream fileInputStream = FileUtils.openInputStream(file)) {
             WallpaperManager.getInstance(context).setStream(fileInputStream);
         }
+        return true;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public static void setLockScreenWallpaper(Context context, File file) throws IOException {
-        setWallpaper(context, file, WallpaperManager.FLAG_LOCK);
+    public static boolean setLockScreenWallpaper(Context context, File file) throws IOException {
+        return setWallpaper(context, file, WallpaperManager.FLAG_LOCK);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public static void setHomeScreenWallpaper(Context context, File file) throws IOException {
-        setWallpaper(context, file, WallpaperManager.FLAG_SYSTEM);
+    public static boolean setHomeScreenWallpaper(Context context, File file) throws IOException {
+        return setWallpaper(context, file, WallpaperManager.FLAG_SYSTEM);
     }
 
     public static Observable<Object> clearCache(Context context) {

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import androidx.annotation.RequiresApi;
-import com.github.liaoheng.common.util.ROM;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,29 +57,27 @@ public class EmuiHelper {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public static void setBothWallpaper(Context context, File file) throws IOException {
+    public static boolean setBothWallpaper(Context context, File file) throws IOException {
         try {
-            BingWallpaperUtils.setHomeScreenWallpaper(context, file);
-            BingWallpaperUtils.setLockScreenWallpaper(context, file);
+            boolean h = BingWallpaperUtils.setHomeScreenWallpaper(context, file);
+            boolean l = BingWallpaperUtils.setLockScreenWallpaper(context, file);
+            return h && l;
         } catch (IOException e) {
-            BingWallpaperUtils.setBothWallpaper(context, file);
+            return BingWallpaperUtils.setBothWallpaper(context, file);
         }
     }
 
-    public static void setWallpaper(Context context, @Constants.setWallpaperMode int mode, File wallpaper)
+    public static boolean setWallpaper(Context context, @Constants.setWallpaperMode int mode, File wallpaper)
             throws Exception {
-        if (!ROM.getROM().isEmui()) {
-            return;
-        }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            BingWallpaperUtils.setWallpaper(context, wallpaper);
+            return BingWallpaperUtils.setWallpaper(context, wallpaper);
         } else {
             if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-                BingWallpaperUtils.setHomeScreenWallpaper(context, wallpaper);
+                return BingWallpaperUtils.setHomeScreenWallpaper(context, wallpaper);
             } else if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                BingWallpaperUtils.setLockScreenWallpaper(context, wallpaper);
+                return BingWallpaperUtils.setLockScreenWallpaper(context, wallpaper);
             } else {
-                setBothWallpaper(context, wallpaper);
+                return setBothWallpaper(context, wallpaper);
             }
         }
     }

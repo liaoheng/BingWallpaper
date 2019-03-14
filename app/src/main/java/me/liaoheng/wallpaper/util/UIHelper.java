@@ -13,21 +13,21 @@ import java.io.File;
 public class UIHelper implements IUIHelper {
 
     @Override
-    public void setWallpaper(Context context, int mode, File wallpaper) throws Exception {
+    public boolean setWallpaper(Context context, int mode, File wallpaper) throws Exception {
         if (ROM.getROM().isMiui()) {
-            MiuiHelper.setWallpaper(context, mode, wallpaper);
+            return MiuiHelper.setWallpaper(context, mode, wallpaper);
         } else if (ROM.getROM().isEmui()) {
-            EmuiHelper.setWallpaper(context, mode, wallpaper);
+            return EmuiHelper.setWallpaper(context, mode, wallpaper);
         } else {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                BingWallpaperUtils.setWallpaper(context, wallpaper);
+                return BingWallpaperUtils.setWallpaper(context, wallpaper);
             } else {
                 if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-                    BingWallpaperUtils.setHomeScreenWallpaper(context, wallpaper);
+                    return BingWallpaperUtils.setHomeScreenWallpaper(context, wallpaper);
                 } else if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                    BingWallpaperUtils.setLockScreenWallpaper(context, wallpaper);
+                    return BingWallpaperUtils.setLockScreenWallpaper(context, wallpaper);
                 } else {
-                    BingWallpaperUtils.setBothWallpaper(context, wallpaper);
+                    return BingWallpaperUtils.setBothWallpaper(context, wallpaper);
                 }
             }
         }

@@ -9,6 +9,6 @@ import java.io.File;
  * @version 2018-12-24 11:11
  */
 public interface IUIHelper {
-    void setWallpaper(Context context, @Constants.setWallpaperMode int mode, File wallpaper)
+    boolean setWallpaper(Context context, @Constants.setWallpaperMode int mode, File wallpaper)
             throws Exception;
 }
