@@ -22,7 +22,8 @@
       7. <img alt='miui_5' src='https://raw.githubusercontent.com/liaoheng/BingWallpaper/image/miui_5.png' width='300'/>
       8. <img alt='miui_6' src='https://raw.githubusercontent.com/liaoheng/BingWallpaper/image/miui_6.png' width='300'/>
       9. <img alt='miui_7' src='https://raw.githubusercontent.com/liaoheng/BingWallpaper/image/miui_7.png' width='300'/>
-
+      10. If it still doesn't work, please lock the application. open the background application list as follows:
+      <img alt='miui_7' src='https://raw.githubusercontent.com/liaoheng/BingWallpaper/image/miui_8.png' width='300'/>
   - **EMUI** System, Follow the steps below:
       1. AOSP operating
       2. Open system settings
