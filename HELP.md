@@ -6,7 +6,7 @@
 ### Use `Daily automatic update` or `Daily timer update` option, it not works fine. 
 #### 1. Can try adding a desktop widget.
 #### 2. Added to the battery optimization white list.
-  - **AOSP** System, Open app settings, Follow the steps below:
+  -  General operation, Open app settings, Follow the steps below:
       1. <img alt='aosp_1' src='https://raw.githubusercontent.com/liaoheng/BingWallpaper/image/aosp_1.png' width='300'/>
       2. <img alt='aosp_2' src='https://raw.githubusercontent.com/liaoheng/BingWallpaper/image/aosp_2.png' width='300'/>
       3. <img alt='aosp_3' src='https://raw.githubusercontent.com/liaoheng/BingWallpaper/image/aosp_3.png' width='300'/>
