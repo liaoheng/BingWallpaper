@@ -54,11 +54,11 @@ public class WallpaperDaemonService extends Service {
                     if (startTime >= time) {
                         startTime = 0;
                         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-                            LogDebugFileUtils.get().i(TAG, "daemon service action");
+                            LogDebugFileUtils.get().i(TAG, "daemon service action : %s", startTime);
                         }
                         if (TasksUtils.isToDaysDoProvider(getApplicationContext(), 1,
                                 BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
-                            SetWallpaperBroadcastReceiver.send(getApplicationContext(), TAG);
+                            BingWallpaperUtils.runningService(WallpaperDaemonService.this, TAG);
                         }
                     }
                 });

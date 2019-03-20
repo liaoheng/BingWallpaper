@@ -2,11 +2,9 @@ package me.liaoheng.wallpaper.util;
 
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
@@ -16,7 +14,6 @@ import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.UIUtils;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.service.FirebaseJobSchedulerDaemonService;
-import me.liaoheng.wallpaper.service.JobSchedulerDaemonService;
 import me.liaoheng.wallpaper.service.WallpaperDaemonService;
 
 import java.lang.annotation.Retention;
@@ -34,15 +31,20 @@ public class BingWallpaperJobManager {
     private static final String JOB_TAG = "bing_wallpaper_job_" + JOB_ID;
 
     public static void disabled(Context context) {
-        setJobType(context, NONE);
+        clear(context);
         if (BingWallpaperUtils.isGooglePlayServicesAvailable(context)) {
             FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
             dispatcher.cancel(JOB_TAG);
         }
 
+        WorkerManager.disabled();
+
         Intent intent = new Intent(context, WallpaperDaemonService.class);
         context.stopService(intent);
+    }
 
+    public static void clear(Context context) {
+        setJobType(context, NONE);
         JobScheduler jobScheduler = (JobScheduler)
                 context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         if (jobScheduler == null) {
@@ -52,7 +54,7 @@ public class BingWallpaperJobManager {
     }
 
     public static boolean enabled(Context context) {
-        disabled(context);
+        clear(context);
         boolean ret = enabled(context,
                 TimeUnit.HOURS.toSeconds(BingWallpaperUtils.getAutomaticUpdateInterval(context)));
         if (!ret) {
@@ -61,12 +63,111 @@ public class BingWallpaperJobManager {
         return ret;
     }
 
+    /**
+     * @param time seconds
+     */
+    public static boolean enableGoogleService(Context context, long time) {
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
+        Job myJob = dispatcher.newJobBuilder()
+                .setService(FirebaseJobSchedulerDaemonService.class)
+                .setTag(JOB_TAG)
+                .setRecurring(true)
+                .setReplaceCurrent(true)
+                .setLifetime(Lifetime.FOREVER)
+                .setRetryStrategy(
+                        RetryStrategy.DEFAULT_EXPONENTIAL)
+                .setTrigger(Trigger.executionWindow(0, (int) time))
+                //.setConstraints(Constraint.DEVICE_IDLE)
+                .build();
+        boolean success = dispatcher.schedule(myJob) == FirebaseJobDispatcher.SCHEDULE_RESULT_SUCCESS;
+        if (success) {
+            setJobType(context, GOOGLE_SERVICE);
+            if (BingWallpaperUtils.isEnableLog(context)) {
+                LogDebugFileUtils.get()
+                        .i(TAG, "Enable google service job interval time : %s", time);
+            }
+            L.alog().d(TAG, "Enable google service job interval time : %s", time);
+        }
+        return success;
+    }
+
+    /**
+     * @param time seconds
+     */
+    public static boolean enableSystem(Context context, long time) {
+        return WorkerManager.enabled(context, time);
+        //JobScheduler jobScheduler = (JobScheduler)
+        //        context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        //if (jobScheduler == null) {
+        //    return false;
+        //}
+        //JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, new ComponentName(context,
+        //        JobSchedulerDaemonService.class))
+        //        .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+        //        .setBackoffCriteria(TimeUnit.MINUTES.toMillis(15), JobInfo.BACKOFF_POLICY_EXPONENTIAL)
+        //        .setPersisted(true);
+        //
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        //    builder.setPeriodic(TimeUnit.SECONDS.toMillis(time), TimeUnit.SECONDS.toMillis(time / 3));
+        //} else {
+        //    builder.setPeriodic(TimeUnit.SECONDS.toMillis(time));
+        //}
+        //
+        //boolean success = jobScheduler.schedule(builder.build()) == JobScheduler.RESULT_SUCCESS;
+        //if (success) {
+        //    setJobType(context, SYSTEM);
+        //    if (BingWallpaperUtils.isEnableLog(context)) {
+        //        LogDebugFileUtils.get()
+        //                .i(TAG, "Enable system job interval time : %s", time);
+        //    }
+        //    L.alog().d(TAG, "Enable system job interval time : %s", time);
+        //}
+        //return success;
+    }
+
+    /**
+     * @param time seconds
+     */
+    public static boolean enabled(Context context, long time) {
+        try {
+            int type = BingWallpaperUtils.getAutomaticUpdateType(context);
+            if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_AUTO) {
+                if (BingWallpaperUtils.isGooglePlayServicesAvailable(context)) {
+                    if (!enableGoogleService(context, time)) {
+                        if (!enableSystem(context, time)) {
+                            return enableDaemonService(context);
+                        }
+                    }
+                } else {
+                    if (BingWallpaperUtils.isEnableLog(context)) {
+                        LogDebugFileUtils.get()
+                                .i(TAG, "GMS error: %s",
+                                        BingWallpaperUtils.getGooglePlayServicesAvailableErrorString(context));
+                    }
+                    if (!enableSystem(context, time)) {
+                        return enableDaemonService(context);
+                    }
+                }
+            } else if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_SYSTEM) {
+                return enableSystem(context, time);
+            } else if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_SERVICE) {
+                return enableDaemonService(context);
+            }
+            return true;
+        } catch (Exception ignore) {
+            return false;
+        }
+    }
+
     public static long startDaemonService(Context context) {
         long time = Constants.DAEMON_SERVICE_PERIODIC;
         startDaemonService(context, time);
         return time;
     }
 
+    /**
+     * @param time seconds
+     */
     public static void startDaemonService(Context context, long time) {
         Intent intent = new Intent(context, WallpaperDaemonService.class);
         intent.putExtra("time", time);
@@ -86,92 +187,6 @@ public class BingWallpaperJobManager {
             return false;
         }
         return true;
-    }
-
-    public static boolean enableGoogleService(Context context, long time) {
-        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
-        Job myJob = dispatcher.newJobBuilder()
-                .setService(FirebaseJobSchedulerDaemonService.class)
-                .setTag(JOB_TAG)
-                .setRecurring(true)
-                .setReplaceCurrent(true)
-                .setLifetime(Lifetime.FOREVER)
-                .setRetryStrategy(
-                        RetryStrategy.DEFAULT_EXPONENTIAL)
-                .setTrigger(Trigger.executionWindow(0, (int) time))
-                .setConstraints(Constraint.DEVICE_IDLE)
-                .build();
-        boolean success = dispatcher.schedule(myJob) == FirebaseJobDispatcher.SCHEDULE_RESULT_SUCCESS;
-        if (success) {
-            setJobType(context, GOOGLE_SERVICE);
-            if (BingWallpaperUtils.isEnableLog(context)) {
-                LogDebugFileUtils.get()
-                        .i(TAG, "Enable google service job interval time : %s", time);
-            }
-            L.alog().d(TAG, "Enable google service job interval time : %s", time);
-        }
-        return success;
-    }
-
-    public static boolean enableSystem(Context context, long time) {
-        JobScheduler jobScheduler = (JobScheduler)
-                context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        if (jobScheduler == null) {
-            return false;
-        }
-        JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, new ComponentName(context,
-                JobSchedulerDaemonService.class))
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setBackoffCriteria(TimeUnit.MINUTES.toMillis(15), JobInfo.BACKOFF_POLICY_EXPONENTIAL)
-                .setPersisted(true);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            builder.setPeriodic(TimeUnit.SECONDS.toMillis(time), TimeUnit.SECONDS.toMillis(time / 3));
-        } else {
-            builder.setPeriodic(TimeUnit.SECONDS.toMillis(time));
-        }
-
-        boolean success = jobScheduler.schedule(builder.build()) == JobScheduler.RESULT_SUCCESS;
-        if (success) {
-            setJobType(context, SYSTEM);
-            if (BingWallpaperUtils.isEnableLog(context)) {
-                LogDebugFileUtils.get()
-                        .i(TAG, "Enable system job interval time : %s", time);
-            }
-            L.alog().d(TAG, "Enable system job interval time : %s", time);
-        }
-        return success;
-    }
-
-    /**
-     * @param time seconds
-     */
-    public static boolean enabled(Context context, long time) {
-        try {
-            int type = BingWallpaperUtils.getAutomaticUpdateType(context);
-            if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_AUTO) {
-                if (BingWallpaperUtils.isGooglePlayServicesAvailable(context)) {
-                    if (!enableGoogleService(context, time)) {
-                        if (!enableSystem(context, time)) {
-                            return enableDaemonService(context);
-                        }
-                    }
-                } else {
-                    NotificationUtils.showGMSErrorNotification(context,
-                            BingWallpaperUtils.getGooglePlayServicesAvailableErrorString(context));
-                    if (!enableSystem(context, time)) {
-                        return enableDaemonService(context);
-                    }
-                }
-            } else if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_SYSTEM) {
-                return enableSystem(context, time);
-            } else if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_SERVICE) {
-                return enableDaemonService(context);
-            }
-            return true;
-        } catch (Exception ignore) {
-            return false;
-        }
     }
 
     public static void setJobType(Context context, @JobType int type) {
@@ -195,7 +210,8 @@ public class BingWallpaperJobManager {
             NONE,
             GOOGLE_SERVICE,
             SYSTEM,
-            DAEMON_SERVICE
+            DAEMON_SERVICE,
+            WORKER
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface JobType {}
@@ -204,6 +220,7 @@ public class BingWallpaperJobManager {
     public final static int GOOGLE_SERVICE = 0;
     public final static int SYSTEM = 1;
     public final static int DAEMON_SERVICE = 2;
+    public final static int WORKER = 3;
 
     public static String check(Context context) {
         int jobType = getJobType(context);
@@ -216,6 +233,12 @@ public class BingWallpaperJobManager {
                 return "google_service";
             } else {
                 return "google_service_error";
+            }
+        } else if (jobType == WORKER) {
+            if (WorkerManager.isScheduled()) {
+                return "worker";
+            } else {
+                return "worker_error";
             }
         } else {
             return checkSystemJobStatus(context) ? "true" : "false";
@@ -246,10 +269,6 @@ public class BingWallpaperJobManager {
     public static void restore(Context context) {
         if (isJobTypeDaemonService(context)) {
             startDaemonService(context);
-        } else if (getJobType(context) == BingWallpaperJobManager.SYSTEM) {
-            if (!checkSystemJobStatus(context)) {
-                enableSystem(context, TimeUnit.HOURS.toSeconds(BingWallpaperUtils.getAutomaticUpdateInterval(context)));
-            }
         }
     }
 

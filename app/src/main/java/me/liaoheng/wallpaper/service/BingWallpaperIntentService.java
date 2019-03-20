@@ -94,7 +94,7 @@ public class BingWallpaperIntentService extends IntentService {
     }
 
     @Override
-    protected void onHandleIntent(final Intent intent) {
+    protected void onHandleIntent(Intent intent) {
         int setWallpaperType = intent.getIntExtra(EXTRA_SET_WALLPAPER_MODE, 0);
         boolean isBackground = intent.getBooleanExtra(EXTRA_SET_WALLPAPER_BACKGROUND, false);
         BingWallpaperImage bingWallpaperImage = intent.getParcelableExtra(EXTRA_SET_WALLPAPER_IMAGE);
@@ -169,6 +169,19 @@ public class BingWallpaperIntentService extends IntentService {
     }
 
     private void success(boolean isBackground, BingWallpaperImage bingWallpaperImage) {
+        if (isBackground) {
+            if (TasksUtils.isToDaysDoProvider(getApplicationContext(), 1, FLAG_SET_WALLPAPER_STATE)) {
+                L.alog().i(TAG, "Today markDone");
+                if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+                    LogDebugFileUtils.get().i(TAG, "Today markDone");
+                }
+                TasksUtils.markDoneProvider(getApplicationContext(), FLAG_SET_WALLPAPER_STATE);
+            }
+            if (BingWallpaperUtils.isAutomaticUpdateNotification(getApplicationContext())) {
+                NotificationUtils.showSuccessNotification(getApplicationContext(), bingWallpaperImage.getCopyright());
+            }
+            NotificationUtils.clearFailureNotification(getApplicationContext());
+        }
         L.alog().i(TAG, "Complete");
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
             LogDebugFileUtils.get().i(TAG, "Complete");
@@ -177,21 +190,6 @@ public class BingWallpaperIntentService extends IntentService {
         AppWidget_5x2.start(this, bingWallpaperImage);
         AppWidget_5x1.start(this, bingWallpaperImage);
         sendSetWallpaperBroadcast(BingWallpaperState.SUCCESS);
-        if (isBackground) {
-
-            if (BingWallpaperUtils.isAutomaticUpdateNotification(getApplicationContext())) {
-                NotificationUtils.showSuccessNotification(getApplicationContext(), bingWallpaperImage.getCopyright());
-            }
-            NotificationUtils.clearFailureNotification(getApplicationContext());
-
-            if (TasksUtils.isToDaysDoProvider(getApplicationContext(), 1, FLAG_SET_WALLPAPER_STATE)) {
-                L.alog().i(TAG, "Today markDone");
-                if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-                    LogDebugFileUtils.get().i(TAG, "Today markDone");
-                }
-                TasksUtils.markDoneProvider(getApplicationContext(), FLAG_SET_WALLPAPER_STATE);
-            }
-        }
     }
 
     private void downloadAndSetWallpaper(String url, @Constants.setWallpaperMode int setWallpaperType)

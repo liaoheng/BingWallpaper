@@ -68,7 +68,6 @@
   <string name="menu_set_wallpaper_mode_both">Ustaw tapetę na obu</string>
   <!--intro-->
   <string name="intro_update_set">Automatyczna aktualizacja tapety</string>
-  <string name="intro_update_set_timing_time">Wybrano: </string>
   <string name="intro_hint_welcome">Witamy w Starth Bing Wallpaper</string>
   <string name="intro_hint_whitelist">Aplikacja musi zostać dodana do białych list programów zarządzających procesami np. Brevent, Greenify&#8230;. </string>
   <string name="intro_hint_battery">Optymalizacja baterii systemu sprawi, że aplikacja nie będzie w stanie zaktualizować tapety, aby tego uniknąć można dodać aplikacje do białej listy. </string>

@@ -1,18 +1,10 @@
 package me.liaoheng.wallpaper;
 
 import android.app.Application;
-
 import com.github.liaoheng.common.Common;
 import com.github.liaoheng.common.util.L;
-
 import io.reactivex.plugins.RxJavaPlugins;
-import me.liaoheng.wallpaper.util.BingWallpaperUtils;
-import me.liaoheng.wallpaper.util.Constants;
-import me.liaoheng.wallpaper.util.CrashReportHandle;
-import me.liaoheng.wallpaper.util.LogDebugFileUtils;
-import me.liaoheng.wallpaper.util.NetUtils;
-import me.liaoheng.wallpaper.util.NotificationUtils;
-import me.liaoheng.wallpaper.util.TasksUtils;
+import me.liaoheng.wallpaper.util.*;
 
 /**
  * @author liaoheng
@@ -33,6 +25,7 @@ public class MApplication extends Application {
         RxJavaPlugins.setErrorHandler(throwable -> L.alog().w("RxJavaPlugins", throwable));
         NetUtils.get().init(getApplicationContext());
         Constants.Config.isPhone = getString(R.string.screen_type).equals("phone");
+        WorkerManager.init(this, BuildConfig.DEBUG);
 
         CrashReportHandle.init(this);
 

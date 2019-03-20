@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
     <PreferenceCategory
             android:key="pref_wallpaper_group"
             android:persistent="false"
             android:title="@string/pref_auto_update_wallpaper">
-        <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="pref_set_wallpaper_day_auto_update_only_wifi"
-                android:title="@string/pref_update_only_on_wifi"
-                android:widgetLayout="@layout/mp_preference_switch" />
 
         <CheckBoxPreference
                 android:defaultValue="false"
@@ -32,6 +28,13 @@
                 android:title="@string/pref_set_wallpaper_day_fully_automatic_update_interval" />
 
         <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="pref_set_wallpaper_day_fully_automatic_update_notification"
+                android:summary="@string/pref_auto_update_everyday_notification_note"
+                android:title="@string/pref_auto_update_everyday_notification"
+                android:widgetLayout="@layout/mp_preference_switch" />
+
+        <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="pref_set_wallpaper_day_auto_update"
                 android:summary="@string/pref_alarm_update_wallpaper_everyday_summary"
@@ -52,25 +55,19 @@
                 android:key="pref_set_wallpaper_auto_mode"
                 android:title="@string/pref_choose_auto_set_wallpaper_type" />
 
-        <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="pref_set_wallpaper_day_fully_automatic_update_notification"
-                android:summary="@string/pref_auto_update_everyday_notification_note"
-                android:title="@string/pref_auto_update_everyday_notification"
-                android:widgetLayout="@layout/mp_preference_switch" />
-
-        <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="pref_pixabay_support"
-                android:summary="@string/pref_pixabay_support_note"
-                android:title="@string/pref_pixabay_support"
-                android:widgetLayout="@layout/mp_preference_switch" />
     </PreferenceCategory>
 
     <PreferenceCategory
             android:key="pref_other_group"
             android:persistent="false"
             android:title="@string/pref_other">
+
+        <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="pref_set_wallpaper_day_auto_update_only_wifi"
+                android:title="@string/pref_update_only_on_wifi"
+                android:widgetLayout="@layout/mp_preference_switch" />
+
         <ListPreference
                 android:defaultValue="0"
                 android:entries="@array/pref_set_wallpaper_resolution_name"
@@ -110,6 +107,13 @@
                 android:persistent="false"
                 android:summary="@string/pref_set_miui_lock_screen_wallpaper_note"
                 android:title="@string/pref_set_miui_lock_screen_wallpaper"
+                android:widgetLayout="@layout/mp_preference_switch" />
+
+        <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="pref_pixabay_support"
+                android:summary="@string/pref_pixabay_support_note"
+                android:title="@string/pref_pixabay_support"
                 android:widgetLayout="@layout/mp_preference_switch" />
 
         <CheckBoxPreference

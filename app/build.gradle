@@ -9,8 +9,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 141
-        versionName "1.4.1"
+        versionCode 150
+        versionName "1.5.0"
     }
 
     def isSigning = true
@@ -73,9 +73,10 @@ dependencies {
     implementation deps.palette
     implementation deps.customtabs
 
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.8'
-    implementation 'com.google.firebase:firebase-core:16.0.6'
-    implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
+    implementation 'android.arch.work:work-runtime:1.0.0'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9'
+    implementation 'com.google.firebase:firebase-core:16.0.7'
+    implementation 'com.firebase:firebase-jobdispatcher:0.8.6'
     //    implementation 'com.google.android.gms:play-services-base:15.0.1'
 
     implementation 'com.jakewharton:butterknife:10.0.0'
@@ -86,9 +87,8 @@ dependencies {
     annotationProcessor deps.glide_compiler
     implementation deps.glide_okhttp3_integration
     implementation deps.okhttp
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.0'
     implementation deps.retrofit
-    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
+    implementation deps.retrofit_converter_gson
     implementation deps.retrofit_adapter_rxjava2
     implementation deps.rxandroid2
     implementation deps.rxjava2

@@ -1,15 +1,14 @@
 package me.liaoheng.wallpaper.service;
 
 import android.os.Handler;
-import android.os.Looper;
+import android.os.HandlerThread;
 import android.os.Message;
-
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
 import com.github.liaoheng.common.util.L;
-
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 自动更新壁纸守护服务
@@ -18,19 +17,26 @@ import me.liaoheng.wallpaper.util.LogDebugFileUtils;
  * @version 2017-10-16 11:55
  */
 public class FirebaseJobSchedulerDaemonService extends JobService {
-
     private final String TAG = FirebaseJobSchedulerDaemonService.class.getSimpleName();
 
-    Handler mHandler = new Handler(Looper.myLooper()) {
-        @Override
-        public void handleMessage(Message msg) {
-            SetWallpaperBroadcastReceiver.send(getApplicationContext(), TAG);
-            jobFinished((JobParameters) msg.obj, false);
-        }
-    };
+    private HandlerThread mHandlerThread = new HandlerThread(TAG);
+    private Handler mHandler;
 
     @Override
-    public boolean onStartJob(JobParameters params) {
+    public void onCreate() {
+        super.onCreate();
+        mHandlerThread.start();
+        mHandler = new Handler(mHandlerThread.getLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                BingWallpaperUtils.runningService(FirebaseJobSchedulerDaemonService.this, TAG);
+                jobFinished((JobParameters) msg.obj, false);
+            }
+        };
+    }
+
+    @Override
+    public boolean onStartJob(@NotNull JobParameters params) {
         L.alog().d(TAG, "action job tag : %s", params.getTag());
         if (BingWallpaperUtils.isEnableLog(getApplicationContext())) {
             LogDebugFileUtils.get()
@@ -40,13 +46,13 @@ public class FirebaseJobSchedulerDaemonService extends JobService {
         message.what = 1;
         message.obj = params;
         mHandler.sendMessageDelayed(message, 2000);
-
         return true;
     }
 
     @Override
-    public boolean onStopJob(JobParameters params) {
+    public boolean onStopJob(@NotNull JobParameters params) {
         mHandler.removeMessages(1);
+        mHandlerThread.quit();
         return false;
     }
 }

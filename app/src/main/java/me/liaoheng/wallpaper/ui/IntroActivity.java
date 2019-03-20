@@ -90,6 +90,7 @@ public class IntroActivity extends AppIntro {
             IntroUpdateFragment fragment = (IntroUpdateFragment) currentFragment;
             switch (fragment.updateFlag) {
                 case 1:
+                    BingWallpaperJobManager.disabled(this);
                     if (!BingWallpaperJobManager.enabled(this)) {
                         return;
                     }

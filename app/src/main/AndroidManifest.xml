@@ -97,12 +97,6 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".service.SetWallpaperBroadcastReceiver">
-            <intent-filter>
-                <action android:name="me.liaoheng.wallpaper.SET_BING_WALLPAPER" />
-            </intent-filter>
-        </receiver>
-
         <service
                 android:name=".service.WallpaperDaemonService"
                 android:exported="false"
@@ -140,6 +134,11 @@
                     android:name="android.support.FILE_PROVIDER_PATHS"
                     android:resource="@xml/file_paths" />
         </provider>
+
+        <provider
+                android:name="androidx.work.impl.WorkManagerInitializer"
+                android:authorities="${applicationId}.workmanager-init"
+                tools:node="remove" />
 
         <meta-data
                 android:name="firebase_crashlytics_collection_enabled"

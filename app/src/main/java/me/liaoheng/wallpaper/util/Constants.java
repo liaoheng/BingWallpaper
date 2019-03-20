@@ -1,11 +1,11 @@
 package me.liaoheng.wallpaper.util;
 
+import androidx.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.TimeUnit;
-
-import androidx.annotation.IntDef;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author liaoheng
@@ -20,7 +20,7 @@ public interface Constants {
     int IMAGE_DISK_CACHE_SIZE = 50 * 1024 * 1024; // 50MB
     int HTTP_DISK_CACHE_SIZE = 5 * 1024 * 1024;  // 5MB
 
-    long JOB_SCHEDULER_PERIODIC = TimeUnit.HOURS.toSeconds(3);
+    long JOB_SCHEDULER_PERIODIC = 3;//hour
     long DAEMON_SERVICE_PERIODIC = TimeUnit.MINUTES.toSeconds(30);
 
     String BASE_URL = "https://www.bing.com";
@@ -64,7 +64,6 @@ public interface Constants {
     String FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL = "bing_wallpaper_intent_service_notification_channel_id";
     String FOREGROUND_INTENT_SERVICE_SUCCESS_NOTIFICATION_CHANNEL = "bing_wallpaper_intent_service_success_notification_channel_id";
     String FOREGROUND_DAEMON_SERVICE_NOTIFICATION_CHANNEL = "bing_wallpaper_daemon_service_notification_channel_id";
-    String GMS_NOTIFICATION_CHANNEL = "bing_wallpaper_gms_notification_channel_id";
 
     String ACTION_UPDATE_WALLPAPER_COVER_STORY = "me.liaoheng.wallpaper.UPDATE_WALLPAPER_COVER_STORY";
     String EXTRA_UPDATE_WALLPAPER_COVER_STORY = "WALLPAPER_COVER_STORY";

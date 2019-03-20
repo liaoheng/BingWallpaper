@@ -40,6 +40,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author liaoheng
@@ -89,10 +90,7 @@ public class BingWallpaperUtils {
     }
 
     public static int getAutoModeValue(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-
-        return Integer.parseInt(sharedPreferences
+        return Integer.parseInt(SettingTrayPreferences.get(context)
                 .getString(SettingsActivity.PREF_SET_WALLPAPER_AUTO_MODE, "0"));
     }
 
@@ -259,9 +257,10 @@ public class BingWallpaperUtils {
 
     public static boolean isAutomaticUpdateNotification(Context context) {
         return SettingTrayPreferences.get(context)
-                .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_NOTIFICATION, false);
+                .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_NOTIFICATION, true);
     }
 
+    // hour
     public static int getAutomaticUpdateInterval(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
@@ -558,6 +557,36 @@ public class BingWallpaperUtils {
             }
         } else {
             return 1;
+        }
+    }
+
+    public static void runningService(Context context, String TAG) {
+        boolean enableLog = isEnableLog(context);
+        int state = checkRunningService(context);
+        if (state == 1) {
+            L.alog().d(TAG, "isConnectedOrConnecting :false");
+            if (enableLog) {
+                LogDebugFileUtils.get()
+                        .i(TAG, "Network unavailable");
+            }
+        } else if (state == 2) {
+            L.alog().d(TAG, "isWifiConnected :false");
+            if (enableLog) {
+                LogDebugFileUtils.get()
+                        .i(TAG, "Network not wifi");
+            }
+        } else if (state == 3) {
+            L.alog().d(TAG, "isToDaysDo :false");
+            if (enableLog) {
+                LogDebugFileUtils.get()
+                        .i(TAG, "Already executed");
+            }
+        } else if (state == 4) {
+            L.alog().d(TAG, "Zero hour skip");
+            if (enableLog) {
+                LogDebugFileUtils.get()
+                        .i(TAG, "Zero hour skip");
+            }
         }
     }
 

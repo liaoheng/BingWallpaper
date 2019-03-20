@@ -85,7 +85,6 @@
     <string name="menu_set_wallpaper_mode_both">Установить обои на оба экрана</string>
     <!--intro-->
     <string name="intro_update_set">Установить автоматическое обновление обоев</string>
-    <string name="intro_update_set_timing_time">Время таймера: </string>
     <string name="intro_hint_welcome">Добро пожаловать в приложение Starth Bing Wallpaper</string>
     <string name="intro_hint_whitelist">Данное приложение должно быть добавлено в белый список таких админ приложений как Brevent, Greenify&#8230;. </string>
     <string name="intro_hint_battery">Система энергосбережения не даст данному приложению вовремя выполнять обновление обоев. Приложения могут быть добавленык белому списку системы энергосбережения. </string>

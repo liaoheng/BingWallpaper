@@ -40,12 +40,6 @@ public class NotificationUtils {
                     NotificationManager.IMPORTANCE_MIN);
             channel2.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
             manager.createNotificationChannel(channel2);
-
-            NotificationChannel gms = new NotificationChannel(
-                    Constants.GMS_NOTIFICATION_CHANNEL,
-                    "Google Service Notification",
-                    NotificationManager.IMPORTANCE_DEFAULT);
-            manager.createNotificationChannel(gms);
         }
     }
 
@@ -99,16 +93,5 @@ public class NotificationUtils {
                 .setContentText(service.getString(R.string.daemon_service_running))
                 .build();
         service.startForeground(112, notification);
-    }
-
-    public static void showGMSErrorNotification(Context context, String errorString) {
-        Notification notification = new NotificationCompat.Builder(context,
-                Constants.GMS_NOTIFICATION_CHANNEL).setSmallIcon(
-                R.drawable.ic_notification)
-                .setAutoCancel(true)
-                .setContentText(String.format("Google service error: %s", errorString))
-                .setContentTitle(context.getString(R.string.app_name))
-                .build();
-        NotificationManagerCompat.from(context).notify(56, notification);
     }
 }

@@ -1,7 +1,8 @@
 package me.liaoheng.wallpaper.util;
 
 import android.content.Context;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import net.grandcentrix.tray.TrayPreferences;
 import net.grandcentrix.tray.core.ItemNotFoundException;
 import net.grandcentrix.tray.core.TrayItem;
@@ -9,9 +10,6 @@ import net.grandcentrix.tray.core.TrayRuntimeException;
 import net.grandcentrix.tray.core.WrongTypeException;
 
 import java.util.Collection;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * @author liaoheng
@@ -105,10 +103,14 @@ public class SettingTrayPreferences implements ISettingTrayPreferences {
         return mAccessor.getString(key);
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public String getString(@NonNull String key, @Nullable String defaultValue) {
-        return mAccessor.getString(key, defaultValue);
+    public String getString(@NonNull String key, @NonNull String defaultValue) {
+        String string = mAccessor.getString(key, defaultValue);
+        if (null == string) {
+            return defaultValue;
+        }
+        return string;
     }
 
     @Override
