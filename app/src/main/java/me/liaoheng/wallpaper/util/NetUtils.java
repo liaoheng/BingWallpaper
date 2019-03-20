@@ -188,7 +188,7 @@ public class NetUtils {
         public Response intercept(@NonNull Chain chain) throws IOException {
             Request request = chain.request();
 
-            if (L.isPrint()) {
+            if (!L.isPrint()) {
                 return chain.proceed(request);
             }
 
