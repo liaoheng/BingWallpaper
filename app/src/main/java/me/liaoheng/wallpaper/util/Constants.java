@@ -5,7 +5,6 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author liaoheng
@@ -52,7 +51,7 @@ public interface Constants {
     @IntDef(value = {
             EXTRA_SET_WALLPAPER_MODE_BOTH,
             EXTRA_SET_WALLPAPER_MODE_HOME,
-            EXTRA_SET_WALLPAPER_MODE_LOCK,
+            EXTRA_SET_WALLPAPER_MODE_LOCK
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface setWallpaperMode {}

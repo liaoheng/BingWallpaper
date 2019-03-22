@@ -1,6 +1,7 @@
 package me.liaoheng.wallpaper.service;
 
 import android.content.Context;
+import android.os.SystemClock;
 import androidx.annotation.NonNull;
 import androidx.work.ListenableWorker;
 import androidx.work.Worker;
@@ -8,8 +9,6 @@ import androidx.work.WorkerParameters;
 import com.github.liaoheng.common.util.L;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author liaoheng
@@ -23,8 +22,6 @@ public class BingWallpaperWorker extends Worker {
         super(appContext, workerParams);
     }
 
-    private AtomicBoolean isRunning = new AtomicBoolean(false);
-
     @NonNull
     @Override
     public ListenableWorker.Result doWork() {
@@ -33,12 +30,8 @@ public class BingWallpaperWorker extends Worker {
             LogDebugFileUtils.get()
                     .i(TAG, "action worker id : %s", getId());
         }
-        if (isRunning.get()) {
-            return Result.success();
-        }
-        isRunning.set(true);
+        SystemClock.sleep(2000);
         BingWallpaperUtils.runningService(getApplicationContext(), TAG);
-        isRunning.set(false);
         return Result.success();
     }
 }
