@@ -6,9 +6,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
-import com.github.liaoheng.common.util.NetworkUtils;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
+import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 
 /**
  * @author liaoheng
@@ -22,7 +22,7 @@ public class ShortcutActivity extends Activity {
         if (mode < 0) {
             return;
         }
-        if (NetworkUtils.isConnected(this)) {
+        if (BingWallpaperUtils.isConnected(this)) {
             BingWallpaperIntentService.start(getApplicationContext(), mode, false);
             Toast.makeText(getApplicationContext(), getString(R.string.set_wallpaper_running), Toast.LENGTH_SHORT)
                     .show();

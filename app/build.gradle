@@ -9,8 +9,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 150
-        versionName "1.5.0"
+        versionCode 151
+        versionName "1.5.1"
     }
 
     def isSigning = true
@@ -72,6 +72,7 @@ dependencies {
     implementation deps.design
     implementation deps.palette
     implementation deps.customtabs
+    implementation deps.preference
 
     implementation 'android.arch.work:work-runtime:1.0.0'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9'

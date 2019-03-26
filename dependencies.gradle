@@ -3,3 +3,4 @@ apply from: rootProject.file('./gradle/dependencies.gradle')
 ext.minSdkVersion =21
 ext.deps.put("palette","androidx.palette:palette:1.0.0")
 ext.deps.put("retrofit_converter_gson","com.squareup.retrofit2:converter-gson:$ext.retrofitVersion")
+ext.deps.put("preference","androidx.preference:preference:1.0.0")

@@ -6,6 +6,7 @@ import android.app.WallpaperManager;
 import android.content.*;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,7 +41,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author liaoheng
@@ -299,7 +299,7 @@ public class BingWallpaperUtils {
     public static void setWallpaper(final Context context, final @Nullable BingWallpaperImage image,
             @Constants.setWallpaperMode final int mode,
             @Nullable final Callback4<Boolean> callback) {
-        if (!NetworkUtils.isConnectedOrConnecting(context)) {
+        if (!BingWallpaperUtils.isConnected(context)) {
             UIUtils.showToast(context, R.string.network_unavailable);
             return;
         }
@@ -533,24 +533,25 @@ public class BingWallpaperUtils {
         context.startActivity(Intent.createChooser(emailIntent, context.getString(R.string.send_email)));
     }
 
-    public static int checkRunningService(Context context) {
-        if (NetworkUtils.isConnected(context)) {
-            if (BingWallpaperUtils.getOnlyWifi(context)) {
+    public static int checkRunningService(Context context, boolean skipZone) {
+        if (isConnected(context)) {
+            if (getOnlyWifi(context)) {
                 if (!NetworkUtils.isWifiConnected(context)) {
                     return 2;
                 }
             }
             if (TasksUtils.isToDaysDoProvider(context, 1,
                     BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
-                DateTime now = DateTime.now();
-                int hourOfDay = now.getHourOfDay();
-                int minuteOfHour = now.getMinuteOfHour();
-                if (hourOfDay == 0 && minuteOfHour < 30) {//skip
-                    return 4;
-                } else {
-                    BingWallpaperIntentService.start(context,
-                            BingWallpaperUtils.getAutoModeValue(context));
+                if (skipZone) {
+                    DateTime now = DateTime.now();
+                    int hourOfDay = now.getHourOfDay();
+                    int minuteOfHour = now.getMinuteOfHour();
+                    if (hourOfDay == 0 && minuteOfHour < 30) {//skip
+                        return 4;
+                    }
                 }
+                BingWallpaperIntentService.start(context,
+                        BingWallpaperUtils.getAutoModeValue(context));
                 return 0;
             } else {
                 return 3;
@@ -561,8 +562,12 @@ public class BingWallpaperUtils {
     }
 
     public static void runningService(Context context, String TAG) {
+        runningService(context, TAG, true);
+    }
+
+    public static void runningService(Context context, String TAG, boolean skipZone) {
         boolean enableLog = isEnableLog(context);
-        int state = checkRunningService(context);
+        int state = checkRunningService(context, skipZone);
         if (state == 1) {
             L.alog().d(TAG, "isConnectedOrConnecting :false");
             if (enableLog) {
@@ -588,6 +593,18 @@ public class BingWallpaperUtils {
                         .i(TAG, "Zero hour skip");
             }
         }
+    }
+
+    public static boolean isConnected(Context context) {
+        NetworkInfo[] nets = NetworkUtils.getConnManager(context).getAllNetworkInfo();
+        if (nets != null && nets.length > 0) {
+            for (NetworkInfo net : nets) {
+                if (net.isConnected()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static boolean isGooglePlayServicesAvailable(Context context) {

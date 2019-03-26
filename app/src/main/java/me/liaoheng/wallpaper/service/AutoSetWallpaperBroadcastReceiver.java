@@ -3,15 +3,14 @@ package me.liaoheng.wallpaper.service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-
 import com.github.liaoheng.common.util.L;
-
-import com.github.liaoheng.common.util.NetworkUtils;
-import me.liaoheng.wallpaper.util.*;
-import org.joda.time.LocalTime;
-
+import me.liaoheng.wallpaper.util.BingWallpaperAlarmManager;
+import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
+import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.widget.AppWidget_5x1;
 import me.liaoheng.wallpaper.widget.AppWidget_5x2;
+import org.joda.time.LocalTime;
 
 /**
  * 接收定时闹钟与开机自启事件
@@ -48,19 +47,7 @@ public class AutoSetWallpaperBroadcastReceiver extends BroadcastReceiver {
             return;
         }
         if (ACTION.equals(intent.getAction())) {
-            if (NetworkUtils.isConnected(context)) {
-                return;
-            }
-            if (BingWallpaperUtils.getOnlyWifi(context)) {
-                if (!NetworkUtils.isWifiConnected(context)) {
-                    return;
-                }
-            }
-            if (TasksUtils.isToDaysDoProvider(context, 1,
-                    BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
-                BingWallpaperIntentService.start(context,
-                        BingWallpaperUtils.getAutoModeValue(context));
-            }
+            BingWallpaperUtils.runningService(context, TAG, false);
         }
     }
 }

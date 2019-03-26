@@ -233,7 +233,7 @@ public class MainActivity extends BaseActivity
     }
 
     private void getPixabay() {
-        if (!NetworkUtils.isConnectedOrConnecting(getApplicationContext())) {
+        if (!BingWallpaperUtils.isConnected(getApplicationContext())) {
             mErrorTextView.setText(getString(R.string.network_unavailable));
             return;
         }
@@ -258,7 +258,7 @@ public class MainActivity extends BaseActivity
 
     @SuppressLint({ "SetTextI18n", "CheckResult" })
     private void getBingWallpaper() {
-        if (!NetworkUtils.isConnectedOrConnecting(getApplicationContext())) {
+        if (!BingWallpaperUtils.isConnected(getApplicationContext())) {
             mErrorTextView.setText(getString(R.string.network_unavailable));
             return;
         }
