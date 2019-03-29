@@ -44,6 +44,7 @@ public interface Constants {
 
     String PREF_APPWIDGET_5X1_ENABLE = "appwidget_5x1_enable";
     String PREF_APPWIDGET_5X2_ENABLE = "appwidget_5x2_enable";
+    String PREF_LAST_WALLPAPER_IMAGE_URL = "last_wallpaper_image_url";
 
     /**
      * 0. both , 1. home , 2. lock

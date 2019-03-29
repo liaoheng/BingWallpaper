@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory
+    <androidx.preference.PreferenceCategory
             android:key="pref_wallpaper_group"
             android:persistent="false"
             android:title="@string/pref_auto_update_wallpaper">
 
-        <CheckBoxPreference
+        <androidx.preference.SwitchPreferenceCompat
                 android:defaultValue="false"
                 android:key="pref_set_wallpaper_day_fully_automatic_update"
-                android:title="@string/pref_auto_update_everyday"
-                android:widgetLayout="@layout/mp_preference_switch" />
+                android:title="@string/pref_auto_update_everyday" />
 
-        <ListPreference
+        <androidx.preference.ListPreference
                 android:defaultValue="0"
                 android:entries="@array/pref_set_wallpaper_day_fully_automatic_update_type_names"
                 android:entryValues="@array/pref_set_wallpaper_day_fully_automatic_update_type_values"
                 android:key="pref_set_wallpaper_day_fully_automatic_update_type"
                 android:title="@string/pref_set_wallpaper_day_fully_automatic_update_type" />
 
-        <ListPreference
+        <androidx.preference.ListPreference
                 android:defaultValue="3"
                 android:entries="@array/pref_set_wallpaper_day_fully_automatic_update_interval"
                 android:entryValues="@array/pref_set_wallpaper_day_fully_automatic_update_interval"
@@ -27,19 +26,17 @@
                 android:summary="@string/pref_set_wallpaper_day_fully_automatic_update_interval_note"
                 android:title="@string/pref_set_wallpaper_day_fully_automatic_update_interval" />
 
-        <CheckBoxPreference
+        <androidx.preference.SwitchPreferenceCompat
                 android:defaultValue="true"
                 android:key="pref_set_wallpaper_day_fully_automatic_update_notification"
                 android:summary="@string/pref_auto_update_everyday_notification_note"
-                android:title="@string/pref_auto_update_everyday_notification"
-                android:widgetLayout="@layout/mp_preference_switch" />
+                android:title="@string/pref_auto_update_everyday_notification" />
 
-        <CheckBoxPreference
+        <androidx.preference.SwitchPreferenceCompat
                 android:defaultValue="false"
                 android:key="pref_set_wallpaper_day_auto_update"
                 android:summary="@string/pref_alarm_update_wallpaper_everyday_summary"
-                android:title="@string/pref_alarm_update_wallpaper_everyday"
-                android:widgetLayout="@layout/mp_preference_switch" />
+                android:title="@string/pref_alarm_update_wallpaper_everyday" />
 
         <me.liaoheng.wallpaper.widget.TimePreference
                 android:enabled="false"
@@ -48,110 +45,105 @@
                 android:positiveButtonText="@android:string/ok"
                 android:title="@string/pref_alarm_update_wallpaper_time" />
 
-        <ListPreference
+        <androidx.preference.ListPreference
                 android:defaultValue="0"
                 android:entries="@array/pref_set_wallpaper_auto_mode_name"
                 android:entryValues="@array/pref_set_wallpaper_auto_mode_value"
                 android:key="pref_set_wallpaper_auto_mode"
                 android:title="@string/pref_choose_auto_set_wallpaper_type" />
 
-    </PreferenceCategory>
+    </androidx.preference.PreferenceCategory>
 
-    <PreferenceCategory
+    <androidx.preference.PreferenceCategory
             android:key="pref_other_group"
             android:persistent="false"
             android:title="@string/pref_other">
 
-        <CheckBoxPreference
+        <androidx.preference.SwitchPreferenceCompat
                 android:defaultValue="true"
                 android:key="pref_set_wallpaper_day_auto_update_only_wifi"
-                android:title="@string/pref_update_only_on_wifi"
-                android:widgetLayout="@layout/mp_preference_switch" />
+                android:title="@string/pref_update_only_on_wifi" />
 
-        <ListPreference
+        <androidx.preference.ListPreference
                 android:defaultValue="0"
                 android:entries="@array/pref_set_wallpaper_resolution_name"
                 android:entryValues="@array/pref_set_wallpaper_resolution_value"
                 android:key="pref_set_wallpaper_resolution"
                 android:title="@string/pref_choose_set_wallpaper_resolution" />
 
-        <ListPreference
+        <androidx.preference.ListPreference
                 android:defaultValue="0"
                 android:entries="@array/pref_set_wallpaper_resolution_name"
                 android:entryValues="@array/pref_set_wallpaper_resolution_value"
                 android:key="pref_save_wallpaper_resolution"
                 android:title="@string/pref_choose_save_resolution" />
 
-        <ListPreference
+        <androidx.preference.ListPreference
                 android:defaultValue="0"
                 android:entries="@array/pref_country_names"
                 android:entryValues="@array/pref_country_values"
                 android:key="pref_country"
                 android:title="@string/pref_country" />
 
-        <Preference
+        <androidx.preference.Preference
                 android:key="pref_clear_cache"
                 android:persistent="false"
                 android:title="@string/pref_clear_cache" />
 
-        <CheckBoxPreference
+        <androidx.preference.SwitchPreferenceCompat
                 android:defaultValue="false"
                 android:key="pref_set_wallpaper_debug_log"
                 android:summary="sdcard/Android/data/{package}/log/debug_log.txt"
-                android:title="@string/pref_log_file"
-                android:widgetLayout="@layout/mp_preference_switch" />
+                android:title="@string/pref_log_file" />
 
-        <CheckBoxPreference
+        <androidx.preference.SwitchPreferenceCompat
                 android:defaultValue="false"
                 android:key="pref_set_miui_lock_screen_wallpaper"
                 android:persistent="false"
                 android:summary="@string/pref_set_miui_lock_screen_wallpaper_note"
-                android:title="@string/pref_set_miui_lock_screen_wallpaper"
-                android:widgetLayout="@layout/mp_preference_switch" />
+                android:title="@string/pref_set_miui_lock_screen_wallpaper" />
 
-        <CheckBoxPreference
+        <androidx.preference.SwitchPreferenceCompat
                 android:defaultValue="false"
                 android:key="pref_pixabay_support"
                 android:summary="@string/pref_pixabay_support_note"
-                android:title="@string/pref_pixabay_support"
-                android:widgetLayout="@layout/mp_preference_switch" />
+                android:title="@string/pref_pixabay_support" />
 
-        <CheckBoxPreference
+        <androidx.preference.SwitchPreferenceCompat
                 android:defaultValue="true"
                 android:key="pref_crash_report"
-                android:title="@string/pref_crash_report"
-                android:widgetLayout="@layout/mp_preference_switch" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/about">
-        <Preference
+                android:title="@string/pref_crash_report" />
+    </androidx.preference.PreferenceCategory>
+    <androidx.preference.PreferenceCategory android:title="@string/about">
+        <androidx.preference.Preference
                 android:key="pref_version"
                 android:persistent="false"
                 android:title="@string/pref_version" />
-        <Preference
+        <androidx.preference.Preference
                 android:key="pref_github"
                 android:persistent="false"
                 android:summary="github.com/liaoheng/BingWallpaper"
                 android:title="Github" />
-        <Preference
+        <androidx.preference.Preference
                 android:key="pref_translation"
                 android:persistent="false"
                 android:summary="crowdin.com/project/starth-bing-wallpaper"
                 android:title="Help translation" />
-        <Preference
+        <androidx.preference.Preference
                 android:key="pref_intro"
                 android:persistent="false"
                 android:title="@string/pref_intro" />
-        <Preference
+        <androidx.preference.Preference
                 android:key="pref_license"
                 android:persistent="false"
                 android:title="@string/open_source_license" />
-        <Preference
+        <androidx.preference.Preference
                 android:key="pref_privacy_policy"
                 android:persistent="false"
                 android:title="@string/privacy_policy">
             <intent
                     android:action="android.intent.action.VIEW"
                     android:data="https://github.com/liaoheng/BingWallpaper/blob/image/PRIVACY_POLICY.md" />
-        </Preference>
-    </PreferenceCategory>
-</PreferenceScreen>
+        </androidx.preference.Preference>
+    </androidx.preference.PreferenceCategory>
+</androidx.preference.PreferenceScreen>

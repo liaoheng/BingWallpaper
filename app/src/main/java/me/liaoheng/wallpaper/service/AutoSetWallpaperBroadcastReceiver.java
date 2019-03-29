@@ -47,7 +47,7 @@ public class AutoSetWallpaperBroadcastReceiver extends BroadcastReceiver {
             return;
         }
         if (ACTION.equals(intent.getAction())) {
-            BingWallpaperUtils.runningService(context, TAG, false);
+            BingWallpaperUtils.runningService(context, TAG);
         }
     }
 }

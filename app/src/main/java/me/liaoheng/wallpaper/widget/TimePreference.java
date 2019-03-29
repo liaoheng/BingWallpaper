@@ -2,82 +2,34 @@ package me.liaoheng.wallpaper.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.preference.DialogPreference;
-import android.text.format.DateFormat;
 import android.util.AttributeSet;
-import android.view.View;
-import android.widget.TimePicker;
-
+import androidx.preference.DialogPreference;
+import me.liaoheng.wallpaper.R;
 import org.joda.time.LocalTime;
 
-import androidx.annotation.NonNull;
-
 /**
- * 设置时间选择框
+ * A Preference to select a specific Time with a {@link android.widget.TimePicker}.
  *
- * @author liaoheng
- * @version 2016-09-20 14:15
+ * @author Jakob Ulbrich
  */
 public class TimePreference extends DialogPreference {
-    private TimePicker picker;
+
     private LocalTime localTime;
 
-    public TimePreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
-    public TimePreference(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+    public TimePreference(Context context) {
+        this(context, null);
     }
 
     public TimePreference(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, R.attr.preferenceStyle);
     }
 
-    public TimePreference(Context context) {
-        super(context);
+    public TimePreference(Context context, AttributeSet attrs, int defStyleAttr) {
+        this(context, attrs, defStyleAttr, defStyleAttr);
     }
 
-    @Override
-    protected View onCreateDialogView() {
-        picker = new TimePicker(getContext());
-        picker.setIs24HourView(DateFormat.is24HourFormat(getContext()));
-        return (picker);
-    }
-
-    @Override
-    protected void onBindDialogView(@NonNull View v) {
-        super.onBindDialogView(v);
-        picker.setCurrentHour(getLocalTime().getHourOfDay());
-        picker.setCurrentMinute(getLocalTime().getMinuteOfHour());
-    }
-
-    @Override
-    protected void onDialogClosed(boolean positiveResult) {
-        super.onDialogClosed(positiveResult);
-
-        if (positiveResult) {
-            localTime = new LocalTime(picker.getCurrentHour(), picker.getCurrentMinute());
-
-            String time = localTime.toString("HH:mm");
-
-            if (callChangeListener(localTime.toString())) {
-                persistString(localTime.toString());
-            }
-            setSummary(time);
-        }
-    }
-
-    @Override
-    protected String onGetDefaultValue(TypedArray a, int index) {
-        return a.getString(index);
-    }
-
-    @Override
-    protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
-        if (defaultValue != null) {
-            localTime = LocalTime.parse(getPersistedString(String.valueOf(defaultValue)));
-        }
+    public TimePreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     public LocalTime getLocalTime() {
@@ -87,11 +39,28 @@ public class TimePreference extends DialogPreference {
         return localTime;
     }
 
-    //    @Override
-    //    public CharSequence getSummary() {
-    //        if (localTime == null) {
-    //            return "";
-    //        }
-    //        return localTime.toString("HH:mm");
-    //    }
+    public void setLocalTime(LocalTime localTime) {
+        this.localTime = localTime;
+    }
+
+    public void setTime(String time) {
+        persistString(time);
+    }
+
+    @Override
+    protected Object onGetDefaultValue(TypedArray a, int index) {
+        return a.getInt(index, 0);
+    }
+
+    @Override
+    public int getDialogLayoutResource() {
+        return R.layout.view_preference_time;
+    }
+
+    @Override
+    protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
+        if (defaultValue != null) {
+            localTime = LocalTime.parse(getPersistedString(String.valueOf(defaultValue)));
+        }
+    }
 }

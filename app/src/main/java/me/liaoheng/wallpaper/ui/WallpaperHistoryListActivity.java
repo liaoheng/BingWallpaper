@@ -15,14 +15,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bumptech.glide.request.target.ImageViewTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
-import com.flyco.systembar.SystemBarHelper;
 import com.github.liaoheng.common.adapter.base.BaseRecyclerAdapter;
 import com.github.liaoheng.common.adapter.core.HandleView;
 import com.github.liaoheng.common.adapter.core.RecyclerViewHelper;
@@ -63,8 +61,6 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallpaper_history_list);
         ButterKnife.bind(this);
-        SystemBarHelper
-                .tintStatusBar(this, ContextCompat.getColor(this, R.color.colorPrimaryDark), 0);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mWallpaperAdapter = new WallpaperAdapter(this);

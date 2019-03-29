@@ -76,7 +76,7 @@ dependencies {
 
     implementation 'android.arch.work:work-runtime:1.0.0'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9'
-    implementation 'com.google.firebase:firebase-core:16.0.7'
+    implementation 'com.google.firebase:firebase-core:16.0.8'
     implementation 'com.firebase:firebase-jobdispatcher:0.8.6'
     //    implementation 'com.google.android.gms:play-services-base:15.0.1'
 
@@ -97,14 +97,8 @@ dependencies {
     implementation deps.rxlifecycle_android3
     implementation deps.joda_time_android
 
-    //https://github.com/ferrannp/material-preferences
-    implementation 'com.fnp:material-preferences:0.1.4'
-
     //https://github.com/yshrsmz/LicenseAdapter
     implementation 'net.yslibrary.licenseadapter:licenseadapter:2.2.2'
-
-    //https://github.com/H07000223/FlycoSystemBar
-    implementation "com.flyco.systembar:FlycoSystemBar_Lib:1.0.0"
 
     //https://github.com/Clans/FloatingActionButton
     implementation 'com.github.clans:fab:1.6.4'

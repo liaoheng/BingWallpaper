@@ -28,6 +28,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
+import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.ui.SettingsActivity;
@@ -533,28 +534,45 @@ public class BingWallpaperUtils {
         context.startActivity(Intent.createChooser(emailIntent, context.getString(R.string.send_email)));
     }
 
-    public static int checkRunningService(Context context, boolean skipZone) {
+    public static int checkRunningService(Context context, String TAG) {
         if (isConnected(context)) {
             if (getOnlyWifi(context)) {
                 if (!NetworkUtils.isWifiConnected(context)) {
                     return 2;
                 }
             }
-            if (TasksUtils.isToDaysDoProvider(context, 1,
-                    BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
-                if (skipZone) {
-                    DateTime now = DateTime.now();
-                    int hourOfDay = now.getHourOfDay();
-                    int minuteOfHour = now.getMinuteOfHour();
-                    if (hourOfDay == 0 && minuteOfHour < 30) {//skip
-                        return 4;
-                    }
+            if (BingWallpaperUtils.isPixabaySupport(context)) {
+                if (TasksUtils.isToDaysDoProvider(context, 1,
+                        BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
+                    BingWallpaperIntentService.start(context,
+                            BingWallpaperUtils.getAutoModeValue(context));
+                    return 0;
+                } else {
+                    return 3;
                 }
-                BingWallpaperIntentService.start(context,
-                        BingWallpaperUtils.getAutoModeValue(context));
-                return 0;
             } else {
-                return 3;
+                Utils.addSubscribe(BingWallpaperNetworkClient.getBingWallpaper(context),
+                        new Callback.EmptyCallback<BingWallpaperImage>() {
+                            @Override
+                            public void onSuccess(BingWallpaperImage image) {
+                                if (getLastWallpaperImageUrl(context).equals(image.getUrlbase())) {
+                                    if (isEnableLog(context)) {
+                                        LogDebugFileUtils.get().i(TAG, "Equals last skip");
+                                    }
+                                    return;
+                                }
+                                BingWallpaperIntentService.start(context,
+                                        BingWallpaperUtils.getAutoModeValue(context));
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                if (isEnableLog(context)) {
+                                    LogDebugFileUtils.get().e(TAG, "Check error",e);
+                                }
+                            }
+                        });
+                return 0;
             }
         } else {
             return 1;
@@ -562,12 +580,8 @@ public class BingWallpaperUtils {
     }
 
     public static void runningService(Context context, String TAG) {
-        runningService(context, TAG, true);
-    }
-
-    public static void runningService(Context context, String TAG, boolean skipZone) {
         boolean enableLog = isEnableLog(context);
-        int state = checkRunningService(context, skipZone);
+        int state = checkRunningService(context, TAG);
         if (state == 1) {
             L.alog().d(TAG, "isConnectedOrConnecting :false");
             if (enableLog) {
@@ -585,12 +599,6 @@ public class BingWallpaperUtils {
             if (enableLog) {
                 LogDebugFileUtils.get()
                         .i(TAG, "Already executed");
-            }
-        } else if (state == 4) {
-            L.alog().d(TAG, "Zero hour skip");
-            if (enableLog) {
-                LogDebugFileUtils.get()
-                        .i(TAG, "Zero hour skip");
             }
         }
     }
@@ -677,5 +685,13 @@ public class BingWallpaperUtils {
             return "Translator : @tullev2";
         }
         return "";
+    }
+
+    public static void setLastWallpaperImageUrl(Context context, String url) {
+        SettingTrayPreferences.get(context).put(Constants.PREF_LAST_WALLPAPER_IMAGE_URL, url);
+    }
+
+    public static String getLastWallpaperImageUrl(Context context) {
+        return SettingTrayPreferences.get(context).getString(Constants.PREF_LAST_WALLPAPER_IMAGE_URL, "");
     }
 }

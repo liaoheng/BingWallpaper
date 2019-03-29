@@ -123,6 +123,7 @@ public class BingWallpaperIntentService extends IntentService {
                 try {
                     bingWallpaperImage = BingWallpaperNetworkClient.getPixabaysExecute();
                     imageUrl = bingWallpaperImage.getUrl();
+                    bingWallpaperImage.setImageUrl(imageUrl);
                 } catch (NetException e) {
                     callback.onError(e);
                     return;
@@ -134,6 +135,7 @@ public class BingWallpaperIntentService extends IntentService {
                     bingWallpaperImage = BingWallpaperNetworkClient.getBingWallpaperSingleCall(url, locale);
                     imageUrl = BingWallpaperUtils.getResolutionImageUrl(getApplicationContext(),
                             bingWallpaperImage);
+                    bingWallpaperImage.setImageUrl(bingWallpaperImage.getUrlbase());
                 } catch (NetException e) {
                     callback.onError(e);
                     return;
@@ -170,6 +172,7 @@ public class BingWallpaperIntentService extends IntentService {
 
     private void success(boolean isBackground, BingWallpaperImage bingWallpaperImage) {
         if (isBackground) {
+            BingWallpaperUtils.setLastWallpaperImageUrl(getApplicationContext(), bingWallpaperImage.getImageUrl());
             if (TasksUtils.isToDaysDoProvider(getApplicationContext(), 1, FLAG_SET_WALLPAPER_STATE)) {
                 L.alog().i(TAG, "Today markDone");
                 if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {

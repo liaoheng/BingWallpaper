@@ -4,38 +4,33 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceCategory;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import com.flyco.systembar.SystemBarHelper;
+import androidx.fragment.app.DialogFragment;
+import androidx.preference.*;
 import com.github.liaoheng.common.util.*;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.service.AutoSetWallpaperBroadcastReceiver;
 import me.liaoheng.wallpaper.util.*;
 import me.liaoheng.wallpaper.widget.TimePreference;
+import me.liaoheng.wallpaper.widget.TimePreferenceDialogFragmentCompat;
 import org.joda.time.LocalTime;
 
 /**
  * @author liaoheng
  * @version 2016-09-20 13:59
  */
-public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActivity {
+public class SettingsActivity extends BaseActivity {
     private static final String TAG = SettingsActivity.class.getSimpleName();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         BingWallpaperUtils.setPhoneScreen(this);
         super.onCreate(savedInstanceState);
-        SystemBarHelper
-                .tintStatusBar(this, ContextCompat.getColor(this, R.color.colorPrimaryDark), 0);
-        setPreferenceFragment(new MyPreferenceFragment());
+        setContentView(R.layout.activity_settings);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.settings_layout, new MyPreferenceFragment(), "SettingsFragment")
+                .commit();
     }
 
     public static final String PREF_COUNTRY = "pref_country";
@@ -54,35 +49,36 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
     public static final String PREF_PREF_PIXABAY_SUPPORT = "pref_pixabay_support";
     public static final String PREF_CRASH_REPORT = "pref_crash_report";
 
-    public static class MyPreferenceFragment extends com.fnp.materialpreferences.PreferenceFragment
+    public static class MyPreferenceFragment extends PreferenceFragmentCompat
             implements SharedPreferences.OnSharedPreferenceChangeListener {
         private ISettingTrayPreferences mPreferences;
 
-        @Override
-        public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            return super.onCreateView(inflater, container, savedInstanceState);
-        }
-
-        @Override
-        public int addPreferencesFromResource() {
-            return R.xml.preferences;
-        }
-
-        private CheckBoxPreference mOnlyWifiPreference;
+        private SwitchPreferenceCompat mOnlyWifiPreference;
         private ListPreference mCountryListPreference;
         private ListPreference mResolutionListPreference;
         private ListPreference mSaveResolutionListPreference;
         private ListPreference mModeTypeListPreference;
         private TimePreference mTimePreference;
-        private CheckBoxPreference mDayUpdatePreference;
-        private CheckBoxPreference mAutoUpdatePreference;
-        private CheckBoxPreference mAutoUpdateNotificationPreference;
+        private SwitchPreferenceCompat mDayUpdatePreference;
+        private SwitchPreferenceCompat mAutoUpdatePreference;
+        private SwitchPreferenceCompat mAutoUpdateNotificationPreference;
         private ListPreference mAutoUpdateIntervalPreference;
-        private CheckBoxPreference mLogPreference;
-        private CheckBoxPreference mCrashPreference;
+        private SwitchPreferenceCompat mLogPreference;
+        private SwitchPreferenceCompat mCrashPreference;
         private ListPreference mAutoUpdateTypeListPreference;
-        private CheckBoxPreference mMIuiLockScreenPreference;
-        private CheckBoxPreference mPixabaySupportPreference;
+        private SwitchPreferenceCompat mMIuiLockScreenPreference;
+        private SwitchPreferenceCompat mPixabaySupportPreference;
+
+        @Override
+        public void onDisplayPreferenceDialog(Preference preference) {
+            if (preference instanceof TimePreference) {
+                DialogFragment dialogFragment = TimePreferenceDialogFragmentCompat.newInstance(preference.getKey());
+                dialogFragment.setTargetFragment(this, 0);
+                dialogFragment.show(getFragmentManager(), "TimePreference");
+            } else {
+                super.onDisplayPreferenceDialog(preference);
+            }
+        }
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -148,23 +144,24 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                     PREF_SAVE_WALLPAPER_RESOLUTION);
             mModeTypeListPreference = (ListPreference) findPreference(
                     PREF_SET_WALLPAPER_AUTO_MODE);
-            mDayUpdatePreference = (CheckBoxPreference) findPreference(
+            mDayUpdatePreference = (SwitchPreferenceCompat) findPreference(
                     PREF_SET_WALLPAPER_DAY_AUTO_UPDATE);
             mTimePreference = (TimePreference) findPreference(
                     PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME);
             mAutoUpdateTypeListPreference = (ListPreference) findPreference(
                     PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_TYPE);
 
-            mOnlyWifiPreference = (CheckBoxPreference) findPreference(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI);
-            mAutoUpdatePreference = (CheckBoxPreference) findPreference(PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE);
+            mOnlyWifiPreference = (SwitchPreferenceCompat) findPreference(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI);
+            mAutoUpdatePreference = (SwitchPreferenceCompat) findPreference(
+                    PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE);
             mAutoUpdateIntervalPreference = (ListPreference) findPreference(
                     PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_INTERVAL);
-            mAutoUpdateNotificationPreference = (CheckBoxPreference) findPreference(
+            mAutoUpdateNotificationPreference = (SwitchPreferenceCompat) findPreference(
                     PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_NOTIFICATION);
-            mMIuiLockScreenPreference = (CheckBoxPreference) findPreference(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER);
-            mPixabaySupportPreference = (CheckBoxPreference) findPreference(PREF_PREF_PIXABAY_SUPPORT);
-            mLogPreference = (CheckBoxPreference) findPreference(PREF_SET_WALLPAPER_LOG);
-            mCrashPreference = (CheckBoxPreference) findPreference(PREF_CRASH_REPORT);
+            mMIuiLockScreenPreference = (SwitchPreferenceCompat) findPreference(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER);
+            mPixabaySupportPreference = (SwitchPreferenceCompat) findPreference(PREF_PREF_PIXABAY_SUPPORT);
+            mLogPreference = (SwitchPreferenceCompat) findPreference(PREF_SET_WALLPAPER_LOG);
+            mCrashPreference = (SwitchPreferenceCompat) findPreference(PREF_CRASH_REPORT);
 
             if (!ROM.getROM().isMiui()) {
                 ((PreferenceCategory) findPreference("pref_other_group")).removePreference(mMIuiLockScreenPreference);
@@ -208,13 +205,20 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
 
             if (localTime != null) {
                 mTimePreference.setSummary(localTime.toString("HH:mm"));
+                mTimePreference.setLocalTime(localTime);
             } else {
                 mTimePreference.setSummary(R.string.pref_not_set_time);
+                mTimePreference.setLocalTime(null);
             }
             if (mAutoUpdatePreference.isChecked()) {
                 mDayUpdatePreference.setChecked(false);
             }
             mTimePreference.setEnabled(mDayUpdatePreference.isChecked());
+        }
+
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            addPreferencesFromResource(R.xml.preferences);
         }
 
         private void updateCheckTime() {
@@ -256,7 +260,7 @@ public class SettingsActivity extends com.fnp.materialpreferences.PreferenceActi
                         }
                         BingWallpaperUtils.clearDayUpdateTime(getActivity());
                         BingWallpaperAlarmManager.disabled(getActivity());
-                        mTimePreference.setSummary(R.string.pref_not_set_time);
+                        //mTimePreference.setSummary(R.string.pref_not_set_time);
                         mDayUpdatePreference.setChecked(false);
                     } else {
                         BingWallpaperJobManager.disabled(getActivity());

@@ -21,6 +21,7 @@ import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.ui.MainActivity;
+import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 
 /**
@@ -134,7 +135,7 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
     }
 
     protected void getBingWallpaper(final Context context) {
-        if (!NetworkUtils.isConnectedOrConnecting(context)) {
+        if (!BingWallpaperUtils.isConnected(context)) {
             setText(context, null);
             return;
         }
