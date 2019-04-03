@@ -260,7 +260,7 @@ public class SettingsActivity extends BaseActivity {
                         }
                         BingWallpaperUtils.clearDayUpdateTime(getActivity());
                         BingWallpaperAlarmManager.disabled(getActivity());
-                        //mTimePreference.setSummary(R.string.pref_not_set_time);
+                        mTimePreference.setSummary(R.string.pref_not_set_time);
                         mDayUpdatePreference.setChecked(false);
                     } else {
                         BingWallpaperJobManager.disabled(getActivity());
