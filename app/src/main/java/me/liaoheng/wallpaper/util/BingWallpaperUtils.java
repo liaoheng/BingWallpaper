@@ -682,7 +682,7 @@ public class BingWallpaperUtils {
         if (locale.getLanguage().equals(new Locale("pl").getLanguage())) {
             return "Translator : @dekar16";
         } else if (locale.getLanguage().equals(new Locale("ru").getLanguage())) {
-            return "Translator : @tullev2";
+            return "Translator : @tullev";
         }
         return "";
     }

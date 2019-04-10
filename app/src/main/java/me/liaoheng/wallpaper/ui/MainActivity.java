@@ -2,7 +2,6 @@ package me.liaoheng.wallpaper.ui;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,8 +41,6 @@ import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
-import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
-import me.liaoheng.wallpaper.service.SetWallpaperStateBroadcastReceiver;
 import me.liaoheng.wallpaper.util.*;
 import me.liaoheng.wallpaper.util.TasksUtils;
 import me.liaoheng.wallpaper.widget.FeedbackDialog;
@@ -92,7 +89,7 @@ public class MainActivity extends BaseActivity
 
     private ImageView mNavigationHeaderImage;
 
-    private SetWallpaperStateBroadcastReceiver mSetWallpaperStateBroadcastReceiver;
+    private SetWallpaperStateBroadcastReceiverHelper mSetWallpaperStateBroadcastReceiverHelper;
     @Nullable
     private BingWallpaperImage mCurBingWallpaperImage;
     private boolean isRun;
@@ -100,7 +97,7 @@ public class MainActivity extends BaseActivity
     private BingWallpaperCoverStory mCoverStory;
 
     private int mActionMenuBottomMargin;
-    private EmuiHelper mEmuiHelper;
+    private UIHelper mUiHelper = new UIHelper();
 
     @OnClick(R.id.bing_wallpaper_cover_story_text)
     void openMap() {
@@ -155,25 +152,10 @@ public class MainActivity extends BaseActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         initStatusBarAddToolbar();
-        mEmuiHelper = EmuiHelper.with(this);
-
         BingWallpaperJobManager.restore(this);
 
         mActionMenuBottomMargin = DisplayUtils.dp2px(this, 10);
-
-        if (ROM.getROM().isEmui()) {
-            mEmuiHelper.register(this);
-        } else if (ROM.getROM().isVivo()) {
-            if (!BingWallpaperUtils.vivoNavigationGestureEnabled(this)) {
-                showBottomView();
-            }
-        } else if (ROM.getROM().isMiui()) {
-            if (!BingWallpaperUtils.miuiNavigationGestureEnabled(this)) {
-                showBottomView();
-            }
-        } else {
-            showBottomView();
-        }
+        mUiHelper.register(this, this);
 
         mFeedbackDialog = FeedbackDialog.create(this);
 
@@ -191,7 +173,7 @@ public class MainActivity extends BaseActivity
             UIUtils.toggleVisibility(mCoverStoryContent);
         });
 
-        mSetWallpaperStateBroadcastReceiver = new SetWallpaperStateBroadcastReceiver(
+        mSetWallpaperStateBroadcastReceiverHelper = new SetWallpaperStateBroadcastReceiverHelper(
                 new Callback4.EmptyCallback<BingWallpaperState>() {
                     @Override
                     public void onYes(BingWallpaperState bingWallpaperState) {
@@ -205,9 +187,7 @@ public class MainActivity extends BaseActivity
                         UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_failure);
                     }
                 });
-
-        registerReceiver(mSetWallpaperStateBroadcastReceiver,
-                new IntentFilter(BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE));
+        mSetWallpaperStateBroadcastReceiverHelper.register(this);
 
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
             if (isRun) {
@@ -530,11 +510,9 @@ public class MainActivity extends BaseActivity
 
     @Override
     protected void onDestroy() {
-        if (mEmuiHelper != null) {
-            mEmuiHelper.unregister(this);
-        }
-        if (mSetWallpaperStateBroadcastReceiver != null) {
-            unregisterReceiver(mSetWallpaperStateBroadcastReceiver);
+        mUiHelper.unregister(this);
+        if (mSetWallpaperStateBroadcastReceiverHelper != null) {
+            mSetWallpaperStateBroadcastReceiverHelper.unregister(this);
         }
         UIUtils.cancelToast();
         super.onDestroy();

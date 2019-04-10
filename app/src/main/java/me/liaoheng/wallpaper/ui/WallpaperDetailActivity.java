@@ -2,8 +2,9 @@ package me.liaoheng.wallpaper.ui;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.content.IntentFilter;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
@@ -36,10 +37,9 @@ import io.reactivex.disposables.Disposable;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
-import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
-import me.liaoheng.wallpaper.service.SetWallpaperStateBroadcastReceiver;
 import me.liaoheng.wallpaper.util.*;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
@@ -50,8 +50,6 @@ import java.io.File;
  * @version 2018-01-31 14:14
  */
 public class WallpaperDetailActivity extends BaseActivity {
-
-    private final String TAG = WallpaperDetailActivity.class.getSimpleName();
 
     @BindView(R.id.bing_wallpaper_detail_image)
     ImageView mImageView;
@@ -87,7 +85,13 @@ public class WallpaperDetailActivity extends BaseActivity {
     private ProgressDialog mDownLoadProgressDialog;
     private ProgressDialog mSetWallpaperProgressDialog;
     private Disposable mDownLoadSubscription;
-    private SetWallpaperStateBroadcastReceiver mSetWallpaperStateBroadcastReceiver;
+    private SetWallpaperStateBroadcastReceiverHelper mSetWallpaperStateBroadcastReceiverHelper;
+
+    public static void start(Context context, BingWallpaperImage item, Bundle bundle) {
+        Intent intent = new Intent(context, WallpaperDetailActivity.class);
+        intent.putExtra("image", item);
+        ActivityCompat.startActivity(context, intent, bundle);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +101,14 @@ public class WallpaperDetailActivity extends BaseActivity {
         ButterKnife.bind(this);
         initStatusBarAddToolbar();
 
-        mSetWallpaperStateBroadcastReceiver = new SetWallpaperStateBroadcastReceiver(
+        mWallpaperImage = getIntent().getParcelableExtra("image");
+        if (mWallpaperImage == null) {
+            UIUtils.showToast(getApplicationContext(), "unknown error");
+            finish();
+            return;
+        }
+
+        mSetWallpaperStateBroadcastReceiverHelper = new SetWallpaperStateBroadcastReceiverHelper(
                 new Callback4.EmptyCallback<BingWallpaperState>() {
                     @Override
                     public void onYes(BingWallpaperState bingWallpaperState) {
@@ -111,15 +122,7 @@ public class WallpaperDetailActivity extends BaseActivity {
                         UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_failure);
                     }
                 });
-        registerReceiver(mSetWallpaperStateBroadcastReceiver,
-                new IntentFilter(BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE));
-
-        mWallpaperImage = getIntent().getParcelableExtra("image");
-        if (mWallpaperImage == null) {
-            UIUtils.showToast(getApplicationContext(), "unknown error");
-            finish();
-            return;
-        }
+        mSetWallpaperStateBroadcastReceiverHelper.register(this);
 
         ((View) mCoverStoryToggle.getParent()).setOnClickListener(v -> mCoverStoryToggle.toggle());
         mCoverStoryToggle.setOnCheckedChangeListener((view, isChecked) -> {
@@ -196,7 +199,7 @@ public class WallpaperDetailActivity extends BaseActivity {
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NotNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (BingWallpaperUtils.isPixabaySupport(this)) {
             loadImage(mWallpaperImage.getUrl());
@@ -421,7 +424,9 @@ public class WallpaperDetailActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        unregisterReceiver(mSetWallpaperStateBroadcastReceiver);
+        if (mSetWallpaperStateBroadcastReceiverHelper != null) {
+            mSetWallpaperStateBroadcastReceiverHelper.unregister(this);
+        }
         super.onDestroy();
     }
 }

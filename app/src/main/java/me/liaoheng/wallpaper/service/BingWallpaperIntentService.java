@@ -152,7 +152,6 @@ public class BingWallpaperIntentService extends IntentService {
         try {
             downloadAndSetWallpaper(imageUrl, setWallpaperType);
             callback.onSuccess(bingWallpaperImage);
-            callback.onFinish();
         } catch (Exception e) {
             callback.onError(new SystemException(e));
         }
@@ -219,8 +218,6 @@ public class BingWallpaperIntentService extends IntentService {
     }
 
     private void sendSetWallpaperBroadcast(BingWallpaperState state) {
-        Intent intent = new Intent(ACTION_GET_WALLPAPER_STATE);
-        intent.putExtra(EXTRA_GET_WALLPAPER_STATE, state.getState());
-        sendBroadcast(intent);
+        SetWallpaperStateBroadcastReceiverHelper.sendSetWallpaperBroadcast(this, state);
     }
 }

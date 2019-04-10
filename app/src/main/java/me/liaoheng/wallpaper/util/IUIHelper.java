@@ -11,4 +11,6 @@ import java.io.File;
 public interface IUIHelper {
     boolean setWallpaper(Context context, @Constants.setWallpaperMode int mode, File wallpaper)
             throws Exception;
+    void register(Context context, BottomViewListener listener);
+    void unregister(Context context);
 }

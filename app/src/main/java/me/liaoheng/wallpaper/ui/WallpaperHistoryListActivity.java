@@ -2,7 +2,6 @@ package me.liaoheng.wallpaper.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -13,7 +12,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import butterknife.BindView;
@@ -48,9 +46,8 @@ import java.util.List;
  */
 public class WallpaperHistoryListActivity extends BaseActivity {
 
-    private final String TAG = WallpaperHistoryListActivity.class.getSimpleName();
-    RecyclerViewHelper mRecyclerViewHelper;
-    WallpaperAdapter mWallpaperAdapter;
+    private RecyclerViewHelper mRecyclerViewHelper;
+    private WallpaperAdapter mWallpaperAdapter;
     @BindView(R.id.bing_wallpaper_list_error)
     TextView mErrorTextView;
     private int index;
@@ -203,12 +200,10 @@ public class WallpaperHistoryListActivity extends BaseActivity {
             }
 
             itemView.setOnClickListener(v -> {
-                Intent intent = new Intent(getActivity(), WallpaperDetailActivity.class);
-                intent.putExtra("image", item);
                 ActivityOptionsCompat options =
                         ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
                                 mImageView, "bing_wallpaper_detail_image");
-                ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
+                WallpaperDetailActivity.start(getActivity(), item, options.toBundle());
             });
             String imageUrl;
             int width = Constants.WallpaperConfig.WALLPAPER_RESOLUTION_WIDTH;

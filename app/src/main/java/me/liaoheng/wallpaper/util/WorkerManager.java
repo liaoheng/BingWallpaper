@@ -34,11 +34,6 @@ public class WorkerManager {
                     TimeUnit.SECONDS)
                     .addTag(WORKER_TAG);
 
-            //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            //    Constraints constraints = new Constraints.Builder().setRequiresDeviceIdle(true).build();
-            //    builder.setConstraints(constraints);
-            //}
-
             WorkManager.getInstance()
                     .enqueueUniquePeriodicWork(WORKER_TAG, ExistingPeriodicWorkPolicy.REPLACE, builder.build());
 
@@ -57,7 +52,7 @@ public class WorkerManager {
 
     public static void init(Context context, boolean debug) {
         WorkManager.initialize(context,
-                new Configuration.Builder().setMinimumLoggingLevel(debug ? Log.DEBUG : Log.WARN)
+                new Configuration.Builder().setMinimumLoggingLevel(debug ? Log.DEBUG : Log.ERROR)
                         .setExecutor(Executors.newSingleThreadExecutor())
                         .build());
     }

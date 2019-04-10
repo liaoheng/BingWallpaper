@@ -32,4 +32,31 @@ public class UIHelper implements IUIHelper {
             }
         }
     }
+
+    private EmuiHelper mEmuiHelper;
+
+    @Override
+    public void register(Context context, BottomViewListener listener) {
+        if (ROM.getROM().isEmui()) {
+            mEmuiHelper = EmuiHelper.with(listener);
+            mEmuiHelper.register(context);
+        } else if (ROM.getROM().isVivo()) {
+            if (!BingWallpaperUtils.vivoNavigationGestureEnabled(context)) {
+                listener.showBottomView();
+            }
+        } else if (ROM.getROM().isMiui()) {
+            if (!BingWallpaperUtils.miuiNavigationGestureEnabled(context)) {
+                listener.showBottomView();
+            }
+        } else {
+            listener.showBottomView();
+        }
+    }
+
+    @Override
+    public void unregister(Context context) {
+        if (mEmuiHelper != null) {
+            mEmuiHelper.unregister(context);
+        }
+    }
 }

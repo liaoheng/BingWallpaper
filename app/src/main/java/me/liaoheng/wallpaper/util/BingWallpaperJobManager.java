@@ -77,7 +77,6 @@ public class BingWallpaperJobManager {
                 .setRetryStrategy(
                         RetryStrategy.DEFAULT_EXPONENTIAL)
                 .setTrigger(Trigger.executionWindow(0, (int) time))
-                //.setConstraints(Constraint.DEVICE_IDLE)
                 .build();
         boolean success = dispatcher.schedule(myJob) == FirebaseJobDispatcher.SCHEDULE_RESULT_SUCCESS;
         if (success) {
@@ -96,33 +95,6 @@ public class BingWallpaperJobManager {
      */
     public static boolean enableSystem(Context context, long time) {
         return WorkerManager.enabled(context, time);
-        //JobScheduler jobScheduler = (JobScheduler)
-        //        context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        //if (jobScheduler == null) {
-        //    return false;
-        //}
-        //JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, new ComponentName(context,
-        //        JobSchedulerDaemonService.class))
-        //        .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-        //        .setBackoffCriteria(TimeUnit.MINUTES.toMillis(15), JobInfo.BACKOFF_POLICY_EXPONENTIAL)
-        //        .setPersisted(true);
-        //
-        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        //    builder.setPeriodic(TimeUnit.SECONDS.toMillis(time), TimeUnit.SECONDS.toMillis(time / 3));
-        //} else {
-        //    builder.setPeriodic(TimeUnit.SECONDS.toMillis(time));
-        //}
-        //
-        //boolean success = jobScheduler.schedule(builder.build()) == JobScheduler.RESULT_SUCCESS;
-        //if (success) {
-        //    setJobType(context, SYSTEM);
-        //    if (BingWallpaperUtils.isEnableLog(context)) {
-        //        LogDebugFileUtils.get()
-        //                .i(TAG, "Enable system job interval time : %s", time);
-        //    }
-        //    L.alog().d(TAG, "Enable system job interval time : %s", time);
-        //}
-        //return success;
     }
 
     /**

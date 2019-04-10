@@ -80,10 +80,13 @@ public class CrashReportHandle {
         if (!BingWallpaperUtils.isCrashReport(context) || BuildConfig.DEBUG) {
             return;
         }
-        Crashlytics.log("TAG: " + TAG);
-        if (!TextUtils.isEmpty(msg)) {
-            Crashlytics.log(msg);
+        try {
+            Crashlytics.log("TAG: " + TAG);
+            if (!TextUtils.isEmpty(msg)) {
+                Crashlytics.log(msg);
+            }
+            Crashlytics.logException(t);
+        } catch (Exception ignored) {
         }
-        Crashlytics.logException(t);
     }
 }

@@ -59,7 +59,7 @@ public class BingWallpaperAlarmManager {
         if (BingWallpaperUtils.isEnableLog(context)) {
             LogDebugFileUtils.get().i(TAG, "Set Alarm Repeating Time : %s", time.toString("yyyy-MM-dd HH:mm"));
         }
-        L.Log.d(TAG, "Set Alarm Repeating Time : %s", time.toString("yyyy-MM-dd HH:mm"));
+        L.alog().d(TAG, "Set Alarm Repeating Time : %s", time.toString("yyyy-MM-dd HH:mm"));
     }
 
     private static void add(Context context, @NonNull LocalTime localTime) {

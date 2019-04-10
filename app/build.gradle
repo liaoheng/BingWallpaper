@@ -9,8 +9,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 151
-        versionName "1.5.1"
+        versionCode 152
+        versionName "1.5.2"
     }
 
     def isSigning = true
@@ -74,7 +74,7 @@ dependencies {
     implementation deps.customtabs
     implementation deps.preference
 
-    implementation 'android.arch.work:work-runtime:1.0.0'
+    implementation 'androidx.work:work-runtime:2.0.1'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9'
     implementation 'com.google.firebase:firebase-core:16.0.8'
     implementation 'com.firebase:firebase-jobdispatcher:0.8.6'
