@@ -9,8 +9,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 152
-        versionName "1.5.2"
+        versionCode 153
+        versionName "1.5.3"
     }
 
     def isSigning = true
@@ -107,7 +107,7 @@ dependencies {
     implementation 'net.grandcentrix.tray:tray:0.12.0'
 
     //https://github.com/apl-devs/AppIntro
-    implementation 'com.github.paolorotolo:appintro:v5.1.0'
+    implementation 'com.github.AppIntro:AppIntro:5.1.0'
 
 //    implementation group: "com.github.liaoheng", name: "common-core", version: "0.1.0-SNAPSHOT", changing: true
 //    implementation group: "com.github.liaoheng", name: "common-adapter", version: "0.1.0-SNAPSHOT", changing: true

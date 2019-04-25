@@ -74,7 +74,7 @@ public class SettingsActivity extends BaseActivity {
             if (preference instanceof TimePreference) {
                 DialogFragment dialogFragment = TimePreferenceDialogFragmentCompat.newInstance(preference.getKey());
                 dialogFragment.setTargetFragment(this, 0);
-                dialogFragment.show(getFragmentManager(), "TimePreference");
+                dialogFragment.show(getChildFragmentManager(), "TimePreference");
             } else {
                 super.onDisplayPreferenceDialog(preference);
             }
