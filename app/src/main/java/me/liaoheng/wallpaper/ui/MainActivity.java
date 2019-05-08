@@ -41,8 +41,8 @@ import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
-import me.liaoheng.wallpaper.util.*;
 import me.liaoheng.wallpaper.util.TasksUtils;
+import me.liaoheng.wallpaper.util.*;
 import me.liaoheng.wallpaper.widget.FeedbackDialog;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
 
@@ -177,17 +177,19 @@ public class MainActivity extends BaseActivity
                 new Callback4.EmptyCallback<BingWallpaperState>() {
                     @Override
                     public void onYes(BingWallpaperState bingWallpaperState) {
-                        dismissProgressDialog();
                         UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_success);
                     }
 
                     @Override
                     public void onNo(BingWallpaperState bingWallpaperState) {
-                        dismissProgressDialog();
                         UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_failure);
                     }
+
+                    @Override
+                    public void onFinish(BingWallpaperState bingWallpaperState) {
+                        dismissProgressDialog();
+                    }
                 });
-        mSetWallpaperStateBroadcastReceiverHelper.register(this);
 
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
             if (isRun) {
@@ -509,11 +511,24 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
-    protected void onDestroy() {
-        mUiHelper.unregister(this);
+    protected void onStart() {
+        if (mSetWallpaperStateBroadcastReceiverHelper != null) {
+            mSetWallpaperStateBroadcastReceiverHelper.register(this);
+        }
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
         if (mSetWallpaperStateBroadcastReceiverHelper != null) {
             mSetWallpaperStateBroadcastReceiverHelper.unregister(this);
         }
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mUiHelper.unregister(this);
         UIUtils.cancelToast();
         super.onDestroy();
     }

@@ -34,8 +34,10 @@ public class SetWallpaperStateBroadcastReceiver extends BroadcastReceiver {
                 mCallback.onPreExecute();
             } else if (BingWallpaperState.SUCCESS.equals(state)) {
                 mCallback.onYes(state);
+                mCallback.onFinish(state);
             } else if (BingWallpaperState.FAIL.equals(state)) {
                 mCallback.onNo(state);
+                mCallback.onFinish(state);
             }
         }
     }

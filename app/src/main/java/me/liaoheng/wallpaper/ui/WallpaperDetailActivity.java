@@ -112,17 +112,19 @@ public class WallpaperDetailActivity extends BaseActivity {
                 new Callback4.EmptyCallback<BingWallpaperState>() {
                     @Override
                     public void onYes(BingWallpaperState bingWallpaperState) {
-                        dismissProgressDialog();
                         UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_success);
                     }
 
                     @Override
                     public void onNo(BingWallpaperState bingWallpaperState) {
-                        dismissProgressDialog();
                         UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_failure);
                     }
+
+                    @Override
+                    public void onFinish(BingWallpaperState bingWallpaperState) {
+                        dismissProgressDialog();
+                    }
                 });
-        mSetWallpaperStateBroadcastReceiverHelper.register(this);
 
         ((View) mCoverStoryToggle.getParent()).setOnClickListener(v -> mCoverStoryToggle.toggle());
         mCoverStoryToggle.setOnCheckedChangeListener((view, isChecked) -> {
@@ -423,10 +425,18 @@ public class WallpaperDetailActivity extends BaseActivity {
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onStart() {
+        if (mSetWallpaperStateBroadcastReceiverHelper != null) {
+            mSetWallpaperStateBroadcastReceiverHelper.register(this);
+        }
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
         if (mSetWallpaperStateBroadcastReceiverHelper != null) {
             mSetWallpaperStateBroadcastReceiverHelper.unregister(this);
         }
-        super.onDestroy();
+        super.onStop();
     }
 }
