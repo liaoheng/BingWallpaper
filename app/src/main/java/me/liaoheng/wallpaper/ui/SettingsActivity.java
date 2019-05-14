@@ -243,7 +243,7 @@ public class SettingsActivity extends BaseActivity {
                 case PREF_COUNTRY:
                     mCountryListPreference.setSummary(mCountryListPreference.getEntry());
                     mPreferences.put(PREF_COUNTRY, mCountryListPreference.getValue());
-                    BingWallpaperUtils.clearCache(getActivity()).subscribe();
+                    BingWallpaperUtils.clearNetCache().subscribe();
                     break;
                 case PREF_PREF_PIXABAY_SUPPORT:
                     mPreferences.put(PREF_PREF_PIXABAY_SUPPORT, mPixabaySupportPreference.isChecked());

@@ -43,12 +43,20 @@
         <item>@string/pref_country_auto</item>
         <item>@string/pref_country_china</item>
         <item>@string/pref_country_usa</item>
+        <item>@string/pref_country_gb</item>
+        <item>@string/pref_country_fr</item>
+        <item>@string/pref_country_de</item>
+        <item>@string/pref_country_ja</item>
     </string-array>
 
     <string-array name="pref_country_values">
         <item>0</item>
         <item>1</item>
         <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
     </string-array>
 
     <string-array name="pref_set_wallpaper_day_fully_automatic_update_type_names">

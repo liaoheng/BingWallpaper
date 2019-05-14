@@ -66,7 +66,7 @@ public class NetUtils {
     }
 
     public void init(Context context) {
-        Retrofit.Builder factory = new Retrofit.Builder().baseUrl(Constants.BASE_URL)
+        Retrofit.Builder factory = new Retrofit.Builder().baseUrl("https://www.bing.com/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
 

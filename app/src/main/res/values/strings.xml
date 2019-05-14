@@ -54,10 +54,14 @@
     <string name="pref_other">Other Setting</string>
     <string name="pref_choose_set_wallpaper_resolution">Set wallpaper resolution</string>
     <string name="pref_choose_save_resolution">Default save wallpaper resolution</string>
-    <string name="pref_country">Server regions</string>
+    <string name="pref_country">Forced use regions</string>
     <string name="pref_country_auto">Auto</string>
     <string name="pref_country_china">China</string>
     <string name="pref_country_usa">USA</string>
+    <string name="pref_country_gb">UK</string>
+    <string name="pref_country_fr">France</string>
+    <string name="pref_country_de">Germany</string>
+    <string name="pref_country_ja">Japan</string>
     <string name="pref_clear_cache">Clear cache</string>
     <string name="pref_clear_cache_success">Clear cache success</string>
     <string name="pref_log_file">Debug log</string>

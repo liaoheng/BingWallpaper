@@ -59,7 +59,7 @@ public class BingWallpaperUtils {
 
     public static String getImageUrl(Context context, String resolution, BingWallpaperImage image) {
         String baseUrl = image.getUrlbase();
-        return getCountryBaseUrl(context) + baseUrl + "_" + resolution + ".jpg";
+        return getBaseUrl(context) + baseUrl + "_" + resolution + ".jpg";
     }
 
     public static boolean getOnlyWifi(Context context) {
@@ -121,23 +121,27 @@ public class BingWallpaperUtils {
         return Integer.parseInt(country);
     }
 
+    public static boolean isAutoCountry(Context context) {
+        return getCountryValue(context) == 0;
+    }
+
     public static String getUrl(Context context) {
-        return getUrl(context, 0, 1);
+        return getUrl(context, 0, 1, getAutoLocale(context));
     }
 
-    public static String getUrl(Context context, int index, int count) {
+    public static String getUrl(Context context, int index, int count, String mtk) {
         String url;
-        if (isChinaLocale(context)) {
-            url = Constants.CHINA_URL;
+        if (isAutoCountry(context)) {
+            url = Constants.LOCAL_API_URL;
         } else {
-            url = Constants.GLOBAL_URL;
+            url = Constants.GLOBAL_API_URL;
         }
-        return String.format(url, index, count);
+        return String.format(url, index, count, mtk);
     }
 
-    public static String getCountryBaseUrl(Context context) {
-        if (isChinaLocale(context)) {
-            return Constants.CHINA_BASE_URL;
+    public static String getBaseUrl(Context context) {
+        if (isAutoCountry(context)) {
+            return Constants.LOCAL_BASE_URL;
         } else {
             return Constants.GLOBAL_BASE_URL;
         }
@@ -145,33 +149,38 @@ public class BingWallpaperUtils {
 
     public static Locale getLocale(Context context) {
         int auto = getCountryValue(context);
-        Locale country = Locale.getDefault();
-        if (auto == 1) {
-            country = Locale.CHINA;
-        } else if (auto == 2) {
-            country = Locale.US;
+        Locale locale = getCurrentLocale(context);
+        switch (auto) {
+            case 1:
+                return Locale.CHINA;
+            case 2:
+                return Locale.US;
+            case 3:
+                return Locale.UK;
+            case 4:
+                return Locale.FRANCE;
+            case 5:
+                return Locale.GERMANY;
+            case 6:
+                return Locale.JAPAN;
+            default:
+                return locale;
         }
-        return country;
+    }
+
+    public static Locale getCurrentLocale(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return context.getResources().getConfiguration().getLocales().get(0);
+        } else {
+            return context.getResources().getConfiguration().locale;
+        }
     }
 
     public static String getAutoLocale(Context context) {
         Locale locale = getLocale(context);
         String country = locale.getCountry();
         String language = locale.getLanguage();
-        if (isChinaLocale(locale)) {
-            return "zh-cn";
-        } else {
-            return language + "-" + country;
-        }
-    }
-
-    public static boolean isChinaLocale(Context context) {
-        Locale locale = getLocale(context);
-        return isChinaLocale(locale);
-    }
-
-    public static boolean isChinaLocale(Locale locale) {
-        return Locale.CHINA.getCountry().equalsIgnoreCase(locale.getCountry());
+        return language + "-" + country;
     }
 
     public static boolean isAlarm(Context context) {
@@ -402,14 +411,15 @@ public class BingWallpaperUtils {
             return;
         }
         String url = image.getCopyrightlink();
+        String baseUrl = getBaseUrl(context);
         if (TextUtils.isEmpty(url) || "javascript:void(0)".equals(url)) {
-            url = Constants.BASE_URL;
+            url = baseUrl;
         } else {
             if (!ValidateUtils.isWebUrl(url)) {
-                url = Constants.BASE_URL + url;
+                url = baseUrl + url;
             }
             if (!ValidateUtils.isWebUrl(url)) {
-                url = Constants.BASE_URL;
+                url = baseUrl;
             }
         }
         String locale = BingWallpaperUtils.getAutoLocale(context);
@@ -568,7 +578,7 @@ public class BingWallpaperUtils {
                             @Override
                             public void onError(Throwable e) {
                                 if (isEnableLog(context)) {
-                                    LogDebugFileUtils.get().e(TAG, "Check error",e);
+                                    LogDebugFileUtils.get().e(TAG, "Check error", e);
                                 }
                             }
                         });
@@ -675,6 +685,15 @@ public class BingWallpaperUtils {
                     GlideApp.get(c).clearMemory();
                     return "ok";
                 });
+    }
+
+    public static Observable<String> clearNetCache() {
+        return Observable.just("")
+                .subscribeOn(Schedulers.io())
+                .map(c -> {
+                    NetUtils.get().clearCache();
+                    return c;
+                }).observeOn(AndroidSchedulers.mainThread());
     }
 
     public static String getTranslator(Context context) {

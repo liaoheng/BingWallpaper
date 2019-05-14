@@ -79,7 +79,6 @@
                 android:title="@string/pref_choose_save_resolution" />
 
         <ListPreference
-                android:enabled="false"
                 android:defaultValue="0"
                 android:entries="@array/pref_country_names"
                 android:entryValues="@array/pref_country_values"

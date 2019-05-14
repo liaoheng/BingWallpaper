@@ -28,8 +28,8 @@ public class BingWallpaperNetworkClient {
 
     public static Observable<List<BingWallpaperImage>> getBingWallpaper(Context context, int index,
             int count) {
-        String url = BingWallpaperUtils.getUrl(context, index, count);
         String locale = BingWallpaperUtils.getAutoLocale(context);
+        String url = BingWallpaperUtils.getUrl(context, index, count, locale);
         return getBingWallpaper(url, locale).map(bingWallpaper -> {
             if (bingWallpaper == null || bingWallpaper.getImages() == null || bingWallpaper.getImages().isEmpty()) {
                 throw new SystemRuntimeException(new SystemDataException("bing wallpaper is not data"));
@@ -44,8 +44,8 @@ public class BingWallpaperNetworkClient {
     }
 
     public static Observable<BingWallpaperImage> getBingWallpaperSingle(Context context) {
-        String url = BingWallpaperUtils.getUrl(context, 0, 1);
         String locale = BingWallpaperUtils.getAutoLocale(context);
+        String url = BingWallpaperUtils.getUrl(context, 0, 1, locale);
         return getBingWallpaperSingle(url, locale);
     }
 
