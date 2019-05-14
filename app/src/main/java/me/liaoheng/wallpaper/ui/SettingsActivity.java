@@ -218,7 +218,7 @@ public class SettingsActivity extends BaseActivity {
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            addPreferencesFromResource(R.xml.preferences);
+            setPreferencesFromResource(R.xml.preferences, rootKey);
         }
 
         private void updateCheckTime() {
