@@ -9,8 +9,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 153
-        versionName "1.5.3"
+        versionCode 154
+        versionName "1.5.4"
     }
 
     def isSigning = true
@@ -69,14 +69,14 @@ dependencies {
     //android system
     implementation deps.appcompat
     implementation deps.cardview
-    implementation deps.design
+    implementation deps.material
     implementation deps.palette
-    implementation deps.customtabs
+    implementation deps.browser
     implementation deps.preference
 
     implementation 'androidx.work:work-runtime:2.0.1'
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9'
-    implementation 'com.google.firebase:firebase-core:16.0.8'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.0'
+    implementation 'com.google.firebase:firebase-core:16.0.9'
     implementation 'com.firebase:firebase-jobdispatcher:0.8.6'
     //    implementation 'com.google.android.gms:play-services-base:15.0.1'
 

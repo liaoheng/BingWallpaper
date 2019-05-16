@@ -47,6 +47,8 @@
         <item>@string/pref_country_fr</item>
         <item>@string/pref_country_de</item>
         <item>@string/pref_country_ja</item>
+        <item>@string/pref_country_it</item>
+        <item>@string/pref_country_ir</item>
     </string-array>
 
     <string-array name="pref_country_values">
@@ -57,6 +59,8 @@
         <item>4</item>
         <item>5</item>
         <item>6</item>
+        <item>7</item>
+        <item>8</item>
     </string-array>
 
     <string-array name="pref_set_wallpaper_day_fully_automatic_update_type_names">

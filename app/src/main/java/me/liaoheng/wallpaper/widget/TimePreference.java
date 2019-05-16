@@ -58,7 +58,7 @@ public class TimePreference extends DialogPreference {
     }
 
     @Override
-    protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
+    protected void onSetInitialValue(Object defaultValue) {
         if (defaultValue != null) {
             localTime = LocalTime.parse(getPersistedString(String.valueOf(defaultValue)));
         }

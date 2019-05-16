@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.preference.*;
 import com.github.liaoheng.common.util.*;
 import me.liaoheng.wallpaper.R;
@@ -72,9 +73,12 @@ public class SettingsActivity extends BaseActivity {
         @Override
         public void onDisplayPreferenceDialog(Preference preference) {
             if (preference instanceof TimePreference) {
-                DialogFragment dialogFragment = TimePreferenceDialogFragmentCompat.newInstance(preference.getKey());
-                dialogFragment.setTargetFragment(this, 0);
-                dialogFragment.show(getChildFragmentManager(), "TimePreference");
+                FragmentManager fragmentManager = getFragmentManager();
+                if (fragmentManager != null) {
+                    DialogFragment dialogFragment = TimePreferenceDialogFragmentCompat.newInstance(preference.getKey());
+                    dialogFragment.setTargetFragment(this, 0);
+                    dialogFragment.show(fragmentManager, "TimePreference");
+                }
             } else {
                 super.onDisplayPreferenceDialog(preference);
             }

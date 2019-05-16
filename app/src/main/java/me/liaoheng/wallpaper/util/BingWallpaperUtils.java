@@ -163,6 +163,10 @@ public class BingWallpaperUtils {
                 return Locale.GERMANY;
             case 6:
                 return Locale.JAPAN;
+            case 7:
+                return Locale.ITALY;
+            case 8:
+                return new Locale("fa", "IR");
             default:
                 return locale;
         }
