@@ -17,10 +17,7 @@ public class NotificationUtils {
 
     public static void createNotificationChannels(@NonNull Context context) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            if (manager == null) {
-                return;
-            }
+            NotificationManagerCompat manager = NotificationManagerCompat.from(context);
             NotificationChannel channel = new NotificationChannel(
                     Constants.FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL,
                     context.getString(R.string.foreground_intent_service_notification_channel),

@@ -2,3 +2,4 @@ apply from: rootProject.file('./gradle/dependencies.gradle')
 
 ext.minSdkVersion =21
 ext.deps.put("palette","androidx.palette:palette:1.0.0")
+ext.deps.put("okhttp","com.squareup.okhttp3:okhttp:3.14.2")

@@ -78,7 +78,7 @@
     <!--menu-->
     <string name="menu_main_drawer_wallpaper_info">Wallpaper information</string>
     <string name="menu_main_setting">Setting</string>
-    <string name="menu_main_wallpaper_history_list">Wallpaper history list</string>
+    <string name="menu_main_wallpaper_history_list">Wallpaper history</string>
     <string name="menu_main_help">Help</string>
     <string name="menu_main_feedback">Feedback</string>
 
