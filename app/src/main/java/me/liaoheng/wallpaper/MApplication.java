@@ -2,6 +2,7 @@ package me.liaoheng.wallpaper;
 
 import android.app.Application;
 import com.github.liaoheng.common.Common;
+import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
 import io.reactivex.plugins.RxJavaPlugins;
 import me.liaoheng.wallpaper.util.*;
@@ -22,6 +23,7 @@ public class MApplication extends Application {
             LogDebugFileUtils.init(getApplicationContext());
             LogDebugFileUtils.get().open();
         }
+        CacheUtils.get().init(this);
         RxJavaPlugins.setErrorHandler(throwable -> L.alog().w("RxJavaPlugins", throwable));
         NetUtils.get().init(getApplicationContext());
         Constants.Config.isPhone = getString(R.string.screen_type).equals("phone");

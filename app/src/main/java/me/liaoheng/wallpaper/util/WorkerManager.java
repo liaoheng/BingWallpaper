@@ -20,8 +20,8 @@ public class WorkerManager {
     private static final String TAG = WorkerManager.class.getSimpleName();
     private static final String WORKER_TAG = "bing_wallpaper_worker_" + 0x484;
 
-    public static void disabled() {
-        WorkManager.getInstance().cancelUniqueWork(WORKER_TAG);
+    public static void disabled(Context context) {
+        WorkManager.getInstance(context).cancelUniqueWork(WORKER_TAG);
     }
 
     /**
@@ -34,7 +34,7 @@ public class WorkerManager {
                     TimeUnit.SECONDS)
                     .addTag(WORKER_TAG);
 
-            WorkManager.getInstance()
+            WorkManager.getInstance(context)
                     .enqueueUniquePeriodicWork(WORKER_TAG, ExistingPeriodicWorkPolicy.REPLACE, builder.build());
 
             BingWallpaperJobManager.setJobType(context, BingWallpaperJobManager.WORKER);
@@ -57,8 +57,8 @@ public class WorkerManager {
                         .build());
     }
 
-    public static boolean isScheduled() {
-        ListenableFuture<List<WorkInfo>> statuses = WorkManager.getInstance().getWorkInfosForUniqueWork(WORKER_TAG);
+    public static boolean isScheduled(Context context) {
+        ListenableFuture<List<WorkInfo>> statuses = WorkManager.getInstance(context).getWorkInfosForUniqueWork(WORKER_TAG);
         try {
             boolean running = false;
             List<WorkInfo> workInfoList = statuses.get();

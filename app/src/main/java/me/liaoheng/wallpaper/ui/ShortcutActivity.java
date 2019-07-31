@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
+import androidx.core.content.pm.ShortcutManagerCompat;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
@@ -18,6 +19,7 @@ public class ShortcutActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        String shortcutId = getIntent().getStringExtra(ShortcutManagerCompat.EXTRA_SHORTCUT_ID);
         int mode = getIntent().getIntExtra(BingWallpaperIntentService.EXTRA_SET_WALLPAPER_MODE, -1);
         if (mode < 0) {
             return;
@@ -31,7 +33,7 @@ public class ShortcutActivity extends Activity {
                     .show();
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            getSystemService(ShortcutManager.class).reportShortcutUsed("toggle");
+            getSystemService(ShortcutManager.class).reportShortcutUsed(shortcutId == null ? "toggle" : shortcutId);
         }
         finish();
     }

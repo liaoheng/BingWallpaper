@@ -2,7 +2,7 @@ package me.liaoheng.wallpaper.ui;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.graphics.drawable.Drawable;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -24,12 +24,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.ImageViewTarget;
 import com.bumptech.glide.request.target.Target;
-import com.bumptech.glide.request.transition.Transition;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.liaoheng.common.util.*;
@@ -45,8 +40,6 @@ import me.liaoheng.wallpaper.util.TasksUtils;
 import me.liaoheng.wallpaper.util.*;
 import me.liaoheng.wallpaper.widget.FeedbackDialog;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
-
-import java.io.EOFException;
 
 /**
  * 壁纸主界面
@@ -295,7 +288,6 @@ public class MainActivity extends BaseActivity
 
     @SuppressLint("SetTextI18n")
     private void setBingWallpaperError(Throwable throwable) {
-        dismissSwipeRefreshLayout();
         String error = CrashReportHandle.loadFailed(this, TAG, throwable);
         mErrorTextView.setText(getString(R.string.pull_refresh) + error);
     }
@@ -318,7 +310,7 @@ public class MainActivity extends BaseActivity
             url = BingWallpaperUtils.getResolutionImageUrl(this, mCurBingWallpaperImage);
         }
 
-        BingWallpaperUtils.setWallpaper(this, mCurBingWallpaperImage.copy(url), type,
+        BingWallpaperUtils.setWallpaper(this, mCurBingWallpaperImage.copy(url), type, null,
                 new Callback4.EmptyCallback<Boolean>() {
                     @Override
                     public void onYes(Boolean aBoolean) {
@@ -381,54 +373,44 @@ public class MainActivity extends BaseActivity
         return true;
     }
 
-    private void setImage(BingWallpaperImage bingWallpaperImage) {
-        setTitle(bingWallpaperImage.getCopyright());
-        mHeaderCoverStoryTitleView.setText(bingWallpaperImage.getCopyright());
+    private void setImage(BingWallpaperImage image) {
+        setTitle(image.getCopyright());
+        mHeaderCoverStoryTitleView.setText(image.getCopyright());
         String url;
         if (BingWallpaperUtils.isPixabaySupport(this)) {
-            url = bingWallpaperImage.getUrl().replace("_1280", "_960");
+            url = image.getUrl().replace("_1280", "_960");
         } else {
             url = BingWallpaperUtils.getImageUrl(getApplicationContext(),
-                    Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION,
-                    bingWallpaperImage);
+                    Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION, image);
         }
+        image.setImageUrl(url);
 
-        GlideApp.with(getActivity())
-                .load(url)
-                .dontAnimate()
-                .thumbnail(0.5f)
-                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-                .listener(new RequestListener<Drawable>() {
-
+        BingWallpaperUtils.loadImage(GlideApp.with(this).asBitmap()
+                        .load(url)
+                        .dontAnimate()
+                        .thumbnail(0.5f)
+                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL), mWallpaperView,
+                new Callback.EmptyCallback<Bitmap>() {
                     @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target,
-                            boolean isFirstResource) {
-                        setBingWallpaperError(e);
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target,
-                            DataSource dataSource,
-                            boolean isFirstResource) {
-                        return false;
-                    }
-                })
-                .into(new ImageViewTarget<Drawable>(mWallpaperView) {
-                    @Override
-                    public void onLoadStarted(Drawable placeholder) {
-                        super.onLoadStarted(placeholder);
+                    public void onPreExecute() {
                         showSwipeRefreshLayout();
                     }
 
                     @Override
-                    public void onResourceReady(@NonNull Drawable resource,
-                            @Nullable Transition<? super Drawable> transition) {
-                        super.onResourceReady(resource, transition);
-                        mWallpaperView.setImageDrawable(resource);
-                        mNavigationHeaderImage.setImageDrawable(resource);
+                    public void onPostExecute() {
+                        dismissSwipeRefreshLayout();
+                    }
 
-                        Palette.from(BitmapUtils.drawableToBitmap(resource))
+                    @Override
+                    public void onSuccess(@NonNull Bitmap bitmap) {
+                        int settingStackBlur = BingWallpaperUtils.getSettingStackBlur(getApplicationContext());
+                        if (settingStackBlur > 0) {
+                            bitmap = BingWallpaperUtils.toStackBlur(bitmap, settingStackBlur);
+                        }
+
+                        mWallpaperView.setImageBitmap(bitmap);
+                        mNavigationHeaderImage.setImageBitmap(bitmap);
+                        Palette.from(bitmap)
                                 .generate(palette -> {
                                     int defMuted = ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark);
                                     int defVibrant = ContextCompat.getColor(getActivity(), R.color.colorAccent);
@@ -451,10 +433,12 @@ public class MainActivity extends BaseActivity
                                     mSetWallpaperActionMenu.setMenuButtonColorRipple(lightVibrantSwatch);
 
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                        AddBothActionButton(lightMutedSwatch, lightVibrantSwatch);
+                                        AddBothActionButton(image, lightMutedSwatch,
+                                                lightVibrantSwatch);
                                     } else {
                                         if (ROM.getROM().isMiui()) {
-                                            AddBothActionButton(lightMutedSwatch, lightVibrantSwatch);
+                                            AddBothActionButton(image, lightMutedSwatch,
+                                                    lightVibrantSwatch);
                                         } else {
                                             mSetWallpaperActionMenu.setOnMenuButtonClickListener(v -> setWallpaper(0));
                                         }
@@ -462,19 +446,17 @@ public class MainActivity extends BaseActivity
 
                                     mSetWallpaperActionMenu.showMenu(true);
                                 });
-
-                        isRun = false;
-                        dismissSwipeRefreshLayout();
                     }
 
                     @Override
-                    protected void setResource(@Nullable Drawable resource) {
+                    public void onError(Throwable e) {
+                        setBingWallpaperError(e);
                     }
                 });
-
     }
 
-    private void AddBothActionButton(@ColorInt int lightMutedSwatch, @ColorInt int lightVibrantSwatch) {
+    private void AddBothActionButton(BingWallpaperImage image, @ColorInt int lightMutedSwatch,
+            @ColorInt int lightVibrantSwatch) {
         addActionButton(lightMutedSwatch, lightVibrantSwatch,
                 getString(R.string.pref_set_wallpaper_auto_mode_home),
                 R.drawable.ic_home_white_24dp, v -> {
@@ -495,6 +477,16 @@ public class MainActivity extends BaseActivity
                     setWallpaper(0);
                     mSetWallpaperActionMenu.close(true);
                 });
+
+        addActionButton(lightMutedSwatch, lightVibrantSwatch,
+                getString(R.string.share),
+                android.R.drawable.ic_menu_share, v -> {
+                    BingWallpaperUtils.shareImage(getApplicationContext(), image.getImageUrl(),
+                            image.getCopyright(), image.getHsh());
+                    mSetWallpaperActionMenu.close(true);
+                });
+
+        mSetWallpaperActionMenu.getMenuIconView().setImageResource(R.drawable.ic_drawer_home);
     }
 
     private void addActionButton(@ColorInt int lightMutedSwatch, @ColorInt int lightVibrantSwatch, String text,

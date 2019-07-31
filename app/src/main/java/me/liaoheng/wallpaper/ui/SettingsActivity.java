@@ -49,6 +49,7 @@ public class SettingsActivity extends BaseActivity {
     public static final String PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER = "pref_set_miui_lock_screen_wallpaper";
     public static final String PREF_PREF_PIXABAY_SUPPORT = "pref_pixabay_support";
     public static final String PREF_CRASH_REPORT = "pref_crash_report";
+    public static final String PREF_STACK_BLUR = "pref_stack_blur";
 
     public static class MyPreferenceFragment extends PreferenceFragmentCompat
             implements SharedPreferences.OnSharedPreferenceChangeListener {

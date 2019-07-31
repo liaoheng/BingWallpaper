@@ -85,6 +85,12 @@
                 android:key="pref_country"
                 android:title="@string/pref_country" />
 
+        <SeekBarPreference
+                android:defaultValue="0"
+                android:max="100"
+                android:key="pref_stack_blur"
+                android:title="@string/pref_stack_blur" />
+
         <Preference
                 android:key="pref_clear_cache"
                 android:persistent="false"

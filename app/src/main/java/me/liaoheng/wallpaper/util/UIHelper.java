@@ -1,8 +1,15 @@
 package me.liaoheng.wallpaper.util;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.util.Base64;
+import com.github.liaoheng.common.util.BitmapUtils;
+import com.github.liaoheng.common.util.MD5Utils;
 import com.github.liaoheng.common.util.ROM;
+import me.liaoheng.wallpaper.model.Config;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
@@ -13,7 +20,23 @@ import java.io.File;
 public class UIHelper implements IUIHelper {
 
     @Override
-    public boolean setWallpaper(Context context, int mode, File wallpaper) throws Exception {
+    public boolean setWallpaper(Context context, int mode, @NotNull Config config, File wallpaper) throws Exception {
+        if (config.getStackBlur() > 0) {
+            String key = MD5Utils.md5Hex(wallpaper.getAbsolutePath()+"_"+config.getStackBlur());
+            File stackBlurFile = CacheUtils.get().get(key);
+            if (stackBlurFile == null) {
+                Bitmap stackBlur = BingWallpaperUtils.toStackBlur(
+                        BitmapFactory.decodeFile(wallpaper.getAbsolutePath()), config.getStackBlur());
+                if (stackBlur != null) {
+                    wallpaper = CacheUtils.get().put(key, BitmapUtils.bitmapToStream(stackBlur,
+                            Bitmap.CompressFormat.JPEG));
+                    BitmapUtils.recycle(stackBlur);
+                }
+            } else {
+                wallpaper = stackBlurFile;
+            }
+        }
+
         if (ROM.getROM().isMiui()) {
             return MiuiHelper.setWallpaper(context, mode, wallpaper);
         } else if (ROM.getROM().isEmui()) {

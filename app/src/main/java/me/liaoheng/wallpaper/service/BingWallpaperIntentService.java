@@ -13,6 +13,7 @@ import com.github.liaoheng.common.util.SystemException;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
+import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.util.*;
 import me.liaoheng.wallpaper.widget.AppWidget_5x1;
 import me.liaoheng.wallpaper.widget.AppWidget_5x2;
@@ -41,6 +42,7 @@ public class BingWallpaperIntentService extends IntentService {
     public final static String EXTRA_SET_WALLPAPER_MODE = "set_wallpaper_mode";
     public final static String EXTRA_SET_WALLPAPER_BACKGROUND = "set_wallpaper_background";
     public final static String EXTRA_SET_WALLPAPER_IMAGE = "set_wallpaper_image";
+    public final static String EXTRA_SET_WALLPAPER_CONFIG = "set_wallpaper_config";
     private IUIHelper mUiHelper;
 
     public BingWallpaperIntentService() {
@@ -58,18 +60,19 @@ public class BingWallpaperIntentService extends IntentService {
      * @param mode 0. both , 1. home , 2. lock
      */
     public static void start(Context context, @Constants.setWallpaperMode int mode, boolean background) {
-        start(context, null, mode, background);
+        start(context, null, mode, null, background);
     }
 
     /**
      * @param mode 0. both , 1. home , 2. lock
      */
     public static void start(Context context, @Nullable BingWallpaperImage image, @Constants.setWallpaperMode int mode,
-            boolean background) {
+            Config config, boolean background) {
         Intent intent = new Intent(context, BingWallpaperIntentService.class);
         intent.putExtra(EXTRA_SET_WALLPAPER_MODE, mode);
         intent.putExtra(EXTRA_SET_WALLPAPER_BACKGROUND, background);
         intent.putExtra(EXTRA_SET_WALLPAPER_IMAGE, image);
+        intent.putExtra(EXTRA_SET_WALLPAPER_CONFIG, config == null ? new Config(context) : config);
         ContextCompat.startForegroundService(context, intent);
     }
 
@@ -98,6 +101,7 @@ public class BingWallpaperIntentService extends IntentService {
         int setWallpaperType = intent.getIntExtra(EXTRA_SET_WALLPAPER_MODE, 0);
         boolean isBackground = intent.getBooleanExtra(EXTRA_SET_WALLPAPER_BACKGROUND, false);
         BingWallpaperImage bingWallpaperImage = intent.getParcelableExtra(EXTRA_SET_WALLPAPER_IMAGE);
+        Config config = intent.getParcelableExtra(EXTRA_SET_WALLPAPER_CONFIG);
         L.alog().d(TAG, " setWallpaperType : " + setWallpaperType);
 
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
@@ -150,7 +154,7 @@ public class BingWallpaperIntentService extends IntentService {
         }
 
         try {
-            downloadAndSetWallpaper(imageUrl, setWallpaperType);
+            downloadAndSetWallpaper(imageUrl, setWallpaperType, config);
             callback.onSuccess(bingWallpaperImage);
         } catch (Exception e) {
             callback.onError(new SystemException(e));
@@ -194,7 +198,7 @@ public class BingWallpaperIntentService extends IntentService {
         sendSetWallpaperBroadcast(BingWallpaperState.SUCCESS);
     }
 
-    private void downloadAndSetWallpaper(String url, @Constants.setWallpaperMode int setWallpaperType)
+    private void downloadAndSetWallpaper(String url, @Constants.setWallpaperMode int setWallpaperType, Config config)
             throws Exception {
         L.alog().i(TAG, "wallpaper image url: " + url);
         File wallpaper = GlideApp.with(getApplicationContext())
@@ -207,7 +211,7 @@ public class BingWallpaperIntentService extends IntentService {
             throw new IOException("download wallpaper failure");
         }
 
-        if (!mUiHelper.setWallpaper(getApplicationContext(), setWallpaperType, wallpaper)) {
+        if (!mUiHelper.setWallpaper(getApplicationContext(), setWallpaperType, config, wallpaper)) {
             throw new IOException("set wallpaper failure");
         }
 

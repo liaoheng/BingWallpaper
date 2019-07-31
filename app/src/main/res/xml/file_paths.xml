@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <external-cache-path path="../log/" name="my_log" />
+    <external-cache-path path="../temp/" name="my_temp" />
 </resources>

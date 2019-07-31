@@ -7,7 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.drawable.Drawable;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -20,23 +20,18 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import butterknife.BindArray;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.ImageViewTarget;
 import com.bumptech.glide.request.target.Target;
-import com.bumptech.glide.request.transition.Transition;
 import com.github.liaoheng.common.util.*;
 import io.reactivex.disposables.Disposable;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
+import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.util.*;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
 import org.jetbrains.annotations.NotNull;
@@ -219,47 +214,34 @@ public class WallpaperDetailActivity extends BaseActivity {
     }
 
     private void loadImage(String url) {
-        GlideApp.with(this)
-                .load(url)
-                .dontAnimate()
-                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-                .listener(new RequestListener<Drawable>() {
+        BingWallpaperUtils.loadImage(GlideApp.with(this).asBitmap()
+                        .load(url)
+                        .dontAnimate()
+                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL), mImageView,
+                new Callback.EmptyCallback<Bitmap>() {
                     @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target,
-                            boolean isFirstResource) {
+                    public void onPreExecute() {
+                        UIUtils.viewVisible(mProgressBar);
+                        UIUtils.viewGone(mErrorTextView);
+                    }
+
+                    @Override
+                    public void onPostExecute() {
                         UIUtils.viewGone(mProgressBar);
                         UIUtils.viewVisible(mErrorTextView);
-                        String error = CrashReportHandle.loadFailed(getApplicationContext(), TAG, e);
-                        mErrorTextView.setText(error);
-                        return false;
                     }
 
                     @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target,
-                            DataSource dataSource,
-                            boolean isFirstResource) {
-                        return false;
+                    public void onSuccess(Bitmap bitmap) {
+                        mImageView.setImageBitmap(bitmap);
                     }
-                }).into(new ImageViewTarget<Drawable>(mImageView) {
-            @Override
-            public void onLoadStarted(Drawable placeholder) {
-                super.onLoadStarted(placeholder);
-                UIUtils.viewVisible(mProgressBar);
-                UIUtils.viewGone(mErrorTextView);
-            }
 
-            @Override
-            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                super.onResourceReady(resource, transition);
-                UIUtils.viewGone(mProgressBar);
-                UIUtils.viewGone(mErrorTextView);
-                mImageView.setImageDrawable(resource);
-            }
-
-            @Override
-            protected void setResource(Drawable resource) {
-            }
-        });
+                    @Override
+                    public void onError(Throwable e) {
+                        String error = CrashReportHandle.loadFailed(getApplicationContext(), TAG, e);
+                        mErrorTextView.setText(error);
+                    }
+                });
     }
 
     private void dismissProgressDialog() {
@@ -327,6 +309,10 @@ public class WallpaperDetailActivity extends BaseActivity {
                 } else {
                     BingWallpaperUtils.openBrowser(this, mWallpaperImage);
                 }
+                break;
+            case R.id.menu_wallpaper_share:
+                BingWallpaperUtils.shareImage(getApplicationContext(), getUrl(BingWallpaperUtils.getResolution(this)),
+                        mWallpaperImage.getCopyright(), mWallpaperImage.getHsh());
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -413,7 +399,7 @@ public class WallpaperDetailActivity extends BaseActivity {
                 new Callback4.EmptyCallback<DialogInterface>() {
                     @Override
                     public void onYes(DialogInterface dialogInterface) {
-                        BingWallpaperUtils.setWallpaper(getActivity(), mWallpaperImage.copy(url), type,
+                        BingWallpaperUtils.setWallpaper(getActivity(), mWallpaperImage.copy(url), type, new Config(),
                                 new EmptyCallback<Boolean>() {
                                     @Override
                                     public void onYes(Boolean aBoolean) {

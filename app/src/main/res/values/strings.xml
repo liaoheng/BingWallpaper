@@ -28,6 +28,7 @@
     <string name="unable_root_permission">Unable root permission</string>
     <string name="unable_required_permission">Unable required permissions</string>
     <string name="feedback_copied">Feedback is copied to the clipboard.</string>
+    <string name="share">Share</string>
 
     <!--setting -->
     <string name="pref_auto_update_wallpaper">Daily Update Setting</string>
@@ -58,12 +59,13 @@
     <string name="pref_country_auto">Local</string>
     <string name="pref_country_china">China</string>
     <string name="pref_country_usa">USA</string>
-    <string name="pref_country_gb">UK</string>
+    <string name="pref_country_gb">British</string>
     <string name="pref_country_fr">France</string>
     <string name="pref_country_de">Germany</string>
     <string name="pref_country_ja">Japan</string>
     <string name="pref_country_it">Italy</string>
     <string name="pref_country_ir">Iran</string>
+    <string name="pref_stack_blur">Gaussian Blur</string>
     <string name="pref_clear_cache">Clear cache</string>
     <string name="pref_clear_cache_success">Clear cache success</string>
     <string name="pref_log_file">Debug log</string>

@@ -17,6 +17,11 @@
             android:title="@string/menu_wallpaper_info"
             app:showAsAction="ifRoom" />
     <item
+            android:id="@+id/menu_wallpaper_share"
+            android:icon="@android:drawable/ic_menu_share"
+            android:title="@string/share"
+            app:showAsAction="ifRoom" />
+    <item
             android:id="@+id/menu_wallpaper_both"
             android:icon="@drawable/ic_smartphone_white_24dp"
             android:title="@string/menu_set_wallpaper_mode_both"

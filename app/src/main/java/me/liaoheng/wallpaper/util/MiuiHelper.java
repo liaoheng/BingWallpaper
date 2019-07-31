@@ -8,7 +8,6 @@ import com.github.liaoheng.common.util.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
 
 /**
  * @author liaoheng
@@ -16,7 +15,7 @@ import java.util.UUID;
  */
 public class MiuiHelper {
 
-    public static boolean setLockScreenWallpaper(Context context, File file) throws IOException {
+    public static boolean setLockScreenWallpaper(Context context, File wallpaper)  {
         if (BingWallpaperUtils.isMiuiLockScreenSupport(context) && ShellUtils.hasRootPermission()) {
             int width = DisplayUtils.getScreenInfo(context).widthPixels;
             int height = DisplayUtils.getScreenInfo(context).heightPixels;
@@ -25,22 +24,23 @@ public class MiuiHelper {
                 width = height;
                 height = temp;
             }
-            File wallpaperFile = null;
             try {
-                Bitmap newBitmap = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(file.getAbsolutePath()),
-                        width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-                wallpaperFile = new File(FileUtils.getProjectSpaceTempDirectory(context),
-                        UUID.randomUUID().toString());
-                FileUtils.copyToFile(BitmapUtils.bitmapToStream(newBitmap, Bitmap.CompressFormat.JPEG),
-                        wallpaperFile);
-                BitmapUtils.recycle(newBitmap);
-                return setImage(wallpaperFile);
+                String key = MD5Utils.md5Hex(wallpaper.getAbsolutePath());
+                File wallpaperFile = CacheUtils.get().get(key);
+                if (wallpaperFile == null) {
+                    Bitmap newBitmap = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(wallpaper.getAbsolutePath()),
+                            width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+                    if (newBitmap!=null){
+                        wallpaper = CacheUtils.get().put(key, BitmapUtils.bitmapToStream(newBitmap,
+                                Bitmap.CompressFormat.JPEG));
+                        BitmapUtils.recycle(newBitmap);
+                    }
+                }else{
+                    wallpaper = wallpaperFile;
+                }
+                return setImage(wallpaper);
             } catch (Exception e) {
                 L.alog().e("MiuiHelper", e);
-            } finally {
-                if (wallpaperFile != null) {
-                    FileUtils.delete(wallpaperFile);
-                }
             }
         }
         return false;

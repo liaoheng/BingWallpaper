@@ -37,7 +37,7 @@ public class BingWallpaperJobManager {
             dispatcher.cancel(JOB_TAG);
         }
 
-        WorkerManager.disabled();
+        WorkerManager.disabled(context);
 
         Intent intent = new Intent(context, WallpaperDaemonService.class);
         context.stopService(intent);
@@ -207,7 +207,7 @@ public class BingWallpaperJobManager {
                 return "google_service_error";
             }
         } else if (jobType == WORKER) {
-            if (WorkerManager.isScheduled()) {
+            if (WorkerManager.isScheduled(context)) {
                 return "worker";
             } else {
                 return "worker_error";
