@@ -60,7 +60,7 @@ public class BingWallpaperIntentService extends IntentService {
      * @param mode 0. both , 1. home , 2. lock
      */
     public static void start(Context context, @Constants.setWallpaperMode int mode, boolean background) {
-        start(context, null, mode, null, background);
+        start(context, null, mode, new Config(context), background);
     }
 
     /**
@@ -72,7 +72,7 @@ public class BingWallpaperIntentService extends IntentService {
         intent.putExtra(EXTRA_SET_WALLPAPER_MODE, mode);
         intent.putExtra(EXTRA_SET_WALLPAPER_BACKGROUND, background);
         intent.putExtra(EXTRA_SET_WALLPAPER_IMAGE, image);
-        intent.putExtra(EXTRA_SET_WALLPAPER_CONFIG, config == null ? new Config(context) : config);
+        intent.putExtra(EXTRA_SET_WALLPAPER_CONFIG, config);
         ContextCompat.startForegroundService(context, intent);
     }
 
@@ -102,7 +102,7 @@ public class BingWallpaperIntentService extends IntentService {
         boolean isBackground = intent.getBooleanExtra(EXTRA_SET_WALLPAPER_BACKGROUND, false);
         BingWallpaperImage bingWallpaperImage = intent.getParcelableExtra(EXTRA_SET_WALLPAPER_IMAGE);
         Config config = intent.getParcelableExtra(EXTRA_SET_WALLPAPER_CONFIG);
-        L.alog().d(TAG, " setWallpaperType : " + setWallpaperType);
+        L.alog().d(TAG, " setWallpaperType : %s , config : %s", setWallpaperType, config);
 
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
             LogDebugFileUtils.get().i(TAG, "Starting type: %s , background: %s", setWallpaperType, isBackground);

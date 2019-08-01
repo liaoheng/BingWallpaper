@@ -132,7 +132,7 @@
                 app:layout_anchor="@id/bing_wallpaper_view"
                 app:layout_anchorGravity="bottom|end"
                 app:menu_fab_show_animation="@anim/fab_slide_in_from_right"
-                app:menu_icon="@drawable/ic_wallpaper_white_24dp" />
+                app:menu_icon="@drawable/ic_drawer_home" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

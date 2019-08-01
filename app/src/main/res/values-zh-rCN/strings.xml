@@ -27,6 +27,8 @@
     <string name="loading">加载中&#8230;</string>
     <string name="unable_root_permission">无法获取Root权限</string>
     <string name="unable_required_permission">无法获取需要的权限</string>
+    <string name="share">分享</string>
+    <string name="set_wallpaper">设置壁纸</string>
 
     <!--setting -->
     <string name="pref_auto_update_wallpaper">每日更新设置</string>
@@ -37,7 +39,7 @@
     <string name="pref_auto_update_everyday_notification">自动模式成功提示</string>
     <string name="pref_auto_update_everyday_notification_note">仅在后台更新成功后发出</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type">自动模式类型</string>
-    <string name="pref_set_wallpaper_day_fully_automatic_update_type_auto">最佳(优先使用Google Service)</string>
+    <string name="pref_set_wallpaper_day_fully_automatic_update_type_auto">最佳</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_system">Android系统</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_service">后台服务</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_interval">自动模式检查间隔</string>
@@ -57,6 +59,7 @@
     <string name="pref_country_auto">本地</string>
     <string name="pref_country_china">中国</string>
     <string name="pref_country_usa">美国</string>
+    <string name="pref_stack_blur">高斯模糊</string>
     <string name="pref_clear_cache">清除缓存</string>
     <string name="pref_clear_cache_success">清除缓存成功</string>
     <string name="pref_log_file">调试日志</string>
@@ -79,11 +82,11 @@
     <string name="bing_only_two_week">Bing只提供近两周记录</string>
     <string name="menu_save_wallpaper">保存壁纸</string>
     <string name="menu_wallpaper_resolution">壁纸分辨率</string>
-    <string name="menu_wallpaper_info">壁纸信息</string>
+    <string name="menu_wallpaper_info">信息</string>
     <string name="detail_wallpaper_resolution_influences">预览和下载分辨率</string>
-    <string name="menu_set_wallpaper_mode_home">设置壁纸到桌面</string>
-    <string name="menu_set_wallpaper_mode_lock">设置壁纸到锁屏</string>
-    <string name="menu_set_wallpaper_mode_both">设置壁纸</string>
+    <string name="menu_set_wallpaper_mode_home">设置到桌面</string>
+    <string name="menu_set_wallpaper_mode_lock">设置到锁屏</string>
+    <string name="menu_set_wallpaper_mode_both">设置到桌面和锁屏</string>
 
     <!--intro-->
     <string name="intro_update_set">设置自动更新壁纸</string>

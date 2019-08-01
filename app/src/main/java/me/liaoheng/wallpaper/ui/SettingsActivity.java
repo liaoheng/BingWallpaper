@@ -12,6 +12,8 @@ import com.github.liaoheng.common.util.*;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.service.AutoSetWallpaperBroadcastReceiver;
 import me.liaoheng.wallpaper.util.*;
+import me.liaoheng.wallpaper.widget.SeekBarDialogPreference;
+import me.liaoheng.wallpaper.widget.SeekBarPreferenceDialogFragmentCompat;
 import me.liaoheng.wallpaper.widget.TimePreference;
 import me.liaoheng.wallpaper.widget.TimePreferenceDialogFragmentCompat;
 import org.joda.time.LocalTime;
@@ -70,6 +72,7 @@ public class SettingsActivity extends BaseActivity {
         private ListPreference mAutoUpdateTypeListPreference;
         private SwitchPreferenceCompat mMIuiLockScreenPreference;
         private SwitchPreferenceCompat mPixabaySupportPreference;
+        private SeekBarDialogPreference mStackBlurPreference;
 
         @Override
         public void onDisplayPreferenceDialog(Preference preference) {
@@ -79,6 +82,14 @@ public class SettingsActivity extends BaseActivity {
                     DialogFragment dialogFragment = TimePreferenceDialogFragmentCompat.newInstance(preference.getKey());
                     dialogFragment.setTargetFragment(this, 0);
                     dialogFragment.show(fragmentManager, "TimePreference");
+                }
+            } else if (preference instanceof SeekBarDialogPreference) {
+                FragmentManager fragmentManager = getFragmentManager();
+                if (fragmentManager != null) {
+                    DialogFragment dialogFragment = SeekBarPreferenceDialogFragmentCompat.newInstance(
+                            preference.getKey());
+                    dialogFragment.setTargetFragment(this, 1);
+                    dialogFragment.show(fragmentManager, "SeekBarDialogPreference");
                 }
             } else {
                 super.onDisplayPreferenceDialog(preference);
@@ -167,6 +178,8 @@ public class SettingsActivity extends BaseActivity {
             mPixabaySupportPreference = (SwitchPreferenceCompat) findPreference(PREF_PREF_PIXABAY_SUPPORT);
             mLogPreference = (SwitchPreferenceCompat) findPreference(PREF_SET_WALLPAPER_LOG);
             mCrashPreference = (SwitchPreferenceCompat) findPreference(PREF_CRASH_REPORT);
+            mStackBlurPreference = (SeekBarDialogPreference) findPreference(PREF_STACK_BLUR);
+            mStackBlurPreference.setSummary(String.valueOf(BingWallpaperUtils.getSettingStackBlur(getActivity())));
 
             if (!ROM.getROM().isMiui()) {
                 ((PreferenceCategory) findPreference("pref_other_group")).removePreference(mMIuiLockScreenPreference);
@@ -320,6 +333,9 @@ public class SettingsActivity extends BaseActivity {
                     } else {
                         CrashReportHandle.disable(getActivity());
                     }
+                    break;
+                case PREF_STACK_BLUR:
+                    mPreferences.put(PREF_STACK_BLUR, mStackBlurPreference.getProgress());
                     break;
             }
         }

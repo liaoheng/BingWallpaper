@@ -33,6 +33,7 @@ import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.util.*;
+import me.liaoheng.wallpaper.widget.SeekBarDialogFragment;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,7 +45,8 @@ import java.io.File;
  * @author liaoheng
  * @version 2018-01-31 14:14
  */
-public class WallpaperDetailActivity extends BaseActivity {
+public class WallpaperDetailActivity extends BaseActivity implements
+        SeekBarDialogFragment.SeekBarDialogFragmentCallback {
 
     @BindView(R.id.bing_wallpaper_detail_image)
     ImageView mImageView;
@@ -81,6 +83,7 @@ public class WallpaperDetailActivity extends BaseActivity {
     private ProgressDialog mSetWallpaperProgressDialog;
     private Disposable mDownLoadSubscription;
     private SetWallpaperStateBroadcastReceiverHelper mSetWallpaperStateBroadcastReceiverHelper;
+    private Config config = new Config();
 
     public static void start(Context context, BingWallpaperImage item, Bundle bundle) {
         Intent intent = new Intent(context, WallpaperDetailActivity.class);
@@ -198,6 +201,10 @@ public class WallpaperDetailActivity extends BaseActivity {
     @Override
     public void onConfigurationChanged(@NotNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        reloadImage();
+    }
+
+    private void reloadImage() {
         if (BingWallpaperUtils.isPixabaySupport(this)) {
             loadImage(mWallpaperImage.getUrl());
         } else {
@@ -233,6 +240,9 @@ public class WallpaperDetailActivity extends BaseActivity {
 
                     @Override
                     public void onSuccess(Bitmap bitmap) {
+                        if (config.getStackBlur() > 0) {
+                            bitmap = BingWallpaperUtils.toStackBlur(bitmap, config.getStackBlur());
+                        }
                         mImageView.setImageBitmap(bitmap);
                     }
 
@@ -263,6 +273,7 @@ public class WallpaperDetailActivity extends BaseActivity {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             menu.removeItem(R.id.menu_wallpaper_lock);
             menu.removeItem(R.id.menu_wallpaper_home);
+            menu.findItem(R.id.menu_wallpaper_both).setTitle(R.string.set_wallpaper);
         }
         if (BingWallpaperUtils.isPixabaySupport(this)) {
             menu.removeItem(R.id.menu_wallpaper_resolution);
@@ -311,8 +322,13 @@ public class WallpaperDetailActivity extends BaseActivity {
                 }
                 break;
             case R.id.menu_wallpaper_share:
-                BingWallpaperUtils.shareImage(getApplicationContext(), getUrl(BingWallpaperUtils.getResolution(this)),
-                        mWallpaperImage.getCopyright(), mWallpaperImage.getHsh());
+                BingWallpaperUtils.shareImage(getApplicationContext(), config,
+                        getUrl(BingWallpaperUtils.getResolution(this)),
+                        mWallpaperImage.getCopyright());
+                break;
+            case R.id.menu_wallpaper_stack_blur:
+                SeekBarDialogFragment.newInstance(getString(R.string.pref_stack_blur), config.getStackBlur(), this)
+                        .show(getSupportFragmentManager(), "SeekBarDialogFragment");
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -399,7 +415,7 @@ public class WallpaperDetailActivity extends BaseActivity {
                 new Callback4.EmptyCallback<DialogInterface>() {
                     @Override
                     public void onYes(DialogInterface dialogInterface) {
-                        BingWallpaperUtils.setWallpaper(getActivity(), mWallpaperImage.copy(url), type, new Config(),
+                        BingWallpaperUtils.setWallpaper(getActivity(), mWallpaperImage.copy(url), type, config,
                                 new EmptyCallback<Boolean>() {
                                     @Override
                                     public void onYes(Boolean aBoolean) {
@@ -424,5 +440,11 @@ public class WallpaperDetailActivity extends BaseActivity {
             mSetWallpaperStateBroadcastReceiverHelper.unregister(this);
         }
         super.onStop();
+    }
+
+    @Override
+    public void onSeekBarValue(int value) {
+        config.setStackBlur(value);
+        reloadImage();
     }
 }

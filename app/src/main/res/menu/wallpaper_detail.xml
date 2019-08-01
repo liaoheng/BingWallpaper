@@ -12,19 +12,18 @@
             android:title="@string/menu_wallpaper_resolution"
             app:showAsAction="always" />
     <item
+            android:id="@+id/menu_wallpaper_share"
+            android:icon="@drawable/ic_share_24dp"
+            android:title="@string/share"
+            app:showAsAction="ifRoom" />
+    <item
             android:id="@+id/menu_wallpaper_info"
             android:icon="@drawable/ic_info_outline_24"
             android:title="@string/menu_wallpaper_info"
             app:showAsAction="ifRoom" />
     <item
-            android:id="@+id/menu_wallpaper_share"
-            android:icon="@android:drawable/ic_menu_share"
-            android:title="@string/share"
-            app:showAsAction="ifRoom" />
-    <item
-            android:id="@+id/menu_wallpaper_both"
-            android:icon="@drawable/ic_smartphone_white_24dp"
-            android:title="@string/menu_set_wallpaper_mode_both"
+            android:id="@+id/menu_wallpaper_stack_blur"
+            android:title="@string/pref_stack_blur"
             app:showAsAction="ifRoom" />
     <item
             android:id="@+id/menu_wallpaper_home"
@@ -35,5 +34,10 @@
             android:id="@+id/menu_wallpaper_lock"
             android:icon="@drawable/ic_lock_white_24dp"
             android:title="@string/menu_set_wallpaper_mode_lock"
+            app:showAsAction="ifRoom" />
+    <item
+            android:id="@+id/menu_wallpaper_both"
+            android:icon="@drawable/ic_smartphone_white_24dp"
+            android:title="@string/menu_set_wallpaper_mode_both"
             app:showAsAction="ifRoom" />
 </menu>

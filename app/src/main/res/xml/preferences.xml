@@ -85,9 +85,8 @@
                 android:key="pref_country"
                 android:title="@string/pref_country" />
 
-        <SeekBarPreference
+        <me.liaoheng.wallpaper.widget.SeekBarDialogPreference
                 android:defaultValue="0"
-                android:max="100"
                 android:key="pref_stack_blur"
                 android:title="@string/pref_stack_blur" />
 

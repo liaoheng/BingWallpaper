@@ -36,9 +36,11 @@ import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
+import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.util.TasksUtils;
 import me.liaoheng.wallpaper.util.*;
 import me.liaoheng.wallpaper.widget.FeedbackDialog;
+import me.liaoheng.wallpaper.widget.SeekBarDialogFragment;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
 
 /**
@@ -136,6 +138,10 @@ public class MainActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         if (TasksUtils.isOne()) {
             UIUtils.startActivity(this, IntroActivity.class);
+            if (!Constants.Config.isPhone) {
+                BingWallpaperUtils.putResolution(this, "1");
+                BingWallpaperUtils.putSaveResolution(this, "1");
+            }
             finish();
             return;
         }
@@ -303,20 +309,23 @@ public class MainActivity extends BaseActivity
         if (mCurBingWallpaperImage == null) {
             return;
         }
-        String url;
-        if (BingWallpaperUtils.isPixabaySupport(getApplicationContext())) {
-            url = mCurBingWallpaperImage.getUrl();
-        } else {
-            url = BingWallpaperUtils.getResolutionImageUrl(this, mCurBingWallpaperImage);
-        }
+        String url = getUrl(mCurBingWallpaperImage);
 
-        BingWallpaperUtils.setWallpaper(this, mCurBingWallpaperImage.copy(url), type, null,
+        BingWallpaperUtils.setWallpaper(this, mCurBingWallpaperImage.copy(url), type,
                 new Callback4.EmptyCallback<Boolean>() {
                     @Override
                     public void onYes(Boolean aBoolean) {
                         showProgressDialog();
                     }
                 });
+    }
+
+    private String getUrl(BingWallpaperImage image) {
+        if (BingWallpaperUtils.isPixabaySupport(this)) {
+            return image.getUrl();
+        } else {
+            return BingWallpaperUtils.getResolutionImageUrl(this, image);
+        }
     }
 
     @Override
@@ -383,7 +392,6 @@ public class MainActivity extends BaseActivity
             url = BingWallpaperUtils.getImageUrl(getApplicationContext(),
                     Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION, image);
         }
-        image.setImageUrl(url);
 
         BingWallpaperUtils.loadImage(GlideApp.with(this).asBitmap()
                         .load(url)
@@ -433,14 +441,12 @@ public class MainActivity extends BaseActivity
                                     mSetWallpaperActionMenu.setMenuButtonColorRipple(lightVibrantSwatch);
 
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                        AddBothActionButton(image, lightMutedSwatch,
-                                                lightVibrantSwatch);
+                                        AddBothActionButton(image, lightMutedSwatch, lightVibrantSwatch, false);
                                     } else {
                                         if (ROM.getROM().isMiui()) {
-                                            AddBothActionButton(image, lightMutedSwatch,
-                                                    lightVibrantSwatch);
+                                            AddBothActionButton(image, lightMutedSwatch, lightVibrantSwatch, false);
                                         } else {
-                                            mSetWallpaperActionMenu.setOnMenuButtonClickListener(v -> setWallpaper(0));
+                                            AddBothActionButton(image, lightMutedSwatch, lightVibrantSwatch, true);
                                         }
                                     }
 
@@ -456,37 +462,37 @@ public class MainActivity extends BaseActivity
     }
 
     private void AddBothActionButton(BingWallpaperImage image, @ColorInt int lightMutedSwatch,
-            @ColorInt int lightVibrantSwatch) {
+            @ColorInt int lightVibrantSwatch, boolean mini) {
         addActionButton(lightMutedSwatch, lightVibrantSwatch,
-                getString(R.string.pref_set_wallpaper_auto_mode_home),
-                R.drawable.ic_home_white_24dp, v -> {
-                    setWallpaper(1);
+                getString(R.string.share),
+                R.drawable.ic_share_24dp, v -> {
+                    BingWallpaperUtils.shareImage(this, new Config(this),
+                            getUrl(image), image.getCopyright());
                     mSetWallpaperActionMenu.close(true);
                 });
 
-        addActionButton(lightMutedSwatch, lightVibrantSwatch,
-                getString(R.string.pref_set_wallpaper_auto_mode_lock),
-                R.drawable.ic_lock_white_24dp, v -> {
-                    setWallpaper(2);
-                    mSetWallpaperActionMenu.close(true);
-                });
+        if (!mini) {
+            addActionButton(lightMutedSwatch, lightVibrantSwatch,
+                    getString(R.string.pref_set_wallpaper_auto_mode_home),
+                    R.drawable.ic_home_white_24dp, v -> {
+                        setWallpaper(1);
+                        mSetWallpaperActionMenu.close(true);
+                    });
+
+            addActionButton(lightMutedSwatch, lightVibrantSwatch,
+                    getString(R.string.pref_set_wallpaper_auto_mode_lock),
+                    R.drawable.ic_lock_white_24dp, v -> {
+                        setWallpaper(2);
+                        mSetWallpaperActionMenu.close(true);
+                    });
+        }
 
         addActionButton(lightMutedSwatch, lightVibrantSwatch,
-                getString(R.string.pref_set_wallpaper_auto_mode_both),
+                mini ? getString(R.string.set_wallpaper) : getString(R.string.pref_set_wallpaper_auto_mode_both),
                 R.drawable.ic_smartphone_white_24dp, v -> {
                     setWallpaper(0);
                     mSetWallpaperActionMenu.close(true);
                 });
-
-        addActionButton(lightMutedSwatch, lightVibrantSwatch,
-                getString(R.string.share),
-                android.R.drawable.ic_menu_share, v -> {
-                    BingWallpaperUtils.shareImage(getApplicationContext(), image.getImageUrl(),
-                            image.getCopyright(), image.getHsh());
-                    mSetWallpaperActionMenu.close(true);
-                });
-
-        mSetWallpaperActionMenu.getMenuIconView().setImageResource(R.drawable.ic_drawer_home);
     }
 
     private void addActionButton(@ColorInt int lightMutedSwatch, @ColorInt int lightVibrantSwatch, String text,

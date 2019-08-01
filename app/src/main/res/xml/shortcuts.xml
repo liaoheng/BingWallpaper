@@ -6,13 +6,17 @@
             android:shortcutId="both"
             android:shortcutShortLabel="@string/pref_set_wallpaper_auto_mode_both">
         <intent
-                android:action="android.intent.action.MAIN"
+                android:action="android.intent.action.VIEW"
                 android:targetClass="me.liaoheng.wallpaper.ui.ShortcutActivity"
                 android:targetPackage="me.liaoheng.wallpaper">
             <extra
                     android:name="set_wallpaper_mode"
                     android:value="0" />
+            <extra
+                    android:name="shortcutId"
+                    android:value="both" />
         </intent>
+        <categories android:name="android.shortcut.conversation" />
     </shortcut>
 
     <shortcut
@@ -21,13 +25,17 @@
             android:shortcutId="home"
             android:shortcutShortLabel="@string/pref_set_wallpaper_auto_mode_home">
         <intent
-                android:action="android.intent.action.MAIN"
+                android:action="android.intent.action.VIEW"
                 android:targetClass="me.liaoheng.wallpaper.ui.ShortcutActivity"
                 android:targetPackage="me.liaoheng.wallpaper">
             <extra
                     android:name="set_wallpaper_mode"
                     android:value="1" />
+            <extra
+                    android:name="shortcutId"
+                    android:value="home" />
         </intent>
+        <categories android:name="android.shortcut.conversation" />
     </shortcut>
 
     <shortcut
@@ -36,12 +44,16 @@
             android:shortcutId="lock"
             android:shortcutShortLabel="@string/pref_set_wallpaper_auto_mode_lock">
         <intent
-                android:action="android.intent.action.MAIN"
+                android:action="android.intent.action.VIEW"
                 android:targetClass="me.liaoheng.wallpaper.ui.ShortcutActivity"
                 android:targetPackage="me.liaoheng.wallpaper">
             <extra
                     android:name="set_wallpaper_mode"
                     android:value="2" />
+            <extra
+                    android:name="shortcutId"
+                    android:value="lock" />
         </intent>
+        <categories android:name="android.shortcut.conversation" />
     </shortcut>
 </shortcuts>

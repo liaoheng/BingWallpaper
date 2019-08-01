@@ -78,9 +78,7 @@ public class BingWallpaperUtils {
     }
 
     public static boolean getOnlyWifi(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        return sharedPreferences
+        return SettingTrayPreferences.get(context)
                 .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI, true);
     }
 
@@ -93,6 +91,26 @@ public class BingWallpaperUtils {
         return names[Integer.parseInt(Objects.requireNonNull(resolution))];
     }
 
+    public static void putResolution(Context context, String resolution) {
+        PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .edit()
+                .putString(SettingsActivity.PREF_SET_WALLPAPER_RESOLUTION, resolution)
+                .apply();
+        SettingTrayPreferences.get(context)
+                .put(SettingsActivity.PREF_SET_WALLPAPER_RESOLUTION, resolution);
+    }
+
+    public static void putSaveResolution(Context context, String resolution) {
+        PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .edit()
+                .putString(SettingsActivity.PREF_SAVE_WALLPAPER_RESOLUTION, resolution)
+                .apply();
+        SettingTrayPreferences.get(context)
+                .put(SettingsActivity.PREF_SAVE_WALLPAPER_RESOLUTION, resolution);
+    }
+
     public static String getSaveResolution(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
@@ -102,7 +120,7 @@ public class BingWallpaperUtils {
 
         String resolution = sharedPreferences
                 .getString(SettingsActivity.PREF_SAVE_WALLPAPER_RESOLUTION, "0");
-        return names[Integer.parseInt(resolution)];
+        return names[Integer.parseInt(Objects.requireNonNull(resolution))];
     }
 
     public static int getAutoModeValue(Context context) {
@@ -309,8 +327,7 @@ public class BingWallpaperUtils {
     }
 
     public static int getSettingStackBlur(Context context) {
-        return PreferenceManager
-                .getDefaultSharedPreferences(context).getInt(SettingsActivity.PREF_STACK_BLUR, 0);
+        return SettingTrayPreferences.get(context).getInt(SettingsActivity.PREF_STACK_BLUR, 0);
     }
 
     public static void disabledReceiver(Context context, String receiver) {
@@ -328,10 +345,20 @@ public class BingWallpaperUtils {
     }
 
     /**
+     * use setting config
+     *
      * @param mode 0. both , 1. home , 2. lock
      */
     public static void setWallpaper(final Context context, final @Nullable BingWallpaperImage image,
-            @Constants.setWallpaperMode final int mode, Config config,
+            @Constants.setWallpaperMode final int mode, @Nullable final Callback4<Boolean> callback) {
+        setWallpaper(context, image, mode, new Config(context), callback);
+    }
+
+    /**
+     * @param mode 0. both , 1. home , 2. lock
+     */
+    public static void setWallpaper(final Context context, final @Nullable BingWallpaperImage image,
+            @Constants.setWallpaperMode final int mode, @NonNull Config config,
             @Nullable final Callback4<Boolean> callback) {
         if (!BingWallpaperUtils.isConnected(context)) {
             UIUtils.showToast(context, R.string.network_unavailable);
@@ -571,11 +598,11 @@ public class BingWallpaperUtils {
                     return 2;
                 }
             }
-            if (BingWallpaperUtils.isPixabaySupport(context)) {
+            if (isPixabaySupport(context)) {
                 if (TasksUtils.isToDaysDoProvider(context, 1,
                         BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
                     BingWallpaperIntentService.start(context,
-                            BingWallpaperUtils.getAutoModeValue(context));
+                            getAutoModeValue(context));
                     return 0;
                 } else {
                     return 3;
@@ -586,7 +613,7 @@ public class BingWallpaperUtils {
                             @Override
                             public void onSuccess(BingWallpaperImage image) {
                                 if (getLastWallpaperImageUrl(context).equals(image.getUrlbase())) {
-                                    if (isEnableLog(context)) {
+                                    if (isEnableLogProvider(context)) {
                                         LogDebugFileUtils.get().i(TAG, "Equals last skip");
                                     }
                                     return;
@@ -597,7 +624,7 @@ public class BingWallpaperUtils {
 
                             @Override
                             public void onError(Throwable e) {
-                                if (isEnableLog(context)) {
+                                if (isEnableLogProvider(context)) {
                                     LogDebugFileUtils.get().e(TAG, "Check error", e);
                                 }
                             }
@@ -610,7 +637,7 @@ public class BingWallpaperUtils {
     }
 
     public static void runningService(Context context, String TAG) {
-        boolean enableLog = isEnableLog(context);
+        boolean enableLog = isEnableLogProvider(context);
         int state = checkRunningService(context, TAG);
         if (state == 1) {
             L.alog().d(TAG, "isConnectedOrConnecting :false");
@@ -736,7 +763,7 @@ public class BingWallpaperUtils {
     }
 
     //https://github.com/halibobo/WaterMark
-    public static Bitmap waterMark(Bitmap bitmap, String str) {
+    public static Bitmap waterMark(Context context, Bitmap bitmap, String str) {
         int destWidth = bitmap.getWidth();
         int destHeight = bitmap.getHeight();
         Bitmap icon = Bitmap.createBitmap(destWidth, destHeight, Bitmap.Config.ARGB_8888);
@@ -751,7 +778,7 @@ public class BingWallpaperUtils {
         canvas.drawBitmap(bitmap, src, dst, photoPaint);
 
         Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DEV_KERN_TEXT_FLAG);
-        textPaint.setTextSize(destWidth / 50F);
+        textPaint.setTextSize(DisplayUtils.dp2px(context, 9));
         textPaint.setTextAlign(Paint.Align.LEFT);
         textPaint.setTypeface(Typeface.DEFAULT);
         textPaint.setAntiAlias(true);
@@ -768,14 +795,17 @@ public class BingWallpaperUtils {
         return icon;
     }
 
-    public static void shareImage(Context context, String url, final String str, String key) {
+    public static void shareImage(@NonNull Context context, @NonNull Config config, @NonNull String url,
+            @NonNull final String str) {
+        String key = MD5Utils.md5Hex(url + "_" + config.getStackBlur());
         Observable<File> fileObservable = Observable.just(str).subscribeOn(Schedulers.io()).map(
-                s -> getImageBitmap(context, url)).flatMap(
+                s -> getImageBitmap(context, config, url)).flatMap(
                 (Function<Bitmap, ObservableSource<File>>) bitmap -> {
                     File tempFile = CacheUtils.get().get(key);
                     if (tempFile == null) {
-                        tempFile = CacheUtils.get().put(key, BitmapUtils.bitmapToStream(waterMark(bitmap, str),
-                                Bitmap.CompressFormat.JPEG));
+                        tempFile = CacheUtils.get()
+                                .put(key, BitmapUtils.bitmapToStream(waterMark(context, bitmap, str),
+                                        Bitmap.CompressFormat.JPEG));
                     }
                     return Observable.just(tempFile);
                 });
@@ -806,11 +836,11 @@ public class BingWallpaperUtils {
         }
     }
 
-    public static Bitmap getImageBitmap(Context context, String url) throws ExecutionException, InterruptedException {
+    public static Bitmap getImageBitmap(@NonNull Context context, @NonNull Config config, @NonNull String url)
+            throws ExecutionException, InterruptedException {
         Bitmap bitmap = GlideApp.with(context).asBitmap().load(url).submit().get();
-        int settingStackBlur = getSettingStackBlur(context);
-        if (settingStackBlur > 0) {
-            return toStackBlur(bitmap, settingStackBlur);
+        if (config.getStackBlur() > 0) {
+            return toStackBlur(bitmap, config.getStackBlur());
         }
         return bitmap;
     }

@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.TimePicker;
 import androidx.preference.DialogPreference;
 import androidx.preference.PreferenceDialogFragmentCompat;
+import com.github.liaoheng.common.util.L;
 import me.liaoheng.wallpaper.R;
 import org.joda.time.LocalTime;
 
@@ -78,6 +79,7 @@ public class TimePreferenceDialogFragmentCompat extends PreferenceDialogFragment
             if (preference instanceof TimePreference) {
                 TimePreference timePreference = ((TimePreference) preference);
                 LocalTime localTime = new LocalTime(hours, minutes);
+                timePreference.setLocalTime(localTime);
                 if (timePreference.callChangeListener(localTime.toString())) {
                     timePreference.setTime(localTime.toString());
                 }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
-import android.util.Base64;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.MD5Utils;
 import com.github.liaoheng.common.util.ROM;

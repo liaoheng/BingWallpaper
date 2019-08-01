@@ -29,6 +29,7 @@
     <string name="unable_required_permission">Unable required permissions</string>
     <string name="feedback_copied">Feedback is copied to the clipboard.</string>
     <string name="share">Share</string>
+    <string name="set_wallpaper">Set wallpaper</string>
 
     <!--setting -->
     <string name="pref_auto_update_wallpaper">Daily Update Setting</string>
@@ -39,7 +40,7 @@
     <string name="pref_auto_update_everyday_notification">Auto mode success notification</string>
     <string name="pref_auto_update_everyday_notification_note">After successful auto update in the background</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type">Auto mode type</string>
-    <string name="pref_set_wallpaper_day_fully_automatic_update_type_auto">Optimal(Priority Google Service)</string>
+    <string name="pref_set_wallpaper_day_fully_automatic_update_type_auto">Optimal</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_system">Android System</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_service">Daemon service</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_interval">Auto mode check interval</string>
@@ -49,7 +50,7 @@
     <string name="pref_alarm_update_wallpaper_time">Set timer time</string>
     <string name="pref_not_set_time">No time</string>
     <string name="pref_choose_auto_set_wallpaper_type">Set wallpaper mode</string>
-    <string name="pref_set_wallpaper_auto_mode_both">Both</string>
+    <string name="pref_set_wallpaper_auto_mode_both">Home and lock screen</string>
     <string name="pref_set_wallpaper_auto_mode_home">Home screen</string>
     <string name="pref_set_wallpaper_auto_mode_lock">Lock screen</string>
     <string name="pref_other">Other Setting</string>
@@ -65,7 +66,7 @@
     <string name="pref_country_ja">Japan</string>
     <string name="pref_country_it">Italy</string>
     <string name="pref_country_ir">Iran</string>
-    <string name="pref_stack_blur">Gaussian Blur</string>
+    <string name="pref_stack_blur">Gaussian blur</string>
     <string name="pref_clear_cache">Clear cache</string>
     <string name="pref_clear_cache_success">Clear cache success</string>
     <string name="pref_log_file">Debug log</string>
@@ -88,14 +89,14 @@
     <string name="bing_only_two_week">Bing is only available for the past two weeks</string>
     <string name="menu_save_wallpaper">Save wallpaper</string>
     <string name="menu_wallpaper_resolution">Wallpaper resolution</string>
-    <string name="menu_wallpaper_info">Wallpaper Information</string>
+    <string name="menu_wallpaper_info">Information</string>
     <string name="detail_wallpaper_resolution_influences">Preview and download resolution</string>
-    <string name="menu_set_wallpaper_mode_home">Set wallpaper to home screen</string>
-    <string name="menu_set_wallpaper_mode_lock">Set wallpaper to lock screen</string>
-    <string name="menu_set_wallpaper_mode_both">Set wallpaper</string>
+    <string name="menu_set_wallpaper_mode_home">Set to home screen</string>
+    <string name="menu_set_wallpaper_mode_lock">Set to lock screen</string>
+    <string name="menu_set_wallpaper_mode_both">Set to home and lock screen</string>
 
     <!--intro-->
-    <string name="intro_update_set">Set Automatic update wallpaper</string>
+    <string name="intro_update_set">Set automatic update wallpaper</string>
     <string name="intro_hint_welcome">Welcome to Starth Bing Wallpaper</string>
     <string name="intro_hint_whitelist">The app needs to be added to the whitelist of the background admin app, as Brevent, Greenify&#8230;. </string>
     <string name="intro_hint_battery">System battery optimization will make the app can not be performed on time to update the wallpaper, Apps can be added to the battery optimization white list. </string>
