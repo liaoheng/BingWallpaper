@@ -1,11 +1,20 @@
 package me.liaoheng.wallpaper.util;
 
-import android.app.*;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.ui.MainActivity;
 
@@ -17,26 +26,28 @@ public class NotificationUtils {
 
     public static void createNotificationChannels(@NonNull Context context) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationManagerCompat manager = NotificationManagerCompat.from(context);
+            List<NotificationChannel> channels = new ArrayList<>();
             NotificationChannel channel = new NotificationChannel(
                     Constants.FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL,
                     context.getString(R.string.foreground_intent_service_notification_channel),
                     NotificationManager.IMPORTANCE_LOW);
-            manager.createNotificationChannel(channel);
+            channels.add(channel);
 
             NotificationChannel channel1 = new NotificationChannel(
                     Constants.FOREGROUND_INTENT_SERVICE_SUCCESS_NOTIFICATION_CHANNEL,
                     context.getString(R.string.foreground_intent_service_success_notification_channel),
                     NotificationManager.IMPORTANCE_LOW);
             channel1.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-            manager.createNotificationChannel(channel1);
+            channels.add(channel1);
 
             NotificationChannel channel2 = new NotificationChannel(
                     Constants.FOREGROUND_DAEMON_SERVICE_NOTIFICATION_CHANNEL,
                     context.getString(R.string.foreground_daemon_service_notification_channel),
                     NotificationManager.IMPORTANCE_MIN);
             channel2.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
-            manager.createNotificationChannel(channel2);
+            channels.add(channel2);
+
+            NotificationManagerCompat.from(context).createNotificationChannels(channels);
         }
     }
 

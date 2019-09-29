@@ -4,13 +4,16 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.MD5Utils;
 import com.github.liaoheng.common.util.ROM;
-import me.liaoheng.wallpaper.model.Config;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+
+import me.liaoheng.wallpaper.model.Config;
 
 /**
  * @author liaoheng
@@ -21,7 +24,7 @@ public class UIHelper implements IUIHelper {
     @Override
     public boolean setWallpaper(Context context, int mode, @NotNull Config config, File wallpaper) throws Exception {
         if (config.getStackBlur() > 0) {
-            String key = MD5Utils.md5Hex(wallpaper.getAbsolutePath()+"_"+config.getStackBlur());
+            String key = MD5Utils.md5Hex(wallpaper.getAbsolutePath() + "_" + config.getStackBlur());
             File stackBlurFile = CacheUtils.get().get(key);
             if (stackBlurFile == null) {
                 Bitmap stackBlur = BingWallpaperUtils.toStackBlur(
@@ -29,7 +32,6 @@ public class UIHelper implements IUIHelper {
                 if (stackBlur != null) {
                     wallpaper = CacheUtils.get().put(key, BitmapUtils.bitmapToStream(stackBlur,
                             Bitmap.CompressFormat.JPEG));
-                    BitmapUtils.recycle(stackBlur);
                 }
             } else {
                 wallpaper = stackBlurFile;

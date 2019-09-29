@@ -5,10 +5,12 @@ import android.app.job.JobScheduler;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
+
 import com.firebase.jobdispatcher.*;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.UIUtils;

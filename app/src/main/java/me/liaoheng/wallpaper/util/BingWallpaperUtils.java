@@ -3,20 +3,29 @@ package me.liaoheng.wallpaper.util;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.WallpaperManager;
-import android.content.*;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.graphics.*;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.Browser;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.widget.ImageView;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,32 +33,35 @@ import androidx.annotation.RequiresApi;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.preference.PreferenceManager;
+
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
-import com.github.liaoheng.common.util.*;
+import com.github.liaoheng.common.util.AppUtils;
+import com.github.liaoheng.common.util.BitmapUtils;
+import com.github.liaoheng.common.util.Callback;
+import com.github.liaoheng.common.util.Callback4;
+import com.github.liaoheng.common.util.DateTimeUtils;
+import com.github.liaoheng.common.util.DisplayUtils;
+import com.github.liaoheng.common.util.L;
+import com.github.liaoheng.common.util.MD5Utils;
+import com.github.liaoheng.common.util.NetworkUtils;
+import com.github.liaoheng.common.util.ROM;
+import com.github.liaoheng.common.util.UIUtils;
+import com.github.liaoheng.common.util.Utils;
+import com.github.liaoheng.common.util.ValidateUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
-import me.liaoheng.wallpaper.BuildConfig;
-import me.liaoheng.wallpaper.R;
-import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
-import me.liaoheng.wallpaper.model.BingWallpaperImage;
-import me.liaoheng.wallpaper.model.Config;
-import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
-import me.liaoheng.wallpaper.ui.SettingsActivity;
-import org.jetbrains.annotations.NotNull;
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Retention;
@@ -57,6 +69,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
+import me.liaoheng.wallpaper.BuildConfig;
+import me.liaoheng.wallpaper.R;
+import me.liaoheng.wallpaper.model.BingWallpaperImage;
+import me.liaoheng.wallpaper.model.Config;
+import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
+import me.liaoheng.wallpaper.ui.SettingsActivity;
 
 /**
  * @author liaoheng
@@ -345,12 +369,10 @@ public class BingWallpaperUtils {
     }
 
     /**
-     * use setting config
-     *
      * @param mode 0. both , 1. home , 2. lock
      */
-    public static void setWallpaper(final Context context, final @Nullable BingWallpaperImage image,
-            @Constants.setWallpaperMode final int mode, @Nullable final Callback4<Boolean> callback) {
+    public static void setWallpaper(Context context, @Nullable BingWallpaperImage image,
+            @Constants.setWallpaperMode int mode, @Nullable Callback4<Boolean> callback) {
         setWallpaper(context, image, mode, new Config(context), callback);
     }
 
@@ -608,27 +630,29 @@ public class BingWallpaperUtils {
                     return 3;
                 }
             } else {
-                Utils.addSubscribe(BingWallpaperNetworkClient.getBingWallpaper(context),
-                        new Callback.EmptyCallback<BingWallpaperImage>() {
-                            @Override
-                            public void onSuccess(BingWallpaperImage image) {
-                                if (getLastWallpaperImageUrl(context).equals(image.getUrlbase())) {
-                                    if (isEnableLogProvider(context)) {
-                                        LogDebugFileUtils.get().i(TAG, "Equals last skip");
-                                    }
-                                    return;
-                                }
-                                BingWallpaperIntentService.start(context,
-                                        BingWallpaperUtils.getAutoModeValue(context));
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                if (isEnableLogProvider(context)) {
-                                    LogDebugFileUtils.get().e(TAG, "Check error", e);
-                                }
-                            }
-                        });
+                //Utils.addSubscribe(BingWallpaperNetworkClient.getBingWallpaper(context),
+                //        new Callback.EmptyCallback<BingWallpaperImage>() {
+                //            @Override
+                //            public void onSuccess(BingWallpaperImage image) {
+                //                if (getLastWallpaperImageUrl(context).equals(image.getUrlbase())) {
+                //                    if (isEnableLogProvider(context)) {
+                //                        LogDebugFileUtils.get().i(TAG, "Equals last skip");
+                //                    }
+                //                    return;
+                //                }
+                //                BingWallpaperIntentService.start(context,
+                //                        BingWallpaperUtils.getAutoModeValue(context));
+                //            }
+                //
+                //            @Override
+                //            public void onError(Throwable e) {
+                //                if (isEnableLogProvider(context)) {
+                //                    LogDebugFileUtils.get().e(TAG, "Check error", e);
+                //                }
+                //            }
+                //        });
+                BingWallpaperIntentService.start(context,
+                        BingWallpaperUtils.getAutoModeValue(context));
                 return 0;
             }
         } else {
@@ -695,7 +719,7 @@ public class BingWallpaperUtils {
 
     public static boolean setWallpaper(Context context, File file, int which) throws IOException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            try (InputStream fileInputStream = FileUtils.openInputStream(file)) {
+            try (InputStream fileInputStream = new FileInputStream(file)) {
                 return WallpaperManager.getInstance(context)
                         .setStream(fileInputStream, null, true, which) != 0;
             }
@@ -705,7 +729,7 @@ public class BingWallpaperUtils {
     }
 
     public static boolean setWallpaper(Context context, File file) throws IOException {
-        try (InputStream fileInputStream = FileUtils.openInputStream(file)) {
+        try (InputStream fileInputStream = new FileInputStream(file)) {
             WallpaperManager.getInstance(context).setStream(fileInputStream);
         }
         return true;
@@ -750,6 +774,8 @@ public class BingWallpaperUtils {
             return "Translator : @dekar16";
         } else if (locale.getLanguage().equals(new Locale("ru").getLanguage())) {
             return "Translator : @tullev";
+        } else if (locale.getLanguage().equals(new Locale("cs").getLanguage())) {
+            return "Translator : @foreteller";
         }
         return "";
     }

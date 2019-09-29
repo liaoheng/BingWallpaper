@@ -7,16 +7,16 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.widget.RemoteViews;
-
-import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.NetworkUtils;
-import com.github.liaoheng.common.util.Utils;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
+
+import com.github.liaoheng.common.util.Callback;
+import com.github.liaoheng.common.util.Utils;
+
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;

@@ -3,24 +3,36 @@ package me.liaoheng.wallpaper.service;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+
 import com.bumptech.glide.request.target.Target;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetException;
 import com.github.liaoheng.common.util.SystemException;
-import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
-import me.liaoheng.wallpaper.model.BingWallpaperImage;
-import me.liaoheng.wallpaper.model.BingWallpaperState;
-import me.liaoheng.wallpaper.model.Config;
-import me.liaoheng.wallpaper.util.*;
-import me.liaoheng.wallpaper.widget.AppWidget_5x1;
-import me.liaoheng.wallpaper.widget.AppWidget_5x2;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+
+import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
+import me.liaoheng.wallpaper.model.BingWallpaperImage;
+import me.liaoheng.wallpaper.model.BingWallpaperState;
+import me.liaoheng.wallpaper.model.Config;
+import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.Constants;
+import me.liaoheng.wallpaper.util.CrashReportHandle;
+import me.liaoheng.wallpaper.util.GlideApp;
+import me.liaoheng.wallpaper.util.IUIHelper;
+import me.liaoheng.wallpaper.util.LogDebugFileUtils;
+import me.liaoheng.wallpaper.util.NotificationUtils;
+import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
+import me.liaoheng.wallpaper.util.TasksUtils;
+import me.liaoheng.wallpaper.util.UIHelper;
+import me.liaoheng.wallpaper.widget.AppWidget_5x1;
+import me.liaoheng.wallpaper.widget.AppWidget_5x2;
 
 /**
  * 设置壁纸操作IntentService
@@ -137,6 +149,16 @@ public class BingWallpaperIntentService extends IntentService {
                     String locale = BingWallpaperUtils.getAutoLocale(getApplicationContext());
                     String url = BingWallpaperUtils.getUrl(getApplicationContext());
                     bingWallpaperImage = BingWallpaperNetworkClient.getBingWallpaperSingleCall(url, locale);
+
+                    //To ensure that the latest wallpaper
+                    if (BingWallpaperUtils.getLastWallpaperImageUrl(getApplicationContext())
+                            .equals(bingWallpaperImage.getUrlbase())) {
+                        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+                            LogDebugFileUtils.get().i(TAG, "check latest wallpaper, skip");
+                        }
+                        return;
+                    }
+
                     imageUrl = BingWallpaperUtils.getResolutionImageUrl(getApplicationContext(),
                             bingWallpaperImage);
                     bingWallpaperImage.setImageUrl(bingWallpaperImage.getUrlbase());

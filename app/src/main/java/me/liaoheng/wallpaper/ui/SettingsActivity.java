@@ -5,10 +5,13 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.*;
+
 import com.github.liaoheng.common.util.*;
+
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.service.AutoSetWallpaperBroadcastReceiver;
 import me.liaoheng.wallpaper.util.*;
@@ -16,6 +19,7 @@ import me.liaoheng.wallpaper.widget.SeekBarDialogPreference;
 import me.liaoheng.wallpaper.widget.SeekBarPreferenceDialogFragmentCompat;
 import me.liaoheng.wallpaper.widget.TimePreference;
 import me.liaoheng.wallpaper.widget.TimePreferenceDialogFragmentCompat;
+
 import org.joda.time.LocalTime;
 
 /**
@@ -320,8 +324,7 @@ public class SettingsActivity extends BaseActivity {
                 case PREF_SET_WALLPAPER_LOG:
                     mPreferences.put(PREF_SET_WALLPAPER_LOG, mLogPreference.isChecked());
                     if (mLogPreference.isChecked()) {
-                        LogDebugFileUtils.init(getActivity());
-                        LogDebugFileUtils.get().open();
+                        LogDebugFileUtils.get().init(getContext());
                     } else {
                         LogDebugFileUtils.get().clearFile();
                     }

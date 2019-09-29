@@ -4,15 +4,15 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
+
+import androidx.preference.PreferenceManager;
+
 import com.github.liaoheng.common.util.L;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+
 import me.liaoheng.wallpaper.R;
-import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
-import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 
 /**

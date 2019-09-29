@@ -1,11 +1,20 @@
 package me.liaoheng.wallpaper;
 
 import android.app.Application;
+
 import com.github.liaoheng.common.Common;
-import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
+
 import io.reactivex.plugins.RxJavaPlugins;
-import me.liaoheng.wallpaper.util.*;
+import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.CacheUtils;
+import me.liaoheng.wallpaper.util.Constants;
+import me.liaoheng.wallpaper.util.CrashReportHandle;
+import me.liaoheng.wallpaper.util.LogDebugFileUtils;
+import me.liaoheng.wallpaper.util.NetUtils;
+import me.liaoheng.wallpaper.util.NotificationUtils;
+import me.liaoheng.wallpaper.util.TasksUtils;
+import me.liaoheng.wallpaper.util.WorkerManager;
 
 /**
  * @author liaoheng
@@ -20,8 +29,7 @@ public class MApplication extends Application {
         L.init(Constants.PROJECT_NAME, BuildConfig.DEBUG);
         TasksUtils.init(this);
         if (BingWallpaperUtils.isEnableLog(this)) {
-            LogDebugFileUtils.init(getApplicationContext());
-            LogDebugFileUtils.get().open();
+            LogDebugFileUtils.get().init(getApplicationContext());
         }
         CacheUtils.get().init(this);
         RxJavaPlugins.setErrorHandler(throwable -> L.alog().w("RxJavaPlugins", throwable));

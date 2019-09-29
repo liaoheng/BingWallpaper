@@ -33,7 +33,6 @@ public class MiuiHelper {
                     if (newBitmap != null) {
                         wallpaper = CacheUtils.get().put(key, BitmapUtils.bitmapToStream(newBitmap,
                                 Bitmap.CompressFormat.JPEG));
-                        BitmapUtils.recycle(newBitmap);
                     }
                 } else {
                     wallpaper = wallpaperFile;

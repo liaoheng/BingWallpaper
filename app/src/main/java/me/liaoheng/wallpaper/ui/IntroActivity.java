@@ -2,21 +2,28 @@ package me.liaoheng.wallpaper.ui;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
+
+import com.github.liaoheng.common.util.UIUtils;
+import com.github.paolorotolo.appintro.AppIntro;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.github.liaoheng.common.util.UIUtils;
-import com.github.paolorotolo.appintro.AppIntro;
 import me.liaoheng.wallpaper.R;
-import me.liaoheng.wallpaper.util.*;
+import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
+import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.ISettingTrayPreferences;
+import me.liaoheng.wallpaper.util.SettingTrayPreferences;
+import me.liaoheng.wallpaper.util.TasksUtils;
 
 /**
  * @author liaoheng
