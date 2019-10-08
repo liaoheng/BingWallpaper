@@ -16,7 +16,7 @@ import static org.junit.Assert.assertTrue;
  * @version 2018-01-21 16:58
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(application = TestApplication.class)
+@Config(application = TestApplication.class, sdk = 28)
 public class TasksUtilsTest extends BaseTest {
     @Test
     public void isToDaysDoTest() {
