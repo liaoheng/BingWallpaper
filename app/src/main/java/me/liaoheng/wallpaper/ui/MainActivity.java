@@ -2,6 +2,8 @@ package me.liaoheng.wallpaper.ui;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -21,14 +24,23 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.palette.graphics.Palette;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+
 import com.bumptech.glide.request.target.Target;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-import com.github.liaoheng.common.util.*;
+import com.github.liaoheng.common.util.AppUtils;
+import com.github.liaoheng.common.util.Callback;
+import com.github.liaoheng.common.util.Callback4;
+import com.github.liaoheng.common.util.DisplayUtils;
+import com.github.liaoheng.common.util.ROM;
+import com.github.liaoheng.common.util.SystemDataException;
+import com.github.liaoheng.common.util.UIUtils;
+import com.github.liaoheng.common.util.Utils;
 import com.google.android.material.navigation.NavigationView;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import me.liaoheng.wallpaper.R;
@@ -37,10 +49,17 @@ import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.model.Config;
+import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
+import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.BottomViewListener;
+import me.liaoheng.wallpaper.util.Constants;
+import me.liaoheng.wallpaper.util.CrashReportHandle;
+import me.liaoheng.wallpaper.util.GlideApp;
+import me.liaoheng.wallpaper.util.LanguageContextWrapper;
+import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
 import me.liaoheng.wallpaper.util.TasksUtils;
-import me.liaoheng.wallpaper.util.*;
+import me.liaoheng.wallpaper.util.UIHelper;
 import me.liaoheng.wallpaper.widget.FeedbackDialog;
-import me.liaoheng.wallpaper.widget.SeekBarDialogFragment;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
 
 /**
@@ -51,6 +70,11 @@ import me.liaoheng.wallpaper.widget.ToggleImageButton;
  */
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, BottomViewListener {
+
+    @Override
+    protected void attachBaseContext(Context context) {
+        super.attachBaseContext(LanguageContextWrapper.wrap(context, BingWallpaperUtils.getLanguage(context)));
+    }
 
     @BindView(R.id.bing_wallpaper_view)
     ImageView mWallpaperView;
@@ -360,9 +384,19 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 123) {
+                recreate();
+            }
+        }
+    }
+
+    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.menu_main_drawer_settings) {
-            UIUtils.startActivity(this, SettingsActivity.class);
+            UIUtils.startActivityForResult(this, SettingsActivity.class, 123);
         } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_history_list) {
             UIUtils.startActivity(this, WallpaperHistoryListActivity.class);
         } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_info) {

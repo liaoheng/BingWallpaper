@@ -6,21 +6,41 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.preference.*;
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SwitchPreferenceCompat;
 
-import com.github.liaoheng.common.util.*;
+import com.github.liaoheng.common.util.AppUtils;
+import com.github.liaoheng.common.util.Callback;
+import com.github.liaoheng.common.util.Callback4;
+import com.github.liaoheng.common.util.L;
+import com.github.liaoheng.common.util.ROM;
+import com.github.liaoheng.common.util.ShellUtils;
+import com.github.liaoheng.common.util.SystemException;
+import com.github.liaoheng.common.util.UIUtils;
+import com.github.liaoheng.common.util.Utils;
+
+import org.joda.time.LocalTime;
 
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.service.AutoSetWallpaperBroadcastReceiver;
-import me.liaoheng.wallpaper.util.*;
+import me.liaoheng.wallpaper.util.BingWallpaperAlarmManager;
+import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
+import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.CrashReportHandle;
+import me.liaoheng.wallpaper.util.ISettingTrayPreferences;
+import me.liaoheng.wallpaper.util.LanguageContextWrapper;
+import me.liaoheng.wallpaper.util.LogDebugFileUtils;
+import me.liaoheng.wallpaper.util.SettingTrayPreferences;
 import me.liaoheng.wallpaper.widget.SeekBarDialogPreference;
 import me.liaoheng.wallpaper.widget.SeekBarPreferenceDialogFragmentCompat;
 import me.liaoheng.wallpaper.widget.TimePreference;
 import me.liaoheng.wallpaper.widget.TimePreferenceDialogFragmentCompat;
-
-import org.joda.time.LocalTime;
 
 /**
  * @author liaoheng
@@ -28,11 +48,13 @@ import org.joda.time.LocalTime;
  */
 public class SettingsActivity extends BaseActivity {
     private static final String TAG = SettingsActivity.class.getSimpleName();
+    private static boolean isChangeLanguage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         BingWallpaperUtils.setPhoneScreen(this);
         super.onCreate(savedInstanceState);
+        setTitle(R.string.menu_main_setting);
         setContentView(R.layout.activity_settings);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportFragmentManager().beginTransaction()
@@ -40,7 +62,29 @@ public class SettingsActivity extends BaseActivity {
                 .commit();
     }
 
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        isChangeLanguage = savedInstanceState.getBoolean("isChangeLanguage");
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("isChangeLanguage", isChangeLanguage);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isChangeLanguage) {
+            setResult(RESULT_OK);
+        }
+        isChangeLanguage = false;
+        super.onBackPressed();
+    }
+
     public static final String PREF_COUNTRY = "pref_country";
+    public static final String PREF_LANGUAGE = "pref_language";
     public static final String PREF_SET_WALLPAPER_RESOLUTION = "pref_set_wallpaper_resolution";
     public static final String PREF_SAVE_WALLPAPER_RESOLUTION = "pref_save_wallpaper_resolution";
     public static final String PREF_SET_WALLPAPER_AUTO_MODE = "pref_set_wallpaper_auto_mode";
@@ -63,6 +107,7 @@ public class SettingsActivity extends BaseActivity {
 
         private SwitchPreferenceCompat mOnlyWifiPreference;
         private ListPreference mCountryListPreference;
+        private ListPreference mLanguageListPreference;
         private ListPreference mResolutionListPreference;
         private ListPreference mSaveResolutionListPreference;
         private ListPreference mModeTypeListPreference;
@@ -156,33 +201,27 @@ public class SettingsActivity extends BaseActivity {
                 return true;
             });
 
-            mCountryListPreference = (ListPreference) findPreference(
-                    PREF_COUNTRY);
-            mResolutionListPreference = (ListPreference) findPreference(
-                    PREF_SET_WALLPAPER_RESOLUTION);
-            mSaveResolutionListPreference = (ListPreference) findPreference(
-                    PREF_SAVE_WALLPAPER_RESOLUTION);
-            mModeTypeListPreference = (ListPreference) findPreference(
-                    PREF_SET_WALLPAPER_AUTO_MODE);
-            mDayUpdatePreference = (SwitchPreferenceCompat) findPreference(
-                    PREF_SET_WALLPAPER_DAY_AUTO_UPDATE);
-            mTimePreference = (TimePreference) findPreference(
-                    PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME);
-            mAutoUpdateTypeListPreference = (ListPreference) findPreference(
-                    PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_TYPE);
+            mCountryListPreference = findPreference(PREF_COUNTRY);
+            mLanguageListPreference = findPreference(PREF_LANGUAGE);
+            mResolutionListPreference = findPreference(PREF_SET_WALLPAPER_RESOLUTION);
+            mSaveResolutionListPreference = findPreference(PREF_SAVE_WALLPAPER_RESOLUTION);
+            mModeTypeListPreference = findPreference(PREF_SET_WALLPAPER_AUTO_MODE);
+            mDayUpdatePreference = findPreference(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE);
+            mTimePreference = findPreference(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME);
+            mAutoUpdateTypeListPreference = findPreference(PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_TYPE);
 
-            mOnlyWifiPreference = (SwitchPreferenceCompat) findPreference(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI);
-            mAutoUpdatePreference = (SwitchPreferenceCompat) findPreference(
+            mOnlyWifiPreference = findPreference(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI);
+            mAutoUpdatePreference = findPreference(
                     PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE);
-            mAutoUpdateIntervalPreference = (ListPreference) findPreference(
+            mAutoUpdateIntervalPreference = findPreference(
                     PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_INTERVAL);
-            mAutoUpdateNotificationPreference = (SwitchPreferenceCompat) findPreference(
+            mAutoUpdateNotificationPreference = findPreference(
                     PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_NOTIFICATION);
-            mMIuiLockScreenPreference = (SwitchPreferenceCompat) findPreference(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER);
-            mPixabaySupportPreference = (SwitchPreferenceCompat) findPreference(PREF_PREF_PIXABAY_SUPPORT);
-            mLogPreference = (SwitchPreferenceCompat) findPreference(PREF_SET_WALLPAPER_LOG);
-            mCrashPreference = (SwitchPreferenceCompat) findPreference(PREF_CRASH_REPORT);
-            mStackBlurPreference = (SeekBarDialogPreference) findPreference(PREF_STACK_BLUR);
+            mMIuiLockScreenPreference = findPreference(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER);
+            mPixabaySupportPreference = findPreference(PREF_PREF_PIXABAY_SUPPORT);
+            mLogPreference = findPreference(PREF_SET_WALLPAPER_LOG);
+            mCrashPreference = findPreference(PREF_CRASH_REPORT);
+            mStackBlurPreference = findPreference(PREF_STACK_BLUR);
             mStackBlurPreference.setSummary(String.valueOf(BingWallpaperUtils.getSettingStackBlur(getActivity())));
 
             if (!ROM.getROM().isMiui()) {
@@ -218,6 +257,7 @@ public class SettingsActivity extends BaseActivity {
             mResolutionListPreference.setSummary(BingWallpaperUtils.getResolution(getActivity()));
             mSaveResolutionListPreference.setSummary(BingWallpaperUtils.getSaveResolution(getActivity()));
             mCountryListPreference.setSummary(BingWallpaperUtils.getCountryName(getActivity()));
+            mLanguageListPreference.setSummary(BingWallpaperUtils.getLanguageName(getActivity()));
 
             mAutoUpdateTypeListPreference.setSummary(BingWallpaperUtils.getAutomaticUpdateTypeName(getActivity()));
 
@@ -266,6 +306,11 @@ public class SettingsActivity extends BaseActivity {
                     mCountryListPreference.setSummary(mCountryListPreference.getEntry());
                     mPreferences.put(PREF_COUNTRY, mCountryListPreference.getValue());
                     BingWallpaperUtils.clearNetCache().subscribe();
+                    break;
+                case PREF_LANGUAGE:
+                    LanguageContextWrapper.wrap(getContext(), BingWallpaperUtils.getLanguage(getContext()));
+                    isChangeLanguage = true;
+                    getActivity().recreate();
                     break;
                 case PREF_PREF_PIXABAY_SUPPORT:
                     mPreferences.put(PREF_PREF_PIXABAY_SUPPORT, mPixabaySupportPreference.isChecked());

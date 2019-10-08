@@ -1,6 +1,7 @@
 package me.liaoheng.wallpaper.util;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.WallpaperManager;
 import android.content.ComponentName;
@@ -10,6 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -155,26 +157,18 @@ public class BingWallpaperUtils {
     public static String getAutoMode(Context context) {
         String[] names = context.getResources()
                 .getStringArray(R.array.pref_set_wallpaper_auto_mode_name);
-
-        int value = getAutoModeValue(context);
-
-        return names[value];
+        return names[getAutoModeValue(context)];
     }
 
     public static String getCountryName(Context context) {
         String[] names = context.getResources()
                 .getStringArray(R.array.pref_country_names);
-
-        String country = SettingTrayPreferences.get(context)
-                .getString(SettingsActivity.PREF_COUNTRY, "0");
-
-        return names[Integer.parseInt(country)];
+        return names[getCountryValue(context)];
     }
 
     public static int getCountryValue(Context context) {
         String country = SettingTrayPreferences.get(context)
                 .getString(SettingsActivity.PREF_COUNTRY, "0");
-
         return Integer.parseInt(country);
     }
 
@@ -204,9 +198,9 @@ public class BingWallpaperUtils {
         }
     }
 
+    @NonNull
     public static Locale getLocale(Context context) {
         int auto = getCountryValue(context);
-        Locale locale = getCurrentLocale(context);
         switch (auto) {
             case 1:
                 return Locale.CHINA;
@@ -225,16 +219,26 @@ public class BingWallpaperUtils {
             case 8:
                 return new Locale("fa", "IR");
             default:
-                return locale;
+                Locale originalLocale = LanguageContextWrapper.getOriginalLocale();
+                return originalLocale == null ? getCurrentLocale(context) : originalLocale;
         }
     }
 
     public static Locale getCurrentLocale(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return context.getResources().getConfiguration().getLocales().get(0);
+            return getSystemLocale(context.getResources().getConfiguration());
         } else {
-            return context.getResources().getConfiguration().locale;
+            return getSystemLocaleLegacy(context.getResources().getConfiguration());
         }
+    }
+
+    private static Locale getSystemLocaleLegacy(Configuration config) {
+        return config.locale;
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    private static Locale getSystemLocale(Configuration config) {
+        return config.getLocales().get(0);
     }
 
     public static String getAutoLocale(Context context) {
@@ -242,6 +246,43 @@ public class BingWallpaperUtils {
         String country = locale.getCountry();
         String language = locale.getLanguage();
         return language + "-" + country;
+    }
+
+    public static Locale getLanguage(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        int language = Integer.parseInt(sharedPreferences.getString(SettingsActivity.PREF_LANGUAGE, "0"));
+        switch (language) {
+            case 1:
+                return Locale.US;
+            case 2:
+                return Locale.SIMPLIFIED_CHINESE;
+            case 3:
+                return Locale.TRADITIONAL_CHINESE;
+            case 4:
+                return LocaleList.ruLocale();
+            case 5:
+                return Locale.GERMANY;
+            case 6:
+                return LocaleList.plLocale();
+            case 7:
+                return LocaleList.csLocale();
+            default:
+                Locale originalLocale = LanguageContextWrapper.getOriginalLocale();
+                return originalLocale == null ? getCurrentLocale(context) : originalLocale;
+        }
+    }
+
+    public static int getLanguageValue(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        return Integer.parseInt(sharedPreferences.getString(SettingsActivity.PREF_LANGUAGE, "0"));
+    }
+
+    public static String getLanguageName(Context context) {
+        String[] names = context.getResources()
+                .getStringArray(R.array.pref_language_names);
+        return names[getLanguageValue(context)];
     }
 
     public static boolean isAlarm(Context context) {
@@ -769,13 +810,15 @@ public class BingWallpaperUtils {
     }
 
     public static String getTranslator(Context context) {
-        Locale locale = getLocale(context);
-        if (locale.getLanguage().equals(new Locale("pl").getLanguage())) {
+        Locale locale = getLanguage(context);
+        if (locale.equals(LocaleList.plLocale())) {
             return "Translator : @dekar16";
-        } else if (locale.getLanguage().equals(new Locale("ru").getLanguage())) {
+        } else if (locale.equals(LocaleList.ruLocale())) {
             return "Translator : @tullev";
-        } else if (locale.getLanguage().equals(new Locale("cs").getLanguage())) {
+        } else if (locale.equals(LocaleList.csLocale())) {
             return "Translator : @foreteller";
+        } else if (locale.equals(Locale.GERMANY)) {
+            return "Translator : @Bergradler";
         }
         return "";
     }

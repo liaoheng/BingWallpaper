@@ -57,6 +57,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallpaper_history_list);
+        setTitle(R.string.menu_main_wallpaper_history_list);
         ButterKnife.bind(this);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

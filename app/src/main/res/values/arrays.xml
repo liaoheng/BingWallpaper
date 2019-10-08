@@ -63,6 +63,28 @@
         <item>8</item>
     </string-array>
 
+    <string-array name="pref_language_names">
+        <item>@string/pref_country_auto</item>
+        <item>English</item>
+        <item>简体中文</item>
+        <item>繁體中文</item>
+        <item>Русский</item>
+        <item>Deutsch</item>
+        <item>Polski</item>
+        <item>Čeština</item>
+    </string-array>
+
+    <string-array name="pref_language_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
+
     <string-array name="pref_set_wallpaper_day_fully_automatic_update_type_names">
         <item>@string/pref_set_wallpaper_day_fully_automatic_update_type_auto</item>
         <item>@string/pref_set_wallpaper_day_fully_automatic_update_type_system</item>

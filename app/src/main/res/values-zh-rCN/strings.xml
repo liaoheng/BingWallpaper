@@ -59,6 +59,7 @@
     <string name="pref_country_auto">本地</string>
     <string name="pref_country_china">中国</string>
     <string name="pref_country_usa">美国</string>
+    <string name="pref_language">语言</string>
     <string name="pref_stack_blur">高斯模糊</string>
     <string name="pref_clear_cache">清除缓存</string>
     <string name="pref_clear_cache_success">清除缓存成功</string>

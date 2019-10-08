@@ -10,6 +10,7 @@ import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.CacheUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
+import me.liaoheng.wallpaper.util.LanguageContextWrapper;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.NetUtils;
 import me.liaoheng.wallpaper.util.NotificationUtils;
@@ -25,6 +26,7 @@ public class MApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        LanguageContextWrapper.init(this);
         Common.baseInit(this, Constants.PROJECT_NAME, BuildConfig.DEBUG);
         L.init(Constants.PROJECT_NAME, BuildConfig.DEBUG);
         TasksUtils.init(this);

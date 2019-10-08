@@ -85,6 +85,13 @@
                 android:key="pref_country"
                 android:title="@string/pref_country" />
 
+        <ListPreference
+                android:defaultValue="0"
+                android:entries="@array/pref_language_names"
+                android:entryValues="@array/pref_language_values"
+                android:key="pref_language"
+                android:title="@string/pref_language" />
+
         <me.liaoheng.wallpaper.widget.SeekBarDialogPreference
                 android:defaultValue="0"
                 android:key="pref_stack_blur"
