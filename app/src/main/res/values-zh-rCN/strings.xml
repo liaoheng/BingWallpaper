@@ -55,10 +55,16 @@
     <string name="pref_other">其它设置</string>
     <string name="pref_choose_set_wallpaper_resolution">设置壁纸的分辨率</string>
     <string name="pref_choose_save_resolution">默认保存壁纸分辨率</string>
-    <string name="pref_country">强制区域</string>
+    <string name="pref_country">地区</string>
     <string name="pref_country_auto">本地</string>
     <string name="pref_country_china">中国</string>
     <string name="pref_country_usa">美国</string>
+    <string name="pref_country_gb">英国</string>
+    <string name="pref_country_fr">法国</string>
+    <string name="pref_country_de">德国</string>
+    <string name="pref_country_ja">日本</string>
+    <string name="pref_country_it">意大利</string>
+    <string name="pref_country_ir">伊朗</string>
     <string name="pref_language">语言</string>
     <string name="pref_stack_blur">高斯模糊</string>
     <string name="pref_clear_cache">清除缓存</string>
@@ -71,6 +77,7 @@
     <string name="pref_crash_report">情况统计信息和崩溃报告</string>
     <string name="pref_version">版本</string>
     <string name="pref_intro">打开引导页</string>
+    <string name="pref_wallpaper_setting">壁纸相关设置</string>
 
     <!--menu-->
     <string name="menu_main_drawer_wallpaper_info">壁纸信息</string>

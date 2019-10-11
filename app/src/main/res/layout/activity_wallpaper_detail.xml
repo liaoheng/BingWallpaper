@@ -92,9 +92,8 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             android:background="@color/color_3000"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+            android:theme="@style/AppTheme.Transparent.Toolbar"
+            app:layout_scrollFlags="scroll|enterAlways" />
 
     <ProgressBar
             android:id="@+id/bing_wallpaper_detail_loading"

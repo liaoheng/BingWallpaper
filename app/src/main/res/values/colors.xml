@@ -28,5 +28,7 @@
     <color name="color_e5">#e5e5e5</color>
     <color name="color_3000">#30000000</color>
     <color name="color_3300">#33000000</color>
+    <!--    primary_material_dark-->
+    <color name="color_grey_900">#ff212121</color>
 
 </resources>

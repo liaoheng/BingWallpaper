@@ -1,5 +1,6 @@
 package me.liaoheng.wallpaper.ui;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -49,6 +50,11 @@ import me.liaoheng.wallpaper.widget.TimePreferenceDialogFragmentCompat;
 public class SettingsActivity extends BaseActivity {
     private static final String TAG = SettingsActivity.class.getSimpleName();
     private static boolean isChangeLanguage;
+
+    @Override
+    protected void attachBaseContext(Context context) {
+        super.attachBaseContext(LanguageContextWrapper.wrap(context, BingWallpaperUtils.getLanguage(context)));
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -225,7 +231,8 @@ public class SettingsActivity extends BaseActivity {
             mStackBlurPreference.setSummary(String.valueOf(BingWallpaperUtils.getSettingStackBlur(getActivity())));
 
             if (!ROM.getROM().isMiui()) {
-                ((PreferenceCategory) findPreference("pref_other_group")).removePreference(mMIuiLockScreenPreference);
+                ((PreferenceCategory) findPreference("pref_wallpaper_group")).removePreference(
+                        mMIuiLockScreenPreference);
             } else {
                 mMIuiLockScreenPreference.setOnPreferenceClickListener(preference -> {
                     if (mMIuiLockScreenPreference.isChecked()) {
@@ -247,7 +254,7 @@ public class SettingsActivity extends BaseActivity {
                 if (ROM.getROM().isMiui()) {
                     mModeTypeListPreference.setSummary(BingWallpaperUtils.getAutoMode(getActivity()));
                 } else {
-                    ((PreferenceCategory) findPreference("pref_wallpaper_group")).removePreference(
+                    ((PreferenceCategory) findPreference("pref_update_group")).removePreference(
                             mModeTypeListPreference);
                 }
             } else {
@@ -308,7 +315,7 @@ public class SettingsActivity extends BaseActivity {
                     BingWallpaperUtils.clearNetCache().subscribe();
                     break;
                 case PREF_LANGUAGE:
-                    LanguageContextWrapper.wrap(getContext(), BingWallpaperUtils.getLanguage(getContext()));
+                    LanguageContextWrapper.wrap(getActivity(), BingWallpaperUtils.getLanguage(getContext()));
                     isChangeLanguage = true;
                     getActivity().recreate();
                     break;

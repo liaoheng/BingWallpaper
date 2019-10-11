@@ -56,7 +56,7 @@
     <string name="pref_other">Other Setting</string>
     <string name="pref_choose_set_wallpaper_resolution">Set wallpaper resolution</string>
     <string name="pref_choose_save_resolution">Default save wallpaper resolution</string>
-    <string name="pref_country">Forced regions</string>
+    <string name="pref_country">Country</string>
     <string name="pref_country_auto">Local</string>
     <string name="pref_country_china">China</string>
     <string name="pref_country_usa">USA</string>
@@ -78,6 +78,7 @@
     <string name="pref_crash_report">Usage statistics and crash reports</string>
     <string name="pref_version">Version</string>
     <string name="pref_intro">Open intro</string>
+    <string name="pref_wallpaper_setting">Wallpaper Setting</string>
 
     <!--menu-->
     <string name="menu_main_drawer_wallpaper_info">Wallpaper information</string>

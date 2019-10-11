@@ -23,10 +23,13 @@ public class LanguageContextWrapper {
         originalLocale = BingWallpaperUtils.getCurrentLocale(context);
     }
 
+    /**
+     * @param context use activity
+     */
     public static Context wrap(Context context, Locale locale) {
         Configuration config = context.getResources().getConfiguration();
         Locale sysLocale = BingWallpaperUtils.getCurrentLocale(context);
-        if (!locale.getLanguage().equals("") && !sysLocale.equals(locale)) {
+        if (!sysLocale.equals(locale)) {
             Locale.setDefault(locale);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 setSystemLocale(config, locale);

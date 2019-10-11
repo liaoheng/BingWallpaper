@@ -1,4 +1,4 @@
-apply from: rootProject.file('./gradle/dependencies.gradle')
+apply from: 'https://raw.github.com/liaoheng/common/v0.1.0/dependencies.gradle'
 
 ext.minSdkVersion =21
 ext.deps.put("palette","androidx.palette:palette:1.0.0")
