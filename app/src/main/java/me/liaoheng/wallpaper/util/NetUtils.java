@@ -1,28 +1,18 @@
 package me.liaoheng.wallpaper.util;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Environment;
+
 import androidx.annotation.NonNull;
+
 import com.bumptech.glide.request.target.Target;
-import com.github.liaoheng.common.Common;
 import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.*;
-import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import me.liaoheng.wallpaper.data.BingWallpaperNetworkService;
-import okhttp3.*;
-import okhttp3.internal.Util;
-import okhttp3.internal.http.HttpHeaders;
-import okio.Buffer;
-import okio.BufferedSource;
-import okio.GzipSource;
+import com.github.liaoheng.common.util.FileUtils;
+import com.github.liaoheng.common.util.L;
+import com.github.liaoheng.common.util.SystemException;
+import com.github.liaoheng.common.util.SystemRuntimeException;
+import com.github.liaoheng.common.util.Utils;
+
 import org.apache.commons.io.FilenameUtils;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.io.EOFException;
 import java.io.File;
@@ -31,6 +21,30 @@ import java.nio.charset.Charset;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import me.liaoheng.wallpaper.data.BingWallpaperNetworkService;
+import okhttp3.Cache;
+import okhttp3.Connection;
+import okhttp3.Dispatcher;
+import okhttp3.Headers;
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okhttp3.internal.Util;
+import okhttp3.internal.http.HttpHeaders;
+import okio.Buffer;
+import okio.BufferedSource;
+import okio.GzipSource;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * @author liaoheng
@@ -109,19 +123,12 @@ public class NetUtils {
                 .map(url1 -> {
                     File temp = null;
                     try {
-                        String name = FilenameUtils.getName(url1);
-                        File p = new File(Environment.DIRECTORY_PICTURES, Common.getProjectName());
-                        File file = new File(FileUtils.getExternalStoragePath(), p.getAbsolutePath());
-                        File outFile = FileUtils.createFile(file, name);
                         temp = GlideApp.with(context)
                                 .asFile()
                                 .load(url1)
                                 .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
                                 .get(2, TimeUnit.MINUTES);
-                        FileUtils.copyFile(temp, outFile);
-                        context.sendBroadcast(
-                                new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(outFile)));
-                        return outFile;
+                        return BingWallpaperUtils.saveFileToPicture(context, FilenameUtils.getName(url1), temp);
                     } catch (Exception e) {
                         throw new SystemRuntimeException(e);
                     } finally {

@@ -79,6 +79,8 @@
     <string name="pref_version">Version</string>
     <string name="pref_intro">Open intro</string>
     <string name="pref_wallpaper_setting">Wallpaper Setting</string>
+    <string name="pref_auto_save_wallpaper_title">Auto save wallpaper</string>
+    <string name="pref_auto_save_wallpaper_summary">Save wallpaper to photos</string>
 
     <!--menu-->
     <string name="menu_main_drawer_wallpaper_info">Wallpaper information</string>

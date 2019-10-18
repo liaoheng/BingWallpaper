@@ -13,6 +13,8 @@ import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetException;
 import com.github.liaoheng.common.util.SystemException;
 
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -176,7 +178,7 @@ public class BingWallpaperIntentService extends IntentService {
         }
 
         try {
-            downloadAndSetWallpaper(imageUrl, setWallpaperType, config);
+            downloadAndSetWallpaper(isBackground, imageUrl, setWallpaperType, config);
             callback.onSuccess(bingWallpaperImage);
         } catch (Exception e) {
             callback.onError(new SystemException(e));
@@ -220,7 +222,8 @@ public class BingWallpaperIntentService extends IntentService {
         sendSetWallpaperBroadcast(BingWallpaperState.SUCCESS);
     }
 
-    private void downloadAndSetWallpaper(String url, @Constants.setWallpaperMode int setWallpaperType, Config config)
+    private void downloadAndSetWallpaper(boolean isBackground, String url,
+            @Constants.setWallpaperMode int setWallpaperType, Config config)
             throws Exception {
         L.alog().i(TAG, "wallpaper image url: " + url);
         File wallpaper = GlideApp.with(getApplicationContext())
@@ -240,6 +243,19 @@ public class BingWallpaperIntentService extends IntentService {
         L.alog().i(TAG, "setBingWallpaper Success");
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
             LogDebugFileUtils.get().i(TAG, "setBingWallpaper Success");
+        }
+        if (!isBackground) {
+            return;
+        }
+        try {
+            if (BingWallpaperUtils.isAutoSave(this)) {
+                String name = FilenameUtils.getName(url);
+                File file = BingWallpaperUtils.saveFileToPicture(this, name, wallpaper);
+                if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+                    LogDebugFileUtils.get().i(TAG, "save wallpaper to: %s", file.getAbsoluteFile());
+                }
+            }
+        } catch (Exception ignored) {
         }
     }
 

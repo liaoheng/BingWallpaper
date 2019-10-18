@@ -23,6 +23,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Browser;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -43,12 +44,14 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
+import com.github.liaoheng.common.Common;
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.DateTimeUtils;
 import com.github.liaoheng.common.util.DisplayUtils;
+import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.MD5Utils;
 import com.github.liaoheng.common.util.NetworkUtils;
@@ -295,6 +298,20 @@ public class BingWallpaperUtils {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
         return sharedPreferences.getString(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME, "");
+    }
+
+    public static boolean isAutoSave(Context context) {
+        return SettingTrayPreferences.get(context).getBoolean(SettingsActivity.PREF_AUTO_SAVE_WALLPAPER_FILE, false);
+    }
+
+    public static File saveFileToPicture(Context context, String name, File from) throws Exception {
+        File p = new File(Environment.DIRECTORY_PICTURES, Common.getProjectName());
+        File file = new File(FileUtils.getExternalStoragePath(), p.getAbsolutePath());
+        File outFile = FileUtils.createFile(file, name);
+        FileUtils.copyFile(from, outFile);
+        context.sendBroadcast(
+                new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(outFile)));
+        return outFile;
     }
 
     /**

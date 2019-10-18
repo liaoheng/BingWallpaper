@@ -1,13 +1,17 @@
 package me.liaoheng.wallpaper.ui;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.ListPreference;
@@ -106,6 +110,7 @@ public class SettingsActivity extends BaseActivity {
     public static final String PREF_PREF_PIXABAY_SUPPORT = "pref_pixabay_support";
     public static final String PREF_CRASH_REPORT = "pref_crash_report";
     public static final String PREF_STACK_BLUR = "pref_stack_blur";
+    public static final String PREF_AUTO_SAVE_WALLPAPER_FILE = "pref_auto_save_wallpaper_file";
 
     public static class MyPreferenceFragment extends PreferenceFragmentCompat
             implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -128,6 +133,12 @@ public class SettingsActivity extends BaseActivity {
         private SwitchPreferenceCompat mMIuiLockScreenPreference;
         private SwitchPreferenceCompat mPixabaySupportPreference;
         private SeekBarDialogPreference mStackBlurPreference;
+        private SwitchPreferenceCompat mAutoSaveWallpaperPreference;
+
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.preferences, rootKey);
+        }
 
         @Override
         public void onDisplayPreferenceDialog(Preference preference) {
@@ -229,6 +240,7 @@ public class SettingsActivity extends BaseActivity {
             mCrashPreference = findPreference(PREF_CRASH_REPORT);
             mStackBlurPreference = findPreference(PREF_STACK_BLUR);
             mStackBlurPreference.setSummary(String.valueOf(BingWallpaperUtils.getSettingStackBlur(getActivity())));
+            mAutoSaveWallpaperPreference = findPreference(PREF_AUTO_SAVE_WALLPAPER_FILE);
 
             if (!ROM.getROM().isMiui()) {
                 ((PreferenceCategory) findPreference("pref_wallpaper_group")).removePreference(
@@ -285,11 +297,7 @@ public class SettingsActivity extends BaseActivity {
             mTimePreference.setEnabled(mDayUpdatePreference.isChecked());
         }
 
-        @Override
-        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            setPreferencesFromResource(R.xml.preferences, rootKey);
-        }
-
+        @SuppressLint("StringFormatMatches")
         private void updateCheckTime() {
             mAutoUpdatePreference.setSummary(getString(R.string.pref_auto_update_check_time,
                     BingWallpaperUtils.getAutomaticUpdateInterval(getActivity())));
@@ -392,7 +400,28 @@ public class SettingsActivity extends BaseActivity {
                 case PREF_STACK_BLUR:
                     mPreferences.put(PREF_STACK_BLUR, mStackBlurPreference.getProgress());
                     break;
+                case PREF_AUTO_SAVE_WALLPAPER_FILE:
+                    if (mAutoSaveWallpaperPreference.isChecked()) {
+                        requestPermissions(new String[] { Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE }, 111);
+                    } else {
+                        mPreferences.put(PREF_AUTO_SAVE_WALLPAPER_FILE, false);
+                    }
+                    break;
             }
+        }
+
+        @Override
+        public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                @NonNull int[] grantResults) {
+            if (requestCode == 111) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mPreferences.put(PREF_AUTO_SAVE_WALLPAPER_FILE, true);
+                } else {
+                    mAutoSaveWallpaperPreference.setChecked(false);
+                }
+            }
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
         @Override

@@ -4,22 +4,22 @@
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
-        <item name="colorPrimary">@color/color_grey_900</item>
-        <item name="colorPrimaryDark">@color/color_grey_900</item>
-        <item name="colorAccent">@android:color/white</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
     <style name="AppTheme.Transparent.Toolbar" parent="ThemeOverlay.AppCompat.DayNight.ActionBar">
-        <item name="colorPrimary">@color/color_grey_900</item>
-        <item name="colorPrimaryDark">@color/color_grey_900</item>
-        <item name="colorAccent">@android:color/white</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.DayNight</item>
     </style>
 
     <style name="AppTheme.Intro" parent="Theme.AppCompat.DayNight">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="colorAccent">@android:color/white</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
 </resources>

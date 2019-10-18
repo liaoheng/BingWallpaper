@@ -72,6 +72,12 @@
                 android:key="pref_save_wallpaper_resolution"
                 android:title="@string/pref_choose_save_resolution" />
 
+        <SwitchPreferenceCompat
+                android:defaultValue="false"
+                android:key="pref_auto_save_wallpaper_file"
+                android:title="@string/pref_auto_save_wallpaper_title"
+                android:summary="@string/pref_auto_save_wallpaper_summary"/>
+
         <me.liaoheng.wallpaper.widget.SeekBarDialogPreference
                 android:defaultValue="0"
                 android:key="pref_stack_blur"
