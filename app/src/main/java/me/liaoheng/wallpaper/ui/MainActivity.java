@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -41,7 +42,6 @@ import com.google.android.material.navigation.NavigationView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
@@ -200,12 +200,14 @@ public class MainActivity extends BaseActivity
                 new Callback4.EmptyCallback<BingWallpaperState>() {
                     @Override
                     public void onYes(BingWallpaperState bingWallpaperState) {
-                        UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_success);
+                        Toast.makeText(getApplicationContext(), R.string.set_wallpaper_success, Toast.LENGTH_LONG)
+                                .show();
                     }
 
                     @Override
                     public void onNo(BingWallpaperState bingWallpaperState) {
-                        UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_failure);
+                        Toast.makeText(getApplicationContext(), R.string.set_wallpaper_failure, Toast.LENGTH_LONG)
+                                .show();
                     }
 
                     @Override
@@ -244,9 +246,8 @@ public class MainActivity extends BaseActivity
         }
         showSwipeRefreshLayout();
 
-        Observable<BingWallpaperImage> listObservable = BingWallpaperNetworkClient.randomPixabayImage()
-                .compose(this.bindToLifecycle());
-        Utils.addSubscribe(listObservable, new Callback.EmptyCallback<BingWallpaperImage>() {
+        Utils.addSubscribe(BingWallpaperNetworkClient.randomPixabayImage()
+                .compose(bindToLifecycle()), new Callback.EmptyCallback<BingWallpaperImage>() {
             @Override
             public void onSuccess(BingWallpaperImage bingWallpaper) {
                 mCurBingWallpaperImage = bingWallpaper;
@@ -318,6 +319,7 @@ public class MainActivity extends BaseActivity
 
     @SuppressLint("SetTextI18n")
     private void setBingWallpaperError(Throwable throwable) {
+        dismissProgressDialog();
         String error = CrashReportHandle.loadFailed(this, TAG, throwable);
         mErrorTextView.setText(getString(R.string.pull_refresh) + error);
     }
@@ -339,7 +341,8 @@ public class MainActivity extends BaseActivity
                 new Callback4.EmptyCallback<Boolean>() {
                     @Override
                     public void onYes(Boolean aBoolean) {
-                        showProgressDialog();
+                        isRun = true;
+                        mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(true));
                     }
                 });
     }
@@ -363,12 +366,12 @@ public class MainActivity extends BaseActivity
     }
 
     private void dismissSwipeRefreshLayout() {
+        mSetWallpaperActionMenu.post(() -> mSetWallpaperActionMenu.showMenu(true));
         dismissProgressDialog();
     }
 
     private void dismissProgressDialog() {
         isRun = false;
-        mSetWallpaperActionMenu.showMenu(true);
         mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(false));
     }
 
@@ -426,7 +429,9 @@ public class MainActivity extends BaseActivity
             url = BingWallpaperUtils.getImageUrl(getApplicationContext(),
                     Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION, image);
         }
-
+        if (isDestroyed()) {
+            return;
+        }
         BingWallpaperUtils.loadImage(GlideApp.with(this).asBitmap()
                         .load(url)
                         .dontAnimate()
@@ -444,48 +449,57 @@ public class MainActivity extends BaseActivity
                     }
 
                     @Override
-                    public void onSuccess(@NonNull Bitmap bitmap) {
+                    public void onSuccess(@NonNull Bitmap oldBitmap) {
                         int settingStackBlur = BingWallpaperUtils.getSettingStackBlur(getApplicationContext());
                         if (settingStackBlur > 0) {
-                            bitmap = BingWallpaperUtils.toStackBlur(bitmap, settingStackBlur);
+                            oldBitmap = BingWallpaperUtils.toStackBlur(oldBitmap, settingStackBlur);
                         }
 
-                        mWallpaperView.setImageBitmap(bitmap);
-                        mNavigationHeaderImage.setImageBitmap(bitmap);
-                        Palette.from(bitmap)
-                                .generate(palette -> {
-                                    int defMuted = ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark);
-                                    int defVibrant = ContextCompat.getColor(getActivity(), R.color.colorAccent);
-                                    int lightMutedSwatch = defMuted;
-                                    int lightVibrantSwatch = defVibrant;
+                        Bitmap bitmap = Bitmap.createBitmap(oldBitmap);
+                        if (oldBitmap.isRecycled()) {
+                            oldBitmap.recycle();
+                        }
 
-                                    if (palette != null) {
-                                        lightMutedSwatch = palette.getMutedColor(defMuted);
-                                        lightVibrantSwatch = palette.getVibrantColor(defVibrant);
-                                        if (lightMutedSwatch == defMuted) {
-                                            if (lightVibrantSwatch != defVibrant) {
-                                                lightMutedSwatch = lightVibrantSwatch;
+                        try {
+                            mWallpaperView.setImageBitmap(bitmap);
+                            mNavigationHeaderImage.setImageBitmap(bitmap);
+                            Palette.from(bitmap)
+                                    .generate(palette -> {
+                                        int defMuted = ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark);
+                                        int defVibrant = ContextCompat.getColor(getActivity(), R.color.colorAccent);
+                                        int lightMutedSwatch = defMuted;
+                                        int lightVibrantSwatch = defVibrant;
+
+                                        if (palette != null) {
+                                            lightMutedSwatch = palette.getMutedColor(defMuted);
+                                            lightVibrantSwatch = palette.getVibrantColor(defVibrant);
+                                            if (lightMutedSwatch == defMuted) {
+                                                if (lightVibrantSwatch != defVibrant) {
+                                                    lightMutedSwatch = lightVibrantSwatch;
+                                                }
                                             }
                                         }
-                                    }
 
-                                    mSetWallpaperActionMenu.removeAllMenuButtons();
-                                    mSetWallpaperActionMenu.setMenuButtonColorNormal(lightMutedSwatch);
-                                    mSetWallpaperActionMenu.setMenuButtonColorPressed(lightMutedSwatch);
-                                    mSetWallpaperActionMenu.setMenuButtonColorRipple(lightVibrantSwatch);
+                                        mSetWallpaperActionMenu.removeAllMenuButtons();
+                                        mSetWallpaperActionMenu.setMenuButtonColorNormal(lightMutedSwatch);
+                                        mSetWallpaperActionMenu.setMenuButtonColorPressed(lightMutedSwatch);
+                                        mSetWallpaperActionMenu.setMenuButtonColorRipple(lightVibrantSwatch);
 
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                        AddBothActionButton(image, lightMutedSwatch, lightVibrantSwatch, false);
-                                    } else {
-                                        if (ROM.getROM().isMiui()) {
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                             AddBothActionButton(image, lightMutedSwatch, lightVibrantSwatch, false);
                                         } else {
-                                            AddBothActionButton(image, lightMutedSwatch, lightVibrantSwatch, true);
+                                            if (ROM.getROM().isMiui()) {
+                                                AddBothActionButton(image, lightMutedSwatch, lightVibrantSwatch, false);
+                                            } else {
+                                                AddBothActionButton(image, lightMutedSwatch, lightVibrantSwatch, true);
+                                            }
                                         }
-                                    }
 
-                                    mSetWallpaperActionMenu.showMenu(true);
-                                });
+                                        mSetWallpaperActionMenu.showMenu(true);
+                                    });
+                        } catch (RuntimeException e) {
+                            setBingWallpaperError(e);
+                        }
                     }
 
                     @Override

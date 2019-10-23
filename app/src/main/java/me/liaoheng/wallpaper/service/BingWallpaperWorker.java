@@ -2,11 +2,14 @@ package me.liaoheng.wallpaper.service;
 
 import android.content.Context;
 import android.os.SystemClock;
+
 import androidx.annotation.NonNull;
 import androidx.work.ListenableWorker;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+
 import com.github.liaoheng.common.util.L;
+
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 
@@ -31,7 +34,7 @@ public class BingWallpaperWorker extends Worker {
                     .i(TAG, "action worker id : %s", getId());
         }
         SystemClock.sleep(2000);
-        BingWallpaperUtils.runningService(getApplicationContext(), TAG);
+        BingWallpaperUtils.startCheckService(getApplicationContext(), TAG);
         return Result.success();
     }
 }

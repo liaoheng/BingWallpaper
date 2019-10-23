@@ -64,6 +64,7 @@ public interface Constants {
     String FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL = "bing_wallpaper_intent_service_notification_channel_id";
     String FOREGROUND_INTENT_SERVICE_SUCCESS_NOTIFICATION_CHANNEL = "bing_wallpaper_intent_service_success_notification_channel_id";
     String FOREGROUND_DAEMON_SERVICE_NOTIFICATION_CHANNEL = "bing_wallpaper_daemon_service_notification_channel_id";
+    String FOREGROUND_CHECK_SERVICE_NOTIFICATION_CHANNEL = "bing_wallpaper_check_service_notification_channel_id";
 
     String ACTION_UPDATE_WALLPAPER_COVER_STORY = "me.liaoheng.wallpaper.UPDATE_WALLPAPER_COVER_STORY";
     String EXTRA_UPDATE_WALLPAPER_COVER_STORY = "WALLPAPER_COVER_STORY";

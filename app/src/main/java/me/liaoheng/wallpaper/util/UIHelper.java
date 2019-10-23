@@ -12,6 +12,7 @@ import com.github.liaoheng.common.util.ROM;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
 
 import me.liaoheng.wallpaper.model.Config;
 
@@ -22,36 +23,34 @@ import me.liaoheng.wallpaper.model.Config;
 public class UIHelper implements IUIHelper {
 
     @Override
-    public boolean setWallpaper(Context context, int mode, @NotNull Config config, File wallpaper) throws Exception {
+    public void setWallpaper(Context context, int mode, @NotNull Config config, File wallpaper) throws IOException {
         if (config.getStackBlur() > 0) {
             String key = MD5Utils.md5Hex(wallpaper.getAbsolutePath() + "_" + config.getStackBlur());
             File stackBlurFile = CacheUtils.get().get(key);
             if (stackBlurFile == null) {
                 Bitmap stackBlur = BingWallpaperUtils.toStackBlur(
                         BitmapFactory.decodeFile(wallpaper.getAbsolutePath()), config.getStackBlur());
-                if (stackBlur != null) {
-                    wallpaper = CacheUtils.get().put(key, BitmapUtils.bitmapToStream(stackBlur,
-                            Bitmap.CompressFormat.JPEG));
-                }
+                wallpaper = CacheUtils.get().put(key, BitmapUtils.bitmapToStream(stackBlur,
+                        Bitmap.CompressFormat.JPEG));
             } else {
                 wallpaper = stackBlurFile;
             }
         }
 
         if (ROM.getROM().isMiui()) {
-            return MiuiHelper.setWallpaper(context, mode, wallpaper);
+            MiuiHelper.setWallpaper(context, mode, wallpaper);
         } else if (ROM.getROM().isEmui()) {
-            return EmuiHelper.setWallpaper(context, mode, wallpaper);
+            EmuiHelper.setWallpaper(context, mode, wallpaper);
         } else {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                return BingWallpaperUtils.setWallpaper(context, wallpaper);
+                BingWallpaperUtils.setWallpaper(context, wallpaper);
             } else {
                 if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-                    return BingWallpaperUtils.setHomeScreenWallpaper(context, wallpaper);
+                    BingWallpaperUtils.setHomeScreenWallpaper(context, wallpaper);
                 } else if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                    return BingWallpaperUtils.setLockScreenWallpaper(context, wallpaper);
+                    BingWallpaperUtils.setLockScreenWallpaper(context, wallpaper);
                 } else {
-                    return BingWallpaperUtils.setBothWallpaper(context, wallpaper);
+                    BingWallpaperUtils.setBothWallpaper(context, wallpaper);
                 }
             }
         }

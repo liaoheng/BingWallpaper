@@ -3,12 +3,15 @@ package me.liaoheng.wallpaper.service;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
 import com.github.liaoheng.common.util.L;
+
+import org.jetbrains.annotations.NotNull;
+
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * 自动更新壁纸守护服务
@@ -28,8 +31,8 @@ public class FirebaseJobSchedulerDaemonService extends JobService {
         mHandlerThread.start();
         mHandler = new Handler(mHandlerThread.getLooper()) {
             @Override
-            public void handleMessage(Message msg) {
-                BingWallpaperUtils.runningService(FirebaseJobSchedulerDaemonService.this, TAG);
+            public void handleMessage(@NotNull Message msg) {
+                BingWallpaperUtils.startCheckService(getApplicationContext(), TAG);
                 jobFinished((JobParameters) msg.obj, false);
             }
         };

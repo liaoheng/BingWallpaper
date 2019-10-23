@@ -66,6 +66,7 @@ dependencies {
     implementation deps.preference
 
     implementation 'androidx.work:work-runtime:2.2.0'
+    implementation 'androidx.work:work-gcm:2.2.0'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
     implementation 'com.google.firebase:firebase-core:17.2.0'
     implementation 'com.firebase:firebase-jobdispatcher:0.8.6'

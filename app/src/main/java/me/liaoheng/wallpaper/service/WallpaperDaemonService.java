@@ -3,14 +3,21 @@ package me.liaoheng.wallpaper.service;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+
 import androidx.annotation.Nullable;
+
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.Utils;
-import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
-import me.liaoheng.wallpaper.util.*;
 
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.Constants;
+import me.liaoheng.wallpaper.util.LogDebugFileUtils;
+import me.liaoheng.wallpaper.util.NotificationUtils;
+import me.liaoheng.wallpaper.util.TasksUtils;
 
 /**
  * 守护进程服务
@@ -58,7 +65,7 @@ public class WallpaperDaemonService extends Service {
                         }
                         if (TasksUtils.isToDaysDoProvider(getApplicationContext(), 1,
                                 BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
-                            BingWallpaperUtils.runningService(WallpaperDaemonService.this, TAG);
+                            BingWallpaperUtils.startCheckService(getApplicationContext(), TAG);
                         }
                     }
                 });

@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.ListPreference;
@@ -154,7 +153,7 @@ public class SettingsActivity extends BaseActivity {
                 if (fragmentManager != null) {
                     DialogFragment dialogFragment = SeekBarPreferenceDialogFragmentCompat.newInstance(
                             preference.getKey());
-                    dialogFragment.setTargetFragment(this, 1);
+                    dialogFragment.setTargetFragment(this, 0);
                     dialogFragment.show(fragmentManager, "SeekBarDialogPreference");
                 }
             } else {

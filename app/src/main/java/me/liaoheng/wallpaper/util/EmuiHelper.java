@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
+
 import androidx.annotation.RequiresApi;
 
 import java.io.File;
@@ -57,27 +58,29 @@ public class EmuiHelper {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public static boolean setBothWallpaper(Context context, File file) throws IOException {
+    public static void setBothWallpaper(Context context, File file) throws IOException {
         try {
-            boolean h = BingWallpaperUtils.setHomeScreenWallpaper(context, file);
-            boolean l = BingWallpaperUtils.setLockScreenWallpaper(context, file);
-            return h && l;
+            try {
+                BingWallpaperUtils.setLockScreenWallpaper(context, file);
+            } catch (Exception ignored) {
+            }
+            BingWallpaperUtils.setHomeScreenWallpaper(context, file);
         } catch (IOException e) {
-            return BingWallpaperUtils.setBothWallpaper(context, file);
+            BingWallpaperUtils.setBothWallpaper(context, file);
         }
     }
 
-    public static boolean setWallpaper(Context context, @Constants.setWallpaperMode int mode, File wallpaper)
-            throws Exception {
+    public static void setWallpaper(Context context, @Constants.setWallpaperMode int mode, File wallpaper)
+            throws IOException {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            return BingWallpaperUtils.setWallpaper(context, wallpaper);
+            BingWallpaperUtils.setWallpaper(context, wallpaper);
         } else {
             if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-                return BingWallpaperUtils.setHomeScreenWallpaper(context, wallpaper);
+                BingWallpaperUtils.setHomeScreenWallpaper(context, wallpaper);
             } else if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                return BingWallpaperUtils.setLockScreenWallpaper(context, wallpaper);
+                BingWallpaperUtils.setLockScreenWallpaper(context, wallpaper);
             } else {
-                return setBothWallpaper(context, wallpaper);
+                setBothWallpaper(context, wallpaper);
             }
         }
     }

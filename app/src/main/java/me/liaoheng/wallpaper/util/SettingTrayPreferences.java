@@ -58,7 +58,11 @@ public class SettingTrayPreferences implements ISettingTrayPreferences {
 
     @Override
     public boolean getBoolean(@NonNull String key, boolean defaultValue) {
-        return mAccessor.getBoolean(key, defaultValue);
+        try{
+            return mAccessor.getBoolean(key, defaultValue);
+        }catch (Throwable t){
+            return defaultValue;
+        }
     }
 
     @Override

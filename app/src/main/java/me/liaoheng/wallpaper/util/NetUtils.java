@@ -84,8 +84,10 @@ public class NetUtils {
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
 
-        OkHttpClient.Builder simpleBuilder = new OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS)
-                .connectTimeout(60, TimeUnit.SECONDS);
+        OkHttpClient.Builder simpleBuilder = new OkHttpClient.Builder()
+                .callTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(80, TimeUnit.SECONDS);
         ExecutorService threadPoolExecutor = Executors
                 .newSingleThreadExecutor(Util.threadFactory("OkHttp Dispatcher", false));
         Dispatcher dispatcher = new Dispatcher(threadPoolExecutor);

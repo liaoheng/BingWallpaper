@@ -82,8 +82,10 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
+import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.Config;
+import me.liaoheng.wallpaper.service.BingWallpaperCheckIntentService;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.ui.SettingsActivity;
 
@@ -688,34 +690,33 @@ public class BingWallpaperUtils {
                     return 3;
                 }
             } else {
-                //Utils.addSubscribe(BingWallpaperNetworkClient.getBingWallpaper(context),
-                //        new Callback.EmptyCallback<BingWallpaperImage>() {
-                //            @Override
-                //            public void onSuccess(BingWallpaperImage image) {
-                //                if (getLastWallpaperImageUrl(context).equals(image.getUrlbase())) {
-                //                    if (isEnableLogProvider(context)) {
-                //                        LogDebugFileUtils.get().i(TAG, "Equals last skip");
-                //                    }
-                //                    return;
-                //                }
-                //                BingWallpaperIntentService.start(context,
-                //                        BingWallpaperUtils.getAutoModeValue(context));
-                //            }
-                //
-                //            @Override
-                //            public void onError(Throwable e) {
-                //                if (isEnableLogProvider(context)) {
-                //                    LogDebugFileUtils.get().e(TAG, "Check error", e);
-                //                }
-                //            }
-                //        });
-                BingWallpaperIntentService.start(context,
-                        BingWallpaperUtils.getAutoModeValue(context));
+                try {
+                    BingWallpaperImage image = BingWallpaperNetworkClient.getBingWallpaperSingleCall(context);
+                    if (BingWallpaperUtils.getLastWallpaperImageUrl(context)
+                            .equals(BingWallpaperUtils.getResolutionImageUrl(context,
+                                    image))) {
+                        if (BingWallpaperUtils.isEnableLogProvider(context)) {
+                            LogDebugFileUtils.get().i(TAG, "Equals last skip");
+                        }
+                        return 0;
+                    }
+                    BingWallpaperIntentService.start(context, image, BingWallpaperUtils.getAutoModeValue(context),
+                            new Config(context), true);
+                } catch (Exception e) {
+                    if (BingWallpaperUtils.isEnableLogProvider(context)) {
+                        LogDebugFileUtils.get().e(TAG, "Check error :", e);
+                    }
+                    return 0;
+                }
                 return 0;
             }
         } else {
             return 1;
         }
+    }
+
+    public static void startCheckService(Context context, String TAG) {
+        BingWallpaperCheckIntentService.start(context, TAG);
     }
 
     public static void runningService(Context context, String TAG) {
@@ -744,7 +745,7 @@ public class BingWallpaperUtils {
 
     public static boolean isConnected(Context context) {
         NetworkInfo[] nets = NetworkUtils.getConnManager(context).getAllNetworkInfo();
-        if (nets != null && nets.length > 0) {
+        if (nets.length > 0) {
             for (NetworkInfo net : nets) {
                 if (net.isConnected()) {
                     return true;
@@ -771,36 +772,38 @@ public class BingWallpaperUtils {
     }
 
     @SuppressLint("InlinedApi")
-    public static boolean setBothWallpaper(Context context, File file) throws IOException {
-        return setWallpaper(context, file, WallpaperManager.FLAG_SYSTEM | WallpaperManager.FLAG_LOCK);
+    public static void setBothWallpaper(Context context, File file) throws IOException {
+        setWallpaper(context, file, WallpaperManager.FLAG_SYSTEM | WallpaperManager.FLAG_LOCK);
     }
 
-    public static boolean setWallpaper(Context context, File file, int which) throws IOException {
+    public static void setWallpaper(Context context, File file, int which) throws IOException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             try (InputStream fileInputStream = new FileInputStream(file)) {
-                return WallpaperManager.getInstance(context)
-                        .setStream(fileInputStream, null, true, which) != 0;
+                int s = WallpaperManager.getInstance(context)
+                        .setStream(fileInputStream, null, true, which);
+                if (s == 0) {
+                    throw new IOException("WallpaperManager error");
+                }
             }
         } else {
-            return setWallpaper(context, file);
+            setWallpaper(context, file);
         }
     }
 
-    public static boolean setWallpaper(Context context, File file) throws IOException {
+    public static void setWallpaper(Context context, File file) throws IOException {
         try (InputStream fileInputStream = new FileInputStream(file)) {
             WallpaperManager.getInstance(context).setStream(fileInputStream);
         }
-        return true;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public static boolean setLockScreenWallpaper(Context context, File file) throws IOException {
-        return setWallpaper(context, file, WallpaperManager.FLAG_LOCK);
+    public static void setLockScreenWallpaper(Context context, File file) throws IOException {
+        setWallpaper(context, file, WallpaperManager.FLAG_LOCK);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public static boolean setHomeScreenWallpaper(Context context, File file) throws IOException {
-        return setWallpaper(context, file, WallpaperManager.FLAG_SYSTEM);
+    public static void setHomeScreenWallpaper(Context context, File file) throws IOException {
+        setWallpaper(context, file, WallpaperManager.FLAG_SYSTEM);
     }
 
     public static Observable<Object> clearCache(Context context) {
@@ -995,12 +998,13 @@ public class BingWallpaperUtils {
      * the following line:
      * Stack Blur Algorithm by Mario Klingemann <mario@quasimondo.com>
      */
+    @NonNull
     public static Bitmap toStackBlur(Bitmap sentBitmap, int radius) {
-        Bitmap bitmap = sentBitmap.copy(sentBitmap.getConfig(), true);
-
         if (radius < 1) {
-            return (null);
+            return sentBitmap;
         }
+
+        Bitmap bitmap = sentBitmap.copy(sentBitmap.getConfig(), true);
 
         int w = bitmap.getWidth();
         int h = bitmap.getHeight();

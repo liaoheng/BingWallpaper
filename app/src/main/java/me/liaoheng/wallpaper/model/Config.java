@@ -3,6 +3,9 @@ package me.liaoheng.wallpaper.model;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import org.jetbrains.annotations.NotNull;
+
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 
 /**
@@ -26,6 +29,14 @@ public class Config implements Parcelable {
 
     public Config() {
 
+    }
+
+    @NotNull
+    @Override
+    public String toString() {
+        return "Config{" +
+                "stackBlur=" + stackBlur +
+                '}';
     }
 
     protected Config(Parcel in) {

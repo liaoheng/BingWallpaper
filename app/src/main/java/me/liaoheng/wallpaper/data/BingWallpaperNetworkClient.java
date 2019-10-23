@@ -1,20 +1,31 @@
 package me.liaoheng.wallpaper.data;
 
 import android.content.Context;
-import com.github.liaoheng.common.util.*;
-import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
-import me.liaoheng.wallpaper.model.*;
-import me.liaoheng.wallpaper.util.BingWallpaperUtils;
-import me.liaoheng.wallpaper.util.Constants;
-import me.liaoheng.wallpaper.util.NetUtils;
-import retrofit2.Response;
+
+import com.github.liaoheng.common.util.NetException;
+import com.github.liaoheng.common.util.NetLocalException;
+import com.github.liaoheng.common.util.NetServerException;
+import com.github.liaoheng.common.util.SystemDataException;
+import com.github.liaoheng.common.util.SystemRuntimeException;
+import com.github.liaoheng.common.util.ValidateUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
+import me.liaoheng.wallpaper.model.BingWallpaper;
+import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
+import me.liaoheng.wallpaper.model.BingWallpaperImage;
+import me.liaoheng.wallpaper.model.Pixabay;
+import me.liaoheng.wallpaper.model.PixabayImage;
+import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.Constants;
+import me.liaoheng.wallpaper.util.NetUtils;
+import retrofit2.Response;
 
 /**
  * @author liaoheng
@@ -59,6 +70,12 @@ public class BingWallpaperNetworkClient {
                     }
                     return bingWallpaper.getImages().get(0);
                 });
+    }
+
+    public static BingWallpaperImage getBingWallpaperSingleCall(Context context) throws NetException {
+        String locale = BingWallpaperUtils.getAutoLocale(context);
+        String url = BingWallpaperUtils.getUrl(context);
+        return getBingWallpaperSingleCall(url, locale);
     }
 
     public static BingWallpaperImage getBingWallpaperSingleCall(String url, String locale) throws NetException {
