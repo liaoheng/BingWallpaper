@@ -36,7 +36,7 @@
     <string name="pref_update_only_on_wifi">Pouze Wi-Fi</string>
     <string name="pref_auto_update_everyday">Auto mód</string>
     <string name="pref_auto_update_check_every_hour">Kontrola každé tři hodiny</string>
-    <string name="pref_auto_update_check_time">Zkontrolovat každých %1$s hodin</string>
+    <string name="pref_auto_update_check_time">Zkontrolovat každých %1$d hodin</string>
     <string name="pref_auto_update_everyday_notification">Oznámení o úspěšné aktualizaci v režimu Auto</string>
     <string name="pref_auto_update_everyday_notification_note">Po úspěšné aktualizaci na pozadí</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type">Automatický výběr</string>
