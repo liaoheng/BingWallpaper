@@ -326,11 +326,12 @@ public class BingWallpaperUtils {
             String extension = FilenameUtils.getExtension(url);
             name = url.hashCode() + "." + extension;
         }
-        boolean isExternalStorageLegacy;
+        boolean isExternalStorageLegacy = true;
         try {
-            isExternalStorageLegacy = Environment.isExternalStorageLegacy();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                isExternalStorageLegacy = Environment.isExternalStorageLegacy();
+            }
         } catch (NoSuchMethodError ignored) {
-            isExternalStorageLegacy = true;
         }
         if (isExternalStorageLegacy) {
             File p = new File(Environment.DIRECTORY_PICTURES, Common.getProjectName());
