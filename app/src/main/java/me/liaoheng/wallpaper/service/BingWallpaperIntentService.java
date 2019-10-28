@@ -3,6 +3,7 @@ package me.liaoheng.wallpaper.service;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -13,8 +14,6 @@ import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetException;
 import com.github.liaoheng.common.util.SystemException;
-
-import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -236,13 +235,17 @@ public class BingWallpaperIntentService extends IntentService {
         }
         try {
             if (BingWallpaperUtils.isAutoSave(this)) {
-                String name = FilenameUtils.getName(url);
-                File file = BingWallpaperUtils.saveFileToPicture(this, name, wallpaper);
+                Uri file = BingWallpaperUtils.saveFileToPicture(this, url, wallpaper);
                 if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-                    LogDebugFileUtils.get().i(TAG, "save wallpaper to: %s", file.getAbsoluteFile());
+                    LogDebugFileUtils.get().i(TAG, "save wallpaper to: %s", file);
                 }
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            CrashReportHandle.collectException(this, TAG, e);
+            L.alog().e(TAG, e, "save wallpaper error");
+            if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+                LogDebugFileUtils.get().e(TAG, "save wallpaper error: %s", e);
+            }
         }
     }
 

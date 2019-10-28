@@ -34,7 +34,7 @@
     <!--setting -->
     <string name="pref_auto_update_wallpaper">Nastavení denní aktualizace</string>
     <string name="pref_update_only_on_wifi">Pouze Wi-Fi</string>
-    <string name="pref_auto_update_everyday">Auto mód</string>
+    <string name="pref_auto_update_everyday">Automatická kontrola</string>
     <string name="pref_auto_update_check_every_hour">Kontrola každé tři hodiny</string>
     <string name="pref_auto_update_check_time">Zkontrolovat každých %1$d hodin</string>
     <string name="pref_auto_update_everyday_notification">Oznámení o úspěšné aktualizaci v režimu Auto</string>
@@ -45,7 +45,7 @@
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_service">Daemon služba</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_interval">Automatický interval kontroly aktualizací</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_interval_note">Jednotka hodiny, prosím, resetujte po změně</string>
-    <string name="pref_alarm_update_wallpaper_everyday">Mód Timer</string>
+    <string name="pref_alarm_update_wallpaper_everyday">Mód Časovač</string>
     <string name="pref_alarm_update_wallpaper_everyday_summary">Nedoporučeno</string>
     <string name="pref_alarm_update_wallpaper_time">Nastavení časovače</string>
     <string name="pref_not_set_time">Žádný čas</string>
@@ -54,10 +54,10 @@
     <string name="pref_set_wallpaper_auto_mode_home">Domovská obrazovka</string>
     <string name="pref_set_wallpaper_auto_mode_lock">Zamykací obrazovka</string>
     <string name="pref_other">Ostatní nastavení</string>
-    <string name="pref_choose_set_wallpaper_resolution">Rozlišení</string>
-    <string name="pref_choose_save_resolution">Výchozí rozlišení pozadí</string>
-    <string name="pref_country">Vynucený region</string>
-    <string name="pref_country_auto">Lokalizace</string>
+    <string name="pref_choose_set_wallpaper_resolution">Rozlišení pozadí</string>
+    <string name="pref_choose_save_resolution">Rozlišení pozadí pro stahování</string>
+    <string name="pref_country">Země</string>
+    <string name="pref_country_auto">Místní</string>
     <string name="pref_country_china">Čína</string>
     <string name="pref_country_usa">USA</string>
     <string name="pref_country_gb">Velká Británie</string>
@@ -66,6 +66,7 @@
     <string name="pref_country_ja">Japonsko</string>
     <string name="pref_country_it">Itálie</string>
     <string name="pref_country_ir">Írán</string>
+    <string name="pref_language">Jazyk</string>
     <string name="pref_stack_blur">Gaussovo rozostření</string>
     <string name="pref_clear_cache">Vymazat cache</string>
     <string name="pref_clear_cache_success">Vymazání cache úspěšně dokončeno</string>
@@ -77,6 +78,9 @@
     <string name="pref_crash_report">Využití dat a zprávy o selhání</string>
     <string name="pref_version">Verze</string>
     <string name="pref_intro">Zobrazit Intro</string>
+    <string name="pref_wallpaper_setting">Nastavení pozadí</string>
+    <string name="pref_auto_save_wallpaper_title">Automatické uložení pozadí</string>
+    <string name="pref_auto_save_wallpaper_summary">Uložit pozadí medzi fotografie</string>
     <!--menu-->
     <string name="menu_main_drawer_wallpaper_info">Informace o Pozadí</string>
     <string name="menu_main_setting">Nastavení</string>
@@ -84,7 +88,7 @@
     <string name="menu_main_help">Nápověda</string>
     <string name="menu_main_feedback">Feedback</string>
     <!--wallpaper detail-->
-    <string name="bing_only_two_week">Bing je k dispozici pouze na poslední dva týdny</string>
+    <string name="bing_only_two_week">Bing je k dispozici pouze pro poslední dva týdny</string>
     <string name="menu_save_wallpaper">Uložit pozadí</string>
     <string name="menu_wallpaper_resolution">Rozlišení</string>
     <string name="menu_wallpaper_info">Informace</string>
@@ -95,7 +99,7 @@
     <!--intro-->
     <string name="intro_update_set">Nastavit automatickou aktualizaci pozadí</string>
     <string name="intro_hint_welcome">Vítejte v Starth Bing Wallpaper</string>
-    <string name="intro_hint_whitelist">Tuto zprávu je třeba přidat k výjimkám aplikace pro kontextové aplikace, jako Brevent, Greenify&#8230;. </string>
-    <string name="intro_hint_battery">Optizace baterie způsobí, že aplikace nebude schopna aktualizovat pozadí. Aplikaci lze přidat do výnimek optimalizace baterie. </string>
+    <string name="intro_hint_whitelist">Tuto aplikaci je nutno přidat k výjimkám optimalizace baterie</string>
+    <string name="intro_hint_battery">Optimalizace baterie způsobí, že aplikace se nebude schopna aktualizovat na pozadí. Aplikaci lze přidat do výnimek optimalizace baterie. </string>
     <string name="ignore_battery_optimization">Ignorovat optimizaci baterie</string>
 </resources>

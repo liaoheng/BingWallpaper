@@ -78,6 +78,8 @@
     <string name="pref_version">版本</string>
     <string name="pref_intro">打开引导页</string>
     <string name="pref_wallpaper_setting">壁纸相关设置</string>
+    <string name="pref_auto_save_wallpaper_title">自动保存壁纸</string>
+    <string name="pref_auto_save_wallpaper_summary">保存壁纸到相册</string>
 
     <!--menu-->
     <string name="menu_main_drawer_wallpaper_info">壁纸信息</string>

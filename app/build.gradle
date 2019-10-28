@@ -9,8 +9,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 162
-        versionName "1.6.2"
+        versionCode 163
+        versionName "1.6.3"
     }
 
     def isSigning = true
@@ -58,8 +58,6 @@ dependencies {
     testImplementation deps.junit
     testImplementation 'joda-time:joda-time:2.10.3'
     //android system
-    implementation deps.appcompat
-    implementation deps.cardview
     implementation deps.material
     implementation deps.palette
     implementation deps.browser
@@ -68,7 +66,7 @@ dependencies {
     implementation 'androidx.work:work-runtime:2.2.0'
     implementation 'androidx.work:work-gcm:2.2.0'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
-    implementation 'com.google.firebase:firebase-core:17.2.0'
+    implementation 'com.google.firebase:firebase-core:17.2.1'
     implementation 'com.firebase:firebase-jobdispatcher:0.8.6'
     //    implementation 'com.google.android.gms:play-services-base:15.0.1'
 
@@ -88,6 +86,7 @@ dependencies {
     implementation deps.rxlifecycle3
     implementation deps.rxlifecycle_android3
     implementation deps.joda_time_android
+    implementation deps.guava
 
     //https://github.com/yshrsmz/LicenseAdapter
     implementation 'net.yslibrary.licenseadapter:licenseadapter:2.2.2'

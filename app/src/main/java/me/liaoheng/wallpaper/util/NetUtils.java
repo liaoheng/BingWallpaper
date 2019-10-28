@@ -1,6 +1,7 @@
 package me.liaoheng.wallpaper.util;
 
 import android.content.Context;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
@@ -11,8 +12,6 @@ import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.SystemException;
 import com.github.liaoheng.common.util.SystemRuntimeException;
 import com.github.liaoheng.common.util.Utils;
-
-import org.apache.commons.io.FilenameUtils;
 
 import java.io.EOFException;
 import java.io.File;
@@ -120,8 +119,8 @@ public class NetUtils {
         return mBingWallpaperSingleNetworkService;
     }
 
-    public Disposable downloadImageToFile(final Context context, String url, Callback<File> callback) {
-        Observable<File> observable = Observable.just(url).subscribeOn(Schedulers.io())
+    public Disposable downloadImageToFile(final Context context, String url, Callback<Uri> callback) {
+        Observable<Uri> observable = Observable.just(url).subscribeOn(Schedulers.io())
                 .map(url1 -> {
                     File temp = null;
                     try {
@@ -130,7 +129,7 @@ public class NetUtils {
                                 .load(url1)
                                 .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
                                 .get(2, TimeUnit.MINUTES);
-                        return BingWallpaperUtils.saveFileToPicture(context, FilenameUtils.getName(url1), temp);
+                        return BingWallpaperUtils.saveFileToPicture(context, url1, temp);
                     } catch (Exception e) {
                         throw new SystemRuntimeException(e);
                     } finally {

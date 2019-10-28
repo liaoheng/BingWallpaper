@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -19,25 +20,38 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
+
+import com.bumptech.glide.request.target.Target;
+import com.github.liaoheng.common.util.Callback;
+import com.github.liaoheng.common.util.Callback4;
+import com.github.liaoheng.common.util.L;
+import com.github.liaoheng.common.util.NetworkUtils;
+import com.github.liaoheng.common.util.UIUtils;
+import com.github.liaoheng.common.util.Utils;
+
+import org.jetbrains.annotations.NotNull;
+
 import butterknife.BindArray;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.bumptech.glide.request.target.Target;
-import com.github.liaoheng.common.util.*;
 import io.reactivex.disposables.Disposable;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.model.Config;
-import me.liaoheng.wallpaper.util.*;
+import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.Constants;
+import me.liaoheng.wallpaper.util.CrashReportHandle;
+import me.liaoheng.wallpaper.util.GlideApp;
+import me.liaoheng.wallpaper.util.LogDebugFileUtils;
+import me.liaoheng.wallpaper.util.NetUtils;
+import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
 import me.liaoheng.wallpaper.widget.SeekBarDialogFragment;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
-import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
 
 /**
  * 壁纸详情
@@ -355,7 +369,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
         } else {
             url = getUrl(BingWallpaperUtils.getSaveResolution(this));
         }
-        mDownLoadSubscription = NetUtils.get().downloadImageToFile(this, url, new Callback.EmptyCallback<File>() {
+        mDownLoadSubscription = NetUtils.get().downloadImageToFile(this, url, new Callback.EmptyCallback<Uri>() {
             @Override
             public void onPreExecute() {
                 UIUtils.showDialog(mDownLoadProgressDialog);
@@ -367,13 +381,18 @@ public class WallpaperDetailActivity extends BaseActivity implements
             }
 
             @Override
-            public void onSuccess(File file) {
+            public void onSuccess(Uri file) {
                 UIUtils.showToast(getApplicationContext(), R.string.alert_save_wallpaper_success);
             }
 
             @Override
             public void onError(Throwable e) {
-                L.getToast().e(TAG, getApplicationContext(), getString(R.string.alert_save_wallpaper_failure), e);
+                CrashReportHandle.collectException(getApplicationContext(), TAG, e);
+                L.alog().e(TAG, e, "save wallpaper error");
+                if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+                    LogDebugFileUtils.get().e(TAG, "save wallpaper error: %s", e);
+                }
+                UIUtils.showToast(getApplicationContext(), R.string.alert_save_wallpaper_failure);
             }
         });
     }

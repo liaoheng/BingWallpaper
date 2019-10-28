@@ -5,6 +5,8 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.WallpaperManager;
 import android.content.ComponentName;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +14,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -24,7 +27,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.provider.Browser;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.widget.ImageView;
@@ -61,12 +66,15 @@ import com.github.liaoheng.common.util.Utils;
 import com.github.liaoheng.common.util.ValidateUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.common.io.Files;
 
+import org.apache.commons.io.FilenameUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Retention;
@@ -306,14 +314,70 @@ public class BingWallpaperUtils {
         return SettingTrayPreferences.get(context).getBoolean(SettingsActivity.PREF_AUTO_SAVE_WALLPAPER_FILE, false);
     }
 
-    public static File saveFileToPicture(Context context, String name, File from) throws Exception {
-        File p = new File(Environment.DIRECTORY_PICTURES, Common.getProjectName());
-        File file = new File(FileUtils.getExternalStoragePath(), p.getAbsolutePath());
-        File outFile = FileUtils.createFile(file, name);
-        FileUtils.copyFile(from, outFile);
-        context.sendBroadcast(
-                new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(outFile)));
-        return outFile;
+    //https://juejin.im/post/5d0b1739e51d4510a73280cc
+    public static Uri saveFileToPicture(Context context, String url, File from) throws Exception {
+        Uri uri;
+        ContentValues contentValues = null;
+        String name;
+        String[] split = FilenameUtils.getName(url).split("=");
+        if (split.length >= 1) {
+            name = split[1];
+        } else {
+            String extension = FilenameUtils.getExtension(url);
+            name = url.hashCode() + "." + extension;
+        }
+        boolean isExternalStorageLegacy;
+        try {
+            isExternalStorageLegacy = Environment.isExternalStorageLegacy();
+        } catch (NoSuchMethodError ignored) {
+            isExternalStorageLegacy = true;
+        }
+        if (isExternalStorageLegacy) {
+            File p = new File(Environment.DIRECTORY_PICTURES, Common.getProjectName());
+            File file = new File(FileUtils.getExternalStoragePath(), p.getAbsolutePath());
+            File outFile = FileUtils.createFile(file, name);
+            FileUtils.copyFile(from, outFile);
+            uri = Uri.fromFile(outFile);
+            context.sendBroadcast(
+                    new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+        } else {
+            //https://developer.android.com/training/data-storage/files/external-scoped
+            Cursor query = context.getContentResolver().query(MediaStore.Images.Media.getContentUri(
+                    MediaStore.VOLUME_EXTERNAL_PRIMARY), null,
+                    MediaStore.Images.Media.DISPLAY_NAME + "='" + name + "' AND "
+                            + MediaStore.Images.Media.OWNER_PACKAGE_NAME + "='"
+                            + context.getPackageName() + "'",
+                    null, null);
+            if (query != null && query.moveToFirst()) {
+                long id = query.getLong(query.getColumnIndex(MediaStore.Images.Media._ID));
+                uri = ContentUris.withAppendedId(
+                        MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY), id);
+                query.close();
+            } else {
+                contentValues = new ContentValues();
+                contentValues.put(MediaStore.Images.Media.DISPLAY_NAME, name);
+                contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                contentValues.put(MediaStore.Images.Media.IS_PENDING, 1);
+                contentValues.put(MediaStore.Images.Media.RELATIVE_PATH,
+                        Environment.DIRECTORY_PICTURES + File.separator + Common.getProjectName());
+                uri = context.getContentResolver().insert(MediaStore.Images.Media.getContentUri(
+                        MediaStore.VOLUME_EXTERNAL_PRIMARY), contentValues);
+            }
+            if (uri == null) {
+                throw new IOException("getContentResolver uri is null");
+            }
+            ParcelFileDescriptor fd = context.getContentResolver().openFileDescriptor(uri, "w");
+            if (fd == null) {
+                throw new IOException("openFileDescriptor is null");
+            }
+            Files.copy(from, new FileOutputStream(fd.getFileDescriptor()));
+            if (contentValues != null) {
+                contentValues.clear();
+                contentValues.put(MediaStore.Images.Media.IS_PENDING, 0);
+                context.getContentResolver().update(uri, contentValues, null, null);
+            }
+        }
+        return uri;
     }
 
     /**
@@ -607,6 +671,7 @@ public class BingWallpaperUtils {
         String model = Build.MODEL;
         String product = Build.PRODUCT;
         String romName = ROM.getROM().getName();
+        int romType = ROM.getROM().getRom();
         String romVersion = ROM.getROM().getVersion();
         Locale locale = Locale.getDefault();
         Locale autoLocale = getLocale(context);
@@ -628,6 +693,8 @@ public class BingWallpaperUtils {
                 + product
                 + " rom_name: "
                 + romName
+                + " rom_type: "
+                + romType
                 + " rom_version: "
                 + romVersion
                 + " locale: "
