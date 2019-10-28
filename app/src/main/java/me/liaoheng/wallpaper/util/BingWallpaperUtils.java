@@ -336,7 +336,7 @@ public class BingWallpaperUtils {
             File p = new File(Environment.DIRECTORY_PICTURES, Common.getProjectName());
             File file = new File(FileUtils.getExternalStoragePath(), p.getAbsolutePath());
             File outFile = FileUtils.createFile(file, name);
-            FileUtils.copyFile(from, outFile);
+            Files.copy(from, outFile);
             uri = Uri.fromFile(outFile);
             context.sendBroadcast(
                     new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
