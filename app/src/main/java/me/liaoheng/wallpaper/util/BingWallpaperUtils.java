@@ -67,6 +67,7 @@ import com.github.liaoheng.common.util.ValidateUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.common.io.Files;
+import com.scottyab.rootbeer.RootBeer;
 
 import org.apache.commons.io.FilenameUtils;
 import org.joda.time.DateTime;
@@ -320,18 +321,18 @@ public class BingWallpaperUtils {
         ContentValues contentValues = null;
         String name;
         String[] split = FilenameUtils.getName(url).split("=");
-        if (split.length >= 1) {
+        if (split.length > 1) {
             name = split[1];
         } else {
             String extension = FilenameUtils.getExtension(url);
             name = url.hashCode() + "." + extension;
         }
         boolean isExternalStorageLegacy = true;
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            try {
                 isExternalStorageLegacy = Environment.isExternalStorageLegacy();
+            } catch (NoSuchMethodError ignored) {
             }
-        } catch (NoSuchMethodError ignored) {
         }
         if (isExternalStorageLegacy) {
             File p = new File(Environment.DIRECTORY_PICTURES, Common.getProjectName());
@@ -468,6 +469,14 @@ public class BingWallpaperUtils {
     public static boolean isMiuiLockScreenSupport(Context context) {
         return SettingTrayPreferences.get(context)
                 .getBoolean(SettingsActivity.PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, false);
+    }
+
+    public static boolean setMiuiLockScreenSupport(Context context, boolean support) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        sharedPreferences.edit().putBoolean(SettingsActivity.PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, support).apply();
+        return SettingTrayPreferences.get(context)
+                .put(SettingsActivity.PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, support);
     }
 
     public static boolean isPixabaySupport(Context context) {
@@ -849,9 +858,9 @@ public class BingWallpaperUtils {
             try (InputStream fileInputStream = new FileInputStream(file)) {
                 int s = WallpaperManager.getInstance(context)
                         .setStream(fileInputStream, null, true, which);
-                if (s == 0) {
-                    throw new IOException("WallpaperManager error");
-                }
+                //if (s == 0) {
+                //    throw new IOException("WallpaperManager error");
+                //}
             }
         } else {
             setWallpaper(context, file);
@@ -1036,6 +1045,15 @@ public class BingWallpaperUtils {
                 callback.onSuccess(resource);
             }
         });
+    }
+
+    public static boolean isRooted(Context context) {
+        RootBeer rootBeer = new RootBeer(context);
+        if (rootBeer.checkForBusyBoxBinary()) {
+            return rootBeer.isRooted();
+        } else {
+            return rootBeer.isRootedWithoutBusyBoxCheck();
+        }
     }
 
     /**

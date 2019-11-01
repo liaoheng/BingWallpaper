@@ -28,7 +28,6 @@ import androidx.core.app.ActivityCompat;
 import com.bumptech.glide.request.target.Target;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
-import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
@@ -47,7 +46,6 @@ import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.GlideApp;
-import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.NetUtils;
 import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
 import me.liaoheng.wallpaper.widget.SeekBarDialogFragment;
@@ -387,11 +385,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
 
             @Override
             public void onError(Throwable e) {
-                CrashReportHandle.collectException(getApplicationContext(), TAG, e);
-                L.alog().e(TAG, e, "save wallpaper error");
-                if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-                    LogDebugFileUtils.get().e(TAG, "save wallpaper error: %s", e);
-                }
+                CrashReportHandle.saveWallpaper(getApplicationContext(), TAG, e);
                 UIUtils.showToast(getApplicationContext(), R.string.alert_save_wallpaper_failure);
             }
         });

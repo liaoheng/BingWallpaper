@@ -245,20 +245,22 @@ public class SettingsActivity extends BaseActivity {
                 ((PreferenceCategory) findPreference("pref_wallpaper_group")).removePreference(
                         mMIuiLockScreenPreference);
             } else {
-                mMIuiLockScreenPreference.setOnPreferenceClickListener(preference -> {
-                    if (mMIuiLockScreenPreference.isChecked()) {
-                        if (ShellUtils.hasRootPermission()) {
-                            mPreferences.put(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, true);
+                if (BingWallpaperUtils.isRooted(getContext())) {
+                    mMIuiLockScreenPreference.setOnPreferenceClickListener(preference -> {
+                        if (mMIuiLockScreenPreference.isChecked()) {
+                            if (ShellUtils.hasRootPermission()) {
+                                mPreferences.put(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, true);
+                            } else {
+                                mMIuiLockScreenPreference.setChecked(false);
+                                UIUtils.showToast(getActivity(), R.string.unable_root_permission);
+                            }
                         } else {
-                            mMIuiLockScreenPreference.setChecked(false);
-                            UIUtils.showToast(getActivity(), R.string.unable_root_permission);
+                            mPreferences.put(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, false);
                         }
-                    } else {
-                        mPreferences.put(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, false);
-                    }
-                    return false;
-                });
-                mMIuiLockScreenPreference.setChecked(BingWallpaperUtils.isMiuiLockScreenSupport(getActivity()));
+                        return false;
+                    });
+                    mMIuiLockScreenPreference.setChecked(BingWallpaperUtils.isMiuiLockScreenSupport(getActivity()));
+                }
             }
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {

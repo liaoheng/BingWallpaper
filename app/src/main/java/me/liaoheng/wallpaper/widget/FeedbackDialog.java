@@ -6,7 +6,9 @@ import android.content.ClipboardManager;
 import android.content.Context;
 
 import androidx.appcompat.app.AlertDialog;
+
 import com.github.liaoheng.common.util.UIUtils;
+
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 
@@ -22,7 +24,7 @@ public class FeedbackDialog {
                         "E-Mail", (dialog, which) -> BingWallpaperUtils.sendFeedback(context))
                 .setNegativeButton("Github", (dialog, which) -> BingWallpaperUtils.openBrowser(context,
                         "https://github.com/liaoheng/BingWallpaper/issues"))
-                .setNeutralButton(android.R.string.copy, (dialog, which) -> {
+                .setNeutralButton("info", (dialog, which) -> {
                     ClipboardManager cmb = (ClipboardManager) context.getSystemService(
                             Context.CLIPBOARD_SERVICE);
                     if (cmb != null) {

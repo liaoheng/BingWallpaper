@@ -20,7 +20,10 @@ import java.io.IOException;
 public class MiuiHelper {
 
     public static void setLockScreenWallpaper(Context context, File wallpaper) throws IOException {
-        if (BingWallpaperUtils.isMiuiLockScreenSupport(context) && ShellUtils.hasRootPermission()) {
+        if (!BingWallpaperUtils.isMiuiLockScreenSupport(context)) {
+            return;
+        }
+        if (ShellUtils.hasRootPermission()) {
             int width = DisplayUtils.getScreenInfo(context).widthPixels;
             int height = DisplayUtils.getScreenInfo(context).heightPixels;
             if (width > height) {

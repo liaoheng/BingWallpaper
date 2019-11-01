@@ -1,15 +1,19 @@
 package me.liaoheng.wallpaper.util;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.bumptech.glide.load.engine.GlideException;
 import com.crashlytics.android.Crashlytics;
+import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.L;
+import com.github.liaoheng.common.util.ROM;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.net.SocketTimeoutException;
 import java.util.List;
+import java.util.UUID;
 
 import io.fabric.sdk.android.Fabric;
 import me.liaoheng.wallpaper.BuildConfig;
@@ -22,26 +26,22 @@ import me.liaoheng.wallpaper.R;
 public class CrashReportHandle {
 
     public static void init(Context context) {
-        if (BingWallpaperUtils.isCrashReport(context)) {
-            enable(context);
-        } else {
+        if (check(context)) {
             disable(context);
+        } else {
+            enable(context);
         }
     }
 
     public static void enable(Context context) {
-        if (!BuildConfig.DEBUG) {
-            if (!Fabric.isInitialized()) {
-                Fabric.with(context, new Crashlytics());
-            }
-            FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(true);
+        if (!Fabric.isInitialized()) {
+            Fabric.with(context, new Crashlytics());
         }
+        FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(true);
     }
 
     public static void disable(Context context) {
-        if (!BuildConfig.DEBUG) {
-            FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(false);
-        }
+        FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(false);
     }
 
     public static String loadFailed(Context context, String TAG, Throwable throwable) {
@@ -72,12 +72,30 @@ public class CrashReportHandle {
         return error;
     }
 
+    public static void saveWallpaper(Context context, String TAG, Throwable t) {
+        L.alog().e(TAG, t, "save wallpaper error");
+        if (BingWallpaperUtils.isEnableLogProvider(context)) {
+            LogDebugFileUtils.get().e(TAG, "Save wallpaper error: %s", t);
+        }
+        CrashReportHandle.collectException(context, TAG, t);
+    }
+
+    public static void collectROMInfo(Context context, ROM rom) {
+        if (check(context)) {
+            return;
+        }
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, rom.toString());
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, AppUtils.getAndroidId(context));
+        FirebaseAnalytics.getInstance(context).logEvent("ROM_info", bundle);
+    }
+
     public static void collectException(Context context, String TAG, Throwable t) {
         collectException(context, TAG, null, t);
     }
 
     public static void collectException(Context context, String TAG, String msg, Throwable t) {
-        if (!BingWallpaperUtils.isCrashReport(context) || BuildConfig.DEBUG) {
+        if (check(context)) {
             return;
         }
         try {
@@ -85,8 +103,13 @@ public class CrashReportHandle {
             if (!TextUtils.isEmpty(msg)) {
                 Crashlytics.log(msg);
             }
+            Crashlytics.log("Feedback info: " + BingWallpaperUtils.getSystemInfo(context));
             Crashlytics.logException(t);
         } catch (Exception ignored) {
         }
+    }
+
+    private static boolean check(Context context) {
+        return !BingWallpaperUtils.isCrashReport(context) || BuildConfig.DEBUG;
     }
 }

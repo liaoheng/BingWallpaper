@@ -9,8 +9,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 163
-        versionName "1.6.3"
+        versionCode 164
+        versionName "1.6.4"
     }
 
     def isSigning = true
@@ -87,6 +87,10 @@ dependencies {
     implementation deps.rxlifecycle_android3
     implementation deps.joda_time_android
     implementation deps.guava
+
+
+    //https://github.com/scottyab/rootbeer
+    implementation 'com.scottyab:rootbeer-lib:0.0.7'
 
     //https://github.com/yshrsmz/LicenseAdapter
     implementation 'net.yslibrary.licenseadapter:licenseadapter:2.2.2'

@@ -1,12 +1,16 @@
 package me.liaoheng.wallpaper.service;
 
+import android.Manifest;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.request.target.Target;
@@ -81,7 +85,7 @@ public class BingWallpaperIntentService extends IntentService {
      * @param mode 0. both , 1. home , 2. lock
      */
     public static void start(Context context, @Nullable BingWallpaperImage image, @Constants.setWallpaperMode int mode,
-            Config config, boolean background) {
+            @NonNull Config config, boolean background) {
         Intent intent = new Intent(context, BingWallpaperIntentService.class);
         intent.putExtra(EXTRA_SET_WALLPAPER_MODE, mode);
         intent.putExtra(EXTRA_SET_WALLPAPER_BACKGROUND, background);
@@ -221,7 +225,7 @@ public class BingWallpaperIntentService extends IntentService {
                 .get(2, TimeUnit.MINUTES);
 
         if (wallpaper == null || !wallpaper.exists()) {
-            throw new IOException("download wallpaper failure");
+            throw new IOException("Download wallpaper failure");
         }
 
         mUiHelper.setWallpaper(getApplicationContext(), setWallpaperType, config, wallpaper);
@@ -233,18 +237,19 @@ public class BingWallpaperIntentService extends IntentService {
         if (!isBackground) {
             return;
         }
-        try {
-            if (BingWallpaperUtils.isAutoSave(this)) {
+        if (BingWallpaperUtils.isAutoSave(this)) {
+            try {
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    throw new IOException("Permission denied");
+                }
                 Uri file = BingWallpaperUtils.saveFileToPicture(this, url, wallpaper);
                 if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
                     LogDebugFileUtils.get().i(TAG, "save wallpaper to: %s", file);
                 }
-            }
-        } catch (Exception e) {
-            CrashReportHandle.collectException(this, TAG, e);
-            L.alog().e(TAG, e, "save wallpaper error");
-            if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-                LogDebugFileUtils.get().e(TAG, "save wallpaper error: %s", e);
+            } catch (Exception e) {
+                CrashReportHandle.saveWallpaper(getApplicationContext(), TAG, e);
             }
         }
     }
