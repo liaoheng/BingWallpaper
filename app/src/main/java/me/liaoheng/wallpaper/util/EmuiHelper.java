@@ -60,10 +60,7 @@ public class EmuiHelper {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static void setBothWallpaper(Context context, File file) throws IOException {
         try {
-            try {
-                BingWallpaperUtils.setLockScreenWallpaper(context, file);
-            } catch (Exception ignored) {
-            }
+            BingWallpaperUtils.setLockScreenWallpaper(context, file);
             BingWallpaperUtils.setHomeScreenWallpaper(context, file);
         } catch (IOException e) {
             BingWallpaperUtils.setBothWallpaper(context, file);

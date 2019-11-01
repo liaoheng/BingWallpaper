@@ -20,9 +20,6 @@ import java.io.IOException;
 public class MiuiHelper {
 
     public static void setLockScreenWallpaper(Context context, File wallpaper) throws IOException {
-        if (!BingWallpaperUtils.isMiuiLockScreenSupport(context)) {
-            return;
-        }
         if (ShellUtils.hasRootPermission()) {
             int width = DisplayUtils.getScreenInfo(context).widthPixels;
             int height = DisplayUtils.getScreenInfo(context).heightPixels;
@@ -63,15 +60,25 @@ public class MiuiHelper {
     public static void setWallpaper(Context context, @Constants.setWallpaperMode int mode, File wallpaper)
             throws IOException {
         if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-            BingWallpaperUtils.setWallpaper(context, wallpaper);
+            systemSetWallpaper(context, wallpaper);
         } else if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-            setLockScreenWallpaper(context, wallpaper);
-        } else {
-            try {
+            if (BingWallpaperUtils.isMiuiLockScreenSupport(context)) {
                 setLockScreenWallpaper(context, wallpaper);
-            } catch (Exception ignored) {
+            } else {
+                systemSetWallpaper(context, wallpaper);
             }
-            BingWallpaperUtils.setWallpaper(context, wallpaper);
+        } else {
+            if (BingWallpaperUtils.isMiuiLockScreenSupport(context)) {
+                try {
+                    setLockScreenWallpaper(context, wallpaper);
+                } catch (Exception ignored) {
+                }
+            }
+            systemSetWallpaper(context, wallpaper);
         }
+    }
+
+    private static void systemSetWallpaper(Context context, File wallpaper) throws IOException {
+        BingWallpaperUtils.setWallpaper(context, wallpaper);
     }
 }
