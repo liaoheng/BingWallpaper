@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -265,12 +264,10 @@ public class MainActivity extends BaseActivity
     }
 
     private void showMiuiDialog(boolean turn) {
-        View view = LayoutInflater.from(this).inflate(R.layout.dialog_miui, null);
+        View view = UIUtils.inflate(getApplicationContext(), R.layout.dialog_miui);
         SwitchCompat screen = view.findViewById(R.id.dialog_miui_lock_screen);
         if (turn) {
             UIUtils.viewVisible(screen);
-        } else {
-            UIUtils.viewGone(screen);
             screen.setOnCheckedChangeListener(
                     (buttonView, isChecked) -> {
                         if (ShellUtils.hasRootPermission()) {
@@ -283,6 +280,8 @@ public class MainActivity extends BaseActivity
                             UIUtils.showToast(getActivity(), R.string.unable_root_permission);
                         }
                     });
+        } else {
+            UIUtils.viewGone(screen);
         }
         new AlertDialog.Builder(this).setView(view).setPositiveButton(R.string.lcm_no,
                 (dialog, which) -> {
