@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.data.provider.TasksContract;
-import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 
 /**
@@ -14,11 +13,9 @@ import me.liaoheng.wallpaper.util.Constants;
  * @version 2018-01-16 15:44
  */
 public class DBHelper extends SQLiteOpenHelper {
-    private Context context;
 
     public DBHelper(Context context) {
         super(context, Constants.PROJECT_NAME + ".db", null, BuildConfig.VERSION_CODE);
-        this.context = context;
     }
 
     private static final String DB_CREATE = "create table " + TasksContract.TaskEntry.TABLE_NAME +
@@ -33,12 +30,5 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        try {
-            boolean miuiLockScreenSupport = BingWallpaperUtils.isMiuiLockScreenSupport(context);
-            if (miuiLockScreenSupport) {
-                BingWallpaperUtils.setMiuiLockScreenSupport(context, BingWallpaperUtils.isRooted(context));
-            }
-        } catch (Exception ignore) {
-        }
     }
 }
