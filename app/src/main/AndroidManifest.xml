@@ -11,6 +11,9 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
+    <uses-feature android:name="android.hardware.touchscreen"
+            android:required="false" />
+
     <application
             android:name=".MApplication"
             android:allowBackup="false"
@@ -23,7 +26,6 @@
         <activity
                 android:name=".ui.MainActivity"
                 android:configChanges="screenSize|orientation|keyboardHidden"
-                android:launchMode="singleTask"
                 android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

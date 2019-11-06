@@ -1,5 +1,6 @@
 package me.liaoheng.wallpaper.util;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -39,6 +40,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.preference.PreferenceManager;
@@ -319,13 +321,10 @@ public class BingWallpaperUtils {
     public static Uri saveFileToPicture(Context context, String url, File from) throws Exception {
         Uri uri;
         ContentValues contentValues = null;
-        String name;
-        String[] split = FilenameUtils.getName(url).split("=");
+        String name = FilenameUtils.getName(url);
+        String[] split = name.split("=");
         if (split.length > 1) {
             name = split[1];
-        } else {
-            String extension = FilenameUtils.getExtension(url);
-            name = url.hashCode() + "." + extension;
         }
         boolean isExternalStorageLegacy = true;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -1045,6 +1044,22 @@ public class BingWallpaperUtils {
                 callback.onSuccess(resource);
             }
         });
+    }
+
+    public static boolean checkStoragePermissions(Context context) {
+        return ActivityCompat.checkSelfPermission(context,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static boolean requestStoragePermissions(Activity activity) {
+        if (checkStoragePermissions(activity)) {
+            return true;
+        }
+        ActivityCompat.requestPermissions(activity,
+                new String[] { Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE },
+                111);
+        return false;
     }
 
     public static boolean isRooted(Context context) {

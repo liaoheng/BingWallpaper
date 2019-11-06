@@ -64,7 +64,6 @@ dependencies {
     implementation deps.preference
 
     implementation 'androidx.work:work-runtime:2.2.0'
-    implementation 'androidx.work:work-gcm:2.2.0'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
     implementation 'com.google.firebase:firebase-core:17.2.1'
     implementation 'com.firebase:firebase-jobdispatcher:0.8.6'
@@ -78,6 +77,7 @@ dependencies {
     annotationProcessor deps.glide_compiler
     implementation deps.glide_okhttp3_integration
     implementation deps.okhttp
+    implementation 'com.squareup.okhttp3:okhttp-dnsoverhttps:3.14.3'
     implementation deps.retrofit
     implementation deps.retrofit_converter_gson
     implementation deps.retrofit_adapter_rxjava2

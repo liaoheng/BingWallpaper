@@ -1,16 +1,13 @@
 package me.liaoheng.wallpaper.service;
 
-import android.Manifest;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.request.target.Target;
@@ -239,9 +236,7 @@ public class BingWallpaperIntentService extends IntentService {
         }
         if (BingWallpaperUtils.isAutoSave(this)) {
             try {
-                if (ActivityCompat.checkSelfPermission(getApplicationContext(),
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
+                if (!BingWallpaperUtils.checkStoragePermissions(this)) {
                     throw new IOException("Permission denied");
                 }
                 Uri file = BingWallpaperUtils.saveFileToPicture(this, url, wallpaper);

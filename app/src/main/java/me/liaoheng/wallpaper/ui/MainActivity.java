@@ -59,6 +59,7 @@ import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.BottomViewListener;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
+import me.liaoheng.wallpaper.util.DownloadHelper;
 import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.LanguageContextWrapper;
 import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
@@ -122,6 +123,7 @@ public class MainActivity extends BaseActivity
 
     private int mActionMenuBottomMargin;
     private UIHelper mUiHelper = new UIHelper();
+    private DownloadHelper mDownloadHelper;
 
     @OnClick(R.id.bing_wallpaper_cover_story_text)
     void openMap() {
@@ -236,6 +238,7 @@ public class MainActivity extends BaseActivity
         mNavigationHeaderImage = mNavigationView.getHeaderView(0).findViewById(R.id.navigation_header_image);
         mHeaderCoverStoryTitleView = mNavigationView.getHeaderView(0)
                 .findViewById(R.id.navigation_header_cover_story_title);
+        mDownloadHelper = new DownloadHelper(this, TAG);
 
         if (BingWallpaperUtils.isPixabaySupport(this)) {
             getPixabay();
@@ -264,10 +267,13 @@ public class MainActivity extends BaseActivity
     }
 
     private void showMiuiDialog(boolean turn) {
-        View view = UIUtils.inflate(getApplicationContext(), R.layout.dialog_miui);
+        View view = UIUtils.inflate(this, R.layout.dialog_miui);
+        AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view)
+                .setPositiveButton(android.R.string.no,
+                        (dialog, which) -> {
+                        }).create();
         SwitchCompat screen = view.findViewById(R.id.dialog_miui_lock_screen);
         if (turn) {
-            UIUtils.viewVisible(screen);
             screen.setOnCheckedChangeListener(
                     (buttonView, isChecked) -> {
                         if (ShellUtils.hasRootPermission()) {
@@ -283,9 +289,7 @@ public class MainActivity extends BaseActivity
         } else {
             UIUtils.viewGone(screen);
         }
-        new AlertDialog.Builder(this).setView(view).setPositiveButton(R.string.lcm_no,
-                (dialog, which) -> {
-                }).show();
+        alertDialog.show();
     }
 
     private void getPixabay() {
@@ -384,7 +388,7 @@ public class MainActivity extends BaseActivity
         if (mCurBingWallpaperImage == null) {
             return;
         }
-        String url = getUrl(mCurBingWallpaperImage);
+        String url = getUrl();
 
         BingWallpaperUtils.setWallpaper(this, mCurBingWallpaperImage.copy(url), type,
                 new Callback4.EmptyCallback<Boolean>() {
@@ -396,11 +400,23 @@ public class MainActivity extends BaseActivity
                 });
     }
 
-    private String getUrl(BingWallpaperImage image) {
+    private String getUrl() {
+        return getUrl(BingWallpaperUtils.getResolution(this));
+    }
+
+    private String getSaveUrl() {
+        return getUrl(BingWallpaperUtils.getSaveResolution(this));
+    }
+
+    private String getUrl(String resolution) {
+        if (mCurBingWallpaperImage == null) {
+            throw new IllegalArgumentException("image is null");
+        }
         if (BingWallpaperUtils.isPixabaySupport(this)) {
-            return image.getUrl();
+            return mCurBingWallpaperImage.getUrl();
         } else {
-            return BingWallpaperUtils.getResolutionImageUrl(this, image);
+            return BingWallpaperUtils.getImageUrl(this, resolution,
+                    mCurBingWallpaperImage);
         }
     }
 
@@ -564,8 +580,18 @@ public class MainActivity extends BaseActivity
                 getString(R.string.share),
                 R.drawable.ic_share_24dp, v -> {
                     BingWallpaperUtils.shareImage(this, new Config(this),
-                            getUrl(image), image.getCopyright());
+                            getUrl(), image.getCopyright());
                     mSetWallpaperActionMenu.close(true);
+                });
+
+        addActionButton(lightMutedSwatch, lightVibrantSwatch,
+                getString(R.string.save),
+                R.drawable.ic_save_white_24dp, v -> {
+                    mSetWallpaperActionMenu.close(true);
+                    if (mCurBingWallpaperImage == null) {
+                        return;
+                    }
+                    mDownloadHelper.saveWallpaper(this, getSaveUrl());
                 });
 
         if (!mini) {
@@ -625,7 +651,19 @@ public class MainActivity extends BaseActivity
     @Override
     protected void onDestroy() {
         mUiHelper.unregister(this);
+        if (mDownloadHelper != null) {
+            mDownloadHelper.destroy();
+        }
         UIUtils.cancelToast();
         super.onDestroy();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
+        if (mDownloadHelper != null) {
+            mDownloadHelper.onRequestPermissionsResult(requestCode, grantResults, getSaveUrl());
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

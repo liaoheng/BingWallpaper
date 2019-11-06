@@ -50,6 +50,7 @@ public class LicenseActivity extends BaseActivity {
         licenses.add(Licenses.fromGitHubApacheV2("Clans/FloatingActionButton"));
         licenses.add(Licenses.fromGitHubApacheV2("grandcentrix/tray"));
         licenses.add(Licenses.fromGitHubApacheV2("apl-devs/AppIntro"));
+        licenses.add(Licenses.fromGitHubApacheV2("scottyab/rootbeer"));
 
         mRecyclerView.setAdapter(new LicenseAdapter(licenses));
     }

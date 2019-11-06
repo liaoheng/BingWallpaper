@@ -30,6 +30,7 @@
     <string name="share">分享</string>
     <string name="set_wallpaper">设置壁纸</string>
     <string name="miui_root_dialog_hint">当前正使用MIUI，设置锁屏壁纸功能需要root权限! 并且需要手动打开这个功能.</string>
+    <string name="save">保存</string>
 
     <!--setting -->
     <string name="pref_auto_update_wallpaper">每日更新设置</string>

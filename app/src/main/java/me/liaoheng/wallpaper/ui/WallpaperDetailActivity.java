@@ -1,14 +1,11 @@
 package me.liaoheng.wallpaper.ui;
 
-import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -28,16 +25,13 @@ import androidx.core.app.ActivityCompat;
 import com.bumptech.glide.request.target.Target;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
-import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.UIUtils;
-import com.github.liaoheng.common.util.Utils;
 
 import org.jetbrains.annotations.NotNull;
 
 import butterknife.BindArray;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.disposables.Disposable;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
@@ -45,8 +39,8 @@ import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
+import me.liaoheng.wallpaper.util.DownloadHelper;
 import me.liaoheng.wallpaper.util.GlideApp;
-import me.liaoheng.wallpaper.util.NetUtils;
 import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
 import me.liaoheng.wallpaper.widget.SeekBarDialogFragment;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
@@ -91,11 +85,10 @@ public class WallpaperDetailActivity extends BaseActivity implements
     private AlertDialog mResolutionDialog;
 
     private BingWallpaperImage mWallpaperImage;
-    private ProgressDialog mDownLoadProgressDialog;
     private ProgressDialog mSetWallpaperProgressDialog;
-    private Disposable mDownLoadSubscription;
     private SetWallpaperStateBroadcastReceiverHelper mSetWallpaperStateBroadcastReceiverHelper;
     private Config config = new Config();
+    private DownloadHelper mDownloadHelper;
 
     public static void start(Context context, BingWallpaperImage item, Bundle bundle) {
         Intent intent = new Intent(context, WallpaperDetailActivity.class);
@@ -166,23 +159,15 @@ public class WallpaperDetailActivity extends BaseActivity implements
                 .setSingleChoiceItems(arrayAdapter, 2, (dialog, which) -> {
                     mSelectedResolution = mResolutions[which];
                     mResolutionDialog.dismiss();
-                    loadImage(getUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION));
+                    loadImage();
                 })
                 .create();
 
         mSetWallpaperProgressDialog = UIUtils.createProgressDialog(this, getString(R.string.set_wallpaper_running));
         mSetWallpaperProgressDialog.setCancelable(false);
-        mDownLoadProgressDialog = UIUtils.createProgressDialog(this, getString(R.string.download));
-        mDownLoadProgressDialog.setOnDismissListener(dialog -> Utils.dispose(mDownLoadSubscription));
+        mDownloadHelper = new DownloadHelper(this, TAG);
         mImageView.setOnClickListener(v -> toggleToolbar());
-        if (BingWallpaperUtils.isPixabaySupport(this)) {
-            loadImage(mWallpaperImage.getUrl());
-        } else {
-            loadImage(
-                    BingWallpaperUtils.getImageUrl(getApplicationContext(),
-                            Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
-                            mWallpaperImage));
-        }
+        loadImage();
     }
 
     private void toggleToolbar() {
@@ -213,41 +198,35 @@ public class WallpaperDetailActivity extends BaseActivity implements
     @Override
     public void onConfigurationChanged(@NotNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        reloadImage();
+        loadImage();
     }
 
-    private void reloadImage() {
+    private String getUrl(String defResolution) {
         if (BingWallpaperUtils.isPixabaySupport(this)) {
-            loadImage(mWallpaperImage.getUrl());
-        } else {
-            loadImage(getUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION));
+            return mWallpaperImage.getUrl();
         }
-    }
-
-    private String getUrl(String def) {
         if (TextUtils.isEmpty(mSelectedResolution)) {
-            return BingWallpaperUtils.getImageUrl(getApplicationContext(), def, mWallpaperImage);
+            return BingWallpaperUtils.getImageUrl(getApplicationContext(), defResolution, mWallpaperImage);
         } else {
             return BingWallpaperUtils.getImageUrl(getApplicationContext(), mSelectedResolution, mWallpaperImage);
         }
     }
 
-    private void loadImage(String url) {
+    private void loadImage() {
         BingWallpaperUtils.loadImage(GlideApp.with(this).asBitmap()
-                        .load(url)
+                        .load(getUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION))
                         .dontAnimate()
                         .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL), mImageView,
                 new Callback.EmptyCallback<Bitmap>() {
                     @Override
                     public void onPreExecute() {
-                        UIUtils.viewVisible(mProgressBar);
+                        mProgressBar.post(() -> mProgressBar.setVisibility(View.VISIBLE));
                         UIUtils.viewGone(mErrorTextView);
                     }
 
                     @Override
                     public void onPostExecute() {
-                        UIUtils.viewGone(mProgressBar);
-                        UIUtils.viewVisible(mErrorTextView);
+                        mProgressBar.post(() -> mProgressBar.setVisibility(View.GONE));
                     }
 
                     @Override
@@ -262,6 +241,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
                     public void onError(Throwable e) {
                         String error = CrashReportHandle.loadFailed(getApplicationContext(), TAG, e);
                         mErrorTextView.setText(error);
+                        UIUtils.viewVisible(mErrorTextView);
                     }
                 });
     }
@@ -310,16 +290,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
                         new Callback4.EmptyCallback<DialogInterface>() {
                             @Override
                             public void onYes(DialogInterface dialogInterface) {
-                                if (ActivityCompat.checkSelfPermission(getActivity(),
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                                        != PackageManager.PERMISSION_GRANTED) {
-                                    ActivityCompat.requestPermissions(getActivity(),
-                                            new String[] { Manifest.permission.READ_EXTERNAL_STORAGE,
-                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE },
-                                            111);
-                                } else {
-                                    saveWallpaper();
-                                }
+                                mDownloadHelper.saveWallpaper(getActivity(), getSaveUrl());
                             }
                         });
                 break;
@@ -346,60 +317,15 @@ public class WallpaperDetailActivity extends BaseActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    private void saveWallpaper() {
-        if (NetworkUtils.isMobileConnected(this)) {
-            UIUtils.showYNAlertDialog(this, getString(R.string.alert_mobile_data),
-                    new Callback4.EmptyCallback<DialogInterface>() {
-                        @Override
-                        public void onYes(DialogInterface dialogInterface) {
-                            downloadSaveWallpaper();
-                        }
-                    });
-        } else {
-            downloadSaveWallpaper();
-        }
-    }
-
-    private void downloadSaveWallpaper() {
-        String url;
-        if (BingWallpaperUtils.isPixabaySupport(this)) {
-            url = mWallpaperImage.getUrl();
-        } else {
-            url = getUrl(BingWallpaperUtils.getSaveResolution(this));
-        }
-        mDownLoadSubscription = NetUtils.get().downloadImageToFile(this, url, new Callback.EmptyCallback<Uri>() {
-            @Override
-            public void onPreExecute() {
-                UIUtils.showDialog(mDownLoadProgressDialog);
-            }
-
-            @Override
-            public void onPostExecute() {
-                UIUtils.dismissDialog(mDownLoadProgressDialog);
-            }
-
-            @Override
-            public void onSuccess(Uri file) {
-                UIUtils.showToast(getApplicationContext(), R.string.alert_save_wallpaper_success);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                CrashReportHandle.saveWallpaper(getApplicationContext(), TAG, e);
-                UIUtils.showToast(getApplicationContext(), R.string.alert_save_wallpaper_failure);
-            }
-        });
+    private String getSaveUrl() {
+        return getUrl(BingWallpaperUtils.getSaveResolution(this));
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
             @NonNull int[] grantResults) {
-        if (requestCode == 111) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                saveWallpaper();
-            } else {
-                UIUtils.showToast(getApplicationContext(), "no permission");
-            }
+        if (mDownloadHelper != null) {
+            mDownloadHelper.onRequestPermissionsResult(requestCode, grantResults, getSaveUrl());
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
@@ -456,8 +382,16 @@ public class WallpaperDetailActivity extends BaseActivity implements
     }
 
     @Override
+    protected void onDestroy() {
+        if (mDownloadHelper != null) {
+            mDownloadHelper.destroy();
+        }
+        super.onDestroy();
+    }
+
+    @Override
     public void onSeekBarValue(int value) {
         config.setStackBlur(value);
-        reloadImage();
+        loadImage();
     }
 }
