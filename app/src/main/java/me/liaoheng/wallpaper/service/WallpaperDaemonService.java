@@ -65,7 +65,7 @@ public class WallpaperDaemonService extends Service {
                         }
                         if (TasksUtils.isToDaysDoProvider(getApplicationContext(), 1,
                                 BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
-                            BingWallpaperUtils.startCheckService(getApplicationContext(), TAG);
+                            BingWallpaperUtils.runningService(getApplicationContext(), TAG);
                         }
                     }
                 });

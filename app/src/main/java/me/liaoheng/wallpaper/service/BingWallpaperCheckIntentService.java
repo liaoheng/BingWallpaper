@@ -29,8 +29,14 @@ public class BingWallpaperCheckIntentService extends IntentService {
     @Override
     public void onCreate() {
         setIntentRedelivery(true);
-        NotificationUtils.showCheckNotification(this);
         super.onCreate();
+    }
+
+    //https://issuetracker.google.com/issues/76112072
+    @Override
+    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+        NotificationUtils.showCheckNotification(this);
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override

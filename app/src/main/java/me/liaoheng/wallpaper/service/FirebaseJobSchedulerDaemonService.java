@@ -32,7 +32,7 @@ public class FirebaseJobSchedulerDaemonService extends JobService {
         mHandler = new Handler(mHandlerThread.getLooper()) {
             @Override
             public void handleMessage(@NotNull Message msg) {
-                BingWallpaperUtils.startCheckService(getApplicationContext(), TAG);
+                BingWallpaperUtils.runningService(getApplicationContext(), TAG);
                 jobFinished((JobParameters) msg.obj, false);
             }
         };

@@ -245,7 +245,7 @@ public class MainActivity extends BaseActivity
         } else {
             getBingWallpaper();
         }
-        CrashReportHandle.collectROMInfo(this, ROM.getROM());
+
         if (ROM.getROM().isMiui()) {
             if (BingWallpaperUtils.isMiuiLockScreenSupport(this)) {
                 return;
