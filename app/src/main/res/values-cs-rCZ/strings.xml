@@ -31,6 +31,7 @@
     <string name="feedback_copied">Zpětná vazba je skopírovaná do schránky.</string>
     <string name="share">Sdílet</string>
     <string name="set_wallpaper">Nastavit pozadí</string>
+    <string name="miui_root_dialog_hint">Používáte MIUI, nastavení pozadí zámku obrazovky vyžaduje oprávnění root! A je potřeba ručně otevřít.</string>
     <!--setting -->
     <string name="pref_auto_update_wallpaper">Nastavení denní aktualizace</string>
     <string name="pref_update_only_on_wifi">Pouze Wi-Fi</string>
