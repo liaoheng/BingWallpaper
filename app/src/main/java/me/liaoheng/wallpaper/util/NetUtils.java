@@ -29,7 +29,6 @@ import okhttp3.Cache;
 import okhttp3.Connection;
 import okhttp3.Dispatcher;
 import okhttp3.Headers;
-import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -37,7 +36,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import okhttp3.dnsoverhttps.DnsOverHttps;
 import okhttp3.internal.Util;
 import okhttp3.internal.http.HttpHeaders;
 import okio.Buffer;
@@ -89,11 +87,6 @@ public class NetUtils {
                 .callTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(60, TimeUnit.SECONDS)
                 .connectTimeout(80, TimeUnit.SECONDS);
-        simpleBuilder.dns(new DnsOverHttps.Builder()
-                .client(new OkHttpClient.Builder().build())
-                .url(HttpUrl.get("https://cloudflare-dns.com/dns-query"))
-                .includeIPv6(false)
-                .build());
         ExecutorService threadPoolExecutor = Executors
                 .newSingleThreadExecutor(Util.threadFactory("OkHttp Dispatcher", false));
         Dispatcher dispatcher = new Dispatcher(threadPoolExecutor);
