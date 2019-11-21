@@ -7,6 +7,8 @@ import me.liaoheng.wallpaper.model.Pixabay;
 import retrofit2.Call;
 import retrofit2.http.*;
 
+import static me.liaoheng.wallpaper.util.Constants.PIXABAY_BASE_URL;
+
 /**
  * @author liaoheng
  * @version 2016-09-19 11:15
@@ -26,9 +28,9 @@ public interface BingWallpaperNetworkService {
     @GET("https://www.bing.com/cnhp/coverstory")
     Observable<BingWallpaperCoverStory> getCoverStory();
 
-    @GET("https://pixabay.com/api/?key=11234205-21f02ee751cd3cd4f1fa49b70&orientation=horizontal&image_type=photo")
+    @GET(PIXABAY_BASE_URL)
     Call<Pixabay> getPixabays(@Query("per_page") int perPage);
 
-    @GET("https://pixabay.com/api/?key=11234205-21f02ee751cd3cd4f1fa49b70&orientation=horizontal&image_type=photo")
-    Observable<Pixabay> getPixabays(@Query("page") int page, @Query("per_page") int perPage);
+    @GET(PIXABAY_BASE_URL)
+    Observable<Pixabay> getPixabays(@Query("page") int page, @Query("per_page") int perPage,@Query("order") String order);
 }

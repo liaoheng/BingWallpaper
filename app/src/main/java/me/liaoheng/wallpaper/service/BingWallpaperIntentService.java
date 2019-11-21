@@ -150,7 +150,7 @@ public class BingWallpaperIntentService extends IntentService {
                     image.setImageUrl(BingWallpaperUtils.getResolutionImageUrl(getApplicationContext(),
                             image));
                 }
-            } catch (NetException e) {
+            } catch (IOException e) {
                 callback.onError(e);
                 return;
             }

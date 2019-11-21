@@ -757,14 +757,11 @@ public class BingWallpaperUtils {
                 }
             }
             if (isPixabaySupport(context)) {
-                if (TasksUtils.isToDaysDoProvider(context, 1,
+                if (!TasksUtils.isToDaysDoProvider(context, 1,
                         BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
-                    BingWallpaperIntentService.start(context,
-                            getAutoModeValue(context));
-                    return 0;
-                } else {
                     return 3;
                 }
+                BingWallpaperIntentService.start(context, getAutoModeValue(context));
             } else {
                 try {
                     BingWallpaperImage image = BingWallpaperNetworkClient.getBingWallpaperSingleCall(context);
@@ -777,8 +774,8 @@ public class BingWallpaperUtils {
                         return 0;
                     }
                     try {
-                        BingWallpaperIntentService.start(context, image, BingWallpaperUtils.getAutoModeValue(context),
-                                new Config(context), true);
+                        BingWallpaperIntentService.start(context, image, getAutoModeValue(context), new Config(context),
+                                true);
                     } catch (Exception e) {
                         CrashReportHandle.collectException(context, TAG, e);
                     }
@@ -787,8 +784,8 @@ public class BingWallpaperUtils {
                         LogDebugFileUtils.get().e(TAG, "Check error :", e);
                     }
                 }
-                return 0;
             }
+            return 0;
         } else {
             return 1;
         }

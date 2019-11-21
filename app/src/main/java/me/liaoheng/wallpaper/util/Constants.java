@@ -22,12 +22,14 @@ public interface Constants {
     long JOB_SCHEDULER_PERIODIC = 3;//hour
     long DAEMON_SERVICE_PERIODIC = TimeUnit.MINUTES.toSeconds(30);
 
-    String LOCAL_BASE_URL = "https://www.bing.com";
+    String PIXABAY_BASE_URL = "https://pixabay.com/api/?key=11234205-21f02ee751cd3cd4f1fa49b70&orientation=horizontal&image_type=photo";
+
+    String LOCAL_BASE_URL = "https://bing.com";
     String GLOBAL_BASE_URL = "https://global.bing.com";
 
     String BASE_API_URL = "/HPImageArchive.aspx?format=js&idx=%s&n=%s&pid=hp&mtk=%s";
-    String LOCAL_API_URL = LOCAL_BASE_URL+BASE_API_URL;
-    String GLOBAL_API_URL = GLOBAL_BASE_URL+BASE_API_URL;
+    String LOCAL_API_URL = LOCAL_BASE_URL + BASE_API_URL;
+    String GLOBAL_API_URL = GLOBAL_BASE_URL + BASE_API_URL;
 
     String MKT_HEADER = "_EDGE_S=mkt=%s";
 

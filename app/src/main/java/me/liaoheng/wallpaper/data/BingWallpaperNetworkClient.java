@@ -1,12 +1,8 @@
 package me.liaoheng.wallpaper.data;
 
 import android.content.Context;
+import android.util.AndroidRuntimeException;
 
-import com.github.liaoheng.common.util.NetException;
-import com.github.liaoheng.common.util.NetLocalException;
-import com.github.liaoheng.common.util.NetServerException;
-import com.github.liaoheng.common.util.SystemDataException;
-import com.github.liaoheng.common.util.SystemRuntimeException;
 import com.github.liaoheng.common.util.ValidateUtils;
 
 import java.io.IOException;
@@ -43,7 +39,7 @@ public class BingWallpaperNetworkClient {
         String url = BingWallpaperUtils.getUrl(context, index, count, locale);
         return getBingWallpaper(url, locale).map(bingWallpaper -> {
             if (bingWallpaper == null || bingWallpaper.getImages() == null || bingWallpaper.getImages().isEmpty()) {
-                throw new SystemRuntimeException(new SystemDataException("bing wallpaper is not data"));
+                throw new AndroidRuntimeException(new IOException("bing wallpaper is not data"));
             }
             return bingWallpaper.getImages();
         });
@@ -66,33 +62,29 @@ public class BingWallpaperNetworkClient {
                 .map(bingWallpaper -> {
                     if (bingWallpaper == null || bingWallpaper.getImages() == null
                             || bingWallpaper.getImages().isEmpty()) {
-                        throw new SystemRuntimeException(new SystemDataException("bing wallpaper is not data"));
+                        throw new AndroidRuntimeException(new IOException("bing wallpaper is not data"));
                     }
                     return bingWallpaper.getImages().get(0);
                 });
     }
 
-    public static BingWallpaperImage getBingWallpaperSingleCall(Context context) throws NetException {
+    public static BingWallpaperImage getBingWallpaperSingleCall(Context context) throws IOException {
         String locale = BingWallpaperUtils.getAutoLocale(context);
         String url = BingWallpaperUtils.getUrl(context);
         return getBingWallpaperSingleCall(url, locale);
     }
 
-    public static BingWallpaperImage getBingWallpaperSingleCall(String url, String locale) throws NetException {
-        try {
-            Response<BingWallpaper> execute = NetUtils.get().getBingWallpaperSingleNetworkService()
-                    .getBingWallpaperCall(url, getMkt(locale)).execute();
-            if (execute.isSuccessful()) {
-                BingWallpaper bingWallpaper = execute.body();
-                if (bingWallpaper == null || ValidateUtils.isItemEmpty(bingWallpaper.getImages())) {
-                    throw new NetServerException("bing wallpaper is not data");
-                }
-                return bingWallpaper.getImages().get(0);
-            } else {
-                throw new NetServerException("bing server response failure");
+    public static BingWallpaperImage getBingWallpaperSingleCall(String url, String locale) throws IOException {
+        Response<BingWallpaper> execute = NetUtils.get().getBingWallpaperSingleNetworkService()
+                .getBingWallpaperCall(url, getMkt(locale)).execute();
+        if (execute.isSuccessful()) {
+            BingWallpaper bingWallpaper = execute.body();
+            if (bingWallpaper == null || ValidateUtils.isItemEmpty(bingWallpaper.getImages())) {
+                throw new IOException("bing wallpaper is not data");
             }
-        } catch (IOException e) {
-            throw new NetLocalException(e);
+            return bingWallpaper.getImages().get(0);
+        } else {
+            throw new IOException("bing server response failure");
         }
     }
 
@@ -107,30 +99,26 @@ public class BingWallpaperNetworkClient {
 
     private static int PIXABAY_EDITORS_CHOICE_PER_PAGE = 60;
 
-    public static BingWallpaperImage getPixabaysExecute() throws NetException {
-        try {
-            Response<Pixabay> execute = NetUtils.get()
-                    .getBingWallpaperSingleNetworkService()
-                    .getPixabays(PIXABAY_EDITORS_CHOICE_PER_PAGE)
-                    .execute();
-            if (execute.isSuccessful()) {
-                Pixabay pixabay = execute.body();
-                if (pixabay == null || ValidateUtils.isItemEmpty(pixabay.getHits())) {
-                    throw new NetServerException("pixabay is not data");
-                }
-                return createBingWallpaperImage(randomPixabay(pixabay));
-            } else {
-                throw new NetServerException("pixabay server response failure");
+    public static BingWallpaperImage getPixabaysExecute() throws IOException {
+        Response<Pixabay> execute = NetUtils.get()
+                .getBingWallpaperSingleNetworkService()
+                .getPixabays(PIXABAY_EDITORS_CHOICE_PER_PAGE)
+                .execute();
+        if (execute.isSuccessful()) {
+            Pixabay pixabay = execute.body();
+            if (pixabay == null || ValidateUtils.isItemEmpty(pixabay.getHits())) {
+                throw new IOException("pixabay is not data");
             }
-        } catch (IOException e) {
-            throw new NetLocalException(e);
+            return createBingWallpaperImage(randomPixabay(pixabay));
+        } else {
+            throw new IOException("pixabay server response failure");
         }
     }
 
-    public static Observable<Pixabay> getPixabays(int page, int perPage) {
+    public static Observable<Pixabay> getPixabays(int page, int perPage, String order) {
         return NetUtils.get()
                 .getBingWallpaperNetworkService()
-                .getPixabays(page, perPage)
+                .getPixabays(page, perPage, order)
                 .subscribeOn(Schedulers.io());
     }
 
@@ -144,7 +132,7 @@ public class BingWallpaperNetworkClient {
     }
 
     public static Observable<List<BingWallpaperImage>> getPixabays(int page) {
-        return getPixabays(page, 20).flatMap(
+        return getPixabays(page, 20,"latest").flatMap(
                 (Function<Pixabay, ObservableSource<List<BingWallpaperImage>>>) pixabay -> {
                     List<BingWallpaperImage> wallpaperList = new ArrayList<>();
                     if (ValidateUtils.isItemEmpty(pixabay.getHits())) {
@@ -168,10 +156,10 @@ public class BingWallpaperNetworkClient {
     }
 
     public static Observable<BingWallpaperImage> randomPixabayImage() {
-        return getPixabays(1, PIXABAY_EDITORS_CHOICE_PER_PAGE).flatMap(
+        return getPixabays(1, PIXABAY_EDITORS_CHOICE_PER_PAGE,"popular").flatMap(
                 (Function<Pixabay, ObservableSource<BingWallpaperImage>>) pixabay -> {
                     if (ValidateUtils.isItemEmpty(pixabay.getHits())) {
-                        return Observable.error(new NetServerException("pixabay is not data"));
+                        return Observable.error(new IOException("pixabay is not data"));
                     }
                     return Observable.just(createBingWallpaperImage(randomPixabay(pixabay)));
                 });
