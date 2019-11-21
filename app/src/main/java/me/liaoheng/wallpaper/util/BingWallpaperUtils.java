@@ -776,13 +776,16 @@ public class BingWallpaperUtils {
                         }
                         return 0;
                     }
-                    BingWallpaperIntentService.start(context, image, BingWallpaperUtils.getAutoModeValue(context),
-                            new Config(context), true);
+                    try {
+                        BingWallpaperIntentService.start(context, image, BingWallpaperUtils.getAutoModeValue(context),
+                                new Config(context), true);
+                    } catch (Exception e) {
+                        CrashReportHandle.collectException(context, TAG, e);
+                    }
                 } catch (Exception e) {
                     if (BingWallpaperUtils.isEnableLogProvider(context)) {
                         LogDebugFileUtils.get().e(TAG, "Check error :", e);
                     }
-                    return 0;
                 }
                 return 0;
             }
