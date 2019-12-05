@@ -283,6 +283,8 @@ public class BingWallpaperUtils {
                 return LocaleList.plLocale();
             case 7:
                 return LocaleList.csLocale();
+            case 8:
+                return LocaleList.nlLocale();
             default:
                 Locale originalLocale = LanguageContextWrapper.getOriginalLocale();
                 return originalLocale == null ? getCurrentLocale(context) : originalLocale;
@@ -343,27 +345,28 @@ public class BingWallpaperUtils {
                     new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
         } else {
             //https://developer.android.com/training/data-storage/files/external-scoped
-            Cursor query = context.getContentResolver().query(MediaStore.Images.Media.getContentUri(
+            try (Cursor query = context.getContentResolver().query(MediaStore.Images.Media.getContentUri(
                     MediaStore.VOLUME_EXTERNAL_PRIMARY), null,
                     MediaStore.Images.Media.DISPLAY_NAME + "='" + name + "' AND "
                             + MediaStore.Images.Media.OWNER_PACKAGE_NAME + "='"
                             + context.getPackageName() + "'",
-                    null, null);
-            if (query != null && query.moveToFirst()) {
-                long id = query.getLong(query.getColumnIndex(MediaStore.Images.Media._ID));
-                uri = ContentUris.withAppendedId(
-                        MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY), id);
-                query.close();
-            } else {
-                contentValues = new ContentValues();
-                contentValues.put(MediaStore.Images.Media.DISPLAY_NAME, name);
-                contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-                contentValues.put(MediaStore.Images.Media.IS_PENDING, 1);
-                contentValues.put(MediaStore.Images.Media.RELATIVE_PATH,
-                        Environment.DIRECTORY_PICTURES + File.separator + Common.getProjectName());
-                uri = context.getContentResolver().insert(MediaStore.Images.Media.getContentUri(
-                        MediaStore.VOLUME_EXTERNAL_PRIMARY), contentValues);
+                    null, null)) {
+                if (query != null && query.moveToFirst()) {
+                    long id = query.getLong(query.getColumnIndex(MediaStore.Images.Media._ID));
+                    uri = ContentUris.withAppendedId(
+                            MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY), id);
+                } else {
+                    contentValues = new ContentValues();
+                    contentValues.put(MediaStore.Images.Media.DISPLAY_NAME, name);
+                    contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                    contentValues.put(MediaStore.Images.Media.IS_PENDING, 1);
+                    contentValues.put(MediaStore.Images.Media.RELATIVE_PATH,
+                            Environment.DIRECTORY_PICTURES + File.separator + Common.getProjectName());
+                    uri = context.getContentResolver().insert(MediaStore.Images.Media.getContentUri(
+                            MediaStore.VOLUME_EXTERNAL_PRIMARY), contentValues);
+                }
             }
+
             if (uri == null) {
                 throw new IOException("getContentResolver uri is null");
             }
@@ -907,14 +910,16 @@ public class BingWallpaperUtils {
 
     public static String getTranslator(Context context) {
         Locale locale = getLanguage(context);
-        if (locale.equals(LocaleList.plLocale())) {
+        if (locale.getLanguage().equals(LocaleList.plLocale().getLanguage())) {
             return "Translator : @dekar16";
-        } else if (locale.equals(LocaleList.ruLocale())) {
-            return "Translator : @tullev";
-        } else if (locale.equals(LocaleList.csLocale())) {
+        } else if (locale.getLanguage().equals(LocaleList.ruLocale().getLanguage())) {
+            return "Translator : @tullev(Lev Tulubjev) @FanHamMer(Oleg Popenkov)";
+        } else if (locale.getLanguage().equals(LocaleList.csLocale().getLanguage())) {
             return "Translator : @foreteller";
-        } else if (locale.equals(Locale.GERMANY)) {
+        } else if (locale.getLanguage().equals(Locale.GERMANY.getLanguage())) {
             return "Translator : @Bergradler";
+        } else if (locale.getLanguage().equals(LocaleList.nlLocale().getLanguage())) {
+            return "Translator : @5qx9Pe7Lvj8Fn7zg(Jasper)";
         }
         return "";
     }

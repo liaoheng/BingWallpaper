@@ -26,3 +26,18 @@ All contributions features, bug fixes, additional language translations are welc
 
 ### Translating
 See the [translation page](https://crowdin.com/project/starth-bing-wallpaper) if you would like to contribute.
+
+### Translator
+
+> Thanks for their help
+
+- **Polski**(Polish)
+[@dekar16](https://crowdin.com/profile/dekar16)
+-  **Русский**(Russian)
+[@tullev(Lev Tulubjev)](https://crowdin.com/profile/tullev), [@FanHamMer(Oleg Popenkov)](https://crowdin.com/profile/FanHamMer)
+- **Čeština**(Czech)
+[@foreteller](https://crowdin.com/profile/foreteller)
+- **Deutsch**(German)
+[@Bergradler](https://crowdin.com/profile/Bergradler)
+- **Nederlands**(Dutch)
+[@5qx9Pe7Lvj8Fn7zg(Jasper)](https://crowdin.com/profile/5qx9Pe7Lvj8Fn7zg)

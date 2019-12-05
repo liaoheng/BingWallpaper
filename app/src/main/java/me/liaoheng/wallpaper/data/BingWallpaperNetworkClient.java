@@ -8,6 +8,7 @@ import com.github.liaoheng.common.util.ValidateUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
@@ -148,7 +149,7 @@ public class BingWallpaperNetworkClient {
     public static PixabayImage randomPixabay(Pixabay pixabay) {
         try {
             int size = pixabay.getHits().size();
-            int num = (int) (Math.random() * size);
+            int num = new Random().nextInt(size);
             return pixabay.getHits().get(num);
         } catch (Exception e) {
             return pixabay.getHits().get(0);

@@ -19,4 +19,8 @@ public class LocaleList {
     public static Locale csLocale(){
         return new Locale("cs", "CZ");
     }
+
+    public static Locale nlLocale(){
+        return new Locale("nl", "NL");
+    }
 }

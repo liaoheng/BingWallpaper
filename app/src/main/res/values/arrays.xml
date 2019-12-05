@@ -72,6 +72,7 @@
         <item>Deutsch</item>
         <item>Polski</item>
         <item>Čeština</item>
+        <item>Nederlands</item>
     </string-array>
 
     <string-array name="pref_language_values">
@@ -83,6 +84,7 @@
         <item>5</item>
         <item>6</item>
         <item>7</item>
+        <item>8</item>
     </string-array>
 
     <string-array name="pref_set_wallpaper_day_fully_automatic_update_type_names">
