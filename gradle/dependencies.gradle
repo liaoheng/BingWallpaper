@@ -1,0 +1,58 @@
+//AM 11:35 2019/10/9
+ext {
+    minSdkVersion = 21
+    targetSdkVersion = 29
+    compileSdkVersion = 29
+    buildToolsVersion = '29.0.2'
+    retrofitVersion = '2.6.1'
+    jacksonVersion = '2.9.9'
+    glideVersion = '4.10.0'
+    androidxVersion = '1.1.0'
+}
+ext.deps = [
+        robolectric               : 'org.robolectric:robolectric:4.3',
+        junit                     : 'junit:junit:4.12',
+        //https://dl.google.com/dl/android/maven2/index.html
+        core                      : "androidx.core:core:$ext.androidxVersion",
+        annotations               : "androidx.annotation:annotation:$ext.androidxVersion",
+        appcompat                 : "androidx.appcompat:appcompat:$ext.androidxVersion",
+        fragment                  : "androidx.fragment:fragment:$ext.androidxVersion",
+        coordinatorlayout         : "androidx.coordinatorlayout:coordinatorlayout:1.1.0-beta01",
+        viewpager                 : "androidx.viewpager:viewpager:1.0.0",
+        recyclerview              : "androidx.recyclerview:recyclerview:1.1.0-beta04",
+        swiperefreshlayout        : "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha02",
+        cardview                  : "androidx.cardview:cardview:1.0.0",
+        browser                   : "androidx.browser:browser:1.2.0-alpha08",
+        preference                : "androidx.preference:preference:$ext.androidxVersion",
+        material                  : "com.google.android.material:material:1.1.0-beta01",
+        //https://github.com/google/guava
+        guava                : "com.google.guava:guava:28.1-android",
+        //https://github.com/FasterXML/jackson-annotations
+        jackson_annotations       : "com.fasterxml.jackson.core:jackson-annotations:$ext.jacksonVersion",
+        //https://github.com/FasterXML/jackson-databind
+        jackson_databind          : "com.fasterxml.jackson.core:jackson-databind:$ext.jacksonVersion",
+        //https://github.com/FasterXML/jackson-core
+        jackson_core              : "com.fasterxml.jackson.core:jackson-core:$ext.jacksonVersion",
+        //https://github.com/ReactiveX/RxJava
+        rxjava2                   : 'io.reactivex.rxjava2:rxjava:2.2.12',
+        //https://github.com/ReactiveX/RxAndroid
+        rxandroid2                : 'io.reactivex.rxjava2:rxandroid:2.1.1',
+        //https://github.com/trello/RxLifecycle
+        rxlifecycle3              : 'com.trello.rxlifecycle3:rxlifecycle:3.0.0',
+        rxlifecycle_android3      : 'com.trello.rxlifecycle3:rxlifecycle-android:3.0.0',
+        //https://github.com/bumptech/glide
+        glide                     : "com.github.bumptech.glide:glide:$ext.glideVersion",
+        glide_compiler            : "com.github.bumptech.glide:compiler:$ext.glideVersion",
+        glide_okhttp3_integration : "com.github.bumptech.glide:okhttp3-integration:$ext.glideVersion",
+        //https://github.com/square/okhttp
+        okhttp                    : 'com.squareup.okhttp3:okhttp:3.14.3',
+        //https://github.com/square/retrofit
+        retrofit                  : "com.squareup.retrofit2:retrofit:$ext.retrofitVersion",
+        retrofit_converter_jackson: "com.squareup.retrofit2:converter-jackson:$ext.retrofitVersion",
+        retrofit_converter_gson   : "com.squareup.retrofit2:converter-gson:$ext.retrofitVersion",
+        retrofit_adapter_rxjava2  : "com.squareup.retrofit2:adapter-rxjava2:$ext.retrofitVersion",
+        //https://github.com/sockeqwe/AdapterDelegates
+        adapterdelegates4         : 'com.hannesdorfmann:adapterdelegates4:4.0.0',
+        //https://github.com/dlew/joda-time-android
+        joda_time_android         : 'net.danlew:android.joda:2.10.3',
+]

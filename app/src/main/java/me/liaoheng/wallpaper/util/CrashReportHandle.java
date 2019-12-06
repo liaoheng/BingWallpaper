@@ -20,8 +20,12 @@ import me.liaoheng.wallpaper.R;
  * @version 2018-04-23 23:25
  */
 public class CrashReportHandle {
+    private static boolean isCrashlytics;
+    private static boolean isFirebaseAnalytics;
 
     public static void init(Context context) {
+        initCrashlytics();
+        initFirebaseAnalytics();
         if (check(context)) {
             disable(context);
         } else {
@@ -29,15 +33,39 @@ public class CrashReportHandle {
         }
     }
 
-    public static void enable(Context context) {
-        if (!Fabric.isInitialized()) {
-            Fabric.with(context, new Crashlytics());
+    private static void initCrashlytics() {
+        try {
+            Class.forName("com.crashlytics.android.Crashlytics");
+            isCrashlytics = true;
+        } catch (ClassNotFoundException ignored) {
         }
-        FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(true);
+        isCrashlytics = false;
+    }
+
+    private static void initFirebaseAnalytics() {
+        try {
+            Class.forName("com.google.firebase.analytics.FirebaseAnalytics");
+            isFirebaseAnalytics = true;
+        } catch (ClassNotFoundException ignored) {
+        }
+        isFirebaseAnalytics = false;
+    }
+
+    public static void enable(Context context) {
+        if (isCrashlytics) {
+            if (!Fabric.isInitialized()) {
+                Fabric.with(context, new Crashlytics());
+            }
+        }
+        if (isFirebaseAnalytics) {
+            FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(true);
+        }
     }
 
     public static void disable(Context context) {
-        FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(false);
+        if (isFirebaseAnalytics) {
+            FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(false);
+        }
     }
 
     public static String loadFailed(Context context, String TAG, Throwable throwable) {
@@ -82,6 +110,9 @@ public class CrashReportHandle {
 
     public static void collectException(Context context, String TAG, String msg, Throwable t) {
         if (check(context)) {
+            return;
+        }
+        if (!isCrashlytics) {
             return;
         }
         try {

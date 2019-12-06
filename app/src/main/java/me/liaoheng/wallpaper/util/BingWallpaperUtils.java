@@ -913,7 +913,7 @@ public class BingWallpaperUtils {
         if (locale.getLanguage().equals(LocaleList.plLocale().getLanguage())) {
             return "Translator : @dekar16";
         } else if (locale.getLanguage().equals(LocaleList.ruLocale().getLanguage())) {
-            return "Translator : @tullev(Lev Tulubjev) @FanHamMer(Oleg Popenkov)";
+            return "Translator : @tullev(Lev Tulubjev), @FanHamMer(Oleg Popenkov)";
         } else if (locale.getLanguage().equals(LocaleList.csLocale().getLanguage())) {
             return "Translator : @foreteller";
         } else if (locale.getLanguage().equals(Locale.GERMANY.getLanguage())) {

@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
+
+def isFirebase = rootProject.file('app/google-services.json').exists()
+if (isFirebase) {
+    apply plugin: 'io.fabric'
+}
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -53,6 +57,9 @@ android {
     }
 }
 
+def crashlytics="com.crashlytics.sdk.android:crashlytics:2.10.1"
+def firebaseCore="com.google.firebase:firebase-core:17.2.1"
+
 dependencies {
     testImplementation deps.robolectric
     testImplementation deps.junit
@@ -64,10 +71,15 @@ dependencies {
     implementation deps.preference
 
     implementation 'androidx.work:work-runtime:2.2.0'
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
-    implementation 'com.google.firebase:firebase-core:17.2.1'
     implementation 'com.firebase:firebase-jobdispatcher:0.8.6'
-    //    implementation 'com.google.android.gms:play-services-base:15.0.1'
+    if (isFirebase) {
+        implementation crashlytics
+        implementation firebaseCore
+    } else {
+        implementation 'com.google.android.gms:play-services-base:17.1.0'
+        compileOnly crashlytics
+        compileOnly firebaseCore
+    }
 
     implementation 'com.jakewharton:butterknife:10.2.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.0'
@@ -103,8 +115,8 @@ dependencies {
     //https://github.com/apl-devs/AppIntro
     implementation 'com.github.AppIntro:AppIntro:5.1.0'
 
-//    implementation group: "com.github.liaoheng", name: "common-core", version: "0.1.0-SNAPSHOT", changing: true
-//    implementation group: "com.github.liaoheng", name: "common-adapter", version: "0.1.0-SNAPSHOT", changing: true
+    //    implementation group: "com.github.liaoheng", name: "common-core", version: "0.1.0-SNAPSHOT", changing: true
+    //    implementation group: "com.github.liaoheng", name: "common-adapter", version: "0.1.0-SNAPSHOT", changing: true
     implementation 'com.github.liaoheng:common-core:0.1.0-SNAPSHOT'
     implementation 'com.github.liaoheng:common-adapter:0.1.0-SNAPSHOT'
 }
@@ -112,4 +124,6 @@ dependencies {
 //    // check for updates every build
 //    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 //}
-apply plugin: 'com.google.gms.google-services'
+if (isFirebase) {
+    apply plugin: 'com.google.gms.google-services'
+}
