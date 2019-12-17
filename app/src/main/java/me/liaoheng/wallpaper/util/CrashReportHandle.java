@@ -38,8 +38,8 @@ public class CrashReportHandle {
             Class.forName("com.crashlytics.android.Crashlytics");
             isCrashlytics = true;
         } catch (ClassNotFoundException ignored) {
+            isCrashlytics = false;
         }
-        isCrashlytics = false;
     }
 
     private static void initFirebaseAnalytics() {
@@ -47,8 +47,8 @@ public class CrashReportHandle {
             Class.forName("com.google.firebase.analytics.FirebaseAnalytics");
             isFirebaseAnalytics = true;
         } catch (ClassNotFoundException ignored) {
+            isFirebaseAnalytics = false;
         }
-        isFirebaseAnalytics = false;
     }
 
     public static void enable(Context context) {
@@ -109,10 +109,10 @@ public class CrashReportHandle {
     }
 
     public static void collectException(Context context, String TAG, String msg, Throwable t) {
-        if (check(context)) {
+        if (!isCrashlytics) {
             return;
         }
-        if (!isCrashlytics) {
+        if (check(context)) {
             return;
         }
         try {
