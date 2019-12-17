@@ -239,7 +239,7 @@ public class BingWallpaperIntentService extends IntentService {
                 if (!BingWallpaperUtils.checkStoragePermissions(this)) {
                     throw new IOException("Permission denied");
                 }
-                Uri file = BingWallpaperUtils.saveFileToPicture(this, url, wallpaper);
+                Uri file = BingWallpaperUtils.saveFileToPictureCompat(this, url, wallpaper);
                 if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
                     LogDebugFileUtils.get().i(TAG, "save wallpaper to: %s", file);
                 }
