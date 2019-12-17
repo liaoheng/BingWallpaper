@@ -22,6 +22,7 @@ import androidx.preference.SwitchPreferenceCompat;
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
+import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.ShellUtils;
@@ -166,12 +167,7 @@ public class SettingsActivity extends BaseActivity {
             super.onCreate(savedInstanceState);
             mPreferences = SettingTrayPreferences.get(getActivity());
             Preference version = findPreference("pref_version");
-            try {
-                String versionName = AppUtils.getVersionInfo(getActivity()).versionName;
-                version.setSummary(versionName);
-            } catch (SystemException e) {
-                L.alog().w(TAG, e);
-            }
+            version.setSummary(AppUtils.getVersionInfo(getActivity()).versionName);
 
             findPreference("pref_github").setOnPreferenceClickListener(preference -> {
                 BingWallpaperUtils.openBrowser(getActivity(), "https://github.com/liaoheng/BingWallpaper");
@@ -191,9 +187,9 @@ public class SettingsActivity extends BaseActivity {
             findPreference("pref_clear_cache").setOnPreferenceClickListener(
                     preference -> {
                         UIUtils.showYNAlertDialog(getActivity(), getString(R.string.pref_clear_cache) + "?",
-                                new Callback4.EmptyCallback<DialogInterface>() {
+                                new Callback5() {
                                     @Override
-                                    public void onYes(DialogInterface dialogInterface) {
+                                    public void onAllow() {
                                         Utils.addSubscribe(BingWallpaperUtils.clearCache(getActivity()),
                                                 new Callback.EmptyCallback<Object>() {
                                                     @Override
@@ -202,6 +198,11 @@ public class SettingsActivity extends BaseActivity {
                                                                 getString(R.string.pref_clear_cache_success));
                                                     }
                                                 });
+                                    }
+
+                                    @Override
+                                    public void onDeny() {
+
                                     }
                                 });
                         return true;
@@ -385,7 +386,7 @@ public class SettingsActivity extends BaseActivity {
                 case PREF_SET_WALLPAPER_LOG:
                     mPreferences.put(PREF_SET_WALLPAPER_LOG, mLogPreference.isChecked());
                     if (mLogPreference.isChecked()) {
-                        LogDebugFileUtils.get().init(getContext());
+                        LogDebugFileUtils.init(getContext());
                     } else {
                         LogDebugFileUtils.get().clearFile();
                     }

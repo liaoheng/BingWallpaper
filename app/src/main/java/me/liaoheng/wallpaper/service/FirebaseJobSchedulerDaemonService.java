@@ -4,11 +4,11 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 
+import androidx.annotation.NonNull;
+
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
 import com.github.liaoheng.common.util.L;
-
-import org.jetbrains.annotations.NotNull;
 
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
@@ -31,7 +31,7 @@ public class FirebaseJobSchedulerDaemonService extends JobService {
         mHandlerThread.start();
         mHandler = new Handler(mHandlerThread.getLooper()) {
             @Override
-            public void handleMessage(@NotNull Message msg) {
+            public void handleMessage(@NonNull Message msg) {
                 BingWallpaperUtils.runningService(getApplicationContext(), TAG);
                 jobFinished((JobParameters) msg.obj, false);
             }
@@ -39,7 +39,7 @@ public class FirebaseJobSchedulerDaemonService extends JobService {
     }
 
     @Override
-    public boolean onStartJob(@NotNull JobParameters params) {
+    public boolean onStartJob(@NonNull JobParameters params) {
         L.alog().d(TAG, "action job tag : %s", params.getTag());
         if (BingWallpaperUtils.isEnableLog(getApplicationContext())) {
             LogDebugFileUtils.get()
@@ -53,7 +53,7 @@ public class FirebaseJobSchedulerDaemonService extends JobService {
     }
 
     @Override
-    public boolean onStopJob(@NotNull JobParameters params) {
+    public boolean onStopJob(@NonNull JobParameters params) {
         mHandler.removeMessages(1);
         mHandlerThread.quit();
         return false;

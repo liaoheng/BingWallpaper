@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.jetbrains.annotations.NotNull;
+import androidx.annotation.NonNull;
 
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 
@@ -31,7 +31,7 @@ public class Config implements Parcelable {
 
     }
 
-    @NotNull
+    @NonNull
     @Override
     public String toString() {
         return "Config{" +

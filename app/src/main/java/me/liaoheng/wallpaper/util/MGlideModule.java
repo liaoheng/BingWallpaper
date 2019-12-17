@@ -3,6 +3,8 @@ package me.liaoheng.wallpaper.util;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
 import com.bumptech.glide.Registry;
@@ -12,13 +14,12 @@ import com.bumptech.glide.load.engine.cache.DiskLruCacheFactory;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.module.AppGlideModule;
 import com.github.liaoheng.common.util.FileUtils;
-import com.github.liaoheng.common.util.SystemException;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.NonNull;
 import me.liaoheng.wallpaper.BuildConfig;
 import okhttp3.OkHttpClient;
 
@@ -35,7 +36,7 @@ public class MGlideModule extends AppGlideModule {
             File imgCache = FileUtils.getProjectSpaceCacheDirectory(context, Constants.DISK_CACHE_DIR);
             builder.setDiskCache(new DiskLruCacheFactory(imgCache.getAbsolutePath(),
                     Constants.IMAGE_DISK_CACHE_SIZE));
-        } catch (SystemException ignored) {
+        } catch (IOException ignored) {
         }
         builder.setLogLevel(BuildConfig.DEBUG ? Log.DEBUG : Log.INFO);
     }

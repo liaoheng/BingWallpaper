@@ -31,9 +31,9 @@ public class MApplication extends Application {
         L.init(Constants.PROJECT_NAME, BuildConfig.DEBUG);
         TasksUtils.init(this);
         if (BingWallpaperUtils.isEnableLog(this)) {
-            LogDebugFileUtils.get().init(getApplicationContext());
+            LogDebugFileUtils.init(this);
         }
-        CacheUtils.get().init(this);
+        CacheUtils.init(this);
         RxJavaPlugins.setErrorHandler(throwable -> L.alog().w("RxJavaPlugins", throwable));
         NetUtils.get().init(getApplicationContext());
         Constants.Config.isPhone = getString(R.string.screen_type).equals("phone");

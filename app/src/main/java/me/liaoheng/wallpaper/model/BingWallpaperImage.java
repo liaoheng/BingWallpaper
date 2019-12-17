@@ -3,8 +3,9 @@ package me.liaoheng.wallpaper.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.Expose;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author liaoheng
@@ -187,7 +188,7 @@ public class BingWallpaperImage implements Parcelable {
         this.imageUrl = imageUrl;
     }
 
-    @NotNull
+    @NonNull
     @Override
     public String toString() {
         return "BingWallpaperImage{" +

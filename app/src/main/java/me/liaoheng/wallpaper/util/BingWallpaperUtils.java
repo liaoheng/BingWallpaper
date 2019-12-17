@@ -9,7 +9,6 @@ import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -56,6 +55,7 @@ import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
+import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.DateTimeUtils;
 import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.FileUtils;
@@ -71,7 +71,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.common.io.Files;
 import com.scottyab.rootbeer.RootBeer;
 
-import org.apache.commons.io.FilenameUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
@@ -323,7 +322,7 @@ public class BingWallpaperUtils {
     public static Uri saveFileToPicture(Context context, String url, File from) throws Exception {
         Uri uri;
         ContentValues contentValues = null;
-        String name = FilenameUtils.getName(url);
+        String name = FileUtils.getName(url);
         String[] split = name.split("=");
         if (split.length > 1) {
             name = split[1];
@@ -525,13 +524,18 @@ public class BingWallpaperUtils {
         // use mobile network show alert
         if (NetworkUtils.isMobileConnected(context)) {
             UIUtils.showYNAlertDialog(context, context.getString(R.string.alert_mobile_data),
-                    new Callback4.EmptyCallback<DialogInterface>() {
+                    new Callback5() {
                         @Override
-                        public void onYes(DialogInterface dialogInterface) {
+                        public void onAllow() {
                             if (callback != null) {
                                 callback.onYes(true);
                             }
                             BingWallpaperIntentService.start(context, image, mode, config, false);
+                        }
+
+                        @Override
+                        public void onDeny() {
+
                         }
                     });
         } else {
@@ -891,7 +895,7 @@ public class BingWallpaperUtils {
                 .map(c -> {
                     GlideApp.get(c).clearDiskCache();
                     NetUtils.get().clearCache();
-                    CacheUtils.get().clear(c);
+                    CacheUtils.get().clear();
                     return c;
                 }).observeOn(AndroidSchedulers.mainThread()).map(c -> {
                     GlideApp.get(c).clearMemory();

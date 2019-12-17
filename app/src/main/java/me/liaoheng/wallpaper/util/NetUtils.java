@@ -9,7 +9,6 @@ import com.bumptech.glide.request.target.Target;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
-import com.github.liaoheng.common.util.SystemException;
 import com.github.liaoheng.common.util.SystemRuntimeException;
 import com.github.liaoheng.common.util.Utils;
 
@@ -96,7 +95,7 @@ public class NetUtils {
         try {
             File cacheFile = FileUtils.getProjectSpaceCacheDirectory(context, Constants.HTTP_CACHE_DIR);
             simpleBuilder.cache(new Cache(cacheFile, Constants.HTTP_DISK_CACHE_SIZE));
-        } catch (SystemException ignored) {
+        } catch (IOException ignored) {
         }
         client = simpleBuilder.build();
         mRetrofit = factory.client(client).build();

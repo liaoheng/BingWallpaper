@@ -6,9 +6,9 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 
-import com.github.liaoheng.common.util.L;
+import androidx.annotation.NonNull;
 
-import org.jetbrains.annotations.NotNull;
+import com.github.liaoheng.common.util.L;
 
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
@@ -31,7 +31,7 @@ public class JobSchedulerDaemonService extends JobService {
         mHandlerThread.start();
         mHandler = new Handler(mHandlerThread.getLooper()) {
             @Override
-            public void handleMessage(@NotNull Message msg) {
+            public void handleMessage(@NonNull Message msg) {
                 BingWallpaperUtils.runningService(getApplicationContext(), TAG);
                 jobFinished((JobParameters) msg.obj, false);
             }

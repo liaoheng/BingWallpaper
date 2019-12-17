@@ -2,7 +2,6 @@ package me.liaoheng.wallpaper.ui;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -25,9 +24,8 @@ import androidx.core.app.ActivityCompat;
 import com.bumptech.glide.request.target.Target;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
+import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.UIUtils;
-
-import org.jetbrains.annotations.NotNull;
 
 import butterknife.BindArray;
 import butterknife.BindView;
@@ -196,7 +194,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
     }
 
     @Override
-    public void onConfigurationChanged(@NotNull Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         loadImage();
     }
@@ -287,10 +285,15 @@ public class WallpaperDetailActivity extends BaseActivity implements
                 break;
             case R.id.menu_wallpaper_save:
                 UIUtils.showYNAlertDialog(this, getString(R.string.menu_save_wallpaper) + "?",
-                        new Callback4.EmptyCallback<DialogInterface>() {
+                        new Callback5() {
                             @Override
-                            public void onYes(DialogInterface dialogInterface) {
+                            public void onAllow() {
                                 mDownloadHelper.saveWallpaper(getActivity(), getSaveUrl());
+                            }
+
+                            @Override
+                            public void onDeny() {
+
                             }
                         });
                 break;
@@ -351,16 +354,21 @@ public class WallpaperDetailActivity extends BaseActivity implements
             url = getUrl(BingWallpaperUtils.getResolution(this));
         }
         UIUtils.showYNAlertDialog(this, message + "?",
-                new Callback4.EmptyCallback<DialogInterface>() {
+                new Callback5() {
                     @Override
-                    public void onYes(DialogInterface dialogInterface) {
+                    public void onAllow() {
                         BingWallpaperUtils.setWallpaper(getActivity(), mWallpaperImage.copy(url), type, config,
-                                new EmptyCallback<Boolean>() {
+                                new Callback4.EmptyCallback<Boolean>() {
                                     @Override
                                     public void onYes(Boolean aBoolean) {
                                         showProgressDialog();
                                     }
                                 });
+                    }
+
+                    @Override
+                    public void onDeny() {
+
                     }
                 });
     }

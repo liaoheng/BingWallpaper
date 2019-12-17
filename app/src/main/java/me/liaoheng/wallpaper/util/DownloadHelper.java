@@ -3,14 +3,13 @@ package me.liaoheng.wallpaper.util;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
 import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.Callback4;
+import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
@@ -45,10 +44,15 @@ public class DownloadHelper {
     private void saveWallpaper(String url) {
         if (NetworkUtils.isMobileConnected(mContext)) {
             UIUtils.showYNAlertDialog(mContext, mContext.getString(R.string.alert_mobile_data),
-                    new Callback4.EmptyCallback<DialogInterface>() {
+                    new Callback5() {
                         @Override
-                        public void onYes(DialogInterface dialogInterface) {
+                        public void onAllow() {
                             downloadSaveWallpaper(url);
+                        }
+
+                        @Override
+                        public void onDeny() {
+
                         }
                     });
         } else {

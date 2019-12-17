@@ -35,9 +35,9 @@ public class LicenseActivity extends BaseActivity {
         List<Library> licenses = new ArrayList<>();
         licenses.add(Licenses.noContent("Android SDK", "Google Inc.",
                 "https://developer.android.com/sdk/terms.html"));
-        licenses.add(Licenses.fromGitHubApacheV2("JakeWharton/ButterKnife"));
-        licenses.add(Licenses.fromGitHubApacheV2("Google/Gson"));
-        licenses.add(Licenses.fromGitHubApacheV2("apache/commons-io"));
+        licenses.add(Licenses.fromGitHubApacheV2("JakeWharton/butterknife"));
+        licenses.add(Licenses.fromGitHubApacheV2("google/gson"));
+        licenses.add(Licenses.fromGitHubApacheV2("google/guava"));
         licenses.add(Licenses.fromGitHubApacheV2("dlew/joda-time-android"));
         licenses.add(Licenses.fromGitHubApacheV2("square/okhttp"));
         licenses.add(Licenses.fromGitHubApacheV2("square/retrofit"));

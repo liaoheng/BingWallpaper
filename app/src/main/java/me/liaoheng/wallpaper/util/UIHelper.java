@@ -5,11 +5,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
+
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.MD5Utils;
 import com.github.liaoheng.common.util.ROM;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +23,7 @@ import me.liaoheng.wallpaper.model.Config;
 public class UIHelper implements IUIHelper {
 
     @Override
-    public void setWallpaper(Context context, int mode, @NotNull Config config, File wallpaper) throws IOException {
+    public void setWallpaper(Context context, int mode, @NonNull Config config, File wallpaper) throws IOException {
         if (config.getStackBlur() > 0) {
             String key = MD5Utils.md5Hex(wallpaper.getAbsolutePath() + "_" + config.getStackBlur());
             File stackBlurFile = CacheUtils.get().get(key);
