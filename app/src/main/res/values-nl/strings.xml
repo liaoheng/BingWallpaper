@@ -23,7 +23,7 @@
     <string name="foreground_intent_service_success_notification_channel">Afbeelding succesvol geupdate melding</string>
     <string name="foreground_daemon_service_notification_channel">Achtergrondproces melding</string>
     <string name="daemon_service_running">Achtergrondproces draait</string>
-    <string name="enable_job_error">Automatisch dagelijkse update mislukt</string>
+    <string name="enable_job_error">De dagelijkse update is mislukt</string>
     <string name="request_failed_click_retry">Fout, probeer het nog eens</string>
     <string name="loading">Laden&#8230;</string>
     <string name="unable_root_permission">Root is niet verkregen</string>
@@ -40,11 +40,11 @@
     <string name="pref_auto_update_check_time">Controleer elk %1$d uur</string>
     <string name="pref_auto_update_everyday_notification">Melding bij automatisch updaten</string>
     <string name="pref_auto_update_everyday_notification_note">Na een succesvolle update in de achtergrond</string>
-    <string name="pref_set_wallpaper_day_fully_automatic_update_type">Automatische manier</string>
+    <string name="pref_set_wallpaper_day_fully_automatic_update_type">Wijze van automatisch updaten</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_auto">Optimaal</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_system">Android Systeem</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_service">Achtergrondproces</string>
-    <string name="pref_set_wallpaper_day_fully_automatic_update_interval">Automatisch controleren interval</string>
+    <string name="pref_set_wallpaper_day_fully_automatic_update_interval">Interval bij automatisch controleren</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_interval_note">Gekozen uren, reset na een aanpassing</string>
     <string name="pref_alarm_update_wallpaper_everyday">Tijdmodus</string>
     <string name="pref_alarm_update_wallpaper_everyday_summary">Niet aanbevolen</string>
@@ -56,7 +56,7 @@
     <string name="pref_set_wallpaper_auto_mode_lock">Vergrendelscherm</string>
     <string name="pref_other">Andere instellingen</string>
     <string name="pref_choose_set_wallpaper_resolution">Stel de resolutie in</string>
-    <string name="pref_choose_save_resolution">Standaard resolutie</string>
+    <string name="pref_choose_save_resolution">Standaard resolutie om te bewaren</string>
     <string name="pref_country">Land</string>
     <string name="pref_country_auto">Lokaal</string>
     <string name="pref_country_china">China</string>
@@ -83,9 +83,9 @@
     <string name="pref_auto_save_wallpaper_title">Bewaar afbeeldingen automatisch</string>
     <string name="pref_auto_save_wallpaper_summary">Bewaar afbeeldingen bij de foto\'s</string>
     <!--menu-->
-    <string name="menu_main_drawer_wallpaper_info">Afbeelding informatie</string>
+    <string name="menu_main_drawer_wallpaper_info">Informatie</string>
     <string name="menu_main_setting">Instellingen</string>
-    <string name="menu_main_wallpaper_history_list">Afbeelding geschiedenis</string>
+    <string name="menu_main_wallpaper_history_list">Geschiedenis</string>
     <string name="menu_main_help">Help</string>
     <string name="menu_main_feedback">Feedback</string>
     <!--wallpaper detail-->
@@ -98,7 +98,7 @@
     <string name="menu_set_wallpaper_mode_lock">Plaats op het vergrendelscherm</string>
     <string name="menu_set_wallpaper_mode_both">Plaats op het start- en vergrendelscherm</string>
     <!--intro-->
-    <string name="intro_update_set">Stel de automatische update in</string>
+    <string name="intro_update_set">Stel de wijze van automatisch updaten in</string>
     <string name="intro_hint_welcome">Welkom bij Starth Bing Wallpaper</string>
     <string name="intro_hint_whitelist">Deze app moet toegevoegd worden aan de lijst van toegestane achtergrondapplicaties&#8230;. </string>
     <string name="intro_hint_battery">Batterij-optimalisatie zorgt er voor dat deze app misschien niet altijd goed zal functioneren. Zet batterij-optimalisatie uit als de app niet (altijd) goed werkt. </string>

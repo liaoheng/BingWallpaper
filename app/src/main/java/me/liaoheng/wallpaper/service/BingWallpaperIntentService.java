@@ -13,8 +13,6 @@ import androidx.core.content.ContextCompat;
 import com.bumptech.glide.request.target.Target;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.L;
-import com.github.liaoheng.common.util.NetException;
-import com.github.liaoheng.common.util.SystemException;
 
 import java.io.File;
 import java.io.IOException;
@@ -168,13 +166,12 @@ public class BingWallpaperIntentService extends IntentService {
         try {
             downloadAndSetWallpaper(isBackground, image.getImageUrl(), setWallpaperType, config);
             callback.onSuccess(image);
-        } catch (Exception e) {
-            callback.onError(new SystemException(e));
+        } catch (Throwable e) {
+            callback.onError(e);
         }
     }
 
     private void failure(boolean isBackground, Throwable throwable) {
-        throwable = throwable.getCause() != null ? throwable.getCause() : throwable;
         L.alog().e(TAG, throwable, "Failure");
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
             LogDebugFileUtils.get().e(TAG, throwable, "Failure");

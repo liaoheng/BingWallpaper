@@ -3,7 +3,6 @@ package me.liaoheng.wallpaper.ui;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -21,12 +20,9 @@ import androidx.preference.SwitchPreferenceCompat;
 
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.Callback5;
-import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.ShellUtils;
-import com.github.liaoheng.common.util.SystemException;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 
@@ -52,7 +48,6 @@ import me.liaoheng.wallpaper.widget.TimePreferenceDialogFragmentCompat;
  * @version 2016-09-20 13:59
  */
 public class SettingsActivity extends BaseActivity {
-    private static final String TAG = SettingsActivity.class.getSimpleName();
     private static boolean isChangeLanguage;
 
     @Override
@@ -118,7 +113,6 @@ public class SettingsActivity extends BaseActivity {
 
         private SwitchPreferenceCompat mOnlyWifiPreference;
         private ListPreference mCountryListPreference;
-        private ListPreference mLanguageListPreference;
         private ListPreference mResolutionListPreference;
         private ListPreference mSaveResolutionListPreference;
         private ListPreference mModeTypeListPreference;
@@ -219,7 +213,7 @@ public class SettingsActivity extends BaseActivity {
             });
 
             mCountryListPreference = findPreference(PREF_COUNTRY);
-            mLanguageListPreference = findPreference(PREF_LANGUAGE);
+            ListPreference mLanguageListPreference = findPreference(PREF_LANGUAGE);
             mResolutionListPreference = findPreference(PREF_SET_WALLPAPER_RESOLUTION);
             mSaveResolutionListPreference = findPreference(PREF_SAVE_WALLPAPER_RESOLUTION);
             mModeTypeListPreference = findPreference(PREF_SET_WALLPAPER_AUTO_MODE);

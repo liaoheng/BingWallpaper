@@ -1,8 +1,10 @@
 package me.liaoheng.wallpaper.util;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import net.grandcentrix.tray.TrayPreferences;
 import net.grandcentrix.tray.core.ItemNotFoundException;
 import net.grandcentrix.tray.core.TrayItem;
@@ -52,47 +54,59 @@ public class SettingTrayPreferences implements ISettingTrayPreferences {
     }
 
     @Override
-    public boolean getBoolean(@NonNull String key) throws ItemNotFoundException {
-        return mAccessor.getBoolean(key);
+    public boolean getBoolean(@NonNull String key) {
+        return getBoolean(key, false);
     }
 
     @Override
     public boolean getBoolean(@NonNull String key, boolean defaultValue) {
-        try{
+        try {
             return mAccessor.getBoolean(key, defaultValue);
-        }catch (Throwable t){
+        } catch (Throwable t) {
             return defaultValue;
         }
     }
 
     @Override
-    public float getFloat(@NonNull String key) throws ItemNotFoundException, WrongTypeException {
-        return mAccessor.getFloat(key);
+    public float getFloat(@NonNull String key) {
+        return getFloat(key, 0);
     }
 
     @Override
-    public float getFloat(@NonNull String key, float defaultValue) throws WrongTypeException {
-        return mAccessor.getFloat(key, defaultValue);
+    public float getFloat(@NonNull String key, float defaultValue) {
+        try {
+            return mAccessor.getFloat(key, defaultValue);
+        } catch (Throwable t) {
+            return defaultValue;
+        }
     }
 
     @Override
-    public int getInt(@NonNull String key) throws ItemNotFoundException, WrongTypeException {
-        return mAccessor.getInt(key);
+    public int getInt(@NonNull String key) {
+        return getInt(key, 0);
     }
 
     @Override
-    public int getInt(@NonNull String key, int defaultValue) throws WrongTypeException {
-        return mAccessor.getInt(key, defaultValue);
+    public int getInt(@NonNull String key, int defaultValue) {
+        try {
+            return mAccessor.getInt(key, defaultValue);
+        } catch (Throwable t) {
+            return defaultValue;
+        }
     }
 
     @Override
-    public long getLong(@NonNull String key) throws ItemNotFoundException, WrongTypeException {
-        return mAccessor.getLong(key);
+    public long getLong(@NonNull String key) {
+        return getLong(key, 0);
     }
 
     @Override
-    public long getLong(@NonNull String key, long defaultValue) throws WrongTypeException {
-        return mAccessor.getLong(key, defaultValue);
+    public long getLong(@NonNull String key, long defaultValue) {
+        try {
+            return mAccessor.getLong(key, defaultValue);
+        } catch (Throwable t) {
+            return defaultValue;
+        }
     }
 
     @Nullable
@@ -103,18 +117,22 @@ public class SettingTrayPreferences implements ISettingTrayPreferences {
 
     @Nullable
     @Override
-    public String getString(@NonNull String key) throws ItemNotFoundException {
-        return mAccessor.getString(key);
+    public String getString(@NonNull String key) {
+        return getString(key, "");
     }
 
     @NonNull
     @Override
     public String getString(@NonNull String key, @NonNull String defaultValue) {
-        String string = mAccessor.getString(key, defaultValue);
-        if (null == string) {
+        try {
+            String string = mAccessor.getString(key, defaultValue);
+            if (null == string) {
+                return defaultValue;
+            }
+            return string;
+        } catch (Throwable t) {
             return defaultValue;
         }
-        return string;
     }
 
     @Override

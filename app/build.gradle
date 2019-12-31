@@ -13,8 +13,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 167
-        versionName "1.6.7"
+        versionCode 168
+        versionName "1.6.8"
     }
 
     def isSigning = true
@@ -118,15 +118,15 @@ dependencies {
     //https://github.com/apl-devs/AppIntro
     implementation 'com.github.paolorotolo:appintro:v5.1.0'
 
-    implementation group: "com.github.liaoheng", name: "common-core", version: "0.1.0-SNAPSHOT", changing: true
-    implementation group: "com.github.liaoheng", name: "common-adapter", version: "0.1.0-SNAPSHOT", changing: true
-    //    implementation 'com.github.liaoheng:common-core:0.1.0-SNAPSHOT'
-    //    implementation 'com.github.liaoheng:common-adapter:0.1.0-SNAPSHOT'
+//    implementation group: "com.github.liaoheng", name: "common-core", version: "0.1.0-SNAPSHOT", changing: true
+//    implementation group: "com.github.liaoheng", name: "common-adapter", version: "0.1.0-SNAPSHOT", changing: true
+    implementation 'com.github.liaoheng:common-core:0.1.0-SNAPSHOT'
+    implementation 'com.github.liaoheng:common-adapter:0.1.0-SNAPSHOT'
 }
-configurations.all {
-    // check for updates every build
-    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-}
+//configurations.all {
+//    // check for updates every build
+//    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+//}
 if (isFirebase) {
     apply plugin: 'com.google.gms.google-services'
 }

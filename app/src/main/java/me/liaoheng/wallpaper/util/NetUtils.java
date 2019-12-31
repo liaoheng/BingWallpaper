@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkService;
 import okhttp3.Cache;
 import okhttp3.Connection;
@@ -90,8 +91,10 @@ public class NetUtils {
                 .newSingleThreadExecutor(Util.threadFactory("OkHttp Dispatcher", false));
         Dispatcher dispatcher = new Dispatcher(threadPoolExecutor);
         mSingleRetrofit = factory.client(simpleBuilder.dispatcher(dispatcher).build()).build();
-
-        simpleBuilder.dispatcher(new Dispatcher()).addInterceptor(new LogInterceptor("NetUtils"));
+        simpleBuilder.dispatcher(new Dispatcher());
+        if (BuildConfig.DEBUG) {
+            simpleBuilder.addInterceptor(new LogInterceptor("NetUtils"));
+        }
         try {
             File cacheFile = FileUtils.getProjectSpaceCacheDirectory(context, Constants.HTTP_CACHE_DIR);
             simpleBuilder.cache(new Cache(cacheFile, Constants.HTTP_DISK_CACHE_SIZE));
