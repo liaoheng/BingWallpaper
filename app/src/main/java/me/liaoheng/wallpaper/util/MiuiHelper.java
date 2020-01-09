@@ -57,25 +57,27 @@ public class MiuiHelper {
         }
     }
 
-    public static void setWallpaper(Context context, @Constants.setWallpaperMode int mode, File wallpaper)
+    public static void setWallpaper(Context context, @Constants.setWallpaperMode int mode, File homeWallpaper,
+            File lockWallpaper)
             throws IOException {
         if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-            systemSetWallpaper(context, wallpaper);
+            systemSetWallpaper(context, homeWallpaper);
         } else if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-            if (BingWallpaperUtils.isMiuiLockScreenSupport(context)) {
-                setLockScreenWallpaper(context, wallpaper);
-            } else {
-                systemSetWallpaper(context, wallpaper);
-            }
+            lockSetWallpaper(context, lockWallpaper);
         } else {
-            if (BingWallpaperUtils.isMiuiLockScreenSupport(context)) {
-                try {
-                    setLockScreenWallpaper(context, wallpaper);
-                } catch (Exception ignored) {
-                }
+            systemSetWallpaper(context, homeWallpaper);
+            try {
+                lockSetWallpaper(context, lockWallpaper);
+            } catch (Exception ignored) {
             }
-            systemSetWallpaper(context, wallpaper);
         }
+    }
+
+    private static void lockSetWallpaper(Context context, File wallpaper) throws IOException {
+        if (BingWallpaperUtils.isMiuiLockScreenSupport(context)) {
+            return;
+        }
+        setLockScreenWallpaper(context, wallpaper);
     }
 
     private static void systemSetWallpaper(Context context, File wallpaper) throws IOException {

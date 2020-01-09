@@ -16,7 +16,7 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.SwitchPreferenceCompat;
+import androidx.preference.SwitchPreference;
 
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback;
@@ -105,29 +105,31 @@ public class SettingsActivity extends BaseActivity {
     public static final String PREF_PREF_PIXABAY_SUPPORT = "pref_pixabay_support";
     public static final String PREF_CRASH_REPORT = "pref_crash_report";
     public static final String PREF_STACK_BLUR = "pref_stack_blur";
+    public static final String PREF_STACK_BLUR_MODE = "pref_stack_blur_mode";
     public static final String PREF_AUTO_SAVE_WALLPAPER_FILE = "pref_auto_save_wallpaper_file";
 
     public static class MyPreferenceFragment extends PreferenceFragmentCompat
             implements SharedPreferences.OnSharedPreferenceChangeListener {
         private ISettingTrayPreferences mPreferences;
 
-        private SwitchPreferenceCompat mOnlyWifiPreference;
+        private SwitchPreference mOnlyWifiPreference;
         private ListPreference mCountryListPreference;
         private ListPreference mResolutionListPreference;
         private ListPreference mSaveResolutionListPreference;
         private ListPreference mModeTypeListPreference;
         private TimePreference mTimePreference;
-        private SwitchPreferenceCompat mDayUpdatePreference;
-        private SwitchPreferenceCompat mAutoUpdatePreference;
-        private SwitchPreferenceCompat mAutoUpdateNotificationPreference;
+        private SwitchPreference mDayUpdatePreference;
+        private SwitchPreference mAutoUpdatePreference;
+        private SwitchPreference mAutoUpdateNotificationPreference;
         private ListPreference mAutoUpdateIntervalPreference;
-        private SwitchPreferenceCompat mLogPreference;
-        private SwitchPreferenceCompat mCrashPreference;
+        private SwitchPreference mLogPreference;
+        private SwitchPreference mCrashPreference;
         private ListPreference mAutoUpdateTypeListPreference;
-        private SwitchPreferenceCompat mMIuiLockScreenPreference;
-        private SwitchPreferenceCompat mPixabaySupportPreference;
+        private SwitchPreference mMIuiLockScreenPreference;
+        private SwitchPreference mPixabaySupportPreference;
         private SeekBarDialogPreference mStackBlurPreference;
-        private SwitchPreferenceCompat mAutoSaveWallpaperPreference;
+        private ListPreference mStackBlurModePreference;
+        private SwitchPreference mAutoSaveWallpaperPreference;
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -233,7 +235,11 @@ public class SettingsActivity extends BaseActivity {
             mLogPreference = findPreference(PREF_SET_WALLPAPER_LOG);
             mCrashPreference = findPreference(PREF_CRASH_REPORT);
             mStackBlurPreference = findPreference(PREF_STACK_BLUR);
-            mStackBlurPreference.setSummary(String.valueOf(BingWallpaperUtils.getSettingStackBlur(getActivity())));
+            int stackBlur = BingWallpaperUtils.getSettingStackBlur(getActivity());
+            mStackBlurPreference.setProgress(stackBlur);
+            mStackBlurPreference.setSummary(String.valueOf(stackBlur));
+            mStackBlurModePreference = findPreference(PREF_STACK_BLUR_MODE);
+
             mAutoSaveWallpaperPreference = findPreference(PREF_AUTO_SAVE_WALLPAPER_FILE);
 
             if (!ROM.getROM().isMiui()) {
@@ -261,12 +267,16 @@ public class SettingsActivity extends BaseActivity {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                 if (ROM.getROM().isMiui()) {
                     mModeTypeListPreference.setSummary(BingWallpaperUtils.getAutoMode(getActivity()));
+                    mStackBlurModePreference.setSummary(BingWallpaperUtils.getSettingStackBlurModeName(getActivity()));
                 } else {
                     ((PreferenceCategory) findPreference("pref_update_group")).removePreference(
                             mModeTypeListPreference);
+                    ((PreferenceCategory) findPreference("pref_wallpaper_group")).removePreference(
+                            mStackBlurModePreference);
                 }
             } else {
                 mModeTypeListPreference.setSummary(BingWallpaperUtils.getAutoMode(getActivity()));
+                mStackBlurModePreference.setSummary(BingWallpaperUtils.getSettingStackBlurModeName(getActivity()));
             }
 
             mResolutionListPreference.setSummary(BingWallpaperUtils.getResolution(getActivity()));
@@ -395,6 +405,10 @@ public class SettingsActivity extends BaseActivity {
                     break;
                 case PREF_STACK_BLUR:
                     mPreferences.put(PREF_STACK_BLUR, mStackBlurPreference.getProgress());
+                    break;
+                case PREF_STACK_BLUR_MODE:
+                    mPreferences.put(PREF_STACK_BLUR_MODE, mStackBlurModePreference.getValue());
+                    mStackBlurModePreference.setSummary(mStackBlurModePreference.getEntry());
                     break;
                 case PREF_AUTO_SAVE_WALLPAPER_FILE:
                     if (mAutoSaveWallpaperPreference.isChecked()) {

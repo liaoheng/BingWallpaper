@@ -24,34 +24,48 @@ public class UIHelper implements IUIHelper {
 
     @Override
     public void setWallpaper(Context context, int mode, @NonNull Config config, File wallpaper) throws IOException {
+        File home = wallpaper;
+        File lock = wallpaper;
         if (config.getStackBlur() > 0) {
             String key = MD5Utils.md5Hex(wallpaper.getAbsolutePath() + "_" + config.getStackBlur());
             File stackBlurFile = CacheUtils.get().get(key);
             if (stackBlurFile == null) {
                 Bitmap stackBlur = BingWallpaperUtils.toStackBlur(
                         BitmapFactory.decodeFile(wallpaper.getAbsolutePath()), config.getStackBlur());
-                wallpaper = CacheUtils.get().put(key, BitmapUtils.bitmapToStream(stackBlur,
+                stackBlurFile = CacheUtils.get().put(key, BitmapUtils.bitmapToStream(stackBlur,
                         Bitmap.CompressFormat.JPEG));
-            } else {
-                wallpaper = stackBlurFile;
+            }
+            if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_BOTH) {
+                home = stackBlurFile;
+                lock = stackBlurFile;
+            } else if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
+                home = stackBlurFile;
+            } else if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
+                lock = stackBlurFile;
             }
         }
 
         if (ROM.getROM().isMiui()) {
-            MiuiHelper.setWallpaper(context, mode, wallpaper);
+            MiuiHelper.setWallpaper(context, mode, home, lock);
         } else if (ROM.getROM().isEmui()) {
-            EmuiHelper.setWallpaper(context, mode, wallpaper);
+            EmuiHelper.setWallpaper(context, mode, home, lock);
         } else {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                BingWallpaperUtils.setWallpaper(context, wallpaper);
+            systemSetWallpaper(context, mode, home, lock);
+        }
+    }
+
+    private void systemSetWallpaper(Context context, @Constants.setWallpaperMode int mode, File home,
+            File lock) throws IOException {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            BingWallpaperUtils.setWallpaper(context, home);
+        } else {
+            if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
+                BingWallpaperUtils.setHomeScreenWallpaper(context, home);
+            } else if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
+                BingWallpaperUtils.setLockScreenWallpaper(context, lock);
             } else {
-                if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-                    BingWallpaperUtils.setHomeScreenWallpaper(context, wallpaper);
-                } else if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                    BingWallpaperUtils.setLockScreenWallpaper(context, wallpaper);
-                } else {
-                    BingWallpaperUtils.setBothWallpaper(context, wallpaper);
-                }
+                BingWallpaperUtils.setHomeScreenWallpaper(context, home);
+                BingWallpaperUtils.setLockScreenWallpaper(context, lock);
             }
         }
     }

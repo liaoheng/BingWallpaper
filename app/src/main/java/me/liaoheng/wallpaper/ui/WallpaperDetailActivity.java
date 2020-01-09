@@ -229,9 +229,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
 
                     @Override
                     public void onSuccess(Bitmap bitmap) {
-                        if (config.getStackBlur() > 0) {
-                            bitmap = BingWallpaperUtils.toStackBlur(bitmap, config.getStackBlur());
-                        }
+                        bitmap = BingWallpaperUtils.transformStackBlur(bitmap, config.getStackBlur());
                         mImageView.setImageBitmap(bitmap);
                     }
 

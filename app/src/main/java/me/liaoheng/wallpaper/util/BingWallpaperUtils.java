@@ -508,6 +508,16 @@ public class BingWallpaperUtils {
         return SettingTrayPreferences.get(context).getInt(SettingsActivity.PREF_STACK_BLUR, 0);
     }
 
+    public static int getSettingStackBlurMode(Context context) {
+        return SettingTrayPreferences.get(context).getInt(SettingsActivity.PREF_STACK_BLUR_MODE, 0);
+    }
+
+    public static String getSettingStackBlurModeName(Context context) {
+        String[] names = context.getResources()
+                .getStringArray(R.array.pref_set_wallpaper_auto_mode_name);
+        return names[getSettingStackBlurMode(context)];
+    }
+
     public static void disabledReceiver(Context context, String receiver) {
         settingReceiver(context, receiver, PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
     }
@@ -873,11 +883,6 @@ public class BingWallpaperUtils {
         return getGooglePlayServicesAvailableErrorString(getGooglePlayServicesAvailable(context));
     }
 
-    @SuppressLint("InlinedApi")
-    public static void setBothWallpaper(Context context, File file) throws IOException {
-        setWallpaper(context, file, WallpaperManager.FLAG_SYSTEM | WallpaperManager.FLAG_LOCK);
-    }
-
     public static void setWallpaper(Context context, File file, int which) throws IOException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             try (InputStream fileInputStream = new FileInputStream(file)) {
@@ -1032,10 +1037,7 @@ public class BingWallpaperUtils {
     public static Bitmap getImageBitmap(@NonNull Context context, @NonNull Config config, @NonNull String url)
             throws ExecutionException, InterruptedException {
         Bitmap bitmap = GlideApp.with(context).asBitmap().load(url).submit().get();
-        if (config.getStackBlur() > 0) {
-            return toStackBlur(bitmap, config.getStackBlur());
-        }
-        return bitmap;
+        return transformStackBlur(bitmap, config.getStackBlur());
     }
 
     public static void loadImage(GlideRequest<Bitmap> request, ImageView imageView,
@@ -1097,6 +1099,13 @@ public class BingWallpaperUtils {
         } else {
             return rootBeer.isRootedWithoutBusyBoxCheck();
         }
+    }
+
+    public static Bitmap transformStackBlur(Bitmap bitmap, int stackBlur) {
+        if (stackBlur <=0) {
+            return bitmap;
+        }
+        return toStackBlur(bitmap,stackBlur);
     }
 
     /**

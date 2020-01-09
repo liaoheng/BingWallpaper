@@ -6,10 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import net.grandcentrix.tray.TrayPreferences;
-import net.grandcentrix.tray.core.ItemNotFoundException;
 import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.core.TrayRuntimeException;
-import net.grandcentrix.tray.core.WrongTypeException;
 
 import java.util.Collection;
 
@@ -115,7 +113,7 @@ public class SettingTrayPreferences implements ISettingTrayPreferences {
         return mAccessor.getPref(key);
     }
 
-    @Nullable
+    @NonNull
     @Override
     public String getString(@NonNull String key) {
         return getString(key, "");
@@ -188,7 +186,7 @@ public class SettingTrayPreferences implements ISettingTrayPreferences {
         }
 
         @Override
-        public boolean getBoolean(@NonNull String key) throws ItemNotFoundException {
+        public boolean getBoolean(@NonNull String key) {
             return false;
         }
 
@@ -198,32 +196,32 @@ public class SettingTrayPreferences implements ISettingTrayPreferences {
         }
 
         @Override
-        public float getFloat(@NonNull String key) throws ItemNotFoundException, WrongTypeException {
+        public float getFloat(@NonNull String key) {
             return 0;
         }
 
         @Override
-        public float getFloat(@NonNull String key, float defaultValue) throws WrongTypeException {
+        public float getFloat(@NonNull String key, float defaultValue) {
             return 0;
         }
 
         @Override
-        public int getInt(@NonNull String key) throws ItemNotFoundException, WrongTypeException {
+        public int getInt(@NonNull String key) {
             return 0;
         }
 
         @Override
-        public int getInt(@NonNull String key, int defaultValue) throws WrongTypeException {
+        public int getInt(@NonNull String key, int defaultValue) {
             return 0;
         }
 
         @Override
-        public long getLong(@NonNull String key) throws ItemNotFoundException, WrongTypeException {
+        public long getLong(@NonNull String key) {
             return 0;
         }
 
         @Override
-        public long getLong(@NonNull String key, long defaultValue) throws WrongTypeException {
+        public long getLong(@NonNull String key, long defaultValue) {
             return 0;
         }
 
@@ -233,16 +231,16 @@ public class SettingTrayPreferences implements ISettingTrayPreferences {
             return null;
         }
 
-        @Nullable
+        @NonNull
         @Override
-        public String getString(@NonNull String key) throws ItemNotFoundException {
-            return null;
+        public String getString(@NonNull String key) {
+            return "";
         }
 
-        @Nullable
+        @NonNull
         @Override
         public String getString(@NonNull String key, @Nullable String defaultValue) {
-            return null;
+            return "";
         }
 
         @Override

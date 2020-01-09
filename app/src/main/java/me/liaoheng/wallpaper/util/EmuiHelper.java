@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 
-import androidx.annotation.RequiresApi;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -57,27 +55,19 @@ public class EmuiHelper {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public static void setBothWallpaper(Context context, File file) throws IOException {
-        try {
-            BingWallpaperUtils.setLockScreenWallpaper(context, file);
-            BingWallpaperUtils.setHomeScreenWallpaper(context, file);
-        } catch (IOException e) {
-            BingWallpaperUtils.setBothWallpaper(context, file);
-        }
-    }
-
-    public static void setWallpaper(Context context, @Constants.setWallpaperMode int mode, File wallpaper)
+    public static void setWallpaper(Context context, @Constants.setWallpaperMode int mode, File homeWallpaper,
+            File lockWallpaper)
             throws IOException {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            BingWallpaperUtils.setWallpaper(context, wallpaper);
+            BingWallpaperUtils.setWallpaper(context, homeWallpaper);
         } else {
             if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-                BingWallpaperUtils.setHomeScreenWallpaper(context, wallpaper);
+                BingWallpaperUtils.setHomeScreenWallpaper(context, homeWallpaper);
             } else if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                BingWallpaperUtils.setLockScreenWallpaper(context, wallpaper);
+                BingWallpaperUtils.setLockScreenWallpaper(context, lockWallpaper);
             } else {
-                setBothWallpaper(context, wallpaper);
+                BingWallpaperUtils.setHomeScreenWallpaper(context, homeWallpaper);
+                BingWallpaperUtils.setLockScreenWallpaper(context, lockWallpaper);
             }
         }
     }

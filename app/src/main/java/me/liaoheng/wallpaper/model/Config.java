@@ -7,6 +7,7 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.Constants;
 
 /**
  * @author liaoheng
@@ -14,9 +15,16 @@ import me.liaoheng.wallpaper.util.BingWallpaperUtils;
  */
 public class Config implements Parcelable {
     private int stackBlur;
+    @Constants.setWallpaperMode
+    private int stackBlurMode;
 
     public int getStackBlur() {
         return stackBlur;
+    }
+
+    @Constants.setWallpaperMode
+    public int getStackBlurMode() {
+        return stackBlurMode;
     }
 
     public void setStackBlur(int stackBlur) {
@@ -25,6 +33,7 @@ public class Config implements Parcelable {
 
     public Config(Context context) {
         this.stackBlur = BingWallpaperUtils.getSettingStackBlur(context);
+        this.stackBlurMode = BingWallpaperUtils.getSettingStackBlurMode(context);
     }
 
     public Config() {
@@ -41,6 +50,7 @@ public class Config implements Parcelable {
 
     protected Config(Parcel in) {
         stackBlur = in.readInt();
+        stackBlurMode = in.readInt();
     }
 
     public static final Creator<Config> CREATOR = new Creator<Config>() {
@@ -63,5 +73,6 @@ public class Config implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(stackBlur);
+        dest.writeInt(stackBlurMode);
     }
 }

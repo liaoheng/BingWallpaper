@@ -6,7 +6,7 @@
             android:persistent="false"
             android:title="@string/pref_auto_update_wallpaper">
 
-        <SwitchPreferenceCompat
+        <SwitchPreference
                 android:defaultValue="false"
                 android:key="pref_set_wallpaper_day_fully_automatic_update"
                 android:title="@string/pref_auto_update_everyday" />
@@ -26,13 +26,13 @@
                 android:summary="@string/pref_set_wallpaper_day_fully_automatic_update_interval_note"
                 android:title="@string/pref_set_wallpaper_day_fully_automatic_update_interval" />
 
-        <SwitchPreferenceCompat
+        <SwitchPreference
                 android:defaultValue="true"
                 android:key="pref_set_wallpaper_day_fully_automatic_update_notification"
                 android:summary="@string/pref_auto_update_everyday_notification_note"
                 android:title="@string/pref_auto_update_everyday_notification" />
 
-        <SwitchPreferenceCompat
+        <SwitchPreference
                 android:defaultValue="false"
                 android:key="pref_set_wallpaper_day_auto_update"
                 android:summary="@string/pref_alarm_update_wallpaper_everyday_summary"
@@ -72,7 +72,7 @@
                 android:key="pref_save_wallpaper_resolution"
                 android:title="@string/pref_choose_save_resolution" />
 
-        <SwitchPreferenceCompat
+        <SwitchPreference
                 android:defaultValue="false"
                 android:key="pref_auto_save_wallpaper_file"
                 android:title="@string/pref_auto_save_wallpaper_title"
@@ -83,14 +83,21 @@
                 android:key="pref_stack_blur"
                 android:title="@string/pref_stack_blur" />
 
-        <SwitchPreferenceCompat
+        <ListPreference
+                android:defaultValue="0"
+                android:entries="@array/pref_set_wallpaper_auto_mode_name"
+                android:entryValues="@array/pref_set_wallpaper_auto_mode_value"
+                android:key="pref_stack_blur_mode"
+                android:title="@string/pref_stack_blur_mode" />
+
+        <SwitchPreference
                 android:defaultValue="false"
                 android:key="pref_set_miui_lock_screen_wallpaper"
                 android:persistent="false"
                 android:summary="@string/pref_set_miui_lock_screen_wallpaper_note"
                 android:title="@string/pref_set_miui_lock_screen_wallpaper" />
 
-        <SwitchPreferenceCompat
+        <SwitchPreference
                 android:defaultValue="false"
                 android:key="pref_pixabay_support"
                 android:summary="@string/pref_pixabay_support_note"
@@ -102,7 +109,7 @@
             android:persistent="false"
             android:title="@string/pref_other">
 
-        <SwitchPreferenceCompat
+        <SwitchPreference
                 android:defaultValue="true"
                 android:key="pref_set_wallpaper_day_auto_update_only_wifi"
                 android:title="@string/pref_update_only_on_wifi" />
@@ -127,13 +134,13 @@
                 android:persistent="false"
                 android:title="@string/pref_clear_cache" />
 
-        <SwitchPreferenceCompat
+        <SwitchPreference
                 android:defaultValue="false"
                 android:key="pref_set_wallpaper_debug_log"
                 android:summary="sdcard/Android/data/{package}/log/debug_log.txt"
                 android:title="@string/pref_log_file" />
 
-        <SwitchPreferenceCompat
+        <SwitchPreference
                 android:defaultValue="true"
                 android:key="pref_crash_report"
                 android:title="@string/pref_crash_report" />

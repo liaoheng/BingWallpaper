@@ -514,16 +514,9 @@ public class MainActivity extends BaseActivity
                     }
 
                     @Override
-                    public void onSuccess(@NonNull Bitmap oldBitmap) {
-                        int settingStackBlur = BingWallpaperUtils.getSettingStackBlur(getApplicationContext());
-                        if (settingStackBlur > 0) {
-                            oldBitmap = BingWallpaperUtils.toStackBlur(oldBitmap, settingStackBlur);
-                        }
-
-                        Bitmap bitmap = Bitmap.createBitmap(oldBitmap);
-                        if (oldBitmap.isRecycled()) {
-                            oldBitmap.recycle();
-                        }
+                    public void onSuccess(@NonNull Bitmap bitmap) {
+                        //int stackBlur = BingWallpaperUtils.getSettingStackBlur(getApplicationContext());
+                        //bitmap = BingWallpaperUtils.transformStackBlur(bitmap, stackBlur);
 
                         try {
                             mWallpaperView.setImageBitmap(bitmap);
