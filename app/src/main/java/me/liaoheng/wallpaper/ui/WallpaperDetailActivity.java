@@ -282,18 +282,17 @@ public class WallpaperDetailActivity extends BaseActivity implements
                 setWallpaper(0);
                 break;
             case R.id.menu_wallpaper_save:
-                UIUtils.showYNAlertDialog(this, getString(R.string.menu_save_wallpaper) + "?",
-                        new Callback5() {
-                            @Override
-                            public void onAllow() {
-                                mDownloadHelper.saveWallpaper(getActivity(), getSaveUrl());
-                            }
+                BingWallpaperUtils.showSaveWallpaperDialog(this, new Callback5() {
+                    @Override
+                    public void onAllow() {
+                        mDownloadHelper.saveWallpaper(getActivity(), getSaveUrl());
+                    }
 
-                            @Override
-                            public void onDeny() {
+                    @Override
+                    public void onDeny() {
 
-                            }
-                        });
+                    }
+                });
                 break;
             case R.id.menu_wallpaper_resolution:
                 mResolutionDialog.show();
@@ -338,35 +337,17 @@ public class WallpaperDetailActivity extends BaseActivity implements
         if (mWallpaperImage == null) {
             return;
         }
-
-        String message = getString(R.string.menu_set_wallpaper_mode_both);
-        if (type == 1) {
-            message = getString(R.string.menu_set_wallpaper_mode_home);
-        } else if (type == 2) {
-            message = getString(R.string.menu_set_wallpaper_mode_lock);
-        }
         String url;
         if (BingWallpaperUtils.isPixabaySupport(getApplicationContext())) {
             url = mWallpaperImage.getUrl();
         } else {
             url = getUrl(BingWallpaperUtils.getResolution(this));
         }
-        UIUtils.showYNAlertDialog(this, message + "?",
-                new Callback5() {
+        BingWallpaperUtils.showWallpaperDialog(this, mWallpaperImage.copy(url), type, config,
+                new Callback4.EmptyCallback<Boolean>() {
                     @Override
-                    public void onAllow() {
-                        BingWallpaperUtils.setWallpaper(getActivity(), mWallpaperImage.copy(url), type, config,
-                                new Callback4.EmptyCallback<Boolean>() {
-                                    @Override
-                                    public void onYes(Boolean aBoolean) {
-                                        showProgressDialog();
-                                    }
-                                });
-                    }
-
-                    @Override
-                    public void onDeny() {
-
+                    public void onYes(Boolean aBoolean) {
+                        showProgressDialog();
                     }
                 });
     }

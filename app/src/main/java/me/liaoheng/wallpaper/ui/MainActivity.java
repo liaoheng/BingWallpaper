@@ -35,6 +35,7 @@ import com.github.clans.fab.FloatingActionMenu;
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
+import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.ShellUtils;
@@ -390,7 +391,7 @@ public class MainActivity extends BaseActivity
         }
         String url = getUrl();
 
-        BingWallpaperUtils.setWallpaper(this, mCurBingWallpaperImage.copy(url), type,
+        BingWallpaperUtils.showWallpaperDialog(this, mCurBingWallpaperImage.copy(url), type, null,
                 new Callback4.EmptyCallback<Boolean>() {
                     @Override
                     public void onYes(Boolean aBoolean) {
@@ -515,9 +516,6 @@ public class MainActivity extends BaseActivity
 
                     @Override
                     public void onSuccess(@NonNull Bitmap bitmap) {
-                        //int stackBlur = BingWallpaperUtils.getSettingStackBlur(getApplicationContext());
-                        //bitmap = BingWallpaperUtils.transformStackBlur(bitmap, stackBlur);
-
                         try {
                             mWallpaperView.setImageBitmap(bitmap);
                             mNavigationHeaderImage.setImageBitmap(bitmap);
@@ -584,7 +582,17 @@ public class MainActivity extends BaseActivity
                     if (mCurBingWallpaperImage == null) {
                         return;
                     }
-                    mDownloadHelper.saveWallpaper(this, getSaveUrl());
+                    BingWallpaperUtils.showSaveWallpaperDialog(this, new Callback5() {
+                        @Override
+                        public void onAllow() {
+                            mDownloadHelper.saveWallpaper(getActivity(), getSaveUrl());
+                        }
+
+                        @Override
+                        public void onDeny() {
+
+                        }
+                    });
                 });
 
         if (!mini) {

@@ -74,8 +74,8 @@ public class MiuiHelper {
     }
 
     private static void lockSetWallpaper(Context context, File wallpaper) throws IOException {
-        if (BingWallpaperUtils.isMiuiLockScreenSupport(context)) {
-            return;
+        if (!BingWallpaperUtils.isMiuiLockScreenSupport(context)) {
+            throw new IOException("Not enable lock screen support");
         }
         setLockScreenWallpaper(context, wallpaper);
     }

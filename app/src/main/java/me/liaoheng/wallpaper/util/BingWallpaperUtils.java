@@ -1,7 +1,6 @@
 package me.liaoheng.wallpaper.util;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.WallpaperManager;
@@ -530,6 +529,34 @@ public class BingWallpaperUtils {
         ComponentName componentName = new ComponentName(context, receiver);
         PackageManager pm = context.getPackageManager();
         pm.setComponentEnabledSetting(componentName, newState, PackageManager.DONT_KILL_APP);
+    }
+
+    public static void showSaveWallpaperDialog(Context context, Callback5 callback) {
+        UIUtils.showYNAlertDialog(context, context.getString(R.string.menu_save_wallpaper) + "?",
+                callback);
+    }
+
+    public static void showWallpaperDialog(Context context, @Nullable BingWallpaperImage image,
+            @Constants.setWallpaperMode int mode, Config config, @Nullable Callback4<Boolean> callback) {
+        String message = context.getString(R.string.menu_set_wallpaper_mode_both);
+        if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
+            message = context.getString(R.string.menu_set_wallpaper_mode_home);
+        } else if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
+            message = context.getString(R.string.menu_set_wallpaper_mode_lock);
+        }
+
+        UIUtils.showYNAlertDialog(context, message + "?", new Callback5() {
+            @Override
+            public void onAllow() {
+                setWallpaper(context, image, mode, config == null ? new Config(context) : config,
+                        callback);
+            }
+
+            @Override
+            public void onDeny() {
+
+            }
+        });
     }
 
     /**
@@ -1102,10 +1129,10 @@ public class BingWallpaperUtils {
     }
 
     public static Bitmap transformStackBlur(Bitmap bitmap, int stackBlur) {
-        if (stackBlur <=0) {
+        if (stackBlur <= 0) {
             return bitmap;
         }
-        return toStackBlur(bitmap,stackBlur);
+        return toStackBlur(bitmap, stackBlur);
     }
 
     /**
