@@ -391,7 +391,7 @@ public class MainActivity extends BaseActivity
         }
         String url = getUrl();
 
-        BingWallpaperUtils.showWallpaperDialog(this, mCurBingWallpaperImage.copy(url), type, null,
+        BingWallpaperUtils.setWallpaper(this, mCurBingWallpaperImage.copy(url), type,
                 new Callback4.EmptyCallback<Boolean>() {
                     @Override
                     public void onYes(Boolean aBoolean) {
@@ -578,13 +578,13 @@ public class MainActivity extends BaseActivity
         addActionButton(lightMutedSwatch, lightVibrantSwatch,
                 getString(R.string.save),
                 R.drawable.ic_save_white_24dp, v -> {
-                    mSetWallpaperActionMenu.close(true);
                     if (mCurBingWallpaperImage == null) {
                         return;
                     }
                     BingWallpaperUtils.showSaveWallpaperDialog(this, new Callback5() {
                         @Override
                         public void onAllow() {
+                            mSetWallpaperActionMenu.close(true);
                             mDownloadHelper.saveWallpaper(getActivity(), getSaveUrl());
                         }
 
