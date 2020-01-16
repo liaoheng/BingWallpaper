@@ -18,7 +18,6 @@ import com.github.liaoheng.common.util.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.TimeUnit;
 
 import me.liaoheng.wallpaper.BuildConfig;
 import okhttp3.OkHttpClient;
@@ -43,11 +42,7 @@ public class MGlideModule extends AppGlideModule {
 
     @Override
     public void registerComponents(@NonNull Context context, @NonNull Glide glide, @NonNull Registry registry) {
-        final OkHttpClient.Builder builder = new OkHttpClient.Builder();
-
-        builder.readTimeout(80, TimeUnit.SECONDS);
-        builder.connectTimeout(60, TimeUnit.SECONDS);
-
+        OkHttpClient.Builder builder = NetUtils.get().initOkHttpClientBuilder(120, 30);
         registry.replace(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(builder.build()));
     }
 }

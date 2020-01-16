@@ -91,6 +91,7 @@ dependencies {
     annotationProcessor deps.glide_compiler
     implementation deps.glide_okhttp3_integration
     implementation deps.okhttp
+    implementation 'com.squareup.okhttp3:okhttp-dnsoverhttps:3.14.3'
     implementation deps.retrofit
     implementation deps.retrofit_converter_gson
     implementation deps.retrofit_adapter_rxjava2
