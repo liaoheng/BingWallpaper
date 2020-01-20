@@ -23,7 +23,6 @@ import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
-import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.IUIHelper;
@@ -53,7 +52,6 @@ public class BingWallpaperIntentService extends IntentService {
      * <p>2. lock</p>
      */
     public final static String EXTRA_SET_WALLPAPER_MODE = "set_wallpaper_mode";
-    public final static String EXTRA_SET_WALLPAPER_BACKGROUND = "set_wallpaper_background";
     public final static String EXTRA_SET_WALLPAPER_IMAGE = "set_wallpaper_image";
     public final static String EXTRA_SET_WALLPAPER_CONFIG = "set_wallpaper_config";
     private IUIHelper mUiHelper;
@@ -62,28 +60,9 @@ public class BingWallpaperIntentService extends IntentService {
         super("BingWallpaperIntentService");
     }
 
-    /**
-     * @param mode 0. both , 1. home , 2. lock
-     */
-    public static void start(Context context, int mode) {
-        start(context, mode, true);
-    }
-
-    /**
-     * @param mode 0. both , 1. home , 2. lock
-     */
-    public static void start(Context context, @Constants.setWallpaperMode int mode, boolean background) {
-        start(context, null, mode, new Config(context), background);
-    }
-
-    /**
-     * @param mode 0. both , 1. home , 2. lock
-     */
-    public static void start(Context context, @Nullable BingWallpaperImage image, @Constants.setWallpaperMode int mode,
-            @NonNull Config config, boolean background) {
+    public static void start(Context context, @Nullable BingWallpaperImage image,
+            @NonNull Config config) {
         Intent intent = new Intent(context, BingWallpaperIntentService.class);
-        intent.putExtra(EXTRA_SET_WALLPAPER_MODE, mode);
-        intent.putExtra(EXTRA_SET_WALLPAPER_BACKGROUND, background);
         intent.putExtra(EXTRA_SET_WALLPAPER_IMAGE, image);
         intent.putExtra(EXTRA_SET_WALLPAPER_CONFIG, config);
         ContextCompat.startForegroundService(context, intent);
@@ -115,14 +94,15 @@ public class BingWallpaperIntentService extends IntentService {
         if (intent == null) {
             return;
         }
-        int setWallpaperType = intent.getIntExtra(EXTRA_SET_WALLPAPER_MODE, 0);
-        boolean isBackground = intent.getBooleanExtra(EXTRA_SET_WALLPAPER_BACKGROUND, false);
         BingWallpaperImage image = intent.getParcelableExtra(EXTRA_SET_WALLPAPER_IMAGE);
         Config config = intent.getParcelableExtra(EXTRA_SET_WALLPAPER_CONFIG);
-        L.alog().d(TAG, " setWallpaperType : %s , config : %s", setWallpaperType, config);
+        if (config == null) {
+            return;
+        }
+        L.alog().d(TAG, config.toString());
 
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().i(TAG, "Starting type: %s , background: %s", setWallpaperType, isBackground);
+            LogDebugFileUtils.get().i(TAG, "Starting > %s", config);
         }
 
         sendSetWallpaperBroadcast(BingWallpaperState.BEGIN);
@@ -130,12 +110,12 @@ public class BingWallpaperIntentService extends IntentService {
         Callback<BingWallpaperImage> callback = new Callback.EmptyCallback<BingWallpaperImage>() {
             @Override
             public void onSuccess(BingWallpaperImage bingWallpaperImage) {
-                success(isBackground, bingWallpaperImage);
+                success(config, bingWallpaperImage);
             }
 
             @Override
             public void onError(Throwable e) {
-                failure(isBackground, e);
+                failure(config, e);
             }
         };
         if (image == null) {
@@ -164,27 +144,28 @@ public class BingWallpaperIntentService extends IntentService {
         }
 
         try {
-            downloadAndSetWallpaper(isBackground, image.getImageUrl(), setWallpaperType, config);
+            downloadAndSetWallpaper(image.getImageUrl(), config);
             callback.onSuccess(image);
         } catch (Throwable e) {
             callback.onError(e);
         }
     }
 
-    private void failure(boolean isBackground, Throwable throwable) {
+    private void failure(Config config, Throwable throwable) {
         L.alog().e(TAG, throwable, "Failure");
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
             LogDebugFileUtils.get().e(TAG, throwable, "Failure");
         }
         sendSetWallpaperBroadcast(BingWallpaperState.FAIL);
         CrashReportHandle.collectException(getApplicationContext(), TAG, throwable);
-        if (isBackground) {
-            NotificationUtils.showFailureNotification(getApplicationContext());
+        if (!config.isBackground() && !config.isShowNotification()) {
+            return;
         }
+        NotificationUtils.showFailureNotification(getApplicationContext());
     }
 
-    private void success(boolean isBackground, BingWallpaperImage image) {
-        if (isBackground) {
+    private void success(Config config, BingWallpaperImage image) {
+        if (config.isBackground()) {
             BingWallpaperUtils.setLastWallpaperImageUrl(getApplicationContext(), image.getImageUrl());
             if (TasksUtils.isToDaysDoProvider(getApplicationContext(), 1, FLAG_SET_WALLPAPER_STATE)) {
                 L.alog().i(TAG, "Today markDone");
@@ -193,11 +174,11 @@ public class BingWallpaperIntentService extends IntentService {
                 }
                 TasksUtils.markDoneProvider(getApplicationContext(), FLAG_SET_WALLPAPER_STATE);
             }
-            if (BingWallpaperUtils.isAutomaticUpdateNotification(getApplicationContext())) {
-                NotificationUtils.showSuccessNotification(getApplicationContext(), image.getCopyright());
-            }
-            NotificationUtils.clearFailureNotification(getApplicationContext());
+            showSuccessNotification(image, BingWallpaperUtils.isAutomaticUpdateNotification(getApplicationContext()));
+        } else {
+            showSuccessNotification(image, config.isShowNotification());
         }
+
         L.alog().i(TAG, "Complete");
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
             LogDebugFileUtils.get().i(TAG, "Complete");
@@ -208,8 +189,14 @@ public class BingWallpaperIntentService extends IntentService {
         sendSetWallpaperBroadcast(BingWallpaperState.SUCCESS);
     }
 
-    private void downloadAndSetWallpaper(boolean isBackground, String url,
-            @Constants.setWallpaperMode int setWallpaperType, Config config)
+    private void showSuccessNotification(BingWallpaperImage image, boolean isShow) {
+        NotificationUtils.clearFailureNotification(getApplicationContext());
+        if (isShow) {
+            NotificationUtils.showSuccessNotification(getApplicationContext(), image.getCopyright());
+        }
+    }
+
+    private void downloadAndSetWallpaper(String url, Config config)
             throws Exception {
         L.alog().i(TAG, "wallpaper image url: " + url);
         File wallpaper = GlideApp.with(getApplicationContext())
@@ -222,13 +209,13 @@ public class BingWallpaperIntentService extends IntentService {
             throw new IOException("Download wallpaper failure");
         }
 
-        mUiHelper.setWallpaper(getApplicationContext(), setWallpaperType, config, wallpaper);
+        mUiHelper.setWallpaper(getApplicationContext(), config.getWallpaperMode(), config, wallpaper);
 
         L.alog().i(TAG, "setBingWallpaper Success");
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
             LogDebugFileUtils.get().i(TAG, "setBingWallpaper Success");
         }
-        if (!isBackground) {
+        if (!config.isBackground()) {
             return;
         }
         if (BingWallpaperUtils.isAutoSave(this)) {

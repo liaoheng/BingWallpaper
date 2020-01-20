@@ -85,7 +85,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
     private BingWallpaperImage mWallpaperImage;
     private ProgressDialog mSetWallpaperProgressDialog;
     private SetWallpaperStateBroadcastReceiverHelper mSetWallpaperStateBroadcastReceiverHelper;
-    private Config config = new Config();
+    private Config mConfig;
     private DownloadHelper mDownloadHelper;
 
     public static void start(Context context, BingWallpaperImage item, Bundle bundle) {
@@ -101,6 +101,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
         setContentView(R.layout.activity_wallpaper_detail);
         ButterKnife.bind(this);
         initStatusBarAddToolbar();
+        mConfig = new Config.Builder().build();
 
         mWallpaperImage = getIntent().getParcelableExtra("image");
         if (mWallpaperImage == null) {
@@ -229,7 +230,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
 
                     @Override
                     public void onSuccess(Bitmap bitmap) {
-                        bitmap = BingWallpaperUtils.transformStackBlur(bitmap, config.getStackBlur());
+                        bitmap = BingWallpaperUtils.transformStackBlur(bitmap, mConfig.getStackBlur());
                         mImageView.setImageBitmap(bitmap);
                     }
 
@@ -305,12 +306,12 @@ public class WallpaperDetailActivity extends BaseActivity implements
                 }
                 break;
             case R.id.menu_wallpaper_share:
-                BingWallpaperUtils.shareImage(getApplicationContext(), config,
+                BingWallpaperUtils.shareImage(getApplicationContext(), mConfig,
                         getUrl(BingWallpaperUtils.getResolution(this)),
                         mWallpaperImage.getCopyright());
                 break;
             case R.id.menu_wallpaper_stack_blur:
-                SeekBarDialogFragment.newInstance(getString(R.string.pref_stack_blur), config.getStackBlur(), this)
+                SeekBarDialogFragment.newInstance(getString(R.string.pref_stack_blur), mConfig.getStackBlur(), this)
                         .show(getSupportFragmentManager(), "SeekBarDialogFragment");
                 break;
         }
@@ -343,7 +344,8 @@ public class WallpaperDetailActivity extends BaseActivity implements
         } else {
             url = getUrl(BingWallpaperUtils.getResolution(this));
         }
-        BingWallpaperUtils.showWallpaperDialog(this, mWallpaperImage.copy(url), type, config,
+        mConfig.setWallpaperMode(type);
+        BingWallpaperUtils.showWallpaperDialog(this, mWallpaperImage.copy(url), mConfig,
                 new Callback4.EmptyCallback<Boolean>() {
                     @Override
                     public void onYes(Boolean aBoolean) {
@@ -378,7 +380,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
 
     @Override
     public void onSeekBarValue(int value) {
-        config.setStackBlur(value);
+        mConfig.setStackBlur(value);
         loadImage();
     }
 }

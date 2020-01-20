@@ -125,6 +125,7 @@ public class MainActivity extends BaseActivity
     private int mActionMenuBottomMargin;
     private UIHelper mUiHelper = new UIHelper();
     private DownloadHelper mDownloadHelper;
+    private Config.Builder mConfig = new Config.Builder();
 
     @OnClick(R.id.bing_wallpaper_cover_story_text)
     void openMap() {
@@ -390,8 +391,8 @@ public class MainActivity extends BaseActivity
             return;
         }
         String url = getUrl();
-
-        BingWallpaperUtils.setWallpaper(this, mCurBingWallpaperImage.copy(url), type,
+        BingWallpaperUtils.setWallpaperDialog(this, mCurBingWallpaperImage.copy(url),
+                mConfig.setWallpaperMode(type).loadConfig(this).build(),
                 new Callback4.EmptyCallback<Boolean>() {
                     @Override
                     public void onYes(Boolean aBoolean) {
@@ -570,7 +571,7 @@ public class MainActivity extends BaseActivity
         addActionButton(lightMutedSwatch, lightVibrantSwatch,
                 getString(R.string.share),
                 R.drawable.ic_share_24dp, v -> {
-                    BingWallpaperUtils.shareImage(this, new Config(this),
+                    BingWallpaperUtils.shareImage(this, mConfig.loadConfig(this).build(),
                             getUrl(), image.getCopyright());
                     mSetWallpaperActionMenu.close(true);
                 });

@@ -32,6 +32,7 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -536,19 +537,19 @@ public class BingWallpaperUtils {
                 callback);
     }
 
-    public static void showWallpaperDialog(Context context, @Nullable BingWallpaperImage image,
-            @Constants.setWallpaperMode int mode, Config config, @Nullable Callback4<Boolean> callback) {
+    public static void showWallpaperDialog(Context context, @Nullable BingWallpaperImage image, @NonNull Config config,
+            @Nullable Callback4<Boolean> callback) {
         String message = context.getString(R.string.menu_set_wallpaper_mode_both);
-        if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
+        if (config.getWallpaperMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
             message = context.getString(R.string.menu_set_wallpaper_mode_home);
-        } else if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
+        } else if (config.getWallpaperMode() == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
             message = context.getString(R.string.menu_set_wallpaper_mode_lock);
         }
 
         UIUtils.showYNAlertDialog(context, message + "?", new Callback5() {
             @Override
             public void onAllow() {
-                setWallpaper(context, image, mode, config == null ? new Config(context) : config,
+                setWallpaperDialog(context, image, config,
                         callback);
             }
 
@@ -559,19 +560,8 @@ public class BingWallpaperUtils {
         });
     }
 
-    /**
-     * @param mode 0. both , 1. home , 2. lock
-     */
-    public static void setWallpaper(Context context, @Nullable BingWallpaperImage image,
-            @Constants.setWallpaperMode int mode, @Nullable Callback4<Boolean> callback) {
-        setWallpaper(context, image, mode, new Config(context), callback);
-    }
-
-    /**
-     * @param mode 0. both , 1. home , 2. lock
-     */
-    public static void setWallpaper(final Context context, final @Nullable BingWallpaperImage image,
-            @Constants.setWallpaperMode final int mode, @NonNull Config config,
+    public static void setWallpaperDialog(final Context context, final @Nullable BingWallpaperImage image,
+            @NonNull Config config,
             @Nullable final Callback4<Boolean> callback) {
         if (!BingWallpaperUtils.isConnected(context)) {
             UIUtils.showToast(context, R.string.network_unavailable);
@@ -583,10 +573,7 @@ public class BingWallpaperUtils {
                     new Callback5() {
                         @Override
                         public void onAllow() {
-                            if (callback != null) {
-                                callback.onYes(true);
-                            }
-                            BingWallpaperIntentService.start(context, image, mode, config, false);
+                            setWallpaperAction(context, image, config, callback);
                         }
 
                         @Override
@@ -595,11 +582,29 @@ public class BingWallpaperUtils {
                         }
                     });
         } else {
-            if (callback != null) {
-                callback.onYes(true);
-            }
-            BingWallpaperIntentService.start(context, image, mode, config, false);
+            setWallpaperAction(context, image, config, callback);
         }
+    }
+
+    private static void setWallpaperAction(Context context, @Nullable BingWallpaperImage image, @NonNull Config config,
+            @Nullable Callback4<Boolean> callback) {
+        if (callback != null) {
+            callback.onYes(true);
+        }
+        BingWallpaperIntentService.start(context, image, config);
+    }
+
+    public static void setWallpaper(Context context, @Nullable BingWallpaperImage image, @NonNull Config config,
+            @Nullable Callback4<Boolean> callback) {
+        if (!BingWallpaperUtils.isConnected(context)) {
+            Toast.makeText(context, R.string.network_unavailable, Toast.LENGTH_SHORT)
+                    .show();
+            return;
+        }
+        if (callback != null) {
+            callback.onYes(true);
+        }
+        BingWallpaperIntentService.start(context, image, config);
     }
 
     public static int getNavigationBarHeight(Context context) {
@@ -819,12 +824,16 @@ public class BingWallpaperUtils {
                     return 2;
                 }
             }
+            Config config = new Config.Builder().loadConfig(context)
+                    .setWallpaperMode(getAutoModeValue(context))
+                    .setBackground(true)
+                    .build();
             if (isPixabaySupport(context)) {
                 if (!TasksUtils.isToDaysDoProvider(context, 1,
                         BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
                     return 3;
                 }
-                BingWallpaperIntentService.start(context, getAutoModeValue(context));
+                BingWallpaperIntentService.start(context, null, config);
             } else {
                 try {
                     BingWallpaperImage image = BingWallpaperNetworkClient.getBingWallpaperSingleCall(context);
@@ -837,8 +846,7 @@ public class BingWallpaperUtils {
                         return 0;
                     }
                     try {
-                        BingWallpaperIntentService.start(context, image, getAutoModeValue(context), new Config(context),
-                                true);
+                        BingWallpaperIntentService.start(context, image, config);
                     } catch (Exception e) {
                         CrashReportHandle.collectException(context, TAG, e);
                     }

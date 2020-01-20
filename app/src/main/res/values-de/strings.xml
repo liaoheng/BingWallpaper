@@ -32,6 +32,7 @@
     <string name="share">Teilen</string>
     <string name="set_wallpaper">Hintergrundbild festlegen</string>
     <string name="miui_root_dialog_hint">Sie verwenden MIUI. Zum Verändern des Hintergrundbildes/Sperrbildschirms werden Root-Zugriffe benötigt, sowie ein manuelles öffnen.</string>
+    <string name="save">Speichern</string>
     <!--setting -->
     <string name="pref_auto_update_wallpaper">Einstellungen der tägliche Aktualisierung</string>
     <string name="pref_update_only_on_wifi">Nur bei WLAN</string>
@@ -69,6 +70,7 @@
     <string name="pref_country_ir">Iran</string>
     <string name="pref_language">Sprache (Iso-Code)</string>
     <string name="pref_stack_blur">Gauß\'scher Weichzeichner</string>
+    <string name="pref_stack_blur_mode">Hintergrundbild Unschärfe Modus</string>
     <string name="pref_clear_cache">Cache leeren</string>
     <string name="pref_clear_cache_success">Cache erfolgreich geleert</string>
     <string name="pref_log_file">Debug-Protokoll</string>
