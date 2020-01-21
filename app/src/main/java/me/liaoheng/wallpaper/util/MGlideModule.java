@@ -42,7 +42,7 @@ public class MGlideModule extends AppGlideModule {
 
     @Override
     public void registerComponents(@NonNull Context context, @NonNull Glide glide, @NonNull Registry registry) {
-        OkHttpClient.Builder builder = NetUtils.get().initOkHttpClientBuilder(120, 30);
+        OkHttpClient.Builder builder = NetUtils.get().initOkHttpClientBuilder(context, 120, 30);
         registry.replace(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(builder.build()));
     }
 }

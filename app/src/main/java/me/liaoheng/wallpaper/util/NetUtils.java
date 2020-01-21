@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import com.bumptech.glide.request.target.Target;
 import com.github.liaoheng.common.util.Callback;
@@ -80,14 +81,17 @@ public class NetUtils {
         }
     }
 
-    public OkHttpClient.Builder initOkHttpClientBuilder(long readTimeout, long connectTimeout) {
+    public OkHttpClient.Builder initOkHttpClientBuilder(Context context, long readTimeout, long connectTimeout) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.readTimeout(readTimeout, TimeUnit.SECONDS)
-                .connectTimeout(connectTimeout, TimeUnit.SECONDS)
-                .dns(new DnsOverHttps.Builder()
-                        .client(new OkHttpClient.Builder().build())
-                        .url(HttpUrl.get("https://1.1.1.1/dns-query"))
-                        .build());
+                .connectTimeout(connectTimeout, TimeUnit.SECONDS);
+        if (PreferenceManager
+                .getDefaultSharedPreferences(context).getBoolean("pref_doh", false)) {
+            builder.dns(new DnsOverHttps.Builder()
+                    .client(new OkHttpClient.Builder().build())
+                    .url(HttpUrl.get("https://cloudflare-dns.com/dns-query"))
+                    .build());
+        }
         return builder;
     }
 
@@ -95,7 +99,7 @@ public class NetUtils {
         Retrofit.Builder factory = new Retrofit.Builder().baseUrl(Constants.LOCAL_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
-        OkHttpClient.Builder simpleBuilder = initOkHttpClientBuilder(60, 30);
+        OkHttpClient.Builder simpleBuilder = initOkHttpClientBuilder(context, 60, 30);
         ExecutorService threadPoolExecutor = Executors
                 .newSingleThreadExecutor(Util.threadFactory("OkHttp Dispatcher", false));
         Dispatcher dispatcher = new Dispatcher(threadPoolExecutor);

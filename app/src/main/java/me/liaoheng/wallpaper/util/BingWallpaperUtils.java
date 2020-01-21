@@ -68,7 +68,6 @@ import com.github.liaoheng.common.util.Utils;
 import com.github.liaoheng.common.util.ValidateUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import com.scottyab.rootbeer.RootBeer;
 
@@ -319,14 +318,9 @@ public class BingWallpaperUtils {
         return SettingTrayPreferences.get(context).getBoolean(SettingsActivity.PREF_AUTO_SAVE_WALLPAPER_FILE, false);
     }
 
-    public static String getName(String fullName) {
-        String extension = FileUtils.getExtension(fullName);
-        return FileUtils.getName(fullName) + (Strings.isNullOrEmpty(extension) ? "" : "." + extension);
-    }
-
     //https://juejin.im/post/5d0b1739e51d4510a73280cc
     public static Uri saveFileToPictureCompat(Context context, String url, File from) throws Exception {
-        String name = getName(url);
+        String name = FileUtils.getName(url);
         String[] split = name.split("=");
         if (split.length > 1) {
             name = split[1];

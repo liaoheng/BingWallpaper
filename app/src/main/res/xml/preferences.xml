@@ -136,6 +136,11 @@
 
         <SwitchPreference
                 android:defaultValue="false"
+                android:key="pref_doh"
+                android:title="DoH" />
+
+        <SwitchPreference
+                android:defaultValue="false"
                 android:key="pref_set_wallpaper_debug_log"
                 android:summary="sdcard/Android/data/{package}/log/debug_log.txt"
                 android:title="@string/pref_log_file" />
