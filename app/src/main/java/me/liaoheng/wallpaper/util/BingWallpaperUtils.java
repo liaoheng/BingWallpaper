@@ -153,13 +153,10 @@ public class BingWallpaperUtils {
     }
 
     public static String getSaveResolution(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-
         String[] names = context.getResources()
                 .getStringArray(R.array.pref_set_wallpaper_resolution_name);
 
-        String resolution = sharedPreferences
+        String resolution =  SettingTrayPreferences.get(context)
                 .getString(SettingsActivity.PREF_SAVE_WALLPAPER_RESOLUTION, "0");
         return names[Integer.parseInt(Objects.requireNonNull(resolution))];
     }

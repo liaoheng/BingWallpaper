@@ -13,8 +13,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 172
-        versionName "1.7.2"
+        versionCode 173
+        versionName "1.7.3"
     }
 
     def isSigning = true
@@ -58,7 +58,7 @@ android {
 }
 
 def crashlytics = "com.crashlytics.sdk.android:crashlytics:2.10.1"
-def firebaseCore = "com.google.firebase:firebase-core:17.2.1"
+def firebaseCore = "com.google.firebase:firebase-core:17.2.3"
 
 dependencies {
     testImplementation deps.robolectric
@@ -71,7 +71,7 @@ dependencies {
     implementation deps.browser
     implementation deps.preference
 
-    implementation 'androidx.work:work-runtime:2.2.0'
+    implementation 'androidx.work:work-runtime:2.3.2'
     implementation 'com.firebase:firebase-jobdispatcher:0.8.6'
     if (isFirebase) {
         implementation crashlytics

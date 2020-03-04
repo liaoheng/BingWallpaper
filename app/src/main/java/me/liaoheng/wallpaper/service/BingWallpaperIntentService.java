@@ -144,7 +144,7 @@ public class BingWallpaperIntentService extends IntentService {
         }
 
         try {
-            downloadAndSetWallpaper(image.getImageUrl(), config);
+            downloadAndSetWallpaper(image, config);
             callback.onSuccess(image);
         } catch (Throwable e) {
             callback.onError(e);
@@ -196,8 +196,9 @@ public class BingWallpaperIntentService extends IntentService {
         }
     }
 
-    private void downloadAndSetWallpaper(String url, Config config)
+    private void downloadAndSetWallpaper(BingWallpaperImage image, Config config)
             throws Exception {
+        String url = image.getImageUrl();
         L.alog().i(TAG, "wallpaper image url: " + url);
         File wallpaper = GlideApp.with(getApplicationContext())
                 .asFile()
@@ -222,6 +223,17 @@ public class BingWallpaperIntentService extends IntentService {
             try {
                 if (!BingWallpaperUtils.checkStoragePermissions(this)) {
                     throw new IOException("Permission denied");
+                }
+                String saveResolution = BingWallpaperUtils.getSaveResolution(this);
+                String resolution = BingWallpaperUtils.getResolution(this);
+                if (!saveResolution.equals(resolution)) {
+                    String saveImageUrl = BingWallpaperUtils.getImageUrl(getApplicationContext(), saveResolution,
+                            image);
+                    wallpaper = GlideApp.with(getApplicationContext())
+                            .asFile()
+                            .load(saveImageUrl)
+                            .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                            .get(2, TimeUnit.MINUTES);
                 }
                 Uri file = BingWallpaperUtils.saveFileToPictureCompat(this, url, wallpaper);
                 if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {

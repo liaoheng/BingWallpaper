@@ -75,8 +75,8 @@
         <SwitchPreference
                 android:defaultValue="false"
                 android:key="pref_auto_save_wallpaper_file"
-                android:title="@string/pref_auto_save_wallpaper_title"
-                android:summary="@string/pref_auto_save_wallpaper_summary"/>
+                android:summary="@string/pref_auto_save_wallpaper_summary"
+                android:title="@string/pref_auto_save_wallpaper_title" />
 
         <me.liaoheng.wallpaper.widget.SeekBarDialogPreference
                 android:defaultValue="0"
@@ -137,6 +137,7 @@
         <SwitchPreference
                 android:defaultValue="false"
                 android:key="pref_doh"
+                android:summary="DNS over HTTPS(Cloudflare)"
                 android:title="DoH" />
 
         <SwitchPreference
