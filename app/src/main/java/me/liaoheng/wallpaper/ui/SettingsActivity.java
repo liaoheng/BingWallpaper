@@ -322,6 +322,7 @@ public class SettingsActivity extends BaseActivity {
                     break;
                 case PREF_SAVE_WALLPAPER_RESOLUTION:
                     mSaveResolutionListPreference.setSummary(mSaveResolutionListPreference.getEntry());
+                    mPreferences.put(PREF_SAVE_WALLPAPER_RESOLUTION, mSaveResolutionListPreference.getValue());
                     break;
                 case PREF_COUNTRY:
                     mCountryListPreference.setSummary(mCountryListPreference.getEntry());
