@@ -14,7 +14,7 @@ import me.liaoheng.wallpaper.model.Config;
  * @version 2018-12-24 11:11
  */
 public interface IUIHelper {
-    void setWallpaper(Context context, @Constants.setWallpaperMode int mode, @NonNull Config config, File wallpaper)
+    void setWallpaper(Context context, @NonNull Config config, File wallpaper)
             throws IOException;
 
     void register(Context context, BottomViewListener listener);

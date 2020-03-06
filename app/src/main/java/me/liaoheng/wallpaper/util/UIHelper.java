@@ -23,7 +23,7 @@ import me.liaoheng.wallpaper.model.Config;
 public class UIHelper implements IUIHelper {
 
     @Override
-    public void setWallpaper(Context context, int mode, @NonNull Config config, File wallpaper) throws IOException {
+    public void setWallpaper(Context context, @NonNull Config config, File wallpaper) throws IOException {
         File home = wallpaper;
         File lock = wallpaper;
         if (config.getStackBlur() > 0) {
@@ -44,7 +44,7 @@ public class UIHelper implements IUIHelper {
                 lock = stackBlurFile;
             }
         }
-
+        int mode = config.getWallpaperMode();
         if (ROM.getROM().isMiui()) {
             MiuiHelper.setWallpaper(context, mode, home, lock);
         } else if (ROM.getROM().isEmui()) {

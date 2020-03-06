@@ -210,7 +210,7 @@ public class BingWallpaperIntentService extends IntentService {
             throw new IOException("Download wallpaper failure");
         }
 
-        mUiHelper.setWallpaper(getApplicationContext(), config.getWallpaperMode(), config, wallpaper);
+        mUiHelper.setWallpaper(getApplicationContext(), config, wallpaper);
 
         L.alog().i(TAG, "setBingWallpaper Success");
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {

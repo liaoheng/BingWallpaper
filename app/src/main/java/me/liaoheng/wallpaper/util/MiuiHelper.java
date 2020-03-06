@@ -3,10 +3,13 @@ package me.liaoheng.wallpaper.util;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.media.ThumbnailUtils;
+import android.view.WindowManager;
+
+import androidx.core.content.ContextCompat;
 
 import com.github.liaoheng.common.util.BitmapUtils;
-import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.MD5Utils;
 import com.github.liaoheng.common.util.ShellUtils;
 
@@ -19,27 +22,48 @@ import java.io.IOException;
  */
 public class MiuiHelper {
 
+    @SuppressWarnings({ "WeakerAccess", "SuspiciousNameCombination" })
     public static void setLockScreenWallpaper(Context context, File wallpaper) throws IOException {
         if (ShellUtils.hasRootPermission()) {
-            int width = DisplayUtils.getScreenInfo(context).widthPixels;
-            int height = DisplayUtils.getScreenInfo(context).heightPixels;
-            if (width > height) {
-                int temp = width;
-                width = height;
-                height = temp;
+            WindowManager wm = ContextCompat.getSystemService(context, WindowManager.class);
+            if (wm == null) {
+                throw new IOException("WindowManager is null");
             }
-            String key = MD5Utils.md5Hex(wallpaper.getAbsolutePath());
-            File wallpaperFile = CacheUtils.get().get(key);
-            if (wallpaperFile == null) {
-                Bitmap newBitmap = ThumbnailUtils.extractThumbnail(
-                        BitmapFactory.decodeFile(wallpaper.getAbsolutePath()),
-                        width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-                if (newBitmap != null) {
-                    wallpaper = CacheUtils.get().put(key, BitmapUtils.bitmapToStream(newBitmap,
-                            Bitmap.CompressFormat.JPEG));
+            Point size = new Point();
+            wm.getDefaultDisplay().getRealSize(size);
+            int width = size.x;
+            int height = size.y;
+
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(wallpaper.getAbsolutePath(), options);
+            boolean isCrop = false;
+            if (options.outWidth > options.outHeight) {//horizontal
+                if (options.outHeight < height) {
+                    isCrop = true;
                 }
-            } else {
-                wallpaper = wallpaperFile;
+                int tmp = width;
+                width = height;
+                height = tmp;
+            } else {//vertical
+                if (options.outWidth < height) {
+                    isCrop = true;
+                }
+            }
+            if (isCrop) {
+                String key = MD5Utils.md5Hex(wallpaper.getAbsolutePath());
+                File wallpaperFile = CacheUtils.get().get(key);
+                if (wallpaperFile == null) {
+                    Bitmap newBitmap = ThumbnailUtils.extractThumbnail(
+                            BitmapFactory.decodeFile(wallpaper.getAbsolutePath()),
+                            width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+                    if (newBitmap != null) {
+                        wallpaper = CacheUtils.get().put(key, BitmapUtils.bitmapToStream(newBitmap,
+                                Bitmap.CompressFormat.JPEG));
+                    }
+                } else {
+                    wallpaper = wallpaperFile;
+                }
             }
             setImage(wallpaper);
             return;
