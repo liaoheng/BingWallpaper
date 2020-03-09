@@ -4,7 +4,7 @@
 ## FAQ
 
 ### Use `Daily automatic update` or `Daily timer update` option, it not works fine. 
-#### 1. Can try adding a desktop widget.
+#### 1. You can take a look at this URL: [dontkillmyapp.com](https://dontkillmyapp.com/)
 #### 2. Added to the battery optimization white list.
   -  General operation, Open app settings, Follow the steps below:
       1. <img alt='aosp_1' src='https://raw.githubusercontent.com/liaoheng/BingWallpaper/image/aosp_1.png' width='300'/>
@@ -31,7 +31,8 @@
       4. <img alt='emui_2' src='https://raw.githubusercontent.com/liaoheng/BingWallpaper/image/emui_2.png' width='300'/>
       5. <img alt='emui_3' src='https://raw.githubusercontent.com/liaoheng/BingWallpaper/image/emui_3.png' width='300'/>
 
-#### 3. Can try choose `Android System` or `Daemon service` option at `Running mode`.
+#### 4. Can try choose `Android System` or `Daemon service` option at `Running mode`.
+#### 5. Can try adding a desktop widget.
 
 ## Feedback
 
