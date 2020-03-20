@@ -57,7 +57,6 @@ public class SettingsActivity extends BaseActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        BingWallpaperUtils.setPhoneScreen(this);
         super.onCreate(savedInstanceState);
         setTitle(R.string.menu_main_setting);
         setContentView(R.layout.activity_settings);

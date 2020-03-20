@@ -58,7 +58,10 @@ public class Config implements Parcelable {
         }
     }
 
-    public Config(int stackBlur, int stackBlurMode, boolean showNotification, boolean background, int wallpaperMode) {
+    private Config() {
+    }
+
+    private Config(int stackBlur, int stackBlurMode, boolean showNotification, boolean background, int wallpaperMode) {
         this.stackBlur = stackBlur;
         this.stackBlurMode = stackBlurMode;
         this.showNotification = showNotification;

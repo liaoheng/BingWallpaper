@@ -667,7 +667,7 @@ public class BingWallpaperUtils {
             return;
         }
         if (Constants.Config.isPhone) {
-            context.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            context.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
     }
 

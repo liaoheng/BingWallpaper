@@ -2,3 +2,7 @@ apply from: 'https://raw.githubusercontent.com/liaoheng/common/v0.1.0/dependenci
 
 ext.deps.put("palette","androidx.palette:palette:1.0.0")
 ext.deps.put("material","com.google.android.material:material:1.1.0")
+ext.deps.put("glide","com.github.bumptech.glide:glide:4.11.0")
+ext.deps.put("glide_compiler","com.github.bumptech.glide:compiler:4.11.0")
+ext.deps.put("glide_okhttp3_integration","com.github.bumptech.glide:okhttp3-integration:4.11.0")
+ext.deps.put("okhttp","com.squareup.okhttp3:okhttp:3.14.7")

@@ -13,8 +13,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 173
-        versionName "1.7.3"
+        versionCode 174
+        versionName "1.7.4"
     }
 
     def isSigning = true
@@ -71,7 +71,7 @@ dependencies {
     implementation deps.browser
     implementation deps.preference
 
-    implementation 'androidx.work:work-runtime:2.3.2'
+    implementation 'androidx.work:work-runtime:2.3.3'
     implementation 'com.firebase:firebase-jobdispatcher:0.8.6'
     if (isFirebase) {
         implementation crashlytics
@@ -91,7 +91,7 @@ dependencies {
     annotationProcessor deps.glide_compiler
     implementation deps.glide_okhttp3_integration
     implementation deps.okhttp
-    implementation 'com.squareup.okhttp3:okhttp-dnsoverhttps:3.14.3'
+    implementation 'com.squareup.okhttp3:okhttp-dnsoverhttps:3.14.7'
     implementation deps.retrofit
     implementation deps.retrofit_converter_gson
     implementation deps.retrofit_adapter_rxjava2
@@ -103,7 +103,7 @@ dependencies {
 
 
     //https://github.com/scottyab/rootbeer
-    implementation 'com.scottyab:rootbeer-lib:0.0.7'
+    implementation 'com.github.scottyab:rootbeer:0.0.8'
 
     //https://github.com/yshrsmz/LicenseAdapter
     implementation('net.yslibrary.licenseadapter:licenseadapter:3.0.0') {
@@ -117,7 +117,7 @@ dependencies {
     implementation 'net.grandcentrix.tray:tray:0.12.0'
 
     //https://github.com/apl-devs/AppIntro
-    implementation 'com.github.paolorotolo:appintro:v5.1.0'
+    implementation 'com.github.AppIntro:AppIntro:5.1.0'
 
 //    implementation group: "com.github.liaoheng", name: "common-core", version: "0.1.0-SNAPSHOT", changing: true
 //    implementation group: "com.github.liaoheng", name: "common-adapter", version: "0.1.0-SNAPSHOT", changing: true

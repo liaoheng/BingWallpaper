@@ -3,7 +3,6 @@ package me.liaoheng.wallpaper.service;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -139,8 +138,9 @@ public class BingWallpaperIntentService extends IntentService {
             }
         }
 
+        L.alog().i(TAG, "load image url : %s", image.getImageUrl());
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().i(TAG, "imageUrl : %s", image.getImageUrl());
+            LogDebugFileUtils.get().i(TAG, "Load image url : %s", image.getImageUrl());
         }
 
         try {
@@ -152,9 +152,9 @@ public class BingWallpaperIntentService extends IntentService {
     }
 
     private void failure(Config config, Throwable throwable) {
-        L.alog().e(TAG, throwable, "Failure");
+        L.alog().e(TAG, throwable, "load image failure");
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().e(TAG, throwable, "Failure");
+            LogDebugFileUtils.get().e(TAG, throwable, "Load image failure");
         }
         sendSetWallpaperBroadcast(BingWallpaperState.FAIL);
         CrashReportHandle.collectException(getApplicationContext(), TAG, throwable);
@@ -165,23 +165,23 @@ public class BingWallpaperIntentService extends IntentService {
     }
 
     private void success(Config config, BingWallpaperImage image) {
+        L.alog().i(TAG, "load image success");
+        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+            LogDebugFileUtils.get().i(TAG, "Load image success");
+        }
+
         if (config.isBackground()) {
             BingWallpaperUtils.setLastWallpaperImageUrl(getApplicationContext(), image.getImageUrl());
             if (TasksUtils.isToDaysDoProvider(getApplicationContext(), 1, FLAG_SET_WALLPAPER_STATE)) {
-                L.alog().i(TAG, "Today markDone");
+                L.alog().i(TAG, "today complete");
                 if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-                    LogDebugFileUtils.get().i(TAG, "Today markDone");
+                    LogDebugFileUtils.get().i(TAG, "Today complete");
                 }
                 TasksUtils.markDoneProvider(getApplicationContext(), FLAG_SET_WALLPAPER_STATE);
             }
             showSuccessNotification(image, BingWallpaperUtils.isAutomaticUpdateNotification(getApplicationContext()));
         } else {
             showSuccessNotification(image, config.isShowNotification());
-        }
-
-        L.alog().i(TAG, "Complete");
-        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().i(TAG, "Complete");
         }
 
         AppWidget_5x2.start(this, image);
@@ -199,12 +199,7 @@ public class BingWallpaperIntentService extends IntentService {
     private void downloadAndSetWallpaper(BingWallpaperImage image, Config config)
             throws Exception {
         String url = image.getImageUrl();
-        L.alog().i(TAG, "wallpaper image url: " + url);
-        File wallpaper = GlideApp.with(getApplicationContext())
-                .asFile()
-                .load(url)
-                .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-                .get(2, TimeUnit.MINUTES);
+        File wallpaper = getGlideFile(getApplicationContext(), url);
 
         if (wallpaper == null || !wallpaper.exists()) {
             throw new IOException("Download wallpaper failure");
@@ -212,10 +207,6 @@ public class BingWallpaperIntentService extends IntentService {
 
         mUiHelper.setWallpaper(getApplicationContext(), config, wallpaper);
 
-        L.alog().i(TAG, "setBingWallpaper Success");
-        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().i(TAG, "setBingWallpaper Success");
-        }
         if (!config.isBackground()) {
             return;
         }
@@ -229,20 +220,22 @@ public class BingWallpaperIntentService extends IntentService {
                 if (!saveResolution.equals(resolution)) {
                     String saveImageUrl = BingWallpaperUtils.getImageUrl(getApplicationContext(), saveResolution,
                             image);
-                    wallpaper = GlideApp.with(getApplicationContext())
-                            .asFile()
-                            .load(saveImageUrl)
-                            .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-                            .get(2, TimeUnit.MINUTES);
+                    L.alog().i(TAG, "wallpaper save url: " + saveImageUrl);
+                    wallpaper = getGlideFile(getApplicationContext(), saveImageUrl);
                 }
-                Uri file = BingWallpaperUtils.saveFileToPictureCompat(this, url, wallpaper);
-                if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-                    LogDebugFileUtils.get().i(TAG, "save wallpaper to: %s", file);
-                }
+                BingWallpaperUtils.saveFileToPictureCompat(this, url, wallpaper);
             } catch (Exception e) {
                 CrashReportHandle.saveWallpaper(getApplicationContext(), TAG, e);
             }
         }
+    }
+
+    private File getGlideFile(Context context, String url) throws Exception {
+        return GlideApp.with(context)
+                .asFile()
+                .load(url)
+                .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                .get(2, TimeUnit.MINUTES);
     }
 
     private void sendSetWallpaperBroadcast(BingWallpaperState state) {
