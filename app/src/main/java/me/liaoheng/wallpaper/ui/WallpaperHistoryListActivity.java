@@ -159,6 +159,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
 
             @Override
             public void onError(Throwable e) {
+                mRecyclerViewHelper.changeToLoadMoreComplete();
                 setBingWallpaperError(e);
             }
         });

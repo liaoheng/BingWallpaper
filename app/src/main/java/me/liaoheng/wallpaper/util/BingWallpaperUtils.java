@@ -1,6 +1,7 @@
 package me.liaoheng.wallpaper.util;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.WallpaperManager;
@@ -156,7 +157,7 @@ public class BingWallpaperUtils {
         String[] names = context.getResources()
                 .getStringArray(R.array.pref_set_wallpaper_resolution_name);
 
-        String resolution =  SettingTrayPreferences.get(context)
+        String resolution = SettingTrayPreferences.get(context)
                 .getString(SettingsActivity.PREF_SAVE_WALLPAPER_RESOLUTION, "0");
         return names[Integer.parseInt(Objects.requireNonNull(resolution))];
     }
@@ -662,12 +663,13 @@ public class BingWallpaperUtils {
         }
     }
 
+    @SuppressLint("SourceLockedOrientationActivity")
     public static void setPhoneScreen(Activity context) {
         if (context == null) {
             return;
         }
         if (Constants.Config.isPhone) {
-            context.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            context.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
     }
 
@@ -1163,12 +1165,25 @@ public class BingWallpaperUtils {
      * Stack Blur Algorithm by Mario Klingemann <mario@quasimondo.com>
      */
     @NonNull
+    //TODO Need to optimize, try using ndk
     public static Bitmap toStackBlur(Bitmap sentBitmap, int radius) {
         if (radius < 1) {
             return sentBitmap;
         }
+        Bitmap bitmap = null;
+        try {
+            bitmap = sentBitmap.copy(sentBitmap.getConfig(), true);
+        } catch (OutOfMemoryError oom) {
+            System.gc();
+            try {
+                bitmap = sentBitmap.copy(sentBitmap.getConfig(), true);
+            } catch (OutOfMemoryError ignore) {
+            }
+        }
 
-        Bitmap bitmap = sentBitmap.copy(sentBitmap.getConfig(), true);
+        if (bitmap == null) {
+            return sentBitmap;
+        }
 
         int w = bitmap.getWidth();
         int h = bitmap.getHeight();
