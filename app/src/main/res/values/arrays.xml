@@ -75,7 +75,7 @@
         <item>Polski</item>
         <item>Čeština</item>
         <item>Nederlands</item>
-        <item>français</item>
+        <item>Français</item>
     </string-array>
 
     <string-array name="pref_language_values">
