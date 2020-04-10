@@ -41,5 +41,5 @@ See the [translation page](https://crowdin.com/project/starth-bing-wallpaper) if
 [@Bergradler](https://crowdin.com/profile/Bergradler)
 - **Nederlands**(Dutch)
 [@5qx9Pe7Lvj8Fn7zg(Jasper)](https://crowdin.com/profile/5qx9Pe7Lvj8Fn7zg)
-- **français**(French)
+- **Français**(French)
 [@Faux-ami(Nicolas)](https://crowdin.com/profile/Faux-ami)
