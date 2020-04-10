@@ -30,7 +30,7 @@
     <string name="feedback_copied">Feedback is copied to the clipboard.</string>
     <string name="share">Share</string>
     <string name="set_wallpaper">Set wallpaper</string>
-    <string name="miui_root_dialog_hint">You are using MIUI, set the lock screen wallpaper features require root permission! And the need to manually open.</string>
+    <string name="miui_root_dialog_hint">You are using MIUI, The lock screen wallpaper features require root permission and need to be enabled manually in Settings.</string>
     <string name="save">Save</string>
 
     <!--setting -->

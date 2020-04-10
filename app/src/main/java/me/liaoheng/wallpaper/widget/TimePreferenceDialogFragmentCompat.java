@@ -4,10 +4,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.View;
-import android.widget.TimePicker;
 import androidx.preference.DialogPreference;
 import androidx.preference.PreferenceDialogFragmentCompat;
-import com.github.liaoheng.common.util.L;
+
+import com.takisoft.datetimepicker.widget.TimePicker;
+
 import me.liaoheng.wallpaper.R;
 import org.joda.time.LocalTime;
 

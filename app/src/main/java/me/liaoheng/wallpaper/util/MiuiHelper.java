@@ -38,17 +38,13 @@ public class MiuiHelper {
             options.inJustDecodeBounds = true;
             BitmapFactory.decodeFile(wallpaper.getAbsolutePath(), options);
             boolean isCrop = false;
-            if (options.outWidth > options.outHeight) {//horizontal
-                if (options.outHeight < height) {
-                    isCrop = true;
-                }
+            if (width < height){
                 int tmp = width;
                 width = height;
                 height = tmp;
-            } else {//vertical
-                if (options.outWidth < height) {
-                    isCrop = true;
-                }
+            }
+            if (options.outHeight < height) {
+                isCrop = true;
             }
             if (isCrop) {
                 String key = MD5Utils.md5Hex(wallpaper.getAbsolutePath());

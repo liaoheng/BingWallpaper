@@ -282,6 +282,8 @@ public class BingWallpaperUtils {
                 return LocaleList.csLocale();
             case 8:
                 return LocaleList.nlLocale();
+            case 9:
+                return Locale.FRANCE;
             default:
                 Locale originalLocale = LanguageContextWrapper.getOriginalLocale();
                 return originalLocale == null ? getCurrentLocale(context) : originalLocale;
@@ -976,6 +978,8 @@ public class BingWallpaperUtils {
             return "Translator : @Bergradler";
         } else if (locale.getLanguage().equals(LocaleList.nlLocale().getLanguage())) {
             return "Translator : @5qx9Pe7Lvj8Fn7zg(Jasper)";
+        }else if (locale.getLanguage().equals(Locale.FRANCE.getLanguage())) {
+            return "Translator : @Faux-ami(Nicolas)";
         }
         return "";
     }
