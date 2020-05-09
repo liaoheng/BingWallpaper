@@ -493,8 +493,11 @@ public class MainActivity extends BaseActivity
         if (BingWallpaperUtils.isPixabaySupport(this)) {
             url = image.getUrl().replace("_1280", "_960");
         } else {
-            url = BingWallpaperUtils.getImageUrl(getApplicationContext(),
-                    Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION, image);
+            String u = Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION;
+            if (!Constants.Config.isPhone) {
+                u = Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION_LANDSCAPE;
+            }
+            url = BingWallpaperUtils.getImageUrl(getApplicationContext(), u, image);
         }
         if (isDestroyed()) {
             return;

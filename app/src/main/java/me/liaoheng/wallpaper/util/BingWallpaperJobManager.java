@@ -1,7 +1,5 @@
 package me.liaoheng.wallpaper.util;
 
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,17 +9,15 @@ import androidx.annotation.MainThread;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
-import com.firebase.jobdispatcher.*;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.UIUtils;
-import me.liaoheng.wallpaper.R;
-import me.liaoheng.wallpaper.service.FirebaseJobSchedulerDaemonService;
-import me.liaoheng.wallpaper.service.WallpaperDaemonService;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import me.liaoheng.wallpaper.R;
+import me.liaoheng.wallpaper.service.WallpaperDaemonService;
 
 /**
  * @author liaoheng
@@ -29,15 +25,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class BingWallpaperJobManager {
     private static final String TAG = BingWallpaperJobManager.class.getSimpleName();
-    private static final int JOB_ID = 0x483;
-    private static final String JOB_TAG = "bing_wallpaper_job_" + JOB_ID;
 
     public static void disabled(Context context) {
         clear(context);
-        if (BingWallpaperUtils.isGooglePlayServicesAvailable(context)) {
-            FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
-            dispatcher.cancel(JOB_TAG);
-        }
 
         WorkerManager.disabled(context);
 
@@ -47,12 +37,6 @@ public class BingWallpaperJobManager {
 
     public static void clear(Context context) {
         setJobType(context, NONE);
-        JobScheduler jobScheduler = (JobScheduler)
-                context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        if (jobScheduler == null) {
-            return;
-        }
-        jobScheduler.cancel(JOB_ID);
     }
 
     public static boolean enabled(Context context) {
@@ -63,33 +47,6 @@ public class BingWallpaperJobManager {
             UIUtils.showToast(context, R.string.enable_job_error);
         }
         return ret;
-    }
-
-    /**
-     * @param time seconds
-     */
-    public static boolean enableGoogleService(Context context, long time) {
-        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
-        Job myJob = dispatcher.newJobBuilder()
-                .setService(FirebaseJobSchedulerDaemonService.class)
-                .setTag(JOB_TAG)
-                .setRecurring(true)
-                .setReplaceCurrent(true)
-                .setLifetime(Lifetime.FOREVER)
-                .setRetryStrategy(
-                        RetryStrategy.DEFAULT_EXPONENTIAL)
-                .setTrigger(Trigger.executionWindow(0, (int) time))
-                .build();
-        boolean success = dispatcher.schedule(myJob) == FirebaseJobDispatcher.SCHEDULE_RESULT_SUCCESS;
-        if (success) {
-            setJobType(context, GOOGLE_SERVICE);
-            if (BingWallpaperUtils.isEnableLog(context)) {
-                LogDebugFileUtils.get()
-                        .i(TAG, "Enable google service job interval time : %s", time);
-            }
-            L.alog().d(TAG, "Enable google service job interval time : %s", time);
-        }
-        return success;
     }
 
     /**
@@ -106,21 +63,8 @@ public class BingWallpaperJobManager {
         try {
             int type = BingWallpaperUtils.getAutomaticUpdateType(context);
             if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_AUTO) {
-                if (BingWallpaperUtils.isGooglePlayServicesAvailable(context)) {
-                    if (!enableGoogleService(context, time)) {
-                        if (!enableSystem(context, time)) {
-                            return enableDaemonService(context);
-                        }
-                    }
-                } else {
-                    if (BingWallpaperUtils.isEnableLog(context)) {
-                        LogDebugFileUtils.get()
-                                .i(TAG, "GMS error: %s",
-                                        BingWallpaperUtils.getGooglePlayServicesAvailableErrorString(context));
-                    }
-                    if (!enableSystem(context, time)) {
-                        return enableDaemonService(context);
-                    }
+                if (!enableSystem(context, time)) {
+                    return enableDaemonService(context);
                 }
             } else if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_SYSTEM) {
                 return enableSystem(context, time);
@@ -202,41 +146,14 @@ public class BingWallpaperJobManager {
             return "none";
         } else if (jobType == DAEMON_SERVICE) {
             return "daemon_service";
-        } else if (jobType == GOOGLE_SERVICE) {
-            if (BingWallpaperUtils.isGooglePlayServicesAvailable(context)) {
-                return "google_service";
-            } else {
-                return "google_service_error";
-            }
         } else if (jobType == WORKER) {
             if (WorkerManager.isScheduled(context)) {
                 return "worker";
             } else {
                 return "worker_error";
             }
-        } else {
-            return checkSystemJobStatus(context) ? "true" : "false";
         }
-    }
-
-    public static boolean checkSystemJobStatus(Context context) {
-        JobScheduler jobScheduler = (JobScheduler)
-                context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        if (jobScheduler == null) {
-            return false;
-        }
-        JobInfo myJobInfo = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            myJobInfo = jobScheduler.getPendingJob(JOB_ID);
-        } else {
-            List<JobInfo> allPendingJobs = jobScheduler.getAllPendingJobs();
-            for (JobInfo allPendingJob : allPendingJobs) {
-                if (allPendingJob.getId() == JOB_ID) {
-                    myJobInfo = allPendingJob;
-                }
-            }
-        }
-        return myJobInfo != null;
+        return "unknown";
     }
 
     @MainThread

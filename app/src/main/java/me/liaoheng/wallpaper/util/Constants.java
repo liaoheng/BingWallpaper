@@ -38,6 +38,7 @@ public interface Constants {
         public static int WALLPAPER_RESOLUTION_HEIGHT = 800;
         public static String WALLPAPER_RESOLUTION = WALLPAPER_RESOLUTION_WIDTH + "x" + WALLPAPER_RESOLUTION_HEIGHT;
         public static String MAIN_WALLPAPER_RESOLUTION = "720x1280";
+        public static String MAIN_WALLPAPER_RESOLUTION_LANDSCAPE = "1280x720";
     }
 
     class Config {

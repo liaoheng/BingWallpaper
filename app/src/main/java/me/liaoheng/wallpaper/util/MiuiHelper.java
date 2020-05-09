@@ -5,9 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.media.ThumbnailUtils;
-import android.view.WindowManager;
-
-import androidx.core.content.ContextCompat;
+import android.os.Build;
 
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.MD5Utils;
@@ -22,49 +20,50 @@ import java.io.IOException;
  */
 public class MiuiHelper {
 
-    @SuppressWarnings({ "WeakerAccess", "SuspiciousNameCombination" })
+    @SuppressWarnings({ "WeakerAccess" })
     public static void setLockScreenWallpaper(Context context, File wallpaper) throws IOException {
         if (ShellUtils.hasRootPermission()) {
-            WindowManager wm = ContextCompat.getSystemService(context, WindowManager.class);
-            if (wm == null) {
-                throw new IOException("WindowManager is null");
-            }
-            Point size = new Point();
-            wm.getDefaultDisplay().getRealSize(size);
-            int width = size.x;
-            int height = size.y;
-
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(wallpaper.getAbsolutePath(), options);
-            boolean isCrop = false;
-            if (width < height){
-                int tmp = width;
-                width = height;
-                height = tmp;
-            }
-            if (options.outHeight < height) {
-                isCrop = true;
-            }
-            if (isCrop) {
-                String key = MD5Utils.md5Hex(wallpaper.getAbsolutePath());
-                File wallpaperFile = CacheUtils.get().get(key);
-                if (wallpaperFile == null) {
-                    Bitmap newBitmap = ThumbnailUtils.extractThumbnail(
-                            BitmapFactory.decodeFile(wallpaper.getAbsolutePath()),
-                            width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-                    if (newBitmap != null) {
-                        wallpaper = CacheUtils.get().put(key, BitmapUtils.bitmapToStream(newBitmap,
-                                Bitmap.CompressFormat.JPEG));
-                    }
-                } else {
-                    wallpaper = wallpaperFile;
-                }
-            }
-            setImage(wallpaper);
+            setImage(cropWallpaper(context, wallpaper));
             return;
         }
         throw new IOException("Not acquired root permission");
+    }
+
+    private static File cropWallpaper(Context context, File wallpaper) throws IOException {
+        Point size = BingWallpaperUtils.getSysResolution(context);
+        int width = size.x;
+        int height = size.y;
+        if (width == 0 || height == 0) {
+            throw new IOException("WindowManager is null");
+        }
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(wallpaper.getAbsolutePath(), options);
+        boolean isCrop = false;
+        if (width > height) {//ensure portrait
+            int tmp = width;
+            width = height;
+            height = tmp;
+        }
+        if (options.outHeight < height) {
+            isCrop = true;
+        }
+        if (isCrop) {
+            String key = MD5Utils.md5Hex(wallpaper.getAbsolutePath()+"_thumbnail");
+            File wallpaperFile = CacheUtils.get().get(key);
+            if (wallpaperFile == null) {
+                Bitmap newBitmap = ThumbnailUtils.extractThumbnail(
+                        BitmapFactory.decodeFile(wallpaper.getAbsolutePath()),
+                        width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+                if (newBitmap != null) {
+                    wallpaper = CacheUtils.get().put(key, BitmapUtils.bitmapToStream(newBitmap,
+                            Bitmap.CompressFormat.JPEG));
+                }
+            } else {
+                wallpaper = wallpaperFile;
+            }
+        }
+        return wallpaper;
     }
 
     private static void setImage(File file) throws IOException {
@@ -81,11 +80,11 @@ public class MiuiHelper {
             File lockWallpaper)
             throws IOException {
         if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-            systemSetWallpaper(context, homeWallpaper);
+            homeSetWallpaper(context, homeWallpaper);
         } else if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
             lockSetWallpaper(context, lockWallpaper);
         } else {
-            systemSetWallpaper(context, homeWallpaper);
+            homeSetWallpaper(context, homeWallpaper);
             try {
                 lockSetWallpaper(context, lockWallpaper);
             } catch (Exception ignored) {
@@ -100,7 +99,12 @@ public class MiuiHelper {
         setLockScreenWallpaper(context, wallpaper);
     }
 
-    private static void systemSetWallpaper(Context context, File wallpaper) throws IOException {
-        BingWallpaperUtils.setWallpaper(context, wallpaper);
+    private static void homeSetWallpaper(Context context, File wallpaper) throws IOException {
+        wallpaper = cropWallpaper(context, wallpaper);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            BingWallpaperUtils.setHomeScreenWallpaper(context, wallpaper);
+        } else {
+            BingWallpaperUtils.setWallpaper(context, wallpaper);
+        }
     }
 }

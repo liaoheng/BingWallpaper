@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -32,6 +33,7 @@ import android.provider.Browser;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -67,8 +69,6 @@ import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 import com.github.liaoheng.common.util.ValidateUtils;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.common.io.Files;
 import com.scottyab.rootbeer.RootBeer;
 
@@ -753,6 +753,8 @@ public class BingWallpaperUtils {
         String autoSetMode = getAutoMode(context);
         int interval = getAutomaticUpdateInterval(context);
         String resolution = getResolution(context);
+        Point r = BingWallpaperUtils.getSysResolution(context);
+        String SysResolution = r.x + "x" + r.y;
 
         return "feedback info ------------------------- \n"
                 + "sdk: "
@@ -777,6 +779,8 @@ public class BingWallpaperUtils {
                 + BuildConfig.VERSION_NAME
                 + " resolution: "
                 + resolution
+                + " sys_resolution: "
+                + SysResolution
                 + " job: "
                 + job
                 + " alarm: "
@@ -897,22 +901,6 @@ public class BingWallpaperUtils {
         return false;
     }
 
-    public static boolean isGooglePlayServicesAvailable(Context context) {
-        return getGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS;
-    }
-
-    public static int getGooglePlayServicesAvailable(Context context) {
-        return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context);
-    }
-
-    public static String getGooglePlayServicesAvailableErrorString(int resultCode) {
-        return GoogleApiAvailability.getInstance().getErrorString(resultCode);
-    }
-
-    public static String getGooglePlayServicesAvailableErrorString(Context context) {
-        return getGooglePlayServicesAvailableErrorString(getGooglePlayServicesAvailable(context));
-    }
-
     public static void setWallpaper(Context context, File file, int which) throws IOException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             try (InputStream fileInputStream = new FileInputStream(file)) {
@@ -978,7 +966,7 @@ public class BingWallpaperUtils {
             return "Translator : @Bergradler";
         } else if (locale.getLanguage().equals(LocaleList.nlLocale().getLanguage())) {
             return "Translator : @5qx9Pe7Lvj8Fn7zg(Jasper)";
-        }else if (locale.getLanguage().equals(Locale.FRANCE.getLanguage())) {
+        } else if (locale.getLanguage().equals(Locale.FRANCE.getLanguage())) {
             return "Translator : @Faux-ami(Nicolas)";
         }
         return "";
@@ -1138,6 +1126,16 @@ public class BingWallpaperUtils {
             return bitmap;
         }
         return toStackBlur(bitmap, stackBlur);
+    }
+
+    public static Point getSysResolution(Context context) {
+        WindowManager wm = ContextCompat.getSystemService(context, WindowManager.class);
+        Point size = new Point();
+        if (wm == null) {
+            return size;
+        }
+        wm.getDefaultDisplay().getRealSize(size);
+        return size;
     }
 
     /**

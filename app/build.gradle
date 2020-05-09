@@ -13,8 +13,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 174
-        versionName "1.7.4"
+        versionCode 175
+        versionName "1.7.5"
     }
 
     def isSigning = true
@@ -71,7 +71,7 @@ dependencies {
     implementation deps.browser
     implementation deps.preference
 
-    implementation 'androidx.work:work-runtime:2.3.3'
+    implementation 'androidx.work:work-runtime:2.3.4'
     implementation 'com.firebase:firebase-jobdispatcher:0.8.6'
     if (isFirebase) {
         implementation crashlytics
