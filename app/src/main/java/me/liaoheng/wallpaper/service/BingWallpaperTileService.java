@@ -36,6 +36,14 @@ public class BingWallpaperTileService extends TileService {
                                 .show();
                     }
                 });
-        getQsTile().setState(Tile.STATE_UNAVAILABLE);
+        Tile tile = getQsTile();
+        if (tile == null) {
+            Toast.makeText(getApplicationContext(), getString(R.string.set_wallpaper_failure),
+                    Toast.LENGTH_SHORT)
+                    .show();
+            return;
+        }
+        tile.setState(Tile.STATE_UNAVAILABLE);
+        tile.updateTile();
     }
 }

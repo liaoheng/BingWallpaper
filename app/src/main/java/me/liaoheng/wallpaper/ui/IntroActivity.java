@@ -6,14 +6,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
+import com.github.appintro.AppIntro;
 import com.github.liaoheng.common.util.UIUtils;
-import com.github.paolorotolo.appintro.AppIntro;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,6 +36,7 @@ public class IntroActivity extends AppIntro {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        TasksUtils.markOne();
         super.onCreate(savedInstanceState);
         mPreferences = SettingTrayPreferences.get(this);
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -108,14 +110,13 @@ public class IntroActivity extends AppIntro {
                     break;
             }
         } else {
-            UIUtils.showToast(getApplicationContext(), "Setting invalid");
+            Toast.makeText(getApplicationContext(),"Setting invalid",Toast.LENGTH_LONG).show();
         }
         onSkipPressed(null);
     }
 
     @Override
     public void onSkipPressed(Fragment currentFragment) {
-        TasksUtils.markOne();
         UIUtils.startActivity(this, MainActivity.class);
         finish();
     }

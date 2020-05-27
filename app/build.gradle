@@ -58,7 +58,7 @@ android {
 }
 
 def crashlytics = "com.crashlytics.sdk.android:crashlytics:2.10.1"
-def firebaseCore = "com.google.firebase:firebase-core:17.3.0"
+def firebaseCore = "com.google.firebase:firebase-core:17.4.2"
 
 dependencies {
     testImplementation deps.robolectric
@@ -91,7 +91,7 @@ dependencies {
     annotationProcessor deps.glide_compiler
     implementation deps.glide_okhttp3_integration
     implementation deps.okhttp
-    implementation 'com.squareup.okhttp3:okhttp-dnsoverhttps:3.14.7'
+    implementation deps.okhttp_dnsoverhttps
     implementation deps.retrofit
     implementation deps.retrofit_converter_gson
     implementation deps.retrofit_adapter_rxjava2
@@ -100,12 +100,6 @@ dependencies {
     implementation deps.rxlifecycle3
     implementation deps.rxlifecycle_android3
     implementation deps.joda_time_android
-
-
-    //https://github.com/Gericop/DateTimePicker
-    implementation ('com.takisoft.datetimepicker:datetimepicker:1.0.2'){
-        exclude module: 'appcompat'
-    }
 
     //https://github.com/scottyab/rootbeer
     implementation 'com.github.scottyab:rootbeer:0.0.8'
@@ -122,10 +116,10 @@ dependencies {
     implementation 'net.grandcentrix.tray:tray:0.12.0'
 
     //https://github.com/apl-devs/AppIntro
-    implementation 'com.github.AppIntro:AppIntro:5.1.0'
+    implementation 'com.github.AppIntro:AppIntro:6.0.0'
 
-//    implementation group: "com.github.liaoheng", name: "common-core", version: "0.1.0-SNAPSHOT", changing: true
-//    implementation group: "com.github.liaoheng", name: "common-adapter", version: "0.1.0-SNAPSHOT", changing: true
+    //    implementation group: "com.github.liaoheng", name: "common-core", version: "0.1.0-SNAPSHOT", changing: true
+    //    implementation group: "com.github.liaoheng", name: "common-adapter", version: "0.1.0-SNAPSHOT", changing: true
     implementation 'com.github.liaoheng:common-core:0.1.0-SNAPSHOT'
     implementation 'com.github.liaoheng:common-adapter:0.1.0-SNAPSHOT'
 }

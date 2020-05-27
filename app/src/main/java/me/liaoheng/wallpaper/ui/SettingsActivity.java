@@ -190,7 +190,7 @@ public class SettingsActivity extends BaseActivity {
                                                     @Override
                                                     public void onSuccess(Object o) {
                                                         UIUtils.showToast(getActivity(),
-                                                                getString(R.string.pref_clear_cache_success));
+                                                                R.string.pref_clear_cache_success);
                                                     }
                                                 });
                                     }

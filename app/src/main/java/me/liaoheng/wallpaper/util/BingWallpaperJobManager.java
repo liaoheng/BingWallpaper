@@ -3,6 +3,7 @@ package me.liaoheng.wallpaper.util;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.widget.Toast;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
@@ -10,7 +11,6 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import com.github.liaoheng.common.util.L;
-import com.github.liaoheng.common.util.UIUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -44,7 +44,7 @@ public class BingWallpaperJobManager {
         boolean ret = enabled(context,
                 TimeUnit.HOURS.toSeconds(BingWallpaperUtils.getAutomaticUpdateInterval(context)));
         if (!ret) {
-            UIUtils.showToast(context, R.string.enable_job_error);
+            Toast.makeText(context, R.string.enable_job_error, Toast.LENGTH_LONG).show();
         }
         return ret;
     }
@@ -153,7 +153,7 @@ public class BingWallpaperJobManager {
                 return "worker_error";
             }
         }
-        return "unknown";
+        return String.valueOf(jobType);
     }
 
     @MainThread

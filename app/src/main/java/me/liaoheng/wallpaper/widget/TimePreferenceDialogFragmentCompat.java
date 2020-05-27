@@ -4,13 +4,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.View;
+import android.widget.TimePicker;
+
 import androidx.preference.DialogPreference;
 import androidx.preference.PreferenceDialogFragmentCompat;
 
-import com.takisoft.datetimepicker.widget.TimePicker;
+import org.joda.time.LocalTime;
 
 import me.liaoheng.wallpaper.R;
-import org.joda.time.LocalTime;
 
 /**
  * The Dialog for the {@link TimePreference}.
