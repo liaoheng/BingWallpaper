@@ -19,6 +19,7 @@ import me.liaoheng.wallpaper.util.LogDebugFileUtils;
  * @author liaoheng
  * @version 2017-10-16 11:55
  */
+@Deprecated
 public class JobSchedulerDaemonService extends JobService {
     private final String TAG = JobSchedulerDaemonService.class.getSimpleName();
 

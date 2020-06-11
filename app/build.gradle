@@ -2,7 +2,8 @@ apply plugin: 'com.android.application'
 
 def isFirebase = rootProject.file('app/google-services.json').exists()
 if (isFirebase) {
-    apply plugin: 'io.fabric'
+    apply plugin: 'com.google.gms.google-services'
+    apply plugin: 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -13,8 +14,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 175
-        versionName "1.7.5"
+        versionCode 176
+        versionName "1.7.6"
     }
 
     def isSigning = true
@@ -31,7 +32,9 @@ android {
             }
         }
     }
-
+    firebaseCrashlytics {
+        mappingFileUploadEnabled false
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -60,8 +63,8 @@ android {
     }
 }
 
-def crashlytics = "com.crashlytics.sdk.android:crashlytics:2.10.1"
-def firebaseCore = "com.google.firebase:firebase-core:17.4.2"
+def crashlytics = "com.google.firebase:firebase-crashlytics:17.0.1"
+def firebaseCore = "com.google.firebase:firebase-analytics:17.4.3"
 
 dependencies {
     testImplementation deps.robolectric
@@ -81,7 +84,6 @@ dependencies {
         implementation firebaseCore
     } else {
         printf("not exists google-services.json")
-        implementation 'com.google.android.gms:play-services-base:17.2.1'
         compileOnly crashlytics
         compileOnly firebaseCore
     }
@@ -107,11 +109,6 @@ dependencies {
     //https://github.com/scottyab/rootbeer
     implementation 'com.github.scottyab:rootbeer:0.0.8'
 
-    //https://github.com/yshrsmz/LicenseAdapter
-    implementation('net.yslibrary.licenseadapter:licenseadapter:3.0.0') {
-        exclude module: 'recyclerview'
-    }
-
     //https://github.com/Clans/FloatingActionButton
     implementation 'com.github.clans:fab:1.6.4'
 
@@ -130,6 +127,3 @@ dependencies {
 //    // check for updates every build
 //    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 //}
-if (isFirebase) {
-    apply plugin: 'com.google.gms.google-services'
-}

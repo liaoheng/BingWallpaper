@@ -4,14 +4,14 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.bumptech.glide.load.engine.GlideException;
-import com.crashlytics.android.Crashlytics;
 import com.github.liaoheng.common.util.L;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import java.net.SocketTimeoutException;
 import java.util.List;
 
-import io.fabric.sdk.android.Fabric;
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
 
@@ -24,7 +24,7 @@ public class CrashReportHandle {
     private static boolean isFirebaseAnalytics;
 
     public static void init(Context context) {
-        initCrashlytics();
+        initCrashlytics(context);
         initFirebaseAnalytics();
         if (check(context)) {
             disable(context);
@@ -33,10 +33,11 @@ public class CrashReportHandle {
         }
     }
 
-    private static void initCrashlytics() {
+    private static void initCrashlytics(Context context) {
         try {
-            Class.forName("com.crashlytics.android.Crashlytics");
+            Class.forName("com.google.firebase.crashlytics.FirebaseCrashlytics");
             isCrashlytics = true;
+            FirebaseApp.initializeApp(context);
         } catch (ClassNotFoundException ignored) {
             isCrashlytics = false;
         }
@@ -53,9 +54,7 @@ public class CrashReportHandle {
 
     public static void enable(Context context) {
         if (isCrashlytics) {
-            if (!Fabric.isInitialized()) {
-                Fabric.with(context, new Crashlytics());
-            }
+            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true);
         }
         if (isFirebaseAnalytics) {
             FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(true);
@@ -63,6 +62,9 @@ public class CrashReportHandle {
     }
 
     public static void disable(Context context) {
+        if (isCrashlytics) {
+            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false);
+        }
         if (isFirebaseAnalytics) {
             FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(false);
         }
@@ -116,12 +118,12 @@ public class CrashReportHandle {
             return;
         }
         try {
-            Crashlytics.log("TAG: " + TAG);
+            FirebaseCrashlytics.getInstance().log("TAG: " + TAG);
             if (!TextUtils.isEmpty(msg)) {
-                Crashlytics.log(msg);
+                FirebaseCrashlytics.getInstance().log(msg);
             }
-            Crashlytics.log("Feedback info: " + BingWallpaperUtils.getSystemInfo(context));
-            Crashlytics.logException(t);
+            FirebaseCrashlytics.getInstance().log("Feedback info: " + BingWallpaperUtils.getSystemInfo(context));
+            FirebaseCrashlytics.getInstance().recordException(t);
         } catch (Exception ignored) {
         }
     }
