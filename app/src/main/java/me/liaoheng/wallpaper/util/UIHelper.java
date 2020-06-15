@@ -3,10 +3,10 @@ package me.liaoheng.wallpaper.util;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.media.ThumbnailUtils;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 
 import androidx.annotation.NonNull;
 
@@ -134,9 +134,9 @@ public class UIHelper implements IUIHelper {
     }
 
     public static File cropWallpaper(Context context, File wallpaper, boolean portrait) throws IOException {
-        Point size = BingWallpaperUtils.getSysResolution(context);
-        int width = size.x;
-        int height = size.y;
+        DisplayMetrics size = BingWallpaperUtils.getSysResolution(context);
+        int width = size.widthPixels;
+        int height = size.heightPixels;
         if (width == 0 || height == 0) {
             throw new IOException("WindowManager is null");
         }

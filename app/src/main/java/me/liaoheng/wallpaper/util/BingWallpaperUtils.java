@@ -33,6 +33,7 @@ import android.provider.Browser;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -753,8 +754,8 @@ public class BingWallpaperUtils {
         String autoSetMode = getAutoMode(context);
         int interval = getAutomaticUpdateInterval(context);
         String resolution = getResolution(context);
-        Point r = BingWallpaperUtils.getSysResolution(context);
-        String SysResolution = r.x + "x" + r.y;
+        DisplayMetrics r = BingWallpaperUtils.getSysResolution(context);
+        String SysResolution = r.widthPixels + "x" + r.heightPixels;
 
         return "feedback info ------------------------- \n"
                 + "sdk: "
@@ -1128,14 +1129,14 @@ public class BingWallpaperUtils {
         return toStackBlur(bitmap, stackBlur);
     }
 
-    public static Point getSysResolution(Context context) {
+    public static DisplayMetrics getSysResolution(Context context) {
         WindowManager wm = ContextCompat.getSystemService(context, WindowManager.class);
-        Point size = new Point();
+        DisplayMetrics outMetrics = new DisplayMetrics();
         if (wm == null) {
-            return size;
+            return outMetrics;
         }
-        wm.getDefaultDisplay().getRealSize(size);
-        return size;
+        wm.getDefaultDisplay().getRealMetrics(outMetrics);
+        return outMetrics;
     }
 
     /**

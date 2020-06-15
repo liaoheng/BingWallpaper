@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 import me.liaoheng.wallpaper.R;
@@ -48,7 +49,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
                 mToolbar.getPaddingRight(), mToolbar.getPaddingBottom());
         setSupportActionBar(mToolbar);
         setTitle("");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -76,6 +76,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     @CallSuper
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         BingWallpaperUtils.setPhoneScreen(this);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         super.onCreate(savedInstanceState);
         lifecycleSubject.onNext(ActivityEvent.CREATE);
     }

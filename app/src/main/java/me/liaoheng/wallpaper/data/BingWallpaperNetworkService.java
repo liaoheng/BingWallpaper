@@ -15,9 +15,15 @@ import static me.liaoheng.wallpaper.util.Constants.PIXABAY_BASE_URL;
  */
 public interface BingWallpaperNetworkService {
 
+    @Headers({
+            "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0",
+    })
     @GET
     Observable<BingWallpaper> getBingWallpaper(@Url String url, @Header("Cookie") String mkt);
 
+    @Headers({
+            "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0",
+    })
     @GET
     Call<BingWallpaper> getBingWallpaperCall(@Url String url, @Header("Cookie") String mkt);
 

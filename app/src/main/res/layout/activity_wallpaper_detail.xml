@@ -92,8 +92,7 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             android:background="@color/color_3000"
-            android:theme="@style/AppTheme.Transparent.Toolbar"
-            app:layout_scrollFlags="scroll|enterAlways" />
+            android:theme="@style/AppTheme.Transparent.Toolbar" />
 
     <ProgressBar
             android:visibility="gone"
