@@ -9,7 +9,6 @@ import com.github.liaoheng.common.util.L;
 import org.joda.time.LocalTime;
 
 import me.liaoheng.wallpaper.util.BingWallpaperAlarmManager;
-import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.widget.AppWidget_5x1;
@@ -36,11 +35,6 @@ public class AutoSetWallpaperBroadcastReceiver extends BroadcastReceiver {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
             AppWidget_5x1.start(context, null);
             AppWidget_5x2.start(context, null);
-
-            if (BingWallpaperJobManager.isJobTypeDaemonService(context)) {
-                BingWallpaperJobManager.startDaemonService(context);
-                return;
-            }
 
             LocalTime dayUpdateTime = BingWallpaperUtils.getDayUpdateTime(context);
             if (dayUpdateTime == null) {

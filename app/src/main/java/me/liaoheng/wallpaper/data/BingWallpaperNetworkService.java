@@ -5,9 +5,14 @@ import me.liaoheng.wallpaper.model.BingWallpaper;
 import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import me.liaoheng.wallpaper.model.Pixabay;
 import retrofit2.Call;
-import retrofit2.http.*;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Headers;
+import retrofit2.http.Query;
+import retrofit2.http.Url;
 
 import static me.liaoheng.wallpaper.util.Constants.PIXABAY_BASE_URL;
+import static me.liaoheng.wallpaper.util.Constants.USER_AGENT;
 
 /**
  * @author liaoheng
@@ -16,19 +21,21 @@ import static me.liaoheng.wallpaper.util.Constants.PIXABAY_BASE_URL;
 public interface BingWallpaperNetworkService {
 
     @Headers({
-            "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0",
+            "User-Agent:" + USER_AGENT,
+            "Cache-Control:public, max-age=" + 60 * 60 * 24
     })
     @GET
     Observable<BingWallpaper> getBingWallpaper(@Url String url, @Header("Cookie") String mkt);
 
     @Headers({
-            "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0",
+            "User-Agent:" + USER_AGENT,
     })
     @GET
-    Call<BingWallpaper> getBingWallpaperCall(@Url String url, @Header("Cookie") String mkt);
+    Call<BingWallpaper> getBingWallpaperCall(@Url String url, @Header("Cookie") String mkt,
+            @Header("Cache-Control") String cache);
 
     @Headers({
-            "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0",
+            "User-Agent:" + USER_AGENT,
             "Cookie: _EDGE_S=mkt=zh-cn"
     })
     @GET("https://www.bing.com/cnhp/coverstory")
@@ -38,5 +45,6 @@ public interface BingWallpaperNetworkService {
     Call<Pixabay> getPixabays(@Query("per_page") int perPage);
 
     @GET(PIXABAY_BASE_URL)
-    Observable<Pixabay> getPixabays(@Query("page") int page, @Query("per_page") int perPage,@Query("order") String order);
+    Observable<Pixabay> getPixabays(@Query("page") int page, @Query("per_page") int perPage,
+            @Query("order") String order);
 }

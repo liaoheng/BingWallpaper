@@ -51,33 +51,22 @@ public class BingWallpaperNetworkClient {
                 .getBingWallpaper(url, getMkt(locale)).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<BingWallpaperImage> getBingWallpaperSingle(Context context) {
-        String locale = BingWallpaperUtils.getAutoLocale(context);
-        String url = BingWallpaperUtils.getUrl(context, 0, 1, locale);
-        return getBingWallpaperSingle(url, locale);
-    }
-
-    public static Observable<BingWallpaperImage> getBingWallpaperSingle(String url, String locale) {
-        return NetUtils.get().getBingWallpaperSingleNetworkService()
-                .getBingWallpaper(url, getMkt(locale)).subscribeOn(Schedulers.io())
-                .map(bingWallpaper -> {
-                    if (bingWallpaper == null || bingWallpaper.getImages() == null
-                            || bingWallpaper.getImages().isEmpty()) {
-                        throw new AndroidRuntimeException(new IOException("bing wallpaper is not data"));
-                    }
-                    return bingWallpaper.getImages().get(0);
-                });
-    }
-
-    public static BingWallpaperImage getBingWallpaperSingleCall(Context context) throws IOException {
+    public static BingWallpaperImage getBingWallpaperSingleCall(Context context, boolean cache) throws IOException {
         String locale = BingWallpaperUtils.getAutoLocale(context);
         String url = BingWallpaperUtils.getUrl(context);
-        return getBingWallpaperSingleCall(url, locale);
+        String c = "public, ";
+        if (cache) {
+            c += "max-age=" + (BingWallpaperUtils.getAutomaticUpdateInterval(context) - 1000);
+        } else {
+            c += "no-cache";
+        }
+        return getBingWallpaperSingleCall(url, locale, c);
     }
 
-    public static BingWallpaperImage getBingWallpaperSingleCall(String url, String locale) throws IOException {
-        Response<BingWallpaper> execute = NetUtils.get().getBingWallpaperSingleNetworkService()
-                .getBingWallpaperCall(url, getMkt(locale)).execute();
+    public static BingWallpaperImage getBingWallpaperSingleCall(String url, String locale, String cache)
+            throws IOException {
+        Response<BingWallpaper> execute = NetUtils.get().getBingWallpaperNetworkService()
+                .getBingWallpaperCall(url, getMkt(locale), cache).execute();
         if (execute.isSuccessful()) {
             BingWallpaper bingWallpaper = execute.body();
             if (bingWallpaper == null || ValidateUtils.isItemEmpty(bingWallpaper.getImages())) {
@@ -102,7 +91,7 @@ public class BingWallpaperNetworkClient {
 
     public static BingWallpaperImage getPixabaysExecute() throws IOException {
         Response<Pixabay> execute = NetUtils.get()
-                .getBingWallpaperSingleNetworkService()
+                .getBingWallpaperNetworkService()
                 .getPixabays(PIXABAY_EDITORS_CHOICE_PER_PAGE)
                 .execute();
         if (execute.isSuccessful()) {
@@ -133,7 +122,7 @@ public class BingWallpaperNetworkClient {
     }
 
     public static Observable<List<BingWallpaperImage>> getPixabays(int page) {
-        return getPixabays(page, 20,"latest").flatMap(
+        return getPixabays(page, 20, "latest").flatMap(
                 (Function<Pixabay, ObservableSource<List<BingWallpaperImage>>>) pixabay -> {
                     List<BingWallpaperImage> wallpaperList = new ArrayList<>();
                     if (ValidateUtils.isItemEmpty(pixabay.getHits())) {
@@ -157,7 +146,7 @@ public class BingWallpaperNetworkClient {
     }
 
     public static Observable<BingWallpaperImage> randomPixabayImage() {
-        return getPixabays(1, PIXABAY_EDITORS_CHOICE_PER_PAGE,"popular").flatMap(
+        return getPixabays(1, PIXABAY_EDITORS_CHOICE_PER_PAGE, "popular").flatMap(
                 (Function<Pixabay, ObservableSource<BingWallpaperImage>>) pixabay -> {
                     if (ValidateUtils.isItemEmpty(pixabay.getHits())) {
                         return Observable.error(new IOException("pixabay is not data"));

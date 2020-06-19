@@ -2,8 +2,11 @@ package me.liaoheng.wallpaper.data.db;
 
 import android.app.job.JobScheduler;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import androidx.preference.PreferenceManager;
 
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
@@ -41,6 +44,10 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        BingWallpaperJobManager.setJobType(context, sharedPreferences.getInt("bing_wallpaper_job_type", -1));
+
         int jobType = BingWallpaperJobManager.getJobType(context);
         if (jobType == BingWallpaperJobManager.WORKER || jobType == BingWallpaperJobManager.DAEMON_SERVICE) {
             return;

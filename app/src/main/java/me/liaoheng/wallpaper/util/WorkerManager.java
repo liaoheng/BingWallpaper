@@ -27,27 +27,14 @@ public class WorkerManager {
     /**
      * @param time seconds
      */
-    public static boolean enabled(Context context, long time) {
-        try {
-
+    public static boolean enabled(Context context, long time) throws Throwable{
             PeriodicWorkRequest.Builder builder = new PeriodicWorkRequest.Builder(BingWallpaperWorker.class, time,
                     TimeUnit.SECONDS)
                     .addTag(WORKER_TAG);
 
             WorkManager.getInstance(context)
                     .enqueueUniquePeriodicWork(WORKER_TAG, ExistingPeriodicWorkPolicy.REPLACE, builder.build());
-
-            BingWallpaperJobManager.setJobType(context, BingWallpaperJobManager.WORKER);
-            if (BingWallpaperUtils.isEnableLog(context)) {
-                LogDebugFileUtils.get()
-                        .i(TAG, "Enable worker interval time : %s", time);
-            }
-            L.alog().d(TAG, "Enable worker interval time : %s", time);
             return true;
-        } catch (Exception e) {
-            L.alog().e(TAG, e);
-            return false;
-        }
     }
 
     public static void init(Context context, boolean debug) {
@@ -67,9 +54,7 @@ public class WorkerManager {
                 running = state == WorkInfo.State.RUNNING | state == WorkInfo.State.ENQUEUED;
             }
             return running;
-        } catch (ExecutionException e) {
-            return false;
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             return false;
         }
     }

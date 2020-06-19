@@ -55,7 +55,6 @@ import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.model.Config;
-import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.BottomViewListener;
 import me.liaoheng.wallpaper.util.Constants;
@@ -184,7 +183,6 @@ public class MainActivity extends BaseActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         initStatusBarAddToolbar();
-        BingWallpaperJobManager.restore(this);
 
         mActionMenuBottomMargin = DisplayUtils.dp2px(this, 10);
         mUiHelper.register(this, this);

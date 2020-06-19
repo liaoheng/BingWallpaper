@@ -33,6 +33,8 @@ public interface Constants {
 
     String MKT_HEADER = "_EDGE_S=mkt=%s";
 
+    String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0";
+
     class WallpaperConfig {
         public static int WALLPAPER_RESOLUTION_WIDTH = 480;
         public static int WALLPAPER_RESOLUTION_HEIGHT = 800;

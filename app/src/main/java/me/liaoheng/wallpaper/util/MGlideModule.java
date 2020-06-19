@@ -21,6 +21,7 @@ import java.io.InputStream;
 
 import me.liaoheng.wallpaper.BuildConfig;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 /**
  * @author liaoheng
@@ -43,6 +44,13 @@ public class MGlideModule extends AppGlideModule {
     @Override
     public void registerComponents(@NonNull Context context, @NonNull Glide glide, @NonNull Registry registry) {
         OkHttpClient.Builder builder = NetUtils.get().initOkHttpClientBuilder(context, 120, 30);
+        builder.addInterceptor(chain -> {
+            Request request = chain.request()
+                    .newBuilder()
+                    .header("User-Agent", Constants.USER_AGENT)
+                    .build();
+            return chain.proceed(request);
+        });
         registry.replace(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(builder.build()));
     }
 }

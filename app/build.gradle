@@ -14,8 +14,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 176
-        versionName "1.7.6"
+        versionCode 180
+        versionName "1.8.0"
     }
 
     def isSigning = true
@@ -96,7 +96,8 @@ dependencies {
     annotationProcessor deps.glide_compiler
     implementation deps.glide_okhttp3_integration
     implementation deps.okhttp
-    implementation deps.okhttp_dnsoverhttps
+    implementation deps.okhttp_logging
+    implementation deps.okhttp_doh
     implementation deps.retrofit
     implementation deps.retrofit_converter_gson
     implementation deps.retrofit_adapter_rxjava2
@@ -105,6 +106,9 @@ dependencies {
     implementation deps.rxlifecycle3
     implementation deps.rxlifecycle_android3
     implementation deps.joda_time_android
+
+    //https://github.com/google/conscrypt
+    implementation 'org.conscrypt:conscrypt-android:2.4.0'
 
     //https://github.com/scottyab/rootbeer
     implementation 'com.github.scottyab:rootbeer:0.0.8'

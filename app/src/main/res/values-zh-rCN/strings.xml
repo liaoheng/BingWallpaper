@@ -43,7 +43,7 @@
     <string name="pref_set_wallpaper_day_fully_automatic_update_type">自动模式类型</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_auto">最佳</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_system">Android系统</string>
-    <string name="pref_set_wallpaper_day_fully_automatic_update_type_service">后台服务</string>
+    <string name="pref_set_wallpaper_day_fully_automatic_update_type_service">动态壁纸</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_interval">自动模式检查间隔</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_interval_note">单位小时，改变之后请重新设置</string>
     <string name="pref_alarm_update_wallpaper_everyday">定时模式</string>

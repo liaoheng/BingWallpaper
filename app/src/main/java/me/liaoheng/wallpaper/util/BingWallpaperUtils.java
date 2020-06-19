@@ -19,7 +19,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -86,6 +85,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
@@ -99,6 +99,7 @@ import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.service.BingWallpaperCheckIntentService;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
+import me.liaoheng.wallpaper.service.LiveWallpaperService;
 import me.liaoheng.wallpaper.ui.SettingsActivity;
 
 /**
@@ -586,7 +587,18 @@ public class BingWallpaperUtils {
         if (callback != null) {
             callback.onYes(true);
         }
-        BingWallpaperIntentService.start(context, image, config);
+        startWallpaper(context, image, config);
+        //BingWallpaperIntentService.start(context, image, config);
+    }
+
+    public static void startWallpaper(Context context, BingWallpaperImage image, Config config) {
+        if (BingWallpaperJobManager.LIVE_WALLPAPER == BingWallpaperJobManager.getJobType(context)) {
+            Intent intent = new Intent(LiveWallpaperService.UPDATE_LIVE_WALLPAPER);
+            intent.putExtra("image", image);
+            context.sendBroadcast(intent);
+        } else {
+            BingWallpaperIntentService.start(context, image, config);
+        }
     }
 
     public static void setWallpaper(Context context, @Nullable BingWallpaperImage image, @NonNull Config config,
@@ -599,7 +611,8 @@ public class BingWallpaperUtils {
         if (callback != null) {
             callback.onYes(true);
         }
-        BingWallpaperIntentService.start(context, image, config);
+        startWallpaper(context, image, config);
+        //BingWallpaperIntentService.start(context, image, config);
     }
 
     public static int getNavigationBarHeight(Context context) {
@@ -817,48 +830,48 @@ public class BingWallpaperUtils {
         context.startActivity(Intent.createChooser(emailIntent, context.getString(R.string.send_email)));
     }
 
-    public static int checkRunningService(Context context, String TAG) {
+    public static void checkRunningService(Context context, String TAG) {
+        Intent intent = checkRunningServiceIntent(context, TAG, true);
+        if (intent != null) {
+            BingWallpaperIntentService.start(context, intent);
+        }
+    }
+
+    public static Intent checkRunningServiceIntent(Context context, String TAG, boolean check) {
+        boolean enableLog = isEnableLogProvider(context);
+        Intent intent = new Intent(context, BingWallpaperIntentService.class);
         if (isConnected(context)) {
             if (getOnlyWifi(context)) {
                 if (!NetworkUtils.isWifiConnected(context)) {
-                    return 2;
+                    L.alog().d(TAG, "isWifiConnected :false");
+                    if (enableLog) {
+                        LogDebugFileUtils.get()
+                                .i(TAG, "Network not wifi");
+                    }
+                    return null;
                 }
+            }
+            if (!isTaskUndone(context)) {
+                L.alog().d(TAG, "isToDaysDo :false");
+                if (enableLog) {
+                    LogDebugFileUtils.get()
+                            .i(TAG, "Already executed");
+                }
+                return null;
             }
             Config config = new Config.Builder().loadConfig(context)
                     .setWallpaperMode(getAutoModeValue(context))
                     .setBackground(true)
                     .build();
-            if (isPixabaySupport(context)) {
-                if (!TasksUtils.isToDaysDoProvider(context, 1,
-                        BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE)) {
-                    return 3;
-                }
-                BingWallpaperIntentService.start(context, null, config);
-            } else {
-                try {
-                    BingWallpaperImage image = BingWallpaperNetworkClient.getBingWallpaperSingleCall(context);
-                    if (BingWallpaperUtils.getLastWallpaperImageUrl(context)
-                            .equals(BingWallpaperUtils.getResolutionImageUrl(context,
-                                    image))) {
-                        if (BingWallpaperUtils.isEnableLogProvider(context)) {
-                            LogDebugFileUtils.get().i(TAG, "Equals last skip");
-                        }
-                        return 0;
-                    }
-                    try {
-                        BingWallpaperIntentService.start(context, image, config);
-                    } catch (Exception e) {
-                        CrashReportHandle.collectException(context, TAG, e);
-                    }
-                } catch (Exception e) {
-                    if (BingWallpaperUtils.isEnableLogProvider(context)) {
-                        LogDebugFileUtils.get().e(TAG, "Check error :", e);
-                    }
-                }
-            }
-            return 0;
+            intent.putExtra(BingWallpaperIntentService.EXTRA_SET_WALLPAPER_CONFIG, config);
+            return intent;
         } else {
-            return 1;
+            L.alog().d(TAG, "isConnectedOrConnecting :false");
+            if (enableLog) {
+                LogDebugFileUtils.get()
+                        .i(TAG, "Network unavailable");
+            }
+            return null;
         }
     }
 
@@ -867,27 +880,7 @@ public class BingWallpaperUtils {
     }
 
     public static void runningService(Context context, String TAG) {
-        boolean enableLog = isEnableLogProvider(context);
-        int state = checkRunningService(context, TAG);
-        if (state == 1) {
-            L.alog().d(TAG, "isConnectedOrConnecting :false");
-            if (enableLog) {
-                LogDebugFileUtils.get()
-                        .i(TAG, "Network unavailable");
-            }
-        } else if (state == 2) {
-            L.alog().d(TAG, "isWifiConnected :false");
-            if (enableLog) {
-                LogDebugFileUtils.get()
-                        .i(TAG, "Network not wifi");
-            }
-        } else if (state == 3) {
-            L.alog().d(TAG, "isToDaysDo :false");
-            if (enableLog) {
-                LogDebugFileUtils.get()
-                        .i(TAG, "Already executed");
-            }
-        }
+        checkRunningService(context, TAG);
     }
 
     public static boolean isConnected(Context context) {
@@ -979,6 +972,24 @@ public class BingWallpaperUtils {
 
     public static String getLastWallpaperImageUrl(Context context) {
         return SettingTrayPreferences.get(context).getString(Constants.PREF_LAST_WALLPAPER_IMAGE_URL, "");
+    }
+
+    public static void taskComplete(Context context, String TAG) {
+        if (isTaskUndone(context)) {
+            L.alog().i(TAG, "today complete");
+            if (BingWallpaperUtils.isEnableLogProvider(context)) {
+                LogDebugFileUtils.get().i(TAG, "Today complete");
+            }
+            TasksUtils.markDoneProvider(context, BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE);
+        }
+    }
+
+    public static boolean isTaskUndone(Context context) {
+        return TasksUtils.isToDaysDoProvider(context, 1, BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE);
+    }
+
+    public static void clearTaskComplete(Context context) {
+        TasksUtils.deleteDoneProvider(context, BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE);
     }
 
     //https://github.com/halibobo/WaterMark
@@ -1137,6 +1148,26 @@ public class BingWallpaperUtils {
         }
         wm.getDefaultDisplay().getRealMetrics(outMetrics);
         return outMetrics;
+    }
+
+    public static Bitmap getGlideBitmap(Context context, String url) throws Exception {
+        return GlideApp.with(context)
+                .asBitmap()
+                .load(url)
+                .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                .get(2, TimeUnit.MINUTES);
+    }
+
+    public static BingWallpaperImage getImage(Context context, boolean cache) throws IOException {
+        BingWallpaperImage image;
+        if (BingWallpaperUtils.isPixabaySupport(context)) {
+            image = BingWallpaperNetworkClient.getPixabaysExecute();
+            image.setImageUrl(image.getUrl());
+        } else {
+            image = BingWallpaperNetworkClient.getBingWallpaperSingleCall(context, cache);
+            image.setResolutionImageUrl(context);
+        }
+        return image;
     }
 
     /**

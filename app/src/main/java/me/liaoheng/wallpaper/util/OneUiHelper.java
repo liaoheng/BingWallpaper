@@ -33,7 +33,7 @@ public class OneUiHelper {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private static void homeSetWallpaper(Context context, File wallpaper) throws IOException {
-        wallpaper = UIHelper.cropWallpaper(context, wallpaper,false);
+        //wallpaper = UIHelper.cropWallpaper(context, wallpaper,false);
         BingWallpaperUtils.setHomeScreenWallpaper(context, wallpaper);
     }
 }

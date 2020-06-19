@@ -114,4 +114,9 @@ public class TasksUtils {
                 .update(TasksContract.TaskEntry.CONTENT_URI, contentValues, TasksContract.TaskEntry.COLUMN_TAG + "=?",
                         new String[] { tag });
     }
+
+    public static void deleteDoneProvider(Context context,String tag){
+        context.getContentResolver().delete(TasksContract.TaskEntry.CONTENT_URI,TasksContract.TaskEntry.COLUMN_TAG + "=?",
+                new String[] { tag });
+    }
 }

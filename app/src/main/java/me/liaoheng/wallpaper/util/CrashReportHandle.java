@@ -15,6 +15,8 @@ import java.util.List;
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
 
+import static com.google.firebase.analytics.FirebaseAnalytics.UserProperty.ALLOW_AD_PERSONALIZATION_SIGNALS;
+
 /**
  * @author liaoheng
  * @version 2018-04-23 23:25
@@ -24,7 +26,7 @@ public class CrashReportHandle {
     private static boolean isFirebaseAnalytics;
 
     public static void init(Context context) {
-        initCrashlytics(context);
+        initCrashlytics();
         initFirebaseAnalytics();
         if (check(context)) {
             disable(context);
@@ -33,11 +35,10 @@ public class CrashReportHandle {
         }
     }
 
-    private static void initCrashlytics(Context context) {
+    private static void initCrashlytics() {
         try {
             Class.forName("com.google.firebase.crashlytics.FirebaseCrashlytics");
             isCrashlytics = true;
-            FirebaseApp.initializeApp(context);
         } catch (ClassNotFoundException ignored) {
             isCrashlytics = false;
         }
@@ -54,6 +55,7 @@ public class CrashReportHandle {
 
     public static void enable(Context context) {
         if (isCrashlytics) {
+            FirebaseApp.initializeApp(context);
             FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true);
         }
         if (isFirebaseAnalytics) {
@@ -63,10 +65,10 @@ public class CrashReportHandle {
 
     public static void disable(Context context) {
         if (isCrashlytics) {
-            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false);
+            //FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false);
         }
         if (isFirebaseAnalytics) {
-            FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(false);
+            //FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(false);
         }
     }
 

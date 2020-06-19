@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.model.Config;
@@ -28,7 +27,6 @@ import me.liaoheng.wallpaper.util.IUIHelper;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.NotificationUtils;
 import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
-import me.liaoheng.wallpaper.util.TasksUtils;
 import me.liaoheng.wallpaper.util.UIHelper;
 import me.liaoheng.wallpaper.widget.AppWidget_5x1;
 import me.liaoheng.wallpaper.widget.AppWidget_5x2;
@@ -64,6 +62,10 @@ public class BingWallpaperIntentService extends IntentService {
         Intent intent = new Intent(context, BingWallpaperIntentService.class);
         intent.putExtra(EXTRA_SET_WALLPAPER_IMAGE, image);
         intent.putExtra(EXTRA_SET_WALLPAPER_CONFIG, config);
+        start(context, intent);
+    }
+
+    public static void start(Context context, Intent intent) {
         ContextCompat.startForegroundService(context, intent);
     }
 
@@ -119,22 +121,14 @@ public class BingWallpaperIntentService extends IntentService {
         };
         if (image == null) {
             try {
-                if (BingWallpaperUtils.isPixabaySupport(getApplicationContext())) {
-                    image = BingWallpaperNetworkClient.getPixabaysExecute();
-                    image.setImageUrl(image.getUrl());
-                } else {
-                    image = BingWallpaperNetworkClient.getBingWallpaperSingleCall(getApplicationContext());
-                    image.setImageUrl(BingWallpaperUtils.getResolutionImageUrl(getApplicationContext(),
-                            image));
-                }
+                image = BingWallpaperUtils.getImage(getApplicationContext(),false);
             } catch (IOException e) {
                 callback.onError(e);
                 return;
             }
         } else {
             if (TextUtils.isEmpty(image.getImageUrl())) {
-                image.setImageUrl(BingWallpaperUtils.getResolutionImageUrl(getApplicationContext(),
-                        image));
+                image.setResolutionImageUrl(getApplicationContext());
             }
         }
 
@@ -172,13 +166,7 @@ public class BingWallpaperIntentService extends IntentService {
 
         if (config.isBackground()) {
             BingWallpaperUtils.setLastWallpaperImageUrl(getApplicationContext(), image.getImageUrl());
-            if (TasksUtils.isToDaysDoProvider(getApplicationContext(), 1, FLAG_SET_WALLPAPER_STATE)) {
-                L.alog().i(TAG, "today complete");
-                if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-                    LogDebugFileUtils.get().i(TAG, "Today complete");
-                }
-                TasksUtils.markDoneProvider(getApplicationContext(), FLAG_SET_WALLPAPER_STATE);
-            }
+            BingWallpaperUtils.taskComplete(this, TAG);
             showSuccessNotification(image, BingWallpaperUtils.isAutomaticUpdateNotification(getApplicationContext()));
         } else {
             showSuccessNotification(image, config.isShowNotification());

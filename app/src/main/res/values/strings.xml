@@ -44,7 +44,7 @@
     <string name="pref_set_wallpaper_day_fully_automatic_update_type">Auto mode type</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_auto">Optimal</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_system">Android System</string>
-    <string name="pref_set_wallpaper_day_fully_automatic_update_type_service">Daemon service</string>
+    <string name="pref_set_wallpaper_day_fully_automatic_update_type_service">Live wallpaper</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_interval">Auto mode check interval</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_interval_note">Unit hours, please reset after change</string>
     <string name="pref_alarm_update_wallpaper_everyday">Timer mode</string>

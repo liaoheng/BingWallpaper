@@ -139,7 +139,7 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
             setText(context, null);
             return;
         }
-        Utils.addSubscribe(BingWallpaperNetworkClient.getBingWallpaperSingle(context),
+        Utils.addSubscribe(BingWallpaperNetworkClient.getBingWallpaper(context),
                 new Callback.EmptyCallback<BingWallpaperImage>() {
                     @Override
                     public void onPreExecute() {

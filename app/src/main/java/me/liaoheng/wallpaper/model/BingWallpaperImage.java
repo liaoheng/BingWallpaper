@@ -1,11 +1,14 @@
 package me.liaoheng.wallpaper.model;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.Expose;
+
+import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 
 /**
  * @author liaoheng
@@ -186,6 +189,11 @@ public class BingWallpaperImage implements Parcelable {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public void setResolutionImageUrl(Context context) {
+        this.imageUrl = BingWallpaperUtils.getResolutionImageUrl(context,
+                this);
     }
 
     @NonNull
