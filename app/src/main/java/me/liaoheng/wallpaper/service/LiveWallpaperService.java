@@ -5,17 +5,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.RectF;
 import android.os.Handler;
 import android.service.wallpaper.WallpaperService;
+import android.util.DisplayMetrics;
 import android.view.SurfaceHolder;
 
+import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.L;
+import com.github.liaoheng.common.util.MD5Utils;
 import com.github.liaoheng.common.util.Utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -28,6 +33,7 @@ import io.reactivex.schedulers.Schedulers;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.CacheUtils;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
 
@@ -87,17 +93,18 @@ public class LiveWallpaperService extends WallpaperService {
 
     private class LiveWallpaperEngine extends LiveWallpaperService.Engine {
         private Context mContext;
-        private Paint paint;
         private Handler handler;
         private Runnable drawRunner;
         private Disposable mDisposable;
+        private int width;
+        private int height;
 
         public LiveWallpaperEngine(Context context) {
             mContext = context;
             handler = new Handler();
-            paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            paint.setFilterBitmap(true);
-            paint.setDither(true);
+            DisplayMetrics size = BingWallpaperUtils.getSysResolution(context);
+            width = size.widthPixels;
+            height = size.heightPixels;
             setOffsetNotificationsEnabled(true);
             drawRunner = this::timing;
         }
@@ -131,7 +138,7 @@ public class LiveWallpaperService extends WallpaperService {
         }
 
         public void init() {
-            L.alog().d(TAG,"init");
+            L.alog().d(TAG, "init");
             handler.removeCallbacks(drawRunner);
             setBingWallpaper(true);
             postDelayed();
@@ -139,7 +146,7 @@ public class LiveWallpaperService extends WallpaperService {
 
         private void timing() {
             postDelayed();
-            L.alog().d(TAG,"timing check...");
+            L.alog().d(TAG, "timing check...");
             if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
                 LogDebugFileUtils.get().i(TAG, "Timing check...");
             }
@@ -184,7 +191,23 @@ public class LiveWallpaperService extends WallpaperService {
 
         private ObservableTransformer<DownloadBitmap, DownloadBitmap> download() {
             return upstream -> upstream.flatMap((Function<DownloadBitmap, ObservableSource<DownloadBitmap>>) image -> {
-                image.bitmap = BingWallpaperUtils.getGlideBitmap(mContext, image.image.getImageUrl());
+                File wallpaper = BingWallpaperUtils.getGlideFile(mContext, image.image.getImageUrl());
+                image.bitmap = BitmapFactory.decodeFile(wallpaper.getAbsolutePath());
+
+                int stackBlur = BingWallpaperUtils.getSettingStackBlur(mContext);
+                if (stackBlur > 0) {
+                    String key = MD5Utils.md5Hex(wallpaper.getAbsolutePath() + "_" + stackBlur);
+                    File stackBlurFile = CacheUtils.get().get(key);
+                    if (stackBlurFile == null) {
+                        image.bitmap = BingWallpaperUtils.toStackBlur(
+                                BitmapFactory.decodeFile(wallpaper.getAbsolutePath()), stackBlur);
+                        CacheUtils.get().put(key, BitmapUtils.bitmapToStream(image.bitmap,
+                                Bitmap.CompressFormat.JPEG));
+                    }
+                }
+                if (BingWallpaperUtils.isTaskUndone(mContext)) {
+                    BingWallpaperUtils.autoSaveWallpaper(mContext, TAG, image.image, wallpaper);
+                }
                 return Observable.just(image);
             });
         }
@@ -196,13 +219,34 @@ public class LiveWallpaperService extends WallpaperService {
                 canvas = holder.lockCanvas();
                 if (canvas != null) {
                     canvas.drawColor(Color.BLACK);
-                    canvas.drawBitmap(bitmap, 0, 0, paint);
+                    //canvas.drawBitmap(bitmap, 0, 0, paint);
+                    scaleCenterCrop(bitmap, canvas, height, width);
                 }
             } finally {
                 if (canvas != null) {
                     holder.unlockCanvasAndPost(canvas);
                 }
             }
+        }
+
+        //https://stackoverflow.com/questions/8112715/how-to-crop-bitmap-center-like-imageview
+        public void scaleCenterCrop(Bitmap source, Canvas canvas, int newHeight, int newWidth) {
+            int sourceWidth = source.getWidth();
+            int sourceHeight = source.getHeight();
+
+            float xScale = (float) newWidth / sourceWidth;
+            float yScale = (float) newHeight / sourceHeight;
+            float scale = Math.max(xScale, yScale);
+
+            float scaledWidth = scale * sourceWidth;
+            float scaledHeight = scale * sourceHeight;
+
+            float left = (newWidth - scaledWidth) / 2;
+            float top = (newHeight - scaledHeight) / 2;
+
+            RectF targetRect = new RectF(left, top, left + scaledWidth, top + scaledHeight);
+
+            canvas.drawBitmap(source, null, targetRect, null);
         }
 
         @Override

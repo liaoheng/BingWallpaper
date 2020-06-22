@@ -49,18 +49,17 @@ public class DBHelper extends SQLiteOpenHelper {
         BingWallpaperJobManager.setJobType(context, sharedPreferences.getInt("bing_wallpaper_job_type", -1));
 
         int jobType = BingWallpaperJobManager.getJobType(context);
-        if (jobType == BingWallpaperJobManager.WORKER || jobType == BingWallpaperJobManager.DAEMON_SERVICE) {
-            return;
-        }
-        try {
-            FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
-            dispatcher.cancel(JOB_TAG);
-            JobScheduler jobScheduler = (JobScheduler)
-                    context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-            Objects.requireNonNull(jobScheduler).cancel(JOB_ID);
-        } catch (Throwable ignored) {
-        } finally {
-            BingWallpaperJobManager.enabled(context);
+        if (jobType == BingWallpaperJobManager.SYSTEM || jobType == BingWallpaperJobManager.GOOGLE_SERVICE) {
+            try {
+                FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
+                dispatcher.cancel(JOB_TAG);
+                JobScheduler jobScheduler = (JobScheduler)
+                        context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+                Objects.requireNonNull(jobScheduler).cancel(JOB_ID);
+            } catch (Throwable ignored) {
+            } finally {
+                BingWallpaperJobManager.enabled(context);
+            }
         }
     }
 }

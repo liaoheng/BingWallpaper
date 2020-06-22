@@ -187,7 +187,7 @@ public class BingWallpaperIntentService extends IntentService {
     private void downloadAndSetWallpaper(BingWallpaperImage image, Config config)
             throws Exception {
         String url = image.getImageUrl();
-        File wallpaper = getGlideFile(getApplicationContext(), url);
+        File wallpaper = BingWallpaperUtils.getGlideFile(getApplicationContext(), url);
 
         if (wallpaper == null || !wallpaper.exists()) {
             throw new IOException("Download wallpaper failure");
@@ -198,32 +198,7 @@ public class BingWallpaperIntentService extends IntentService {
         if (!config.isBackground()) {
             return;
         }
-        if (BingWallpaperUtils.isAutoSave(this)) {
-            try {
-                if (!BingWallpaperUtils.checkStoragePermissions(this)) {
-                    throw new IOException("Permission denied");
-                }
-                String saveResolution = BingWallpaperUtils.getSaveResolution(this);
-                String resolution = BingWallpaperUtils.getResolution(this);
-                if (!saveResolution.equals(resolution)) {
-                    String saveImageUrl = BingWallpaperUtils.getImageUrl(getApplicationContext(), saveResolution,
-                            image);
-                    L.alog().i(TAG, "wallpaper save url: " + saveImageUrl);
-                    wallpaper = getGlideFile(getApplicationContext(), saveImageUrl);
-                }
-                BingWallpaperUtils.saveFileToPictureCompat(this, url, wallpaper);
-            } catch (Exception e) {
-                CrashReportHandle.saveWallpaper(getApplicationContext(), TAG, e);
-            }
-        }
-    }
-
-    private File getGlideFile(Context context, String url) throws Exception {
-        return GlideApp.with(context)
-                .asFile()
-                .load(url)
-                .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-                .get(2, TimeUnit.MINUTES);
+        BingWallpaperUtils.autoSaveWallpaper(this,TAG,image,wallpaper);
     }
 
     private void sendSetWallpaperBroadcast(BingWallpaperState state) {

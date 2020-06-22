@@ -54,21 +54,27 @@ public class CrashReportHandle {
     }
 
     public static void enable(Context context) {
-        if (isCrashlytics) {
-            FirebaseApp.initializeApp(context);
-            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true);
-        }
-        if (isFirebaseAnalytics) {
-            FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(true);
+        try {
+            if (isCrashlytics) {
+                FirebaseApp.initializeApp(context);
+                FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true);
+            }
+            if (isFirebaseAnalytics) {
+                FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(true);
+            }
+        } catch (Throwable ignored) {
         }
     }
 
     public static void disable(Context context) {
-        if (isCrashlytics) {
-            //FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false);
-        }
-        if (isFirebaseAnalytics) {
-            //FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(false);
+        try {
+            if (isCrashlytics) {
+                FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false);
+            }
+            if (isFirebaseAnalytics) {
+                FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(false);
+            }
+        } catch (Throwable ignored) {
         }
     }
 
@@ -105,7 +111,7 @@ public class CrashReportHandle {
         if (BingWallpaperUtils.isEnableLogProvider(context)) {
             LogDebugFileUtils.get().e(TAG, "Save wallpaper error: %s", t);
         }
-        CrashReportHandle.collectException(context, TAG, t);
+        collectException(context, TAG, t);
     }
 
     public static void collectException(Context context, String TAG, Throwable t) {

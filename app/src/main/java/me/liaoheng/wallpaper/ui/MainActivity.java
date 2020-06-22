@@ -119,23 +119,23 @@ public class MainActivity extends BaseActivity
     private BingWallpaperImage mCurBingWallpaperImage;
     private boolean isRun;
 
-    private BingWallpaperCoverStory mCoverStory;
+    //private BingWallpaperCoverStory mCoverStory;
 
     private int mActionMenuBottomMargin;
     private UIHelper mUiHelper = new UIHelper();
     private DownloadHelper mDownloadHelper;
     private Config.Builder mConfig = new Config.Builder();
 
-    @OnClick(R.id.bing_wallpaper_cover_story_text)
-    void openMap() {
-        if (mCoverStory == null) {
-            BingWallpaperUtils.openBrowser(this, mCurBingWallpaperImage);
-            return;
-        }
-        String longitude = mCoverStory.getLongitude();//经度
-        String latitude = mCoverStory.getLatitude();//纬度
-        AppUtils.openMap(this, longitude, latitude);
-    }
+    //@OnClick(R.id.bing_wallpaper_cover_story_text)
+    //void openMap() {
+    //    if (mCoverStory == null) {
+    //        BingWallpaperUtils.openBrowser(this, mCurBingWallpaperImage);
+    //        return;
+    //    }
+    //    String longitude = mCoverStory.getLongitude();//经度
+    //    String latitude = mCoverStory.getLatitude();//纬度
+    //    AppUtils.openMap(this, longitude, latitude);
+    //}
 
     @Override
     public void showBottomView() {

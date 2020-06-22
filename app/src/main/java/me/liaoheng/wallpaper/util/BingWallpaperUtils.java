@@ -1150,12 +1150,42 @@ public class BingWallpaperUtils {
         return outMetrics;
     }
 
-    public static Bitmap getGlideBitmap(Context context, String url) throws Exception {
+    //public static Bitmap getGlideBitmap(Context context, String url) throws Exception {
+    //    return GlideApp.with(context)
+    //            .asBitmap()
+    //            .load(url)
+    //            .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+    //            .get(2, TimeUnit.MINUTES);
+    //}
+
+    public static File getGlideFile(Context context, String url) throws Exception {
         return GlideApp.with(context)
-                .asBitmap()
+                .asFile()
                 .load(url)
                 .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
                 .get(2, TimeUnit.MINUTES);
+    }
+
+    public static void autoSaveWallpaper(Context context, String TAG, BingWallpaperImage image, File wallpaper) {
+        if (isAutoSave(context)) {
+            try {
+                if (!checkStoragePermissions(context)) {
+                    throw new IOException("Permission denied");
+                }
+                String saveResolution = getSaveResolution(context);
+                String resolution = getResolution(context);
+                if (!saveResolution.equals(resolution)) {
+                    String saveImageUrl = getImageUrl(context, saveResolution,
+                            image);
+                    L.alog().i(TAG, "wallpaper save url: " + saveImageUrl);
+                    saveFileToPictureCompat(context, saveImageUrl, getGlideFile(context, saveImageUrl));
+                } else {
+                    saveFileToPictureCompat(context, image.getImageUrl(), wallpaper);
+                }
+            } catch (Throwable e) {
+                CrashReportHandle.saveWallpaper(context, TAG, e);
+            }
+        }
     }
 
     public static BingWallpaperImage getImage(Context context, boolean cache) throws IOException {
