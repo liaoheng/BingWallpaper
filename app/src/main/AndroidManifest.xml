@@ -135,7 +135,7 @@
 
             <meta-data
                     android:name="android.service.wallpaper"
-                    android:resource="@xml/my_wallpaper" />
+                    android:resource="@xml/live_wallpaper" />
         </service>
 
         <provider

@@ -1,9 +1,9 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                 xmlns:tools="http://schemas.android.com/tools"
-                                                 android:orientation="vertical"
-                                                 android:layout_width="match_parent"
-                                                 android:layout_height="match_parent">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
     <ImageView
             android:id="@+id/bing_wallpaper_detail_image"
@@ -20,10 +20,10 @@
             android:background="@color/color_3000">
 
         <LinearLayout
-                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="top">
+                android:layout_gravity="top"
+                android:orientation="vertical">
 
             <TextView
                     android:id="@+id/bing_wallpaper_detail_bottom_text"
@@ -45,44 +45,25 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_gravity="end"
-                        android:layout_marginBottom="5dp"
-                        android:layout_marginEnd="5dp"
                         android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginBottom="5dp"
                         android:background="?selectableItemBackgroundBorderless"
                         app:enableSelected="true"
                         app:normalDrawableRes="@drawable/ic_expand_less_white_24dp"
                         app:selectedDrawableRes="@drawable/ic_expand_more_white_24dp" />
             </FrameLayout>
 
-            <LinearLayout
-                    android:id="@+id/bing_wallpaper_detail_cover_story_content"
-                    android:orientation="vertical"
+            <TextView
+                    android:id="@+id/bing_wallpaper_detail_cover_story_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone">
-
-                <TextView
-                        android:id="@+id/bing_wallpaper_detail_cover_story_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginStart="10dp"
-                        android:maxLines="2"
-                        android:textColor="@android:color/white"
-                        android:textSize="18sp"
-                        tools:text="title" />
-
-                <TextView
-                        android:id="@+id/bing_wallpaper_detail_cover_story_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginStart="10dp"
-                        android:textColor="@android:color/white"
-                        tools:text="message" />
-            </LinearLayout>
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:textColor="@android:color/white"
+                    android:visibility="gone"
+                    tools:text="message" />
         </LinearLayout>
 
     </FrameLayout>
@@ -95,12 +76,12 @@
             android:theme="@style/AppTheme.Transparent.Toolbar" />
 
     <ProgressBar
-            android:visibility="gone"
             android:id="@+id/bing_wallpaper_detail_loading"
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:visibility="gone" />
 
     <TextView
             android:id="@+id/bing_wallpaper_detail_error"

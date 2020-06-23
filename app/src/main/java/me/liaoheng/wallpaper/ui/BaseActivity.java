@@ -48,6 +48,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
         mToolbar.setPadding(mToolbar.getPaddingLeft(), mToolbar.getPaddingTop() + statusBarHeight,
                 mToolbar.getPaddingRight(), mToolbar.getPaddingBottom());
         setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle("");
     }
 

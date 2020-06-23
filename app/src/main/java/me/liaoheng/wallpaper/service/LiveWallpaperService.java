@@ -30,7 +30,7 @@ import io.reactivex.ObservableTransformer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import me.liaoheng.wallpaper.model.BingWallpaperImage;
+import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.CacheUtils;
@@ -74,7 +74,7 @@ public class LiveWallpaperService extends WallpaperService {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (UPDATE_LIVE_WALLPAPER.equals(intent.getAction())) {
-                BingWallpaperImage image = intent.getParcelableExtra("image");
+                Wallpaper image = intent.getParcelableExtra("image");
                 if (mEngine != null) {
                     mEngine.loadBingWallpaper(image);
                 }
@@ -83,11 +83,11 @@ public class LiveWallpaperService extends WallpaperService {
     }
 
     static class DownloadBitmap {
-        public DownloadBitmap(BingWallpaperImage image) {
+        public DownloadBitmap(Wallpaper image) {
             this.image = image;
         }
 
-        BingWallpaperImage image;
+        Wallpaper image;
         Bitmap bitmap;
     }
 
@@ -114,7 +114,7 @@ public class LiveWallpaperService extends WallpaperService {
             handler.postDelayed(drawRunner, TimeUnit.MINUTES.toMillis(10));
         }
 
-        public void loadBingWallpaper(BingWallpaperImage image) {
+        public void loadBingWallpaper(Wallpaper image) {
             handler.removeCallbacks(drawRunner);
             postDelayed();
             mDisposable = Utils.addSubscribe(
@@ -172,7 +172,7 @@ public class LiveWallpaperService extends WallpaperService {
 
         private ObservableTransformer<Boolean, DownloadBitmap> load() {
             return upstream -> upstream.flatMap((Function<Boolean, ObservableSource<DownloadBitmap>>) force -> {
-                BingWallpaperImage image;
+                Wallpaper image;
                 if (!force) {
                     Intent intent = BingWallpaperUtils.checkRunningServiceIntent(mContext,
                             TAG, false);
@@ -192,8 +192,6 @@ public class LiveWallpaperService extends WallpaperService {
         private ObservableTransformer<DownloadBitmap, DownloadBitmap> download() {
             return upstream -> upstream.flatMap((Function<DownloadBitmap, ObservableSource<DownloadBitmap>>) image -> {
                 File wallpaper = BingWallpaperUtils.getGlideFile(mContext, image.image.getImageUrl());
-                image.bitmap = BitmapFactory.decodeFile(wallpaper.getAbsolutePath());
-
                 int stackBlur = BingWallpaperUtils.getSettingStackBlur(mContext);
                 if (stackBlur > 0) {
                     String key = MD5Utils.md5Hex(wallpaper.getAbsolutePath() + "_" + stackBlur);
@@ -203,7 +201,11 @@ public class LiveWallpaperService extends WallpaperService {
                                 BitmapFactory.decodeFile(wallpaper.getAbsolutePath()), stackBlur);
                         CacheUtils.get().put(key, BitmapUtils.bitmapToStream(image.bitmap,
                                 Bitmap.CompressFormat.JPEG));
+                    }else{
+                        image.bitmap = BitmapFactory.decodeFile(stackBlurFile.getAbsolutePath());
                     }
+                }else {
+                    image.bitmap = BitmapFactory.decodeFile(wallpaper.getAbsolutePath());
                 }
                 if (BingWallpaperUtils.isTaskUndone(mContext)) {
                     BingWallpaperUtils.autoSaveWallpaper(mContext, TAG, image.image, wallpaper);

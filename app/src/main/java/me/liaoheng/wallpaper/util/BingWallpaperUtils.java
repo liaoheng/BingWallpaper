@@ -95,7 +95,7 @@ import io.reactivex.schedulers.Schedulers;
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
-import me.liaoheng.wallpaper.model.BingWallpaperImage;
+import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.service.BingWallpaperCheckIntentService;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
@@ -112,12 +112,11 @@ public class BingWallpaperUtils {
         return SettingTrayPreferences.get(context).getBoolean(SettingsActivity.PREF_CRASH_REPORT, true);
     }
 
-    public static String getResolutionImageUrl(Context context, BingWallpaperImage image) {
-        return getImageUrl(context, getResolution(context), image);
+    public static String getResolutionImageUrl(Context context, Wallpaper image) {
+        return getImageUrl(context, getResolution(context),  image.getBaseUrl());
     }
 
-    public static String getImageUrl(Context context, String resolution, BingWallpaperImage image) {
-        String baseUrl = image.getUrlbase();
+    public static String getImageUrl(Context context, String resolution, String baseUrl) {
         return getBaseUrl(context) + baseUrl + "_" + resolution + ".jpg";
     }
 
@@ -533,7 +532,7 @@ public class BingWallpaperUtils {
                 callback);
     }
 
-    public static void showWallpaperDialog(Context context, @Nullable BingWallpaperImage image, @NonNull Config config,
+    public static void showWallpaperDialog(Context context, @Nullable Wallpaper image, @NonNull Config config,
             @Nullable Callback4<Boolean> callback) {
         String message = context.getString(R.string.menu_set_wallpaper_mode_both);
         if (config.getWallpaperMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
@@ -556,7 +555,7 @@ public class BingWallpaperUtils {
         });
     }
 
-    public static void setWallpaperDialog(final Context context, final @Nullable BingWallpaperImage image,
+    public static void setWallpaperDialog(final Context context, final @Nullable Wallpaper image,
             @NonNull Config config,
             @Nullable final Callback4<Boolean> callback) {
         if (!BingWallpaperUtils.isConnected(context)) {
@@ -582,7 +581,7 @@ public class BingWallpaperUtils {
         }
     }
 
-    private static void setWallpaperAction(Context context, @Nullable BingWallpaperImage image, @NonNull Config config,
+    private static void setWallpaperAction(Context context, @Nullable Wallpaper image, @NonNull Config config,
             @Nullable Callback4<Boolean> callback) {
         if (callback != null) {
             callback.onYes(true);
@@ -591,7 +590,7 @@ public class BingWallpaperUtils {
         //BingWallpaperIntentService.start(context, image, config);
     }
 
-    public static void startWallpaper(Context context, BingWallpaperImage image, Config config) {
+    public static void startWallpaper(Context context, Wallpaper image, Config config) {
         if (BingWallpaperJobManager.LIVE_WALLPAPER == BingWallpaperJobManager.getJobType(context)) {
             Intent intent = new Intent(LiveWallpaperService.UPDATE_LIVE_WALLPAPER);
             intent.putExtra("image", image);
@@ -601,7 +600,7 @@ public class BingWallpaperUtils {
         }
     }
 
-    public static void setWallpaper(Context context, @Nullable BingWallpaperImage image, @NonNull Config config,
+    public static void setWallpaper(Context context, @Nullable Wallpaper image, @NonNull Config config,
             @Nullable Callback4<Boolean> callback) {
         if (!BingWallpaperUtils.isConnected(context)) {
             Toast.makeText(context, R.string.network_unavailable, Toast.LENGTH_SHORT)
@@ -689,11 +688,11 @@ public class BingWallpaperUtils {
         }
     }
 
-    public static void openBrowser(Context context, BingWallpaperImage image) {
+    public static void openBrowser(Context context, Wallpaper image) {
         if (image == null) {
             return;
         }
-        String url = image.getCopyrightlink();
+        String url = image.getWebUrl();
         String baseUrl = getBaseUrl(context);
         if (TextUtils.isEmpty(url) || "javascript:void(0)".equals(url)) {
             url = baseUrl;
@@ -718,7 +717,7 @@ public class BingWallpaperUtils {
             headers.putString("Cookie", String.format(Constants.MKT_HEADER, locale));
             build.intent.putExtra(Browser.EXTRA_HEADERS, headers);
             build.launchUrl(context, Uri.parse(url));
-        } catch (Exception ignore) {
+        } catch (Throwable ignore) {
             startBrowser(context, url);
         }
     }
@@ -733,7 +732,7 @@ public class BingWallpaperUtils {
                         Uri.parse(Intent.URI_ANDROID_APP_SCHEME + "//" + context.getPackageName()));
             }
             build.launchUrl(context, Uri.parse(url));
-        } catch (Exception ignore) {
+        } catch (Throwable ignore) {
             startBrowser(context, url);
         }
     }
@@ -746,13 +745,12 @@ public class BingWallpaperUtils {
                 return;
             }
             context.startActivity(intent);
-        } catch (Exception ignore) {
+        } catch (Throwable ignore) {
             UIUtils.showToast(context, R.string.unable_open_url);
         }
     }
 
     public static String getSystemInfo(Context context) {
-        int sdk = Build.VERSION.SDK_INT;
         String device = Build.DEVICE;
         String model = Build.MODEL;
         String product = Build.PRODUCT;
@@ -772,7 +770,7 @@ public class BingWallpaperUtils {
 
         return "feedback info ------------------------- \n"
                 + "sdk: "
-                + sdk
+                + Build.VERSION.SDK_INT
                 + " device: "
                 + device
                 + " model: "
@@ -1166,7 +1164,7 @@ public class BingWallpaperUtils {
                 .get(2, TimeUnit.MINUTES);
     }
 
-    public static void autoSaveWallpaper(Context context, String TAG, BingWallpaperImage image, File wallpaper) {
+    public static void autoSaveWallpaper(Context context, String TAG, Wallpaper image, File wallpaper) {
         if (isAutoSave(context)) {
             try {
                 if (!checkStoragePermissions(context)) {
@@ -1176,7 +1174,7 @@ public class BingWallpaperUtils {
                 String resolution = getResolution(context);
                 if (!saveResolution.equals(resolution)) {
                     String saveImageUrl = getImageUrl(context, saveResolution,
-                            image);
+                            image.getBaseUrl());
                     L.alog().i(TAG, "wallpaper save url: " + saveImageUrl);
                     saveFileToPictureCompat(context, saveImageUrl, getGlideFile(context, saveImageUrl));
                 } else {
@@ -1188,8 +1186,8 @@ public class BingWallpaperUtils {
         }
     }
 
-    public static BingWallpaperImage getImage(Context context, boolean cache) throws IOException {
-        BingWallpaperImage image;
+    public static Wallpaper getImage(Context context, boolean cache) throws IOException {
+        Wallpaper image;
         if (BingWallpaperUtils.isPixabaySupport(context)) {
             image = BingWallpaperNetworkClient.getPixabaysExecute();
             image.setImageUrl(image.getUrl());

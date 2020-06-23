@@ -24,6 +24,11 @@ public class PixabayImage {
     private String userImageURL;
     private String previewURL;
 
+    public Wallpaper to() {
+        return new Wallpaper(null, getLargeImageURL(), getPreviewURL(),
+                "Photo by " + getUser() + " on Pixabay", getPageURL(), null);
+    }
+
     public String getLargeImageURL() { return largeImageURL;}
 
     public void setLargeImageURL(String largeImageURL) { this.largeImageURL = largeImageURL;}

@@ -19,7 +19,7 @@ import com.github.liaoheng.common.util.Utils;
 
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
-import me.liaoheng.wallpaper.model.BingWallpaperImage;
+import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.ui.MainActivity;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
@@ -34,11 +34,11 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
     protected final String CLICK_RETRY = "CLICK_RETRY";
     protected final String TAG = this.getClass().getSimpleName();
 
-    protected static void start(Context context, Class<?> cls, BingWallpaperImage bingWallpaperImage) {
+    protected static void start(Context context, Class<?> cls, Wallpaper wallpaper) {
         Intent intent = new Intent(context, cls);
         intent.setAction(Constants.ACTION_UPDATE_WALLPAPER_COVER_STORY);
-        if (bingWallpaperImage != null) {
-            intent.putExtra(Constants.EXTRA_UPDATE_WALLPAPER_COVER_STORY, bingWallpaperImage);
+        if (wallpaper != null) {
+            intent.putExtra(Constants.EXTRA_UPDATE_WALLPAPER_COVER_STORY, wallpaper);
         }
         context.sendBroadcast(intent);
     }
@@ -112,7 +112,7 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
         }
         String action = intent.getAction();
         if (Constants.ACTION_UPDATE_WALLPAPER_COVER_STORY.equals(action)) {
-            BingWallpaperImage image = intent.getParcelableExtra(
+            Wallpaper image = intent.getParcelableExtra(
                     Constants.EXTRA_UPDATE_WALLPAPER_COVER_STORY);
             if (image == null) {
                 getBingWallpaper(context);
@@ -140,14 +140,14 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
             return;
         }
         Utils.addSubscribe(BingWallpaperNetworkClient.getBingWallpaper(context),
-                new Callback.EmptyCallback<BingWallpaperImage>() {
+                new Callback.EmptyCallback<Wallpaper>() {
                     @Override
                     public void onPreExecute() {
                         loadStart(context);
                     }
 
                     @Override
-                    public void onSuccess(BingWallpaperImage image) {
+                    public void onSuccess(Wallpaper image) {
                         setText(context, image);
                     }
 
@@ -158,7 +158,7 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
                 });
     }
 
-    protected void setText(Context context, BingWallpaperImage image) {}
+    protected void setText(Context context, Wallpaper image) {}
 
     protected void loadStart(Context context) {}
 }

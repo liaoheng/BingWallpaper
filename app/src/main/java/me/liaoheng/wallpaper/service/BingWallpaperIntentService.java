@@ -9,20 +9,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
-import com.bumptech.glide.request.target.Target;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.L;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
-import me.liaoheng.wallpaper.model.BingWallpaperImage;
+import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
-import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.IUIHelper;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.NotificationUtils;
@@ -57,7 +54,7 @@ public class BingWallpaperIntentService extends IntentService {
         super("BingWallpaperIntentService");
     }
 
-    public static void start(Context context, @Nullable BingWallpaperImage image,
+    public static void start(Context context, @Nullable Wallpaper image,
             @NonNull Config config) {
         Intent intent = new Intent(context, BingWallpaperIntentService.class);
         intent.putExtra(EXTRA_SET_WALLPAPER_IMAGE, image);
@@ -95,7 +92,7 @@ public class BingWallpaperIntentService extends IntentService {
         if (intent == null) {
             return;
         }
-        BingWallpaperImage image = intent.getParcelableExtra(EXTRA_SET_WALLPAPER_IMAGE);
+        Wallpaper image = intent.getParcelableExtra(EXTRA_SET_WALLPAPER_IMAGE);
         Config config = intent.getParcelableExtra(EXTRA_SET_WALLPAPER_CONFIG);
         if (config == null) {
             return;
@@ -108,9 +105,9 @@ public class BingWallpaperIntentService extends IntentService {
 
         sendSetWallpaperBroadcast(BingWallpaperState.BEGIN);
 
-        Callback<BingWallpaperImage> callback = new Callback.EmptyCallback<BingWallpaperImage>() {
+        Callback<Wallpaper> callback = new Callback.EmptyCallback<Wallpaper>() {
             @Override
-            public void onSuccess(BingWallpaperImage bingWallpaperImage) {
+            public void onSuccess(Wallpaper bingWallpaperImage) {
                 success(config, bingWallpaperImage);
             }
 
@@ -158,7 +155,7 @@ public class BingWallpaperIntentService extends IntentService {
         NotificationUtils.showFailureNotification(getApplicationContext());
     }
 
-    private void success(Config config, BingWallpaperImage image) {
+    private void success(Config config, Wallpaper image) {
         L.alog().i(TAG, "load image success");
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
             LogDebugFileUtils.get().i(TAG, "Load image success");
@@ -177,14 +174,14 @@ public class BingWallpaperIntentService extends IntentService {
         sendSetWallpaperBroadcast(BingWallpaperState.SUCCESS);
     }
 
-    private void showSuccessNotification(BingWallpaperImage image, boolean isShow) {
+    private void showSuccessNotification(Wallpaper image, boolean isShow) {
         NotificationUtils.clearFailureNotification(getApplicationContext());
         if (isShow) {
             NotificationUtils.showSuccessNotification(getApplicationContext(), image.getCopyright());
         }
     }
 
-    private void downloadAndSetWallpaper(BingWallpaperImage image, Config config)
+    private void downloadAndSetWallpaper(Wallpaper image, Config config)
             throws Exception {
         String url = image.getImageUrl();
         File wallpaper = BingWallpaperUtils.getGlideFile(getApplicationContext(), url);

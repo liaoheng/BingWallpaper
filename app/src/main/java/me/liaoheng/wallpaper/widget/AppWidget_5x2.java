@@ -12,7 +12,7 @@ import androidx.preference.PreferenceManager;
 import com.github.liaoheng.common.util.L;
 
 import me.liaoheng.wallpaper.R;
-import me.liaoheng.wallpaper.model.BingWallpaperImage;
+import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.util.Constants;
 
 /**
@@ -21,11 +21,11 @@ import me.liaoheng.wallpaper.util.Constants;
  */
 public class AppWidget_5x2 extends BaseAppWidget {
 
-    public static void start(Context context, BingWallpaperImage bingWallpaperImage) {
+    public static void start(Context context, Wallpaper wallpaper) {
         if (getWidgetActive(context, Constants.PREF_APPWIDGET_5X2_ENABLE)) {
             return;
         }
-        start(context, AppWidget_5x2.class, bingWallpaperImage);
+        start(context, AppWidget_5x2.class, wallpaper);
     }
 
     protected void setWidgetActive(Context context, boolean active) {
@@ -41,7 +41,7 @@ public class AppWidget_5x2 extends BaseAppWidget {
 
     @SuppressLint("CheckResult")
     @Override
-    protected void setText(final Context context, final BingWallpaperImage image) {
+    protected void setText(final Context context, final Wallpaper image) {
         final RemoteViews remoteViews = getRemoteViews(context, R.layout.view_appwidget_5x2);
 
         if (image == null) {
@@ -68,8 +68,8 @@ public class AppWidget_5x2 extends BaseAppWidget {
         //                        update(context, AppWidget_5x2.class, remoteViews);
         //                    });
         //} else
-        if (!TextUtils.isEmpty(image.getCaption())) {
-            remoteViews.setTextViewText(R.id.app_widget_title, image.getCaption());
+        if (!TextUtils.isEmpty(image.getCopyright())) {
+            remoteViews.setTextViewText(R.id.app_widget_title, image.getCopyright());
             remoteViews.setTextViewText(R.id.app_widget_content, image.getDesc());
             update(context, AppWidget_5x2.class, remoteViews);
         } else {

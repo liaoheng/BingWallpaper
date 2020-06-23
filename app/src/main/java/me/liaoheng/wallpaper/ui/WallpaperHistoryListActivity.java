@@ -30,7 +30,7 @@ import com.github.liaoheng.common.util.ValidateUtils;
 import io.reactivex.Observable;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
-import me.liaoheng.wallpaper.model.BingWallpaperImage;
+import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
@@ -96,9 +96,9 @@ public class WallpaperHistoryListActivity extends BaseActivity {
     }
 
     private void getPixabayList() {
-        Observable<List<BingWallpaperImage>> listObservable = BingWallpaperNetworkClient.getPixabays(index)
+        Observable<List<Wallpaper>> listObservable = BingWallpaperNetworkClient.getPixabays(index)
                 .compose(this.bindToLifecycle());
-        Utils.addSubscribe(listObservable, new Callback.EmptyCallback<List<BingWallpaperImage>>() {
+        Utils.addSubscribe(listObservable, new Callback.EmptyCallback<List<Wallpaper>>() {
             @Override
             public void onPreExecute() {
                 mRecyclerViewHelper.setLoadMoreLoading(true);
@@ -110,7 +110,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
             }
 
             @Override
-            public void onSuccess(List<BingWallpaperImage> images) {
+            public void onSuccess(List<Wallpaper> images) {
                 mRecyclerViewHelper.setLoadMoreHasLoadedAllItems(images.size() == 0);
                 index++;
                 mWallpaperAdapter.addAll(images);
@@ -125,9 +125,9 @@ public class WallpaperHistoryListActivity extends BaseActivity {
     }
 
     private void getBingWallpaperList(final Callback callback) {
-        Observable<List<BingWallpaperImage>> listObservable = BingWallpaperNetworkClient.getBingWallpaper(this, index,
+        Observable<List<Wallpaper>> listObservable = BingWallpaperNetworkClient.getBingWallpaper(this, index,
                 count).compose(this.bindToLifecycle());
-        Utils.addSubscribe(listObservable, new Callback.EmptyCallback<List<BingWallpaperImage>>() {
+        Utils.addSubscribe(listObservable, new Callback.EmptyCallback<List<Wallpaper>>() {
             @Override
             public void onPreExecute() {
                 mRecyclerViewHelper.setLoadMoreLoading(true);
@@ -139,18 +139,18 @@ public class WallpaperHistoryListActivity extends BaseActivity {
             }
 
             @Override
-            public void onSuccess(List<BingWallpaperImage> bingWallpaperImages) {
-                if (ValidateUtils.isItemEmpty(bingWallpaperImages)) {
+            public void onSuccess(List<Wallpaper> wallpapers) {
+                if (ValidateUtils.isItemEmpty(wallpapers)) {
                     return;
                 }
                 if (mWallpaperAdapter.isEmpty()) {
                     mRecyclerViewHelper.setLoadMoreHasLoadedAllItems(false);
                 } else {
-                    bingWallpaperImages.remove(0);
+                    wallpapers.remove(0);
                     mRecyclerViewHelper.setLoadMoreHasLoadedAllItems(true);
                 }
-                mWallpaperAdapter.addAll(bingWallpaperImages);
-                index += bingWallpaperImages.size();
+                mWallpaperAdapter.addAll(wallpapers);
+                index += wallpapers.size();
                 if (callback != null) {
                     callback.onFinish();
                 }
@@ -169,7 +169,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         mErrorTextView.setText(error);
     }
 
-    public class WallpaperViewHolder extends BaseRecyclerViewHolder<BingWallpaperImage> {
+    public class WallpaperViewHolder extends BaseRecyclerViewHolder<Wallpaper> {
 
         @BindView(R.id.bing_wallpaper_list_item_image)
         ImageView mImageView;
@@ -185,12 +185,12 @@ public class WallpaperHistoryListActivity extends BaseActivity {
 
         @SuppressLint("SetTextI18n")
         @Override
-        public void onHandle(final BingWallpaperImage item, int position) {
-            if (TextUtils.isEmpty(item.getEnddate())) {
+        public void onHandle(final Wallpaper item, int position) {
+            if (TextUtils.isEmpty(item.getDateTime())) {
                 UIUtils.viewGone(mDate);
             } else {
                 UIUtils.viewVisible(mDate);
-                String endDate = item.getEnddate();// YYYYMMDD
+                String endDate = item.getDateTime();// YYYYMMDD
                 try {
                     String m = endDate.substring(4, 6);
                     String d = endDate.substring(6, 8);
@@ -210,13 +210,13 @@ public class WallpaperHistoryListActivity extends BaseActivity {
             int width = Constants.WallpaperConfig.WALLPAPER_RESOLUTION_WIDTH;
             int height = Constants.WallpaperConfig.WALLPAPER_RESOLUTION_HEIGHT;
             if (BingWallpaperUtils.isPixabaySupport(getContext())) {
-                imageUrl = item.getUrlbase();
+                imageUrl = item.getBaseUrl();
                 width = Target.SIZE_ORIGINAL;
                 height = Target.SIZE_ORIGINAL;
             } else {
                 imageUrl = BingWallpaperUtils.getImageUrl(getContext(),
                         Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
-                        item);
+                        item.getBaseUrl());
             }
             GlideApp.with(getContext())
                     .asDrawable()
@@ -274,7 +274,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         }
     }
 
-    public class WallpaperAdapter extends BaseRecyclerAdapter<BingWallpaperImage, WallpaperViewHolder> {
+    public class WallpaperAdapter extends BaseRecyclerAdapter<Wallpaper, WallpaperViewHolder> {
 
         public WallpaperAdapter(Context context) {
             super(context);
@@ -291,7 +291,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         }
 
         @Override
-        public void onBindViewHolderItem(@NonNull WallpaperViewHolder holder, BingWallpaperImage item,
+        public void onBindViewHolderItem(@NonNull WallpaperViewHolder holder, Wallpaper item,
                 int position) {
             holder.onHandle(item, position);
         }

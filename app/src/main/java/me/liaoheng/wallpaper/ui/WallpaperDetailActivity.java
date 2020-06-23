@@ -31,9 +31,9 @@ import butterknife.BindArray;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.liaoheng.wallpaper.R;
-import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.model.Config;
+import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
@@ -63,12 +63,8 @@ public class WallpaperDetailActivity extends BaseActivity implements
     @BindView(R.id.bing_wallpaper_detail_error)
     TextView mErrorTextView;
 
-    @BindView(R.id.bing_wallpaper_detail_cover_story_content)
-    View mCoverStoryContent;
     @BindView(R.id.bing_wallpaper_detail_cover_story_text)
     TextView mCoverStoryTextView;
-    @BindView(R.id.bing_wallpaper_detail_cover_story_title)
-    TextView mCoverStoryTitleView;
     @BindView(R.id.bing_wallpaper_detail_cover_story_toggle)
     ToggleImageButton mCoverStoryToggle;
 
@@ -82,13 +78,13 @@ public class WallpaperDetailActivity extends BaseActivity implements
 
     private AlertDialog mResolutionDialog;
 
-    private BingWallpaperImage mWallpaperImage;
+    private Wallpaper mWallpaper;
     private ProgressDialog mSetWallpaperProgressDialog;
     private SetWallpaperStateBroadcastReceiverHelper mSetWallpaperStateBroadcastReceiverHelper;
     private Config mConfig;
     private DownloadHelper mDownloadHelper;
 
-    public static void start(Context context, BingWallpaperImage item, Bundle bundle) {
+    public static void start(Context context, Wallpaper item, Bundle bundle) {
         Intent intent = new Intent(context, WallpaperDetailActivity.class);
         intent.putExtra("image", item);
         ActivityCompat.startActivity(context, intent, bundle);
@@ -103,8 +99,8 @@ public class WallpaperDetailActivity extends BaseActivity implements
         initStatusBarAddToolbar();
         mConfig = new Config.Builder().build();
 
-        mWallpaperImage = getIntent().getParcelableExtra("image");
-        if (mWallpaperImage == null) {
+        mWallpaper = getIntent().getParcelableExtra("image");
+        if (mWallpaper == null) {
             UIUtils.showToast(getApplicationContext(), "unknown error");
             finish();
             return;
@@ -130,22 +126,21 @@ public class WallpaperDetailActivity extends BaseActivity implements
 
         ((View) mCoverStoryToggle.getParent()).setOnClickListener(v -> mCoverStoryToggle.toggle());
         mCoverStoryToggle.setOnCheckedChangeListener((view, isChecked) -> {
-            if (mCoverStoryContent.getVisibility() == View.VISIBLE) {
+            if (mCoverStoryTextView.getVisibility() == View.VISIBLE) {
                 UIUtils.viewVisible(mBottomTextView);
             } else {
                 UIUtils.viewGone(mBottomTextView);
             }
-            UIUtils.toggleVisibility(mCoverStoryContent);
+            UIUtils.toggleVisibility(mCoverStoryTextView);
         });
 
-        mBottomTextView.setText(mWallpaperImage.getCopyright());
+        mBottomTextView.setText(mWallpaper.getCopyright());
 
-        if (TextUtils.isEmpty(mWallpaperImage.getCaption())) {
+        if (TextUtils.isEmpty(mWallpaper.getDesc())) {
             UIUtils.viewParentGone(mCoverStoryToggle.getParent());
         } else {
             UIUtils.viewParentVisible(mCoverStoryToggle.getParent());
-            mCoverStoryTitleView.setText(mWallpaperImage.getCaption());
-            mCoverStoryTextView.setText(mWallpaperImage.getDesc());
+            mCoverStoryTextView.setText(mWallpaper.getDesc());
         }
 
         mBottomView.setPadding(mBottomView.getPaddingLeft(), mBottomView.getPaddingTop(),
@@ -202,12 +197,13 @@ public class WallpaperDetailActivity extends BaseActivity implements
 
     private String getUrl(String defResolution) {
         if (BingWallpaperUtils.isPixabaySupport(this)) {
-            return mWallpaperImage.getUrl();
+            return mWallpaper.getUrl();
         }
         if (TextUtils.isEmpty(mSelectedResolution)) {
-            return BingWallpaperUtils.getImageUrl(getApplicationContext(), defResolution, mWallpaperImage);
+            return BingWallpaperUtils.getImageUrl(getApplicationContext(), defResolution, mWallpaper.getBaseUrl());
         } else {
-            return BingWallpaperUtils.getImageUrl(getApplicationContext(), mSelectedResolution, mWallpaperImage);
+            return BingWallpaperUtils.getImageUrl(getApplicationContext(), mSelectedResolution,
+                    mWallpaper.getBaseUrl());
         }
     }
 
@@ -300,15 +296,15 @@ public class WallpaperDetailActivity extends BaseActivity implements
                 break;
             case R.id.menu_wallpaper_info:
                 if (BingWallpaperUtils.isPixabaySupport(this)) {
-                    BingWallpaperUtils.openBrowser(this, mWallpaperImage.getCopyrightlink());
+                    BingWallpaperUtils.openBrowser(this, mWallpaper.getWebUrl());
                 } else {
-                    BingWallpaperUtils.openBrowser(this, mWallpaperImage);
+                    BingWallpaperUtils.openBrowser(this, mWallpaper);
                 }
                 break;
             case R.id.menu_wallpaper_share:
                 BingWallpaperUtils.shareImage(getApplicationContext(), mConfig,
                         getUrl(BingWallpaperUtils.getResolution(this)),
-                        mWallpaperImage.getCopyright());
+                        mWallpaper.getCopyright());
                 break;
             case R.id.menu_wallpaper_stack_blur:
                 SeekBarDialogFragment.newInstance(getString(R.string.pref_stack_blur), mConfig.getStackBlur(), this)
@@ -335,17 +331,17 @@ public class WallpaperDetailActivity extends BaseActivity implements
      * @param type 0. both , 1. home , 2. lock
      */
     private void setWallpaper(final int type) {
-        if (mWallpaperImage == null) {
+        if (mWallpaper == null) {
             return;
         }
         String url;
         if (BingWallpaperUtils.isPixabaySupport(getApplicationContext())) {
-            url = mWallpaperImage.getUrl();
+            url = mWallpaper.getUrl();
         } else {
             url = getUrl(BingWallpaperUtils.getResolution(this));
         }
         mConfig.setWallpaperMode(type);
-        BingWallpaperUtils.showWallpaperDialog(this, mWallpaperImage.copy(url), mConfig,
+        BingWallpaperUtils.showWallpaperDialog(this, mWallpaper.copy(url), mConfig,
                 new Callback4.EmptyCallback<Boolean>() {
                     @Override
                     public void onYes(Boolean aBoolean) {

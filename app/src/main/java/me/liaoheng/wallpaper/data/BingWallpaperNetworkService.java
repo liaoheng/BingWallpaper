@@ -2,7 +2,6 @@ package me.liaoheng.wallpaper.data;
 
 import io.reactivex.Observable;
 import me.liaoheng.wallpaper.model.BingWallpaper;
-import me.liaoheng.wallpaper.model.BingWallpaperCoverStory;
 import me.liaoheng.wallpaper.model.Pixabay;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -33,13 +32,6 @@ public interface BingWallpaperNetworkService {
     @GET
     Call<BingWallpaper> getBingWallpaperCall(@Url String url, @Header("Cookie") String mkt,
             @Header("Cache-Control") String cache);
-
-    @Headers({
-            "User-Agent:" + USER_AGENT,
-            "Cookie: _EDGE_S=mkt=zh-cn"
-    })
-    @GET("https://www.bing.com/cnhp/coverstory")
-    Observable<BingWallpaperCoverStory> getCoverStory();
 
     @GET(PIXABAY_BASE_URL)
     Call<Pixabay> getPixabays(@Query("per_page") int perPage);

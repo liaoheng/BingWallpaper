@@ -10,7 +10,7 @@ import androidx.preference.PreferenceManager;
 import com.github.liaoheng.common.util.L;
 
 import me.liaoheng.wallpaper.R;
-import me.liaoheng.wallpaper.model.BingWallpaperImage;
+import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.util.Constants;
 
 /**
@@ -19,11 +19,11 @@ import me.liaoheng.wallpaper.util.Constants;
  */
 public class AppWidget_5x1 extends BaseAppWidget {
 
-    public static void start(Context context, BingWallpaperImage bingWallpaperImage) {
+    public static void start(Context context, Wallpaper wallpaper) {
         if (getWidgetActive(context, Constants.PREF_APPWIDGET_5X1_ENABLE)) {
             return;
         }
-        start(context, AppWidget_5x1.class, bingWallpaperImage);
+        start(context, AppWidget_5x1.class, wallpaper);
     }
 
     protected void setWidgetActive(Context context, boolean active) {
@@ -38,7 +38,7 @@ public class AppWidget_5x1 extends BaseAppWidget {
     }
 
     @Override
-    protected void setText(Context context, BingWallpaperImage image) {
+    protected void setText(Context context, Wallpaper image) {
         RemoteViews remoteViews = getRemoteViews(context, R.layout.view_appwidget_5x1);
 
         if (image == null) {
