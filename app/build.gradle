@@ -107,9 +107,6 @@ dependencies {
     implementation deps.rxlifecycle_android3
     implementation deps.joda_time_android
 
-    //https://github.com/google/conscrypt
-    implementation 'org.conscrypt:conscrypt-android:2.4.0'
-
     //https://github.com/scottyab/rootbeer
     implementation 'com.github.scottyab:rootbeer:0.0.8'
 

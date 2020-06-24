@@ -40,13 +40,6 @@ public class NotificationUtils {
             channel1.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
             channels.add(channel1);
 
-            NotificationChannel channel2 = new NotificationChannel(
-                    Constants.FOREGROUND_DAEMON_SERVICE_NOTIFICATION_CHANNEL,
-                    context.getString(R.string.foreground_daemon_service_notification_channel),
-                    NotificationManager.IMPORTANCE_MIN);
-            channel2.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
-            channels.add(channel2);
-
             NotificationChannel channel3 = new NotificationChannel(
                     Constants.FOREGROUND_CHECK_SERVICE_NOTIFICATION_CHANNEL,
                     "Check wallpaper service notification",
@@ -107,16 +100,5 @@ public class NotificationUtils {
                 .setContentText("Check update wallpaper")
                 .setContentTitle(service.getText(R.string.app_name)).build();
         service.startForeground(222 + (int) (Math.random() * 10), notification);
-    }
-
-    public static void showRunningNotification(Service service) {
-        Notification notification = new NotificationCompat.Builder(service.getApplicationContext(),
-                Constants.FOREGROUND_DAEMON_SERVICE_NOTIFICATION_CHANNEL).setPriority(NotificationCompat.PRIORITY_MIN)
-                .setVisibility(NotificationCompat.VISIBILITY_SECRET)
-                .setSmallIcon(R.drawable.ic_notification)
-                .setContentTitle(service.getString(R.string.app_name))
-                .setContentText(service.getString(R.string.daemon_service_running))
-                .build();
-        service.startForeground(112, notification);
     }
 }

@@ -20,8 +20,6 @@
     <string name="send_email">发送邮件</string>
     <string name="foreground_intent_service_notification_channel">更新壁纸服务通知</string>
     <string name="foreground_intent_service_success_notification_channel">更新壁纸成功通知</string>
-    <string name="foreground_daemon_service_notification_channel">后台服务通知</string>
-    <string name="daemon_service_running">后台服务运行中</string>
     <string name="enable_job_error">无法开启每日自动更新</string>
     <string name="request_failed_click_retry">请求失败，请点击重试</string>
     <string name="loading">加载中&#8230;</string>
@@ -42,7 +40,7 @@
     <string name="pref_auto_update_everyday_notification_note">仅在后台更新成功后发出</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type">自动模式类型</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_auto">最佳</string>
-    <string name="pref_set_wallpaper_day_fully_automatic_update_type_system">Android系统</string>
+    <string name="pref_set_wallpaper_day_fully_automatic_update_type_system">计划任务</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_service">动态壁纸</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_interval">自动模式检查间隔</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_interval_note">单位小时，改变之后请重新设置</string>

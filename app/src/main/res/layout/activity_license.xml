@@ -1,11 +1,48 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/user_info_collapsing_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:elevation="0dp"
+            android:background="@android:color/transparent">
+
+        <LinearLayout
+                android:padding="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_scrollFlags="scroll|enterAlways">
+
+            <ImageView
+                    android:id="@+id/license_image"
+                    android:layout_width="127dp"
+                    android:layout_height="51dp"/>
+
+            <TextView
+                    android:id="@+id/license_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autoLink="web" />
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Third-party libraries:"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/license_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

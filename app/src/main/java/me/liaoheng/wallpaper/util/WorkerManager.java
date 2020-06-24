@@ -3,7 +3,6 @@ package me.liaoheng.wallpaper.util;
 import android.content.Context;
 import android.util.Log;
 import androidx.work.*;
-import com.github.liaoheng.common.util.L;
 import com.google.common.util.concurrent.ListenableFuture;
 import me.liaoheng.wallpaper.service.BingWallpaperWorker;
 
@@ -17,7 +16,6 @@ import java.util.concurrent.TimeUnit;
  * @version 2019-03-18 10:42
  */
 public class WorkerManager {
-    private static final String TAG = WorkerManager.class.getSimpleName();
     private static final String WORKER_TAG = "bing_wallpaper_worker_" + 0x484;
 
     public static void disabled(Context context) {

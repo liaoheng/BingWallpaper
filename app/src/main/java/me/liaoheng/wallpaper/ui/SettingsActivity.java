@@ -101,7 +101,6 @@ public class SettingsActivity extends BaseActivity {
     public static final String PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI = "pref_set_wallpaper_day_auto_update_only_wifi";
     public static final String PREF_SET_WALLPAPER_LOG = "pref_set_wallpaper_debug_log";
     public static final String PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER = "pref_set_miui_lock_screen_wallpaper";
-    public static final String PREF_PREF_PIXABAY_SUPPORT = "pref_pixabay_support";
     public static final String PREF_CRASH_REPORT = "pref_crash_report";
     public static final String PREF_STACK_BLUR = "pref_stack_blur";
     public static final String PREF_STACK_BLUR_MODE = "pref_stack_blur_mode";
@@ -125,7 +124,6 @@ public class SettingsActivity extends BaseActivity {
         private SwitchPreference mCrashPreference;
         private ListPreference mAutoUpdateTypeListPreference;
         private SwitchPreference mMIuiLockScreenPreference;
-        private SwitchPreference mPixabaySupportPreference;
         private SeekBarDialogPreference mStackBlurPreference;
         private ListPreference mStackBlurModePreference;
         private SwitchPreference mAutoSaveWallpaperPreference;
@@ -230,7 +228,6 @@ public class SettingsActivity extends BaseActivity {
             mAutoUpdateNotificationPreference = findPreference(
                     PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_NOTIFICATION);
             mMIuiLockScreenPreference = findPreference(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER);
-            mPixabaySupportPreference = findPreference(PREF_PREF_PIXABAY_SUPPORT);
             mLogPreference = findPreference(PREF_SET_WALLPAPER_LOG);
             mCrashPreference = findPreference(PREF_CRASH_REPORT);
             mStackBlurPreference = findPreference(PREF_STACK_BLUR);
@@ -332,9 +329,6 @@ public class SettingsActivity extends BaseActivity {
                     LanguageContextWrapper.wrap(getActivity(), BingWallpaperUtils.getLanguage(getContext()));
                     isChangeLanguage = true;
                     getActivity().recreate();
-                    break;
-                case PREF_PREF_PIXABAY_SUPPORT:
-                    mPreferences.put(PREF_PREF_PIXABAY_SUPPORT, mPixabaySupportPreference.isChecked());
                     break;
                 case PREF_SET_WALLPAPER_AUTO_MODE:
                     mModeTypeListPreference.setSummary(mModeTypeListPreference.getEntry());

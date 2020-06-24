@@ -8,17 +8,12 @@ import com.github.liaoheng.common.util.ValidateUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import me.liaoheng.wallpaper.model.BingWallpaper;
 import me.liaoheng.wallpaper.model.BingWallpaperImage;
 import me.liaoheng.wallpaper.model.Wallpaper;
-import me.liaoheng.wallpaper.model.Pixabay;
-import me.liaoheng.wallpaper.model.PixabayImage;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.NetUtils;
@@ -60,7 +55,7 @@ public class BingWallpaperNetworkClient {
         String url = BingWallpaperUtils.getUrl(context);
         String c = "public, ";
         if (cache) {
-            c += "max-age=" + (BingWallpaperUtils.getAutomaticUpdateInterval(context) - 1000);
+            c += "max-age=" + 60 * 60 * 12;//12 hour
         } else {
             c += "no-cache";
         }
@@ -84,64 +79,5 @@ public class BingWallpaperNetworkClient {
 
     private static String getMkt(String locale) {
         return String.format(Constants.MKT_HEADER, locale);
-    }
-
-    private static int PIXABAY_EDITORS_CHOICE_PER_PAGE = 60;
-
-    public static Wallpaper getPixabaysExecute() throws IOException {
-        Response<Pixabay> execute = NetUtils.get()
-                .getBingWallpaperNetworkService()
-                .getPixabays(PIXABAY_EDITORS_CHOICE_PER_PAGE)
-                .execute();
-        if (execute.isSuccessful()) {
-            Pixabay pixabay = execute.body();
-            if (pixabay == null || ValidateUtils.isItemEmpty(pixabay.getHits())) {
-                throw new IOException("pixabay is not data");
-            }
-            return randomPixabay(pixabay).to();
-        } else {
-            throw new IOException("pixabay server response failure");
-        }
-    }
-
-    public static Observable<Pixabay> getPixabays(int page, int perPage, String order) {
-        return NetUtils.get()
-                .getBingWallpaperNetworkService()
-                .getPixabays(page, perPage, order)
-                .subscribeOn(Schedulers.io());
-    }
-
-    public static Observable<List<Wallpaper>> getPixabays(int page) {
-        return getPixabays(page, 20, "latest").flatMap(
-                (Function<Pixabay, ObservableSource<List<Wallpaper>>>) pixabay -> {
-                    List<Wallpaper> wallpaperList = new ArrayList<>();
-                    if (ValidateUtils.isItemEmpty(pixabay.getHits())) {
-                        return Observable.just(wallpaperList);
-                    }
-                    for (PixabayImage image : pixabay.getHits()) {
-                        wallpaperList.add(image.to());
-                    }
-                    return Observable.just(wallpaperList);
-                });
-    }
-
-    public static PixabayImage randomPixabay(Pixabay pixabay) {
-        try {
-            int size = pixabay.getHits().size();
-            int num = new Random().nextInt(size);
-            return pixabay.getHits().get(num);
-        } catch (Throwable e) {
-            return pixabay.getHits().get(0);
-        }
-    }
-
-    public static Observable<Wallpaper> randomPixabayImage() {
-        return getPixabays(1, PIXABAY_EDITORS_CHOICE_PER_PAGE, "popular").flatMap(
-                (Function<Pixabay, ObservableSource<Wallpaper>>) pixabay -> {
-                    if (ValidateUtils.isItemEmpty(pixabay.getHits())) {
-                        return Observable.error(new IOException("pixabay is not data"));
-                    }
-                    return Observable.just(randomPixabay(pixabay).to());
-                });
     }
 }

@@ -30,8 +30,8 @@ import io.reactivex.ObservableTransformer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
+import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.CacheUtils;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
@@ -44,8 +44,8 @@ import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
 public class LiveWallpaperService extends WallpaperService {
     private String TAG = LiveWallpaperService.class.getSimpleName();
     public static final String UPDATE_LIVE_WALLPAPER = "me.liaoheng.wallpaper.UPDATE_LIVE_WALLPAPER";
-    private LiveWallpaperEngine mEngine;
     private LiveWallpaperBroadcastReceiver mReceiver;
+    private LiveWallpaperEngine mEngine;
 
     @Override
     public Engine onCreateEngine() {
@@ -110,8 +110,9 @@ public class LiveWallpaperService extends WallpaperService {
         }
 
         private void postDelayed() {
-            //handler.postDelayed(drawRunner, BingWallpaperUtils.getAutomaticUpdateInterval(mContext));
-            handler.postDelayed(drawRunner, TimeUnit.MINUTES.toMillis(10));
+            handler.postDelayed(drawRunner,
+                    TimeUnit.HOURS.toMillis(BingWallpaperUtils.getAutomaticUpdateInterval(mContext)));
+            //handler.postDelayed(drawRunner, TimeUnit.MINUTES.toMillis(10));
         }
 
         public void loadBingWallpaper(Wallpaper image) {
@@ -201,10 +202,10 @@ public class LiveWallpaperService extends WallpaperService {
                                 BitmapFactory.decodeFile(wallpaper.getAbsolutePath()), stackBlur);
                         CacheUtils.get().put(key, BitmapUtils.bitmapToStream(image.bitmap,
                                 Bitmap.CompressFormat.JPEG));
-                    }else{
+                    } else {
                         image.bitmap = BitmapFactory.decodeFile(stackBlurFile.getAbsolutePath());
                     }
-                }else {
+                } else {
                     image.bitmap = BitmapFactory.decodeFile(wallpaper.getAbsolutePath());
                 }
                 if (BingWallpaperUtils.isTaskUndone(mContext)) {

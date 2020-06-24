@@ -113,7 +113,7 @@ public class BingWallpaperUtils {
     }
 
     public static String getResolutionImageUrl(Context context, Wallpaper image) {
-        return getImageUrl(context, getResolution(context),  image.getBaseUrl());
+        return getImageUrl(context, getResolution(context), image.getBaseUrl());
     }
 
     public static String getImageUrl(Context context, String resolution, String baseUrl) {
@@ -492,11 +492,6 @@ public class BingWallpaperUtils {
         sharedPreferences.edit().putBoolean(SettingsActivity.PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, support).apply();
         return SettingTrayPreferences.get(context)
                 .put(SettingsActivity.PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, support);
-    }
-
-    public static boolean isPixabaySupport(Context context) {
-        return SettingTrayPreferences.get(context)
-                .getBoolean(SettingsActivity.PREF_PREF_PIXABAY_SUPPORT, false);
     }
 
     public static int getSettingStackBlur(Context context) {
@@ -1187,14 +1182,8 @@ public class BingWallpaperUtils {
     }
 
     public static Wallpaper getImage(Context context, boolean cache) throws IOException {
-        Wallpaper image;
-        if (BingWallpaperUtils.isPixabaySupport(context)) {
-            image = BingWallpaperNetworkClient.getPixabaysExecute();
-            image.setImageUrl(image.getUrl());
-        } else {
-            image = BingWallpaperNetworkClient.getBingWallpaperSingleCall(context, cache);
-            image.setResolutionImageUrl(context);
-        }
+        Wallpaper image = BingWallpaperNetworkClient.getBingWallpaperSingleCall(context, cache);
+        image.setResolutionImageUrl(context);
         return image;
     }
 

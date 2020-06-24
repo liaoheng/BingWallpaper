@@ -40,7 +40,6 @@ import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.ShellUtils;
 import com.github.liaoheng.common.util.SystemDataException;
 import com.github.liaoheng.common.util.UIUtils;
-import com.github.liaoheng.common.util.Utils;
 import com.google.android.material.navigation.NavigationView;
 
 import butterknife.BindView;
@@ -201,11 +200,7 @@ public class MainActivity extends BaseActivity
             if (isRun) {
                 UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_running);
             } else {
-                if (BingWallpaperUtils.isPixabaySupport(this)) {
-                    getPixabay();
-                } else {
-                    getBingWallpaper();
-                }
+                getBingWallpaper();
             }
         });
 
@@ -214,11 +209,7 @@ public class MainActivity extends BaseActivity
                 .findViewById(R.id.navigation_header_cover_story_title);
         mDownloadHelper = new DownloadHelper(this, TAG);
 
-        if (BingWallpaperUtils.isPixabaySupport(this)) {
-            getPixabay();
-        } else {
-            getBingWallpaper();
-        }
+        getBingWallpaper();
 
         if (ROM.getROM().isMiui()) {
             if (BingWallpaperUtils.isMiuiLockScreenSupport(this)) {
@@ -264,29 +255,6 @@ public class MainActivity extends BaseActivity
             UIUtils.viewGone(screen);
         }
         alertDialog.show();
-    }
-
-    private void getPixabay() {
-        if (!BingWallpaperUtils.isConnected(getApplicationContext())) {
-            mErrorTextView.setText(getString(R.string.network_unavailable));
-            return;
-        }
-        showSwipeRefreshLayout();
-
-        Utils.addSubscribe(BingWallpaperNetworkClient.randomPixabayImage()
-                .compose(bindToLifecycle()), new Callback.EmptyCallback<Wallpaper>() {
-            @Override
-            public void onSuccess(Wallpaper bingWallpaper) {
-                mCurWallpaper = bingWallpaper;
-                UIUtils.viewParentVisible(mCoverStoryTextView.getParent());
-                setImage(bingWallpaper);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                setBingWallpaperError(e);
-            }
-        });
     }
 
     @SuppressLint({ "SetTextI18n", "CheckResult" })
@@ -359,12 +327,8 @@ public class MainActivity extends BaseActivity
         if (mCurWallpaper == null) {
             throw new IllegalArgumentException("image is null");
         }
-        if (BingWallpaperUtils.isPixabaySupport(this)) {
-            return mCurWallpaper.getUrl();
-        } else {
-            return BingWallpaperUtils.getImageUrl(this, resolution,
-                    mCurWallpaper.getBaseUrl());
-        }
+        return BingWallpaperUtils.getImageUrl(this, resolution,
+                mCurWallpaper.getBaseUrl());
     }
 
     @Override
@@ -416,11 +380,7 @@ public class MainActivity extends BaseActivity
             UIUtils.startActivity(this, WallpaperHistoryListActivity.class);
         } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_info) {
             if (mCurWallpaper != null) {
-                if (BingWallpaperUtils.isPixabaySupport(this)) {
-                    BingWallpaperUtils.openBrowser(this, mCurWallpaper.getWebUrl());
-                } else {
-                    BingWallpaperUtils.openBrowser(this, mCurWallpaper);
-                }
+                BingWallpaperUtils.openBrowser(this, mCurWallpaper);
             }
         } else if (item.getItemId() == R.id.menu_main_drawer_help) {
             BingWallpaperUtils.openBrowser(this, "https://github.com/liaoheng/BingWallpaper/blob/image/HELP.md");
@@ -434,16 +394,11 @@ public class MainActivity extends BaseActivity
     private void setImage(Wallpaper image) {
         setTitle(image.getCopyright());
         mHeaderCoverStoryTitleView.setText(image.getCopyright());
-        String url;
-        if (BingWallpaperUtils.isPixabaySupport(this)) {
-            url = image.getUrl().replace("_1280", "_960");
-        } else {
-            String u = Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION;
-            if (!Constants.Config.isPhone) {
-                u = Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION_LANDSCAPE;
-            }
-            url = BingWallpaperUtils.getImageUrl(getApplicationContext(), u, image.getBaseUrl());
+        String u = Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION;
+        if (!Constants.Config.isPhone) {
+            u = Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION_LANDSCAPE;
         }
+        String url = BingWallpaperUtils.getImageUrl(getApplicationContext(), u, image.getBaseUrl());
         if (isDestroyed()) {
             return;
         }

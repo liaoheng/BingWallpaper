@@ -2,8 +2,10 @@ package me.liaoheng.wallpaper.ui;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,6 +23,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.GlideApp;
 
 /**
  * @author liaoheng
@@ -95,12 +98,29 @@ public class LicenseActivity extends BaseActivity {
         String text = "Apache License 2.0";
     }
 
+    @BindView(R.id.license_text)
+    TextView license;
+    @BindView(R.id.license_image)
+    ImageView image;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_license);
         setTitle(R.string.open_source_license);
         ButterKnife.bind(this);
+        String gpl= "<p> This program is free software: you can redistribute it and/or modify"
+                + "it under the terms of the GNU General Public License as published by"
+                + "the Free Software Foundation, either version 3 of the License, or"
+                + "(at your option) any later version.</p>"
+                + "<p> This program is distributed in the hope that it will be useful,"
+                + "but WITHOUT ANY WARRANTY; without even the implied warranty of"
+                + "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the"
+                + "GNU General Public License for more details.</p>"
+                + "<p> You should have received a copy of the GNU General Public License"
+                + "along with this program.  If not, see https://www.gnu.org/licenses.</p>";
+        license.setText(Html.fromHtml(gpl));
+        GlideApp.with(this).load("https://www.gnu.org/graphics/gplv3-127x51.png").into(image);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         mRecyclerView.setHasFixedSize(true);

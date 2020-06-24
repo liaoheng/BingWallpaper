@@ -196,9 +196,6 @@ public class WallpaperDetailActivity extends BaseActivity implements
     }
 
     private String getUrl(String defResolution) {
-        if (BingWallpaperUtils.isPixabaySupport(this)) {
-            return mWallpaper.getUrl();
-        }
         if (TextUtils.isEmpty(mSelectedResolution)) {
             return BingWallpaperUtils.getImageUrl(getApplicationContext(), defResolution, mWallpaper.getBaseUrl());
         } else {
@@ -260,9 +257,6 @@ public class WallpaperDetailActivity extends BaseActivity implements
             menu.removeItem(R.id.menu_wallpaper_home);
             menu.findItem(R.id.menu_wallpaper_both).setTitle(R.string.set_wallpaper);
         }
-        if (BingWallpaperUtils.isPixabaySupport(this)) {
-            menu.removeItem(R.id.menu_wallpaper_resolution);
-        }
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -295,11 +289,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
                 mResolutionDialog.show();
                 break;
             case R.id.menu_wallpaper_info:
-                if (BingWallpaperUtils.isPixabaySupport(this)) {
-                    BingWallpaperUtils.openBrowser(this, mWallpaper.getWebUrl());
-                } else {
                     BingWallpaperUtils.openBrowser(this, mWallpaper);
-                }
                 break;
             case R.id.menu_wallpaper_share:
                 BingWallpaperUtils.shareImage(getApplicationContext(), mConfig,
@@ -335,11 +325,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
             return;
         }
         String url;
-        if (BingWallpaperUtils.isPixabaySupport(getApplicationContext())) {
-            url = mWallpaper.getUrl();
-        } else {
             url = getUrl(BingWallpaperUtils.getResolution(this));
-        }
         mConfig.setWallpaperMode(type);
         BingWallpaperUtils.showWallpaperDialog(this, mWallpaper.copy(url), mConfig,
                 new Callback4.EmptyCallback<Boolean>() {

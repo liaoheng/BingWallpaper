@@ -3,7 +3,6 @@ package me.liaoheng.wallpaper.util;
 import android.content.Context;
 import android.net.Uri;
 
-import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import com.bumptech.glide.request.target.Target;
@@ -13,11 +12,8 @@ import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.SystemRuntimeException;
 import com.github.liaoheng.common.util.Utils;
 
-import org.conscrypt.Conscrypt;
-
 import java.io.File;
 import java.io.IOException;
-import java.security.Security;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -81,7 +77,7 @@ public class NetUtils {
     }
 
     public void init(Context context) {
-        Security.insertProviderAt(Conscrypt.newProvider(), 1);
+        //Security.insertProviderAt(Conscrypt.newProvider(), 1);
         Retrofit.Builder factory = new Retrofit.Builder().baseUrl(Constants.LOCAL_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());

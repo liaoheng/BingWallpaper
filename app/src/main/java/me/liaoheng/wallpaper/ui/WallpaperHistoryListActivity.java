@@ -10,14 +10,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
-import butterknife.BindView;
-import butterknife.ButterKnife;
+
 import com.bumptech.glide.request.target.ImageViewTarget;
-import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.github.liaoheng.common.adapter.base.BaseRecyclerAdapter;
 import com.github.liaoheng.common.adapter.core.HandleView;
@@ -27,6 +26,11 @@ import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 import com.github.liaoheng.common.util.ValidateUtils;
+
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
@@ -35,8 +39,6 @@ import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.GlideApp;
-
-import java.util.List;
 
 /**
  * 壁纸历史列表
@@ -64,23 +66,14 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         RecyclerViewHelper.Builder builder = new RecyclerViewHelper.Builder(this,
                 new GridLayoutManager(this, 3))
                 .setAdapter(mWallpaperAdapter);
-        if (BingWallpaperUtils.isPixabaySupport(this)) {
-            builder.setLoadMoreListener(this::getPixabayList).addLoadMoreFooterView();
-        } else {
-            builder.addLoadMoreFooterView(R.layout.view_wallpaper_list_footer, new HandleView.EmptyHandleView() {
-                @Override
-                public void handle(View view) {
-                }
-            });
-        }
+        builder.addLoadMoreFooterView(R.layout.view_wallpaper_list_footer, new HandleView.EmptyHandleView() {
+            @Override
+            public void handle(View view) {
+            }
+        });
         mRecyclerViewHelper = builder.setMergedIntoLineSpanSizeLookup().build();
 
         mRecyclerViewHelper.changeToLoadMoreLoading();
-        if (BingWallpaperUtils.isPixabaySupport(this)) {
-            index++;
-            getPixabayList();
-            return;
-        }
 
         getBingWallpaperList(new Callback.EmptyCallback() {
             @Override
@@ -91,35 +84,6 @@ public class WallpaperHistoryListActivity extends BaseActivity {
                         mWallpaperAdapter.notifyDataSetChanged();
                     }
                 });
-            }
-        });
-    }
-
-    private void getPixabayList() {
-        Observable<List<Wallpaper>> listObservable = BingWallpaperNetworkClient.getPixabays(index)
-                .compose(this.bindToLifecycle());
-        Utils.addSubscribe(listObservable, new Callback.EmptyCallback<List<Wallpaper>>() {
-            @Override
-            public void onPreExecute() {
-                mRecyclerViewHelper.setLoadMoreLoading(true);
-            }
-
-            @Override
-            public void onPostExecute() {
-                mRecyclerViewHelper.setLoadMoreLoading(false);
-            }
-
-            @Override
-            public void onSuccess(List<Wallpaper> images) {
-                mRecyclerViewHelper.setLoadMoreHasLoadedAllItems(images.size() == 0);
-                index++;
-                mWallpaperAdapter.addAll(images);
-                mWallpaperAdapter.notifyItemRangeInserted(mWallpaperAdapter.getItemCount(), images.size());
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                setBingWallpaperError(e);
             }
         });
     }
@@ -206,18 +170,11 @@ public class WallpaperHistoryListActivity extends BaseActivity {
                                 mImageView, "bing_wallpaper_detail_image");
                 WallpaperDetailActivity.start(getActivity(), item, options.toBundle());
             });
-            String imageUrl;
             int width = Constants.WallpaperConfig.WALLPAPER_RESOLUTION_WIDTH;
             int height = Constants.WallpaperConfig.WALLPAPER_RESOLUTION_HEIGHT;
-            if (BingWallpaperUtils.isPixabaySupport(getContext())) {
-                imageUrl = item.getBaseUrl();
-                width = Target.SIZE_ORIGINAL;
-                height = Target.SIZE_ORIGINAL;
-            } else {
-                imageUrl = BingWallpaperUtils.getImageUrl(getContext(),
-                        Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
-                        item.getBaseUrl());
-            }
+            String imageUrl = BingWallpaperUtils.getImageUrl(getContext(),
+                    Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
+                    item.getBaseUrl());
             GlideApp.with(getContext())
                     .asDrawable()
                     .thumbnail(0.3f)
