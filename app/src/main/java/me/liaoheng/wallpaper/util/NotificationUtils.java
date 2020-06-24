@@ -40,13 +40,6 @@ public class NotificationUtils {
             channel1.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
             channels.add(channel1);
 
-            NotificationChannel channel3 = new NotificationChannel(
-                    Constants.FOREGROUND_CHECK_SERVICE_NOTIFICATION_CHANNEL,
-                    "Check wallpaper service notification",
-                    NotificationManager.IMPORTANCE_NONE);
-            channel3.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
-            channels.add(channel3);
-
             NotificationManagerCompat.from(context).createNotificationChannels(channels);
         }
     }
@@ -91,14 +84,5 @@ public class NotificationUtils {
                 .setContentTitle(service.getText(R.string.app_name))
                 .setBadgeIconType(NotificationCompat.BADGE_ICON_NONE).build();
         service.startForeground(111 + (int) (Math.random() * 10), notification);// Multiple services
-    }
-
-    public static void showCheckNotification(Service service) {
-        Notification notification = new NotificationCompat.Builder(service.getApplicationContext(),
-                Constants.FOREGROUND_CHECK_SERVICE_NOTIFICATION_CHANNEL)
-                .setSmallIcon(R.drawable.ic_notification)
-                .setContentText("Check update wallpaper")
-                .setContentTitle(service.getText(R.string.app_name)).build();
-        service.startForeground(222 + (int) (Math.random() * 10), notification);
     }
 }

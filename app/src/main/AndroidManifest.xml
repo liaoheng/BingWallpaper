@@ -120,10 +120,6 @@
                 android:process=":background" />
 
         <service
-                android:name=".service.BingWallpaperCheckIntentService"
-                android:exported="false" />
-
-        <service
                 android:name=".service.LiveWallpaperService"
                 android:enabled="true"
                 android:permission="android.permission.BIND_WALLPAPER"

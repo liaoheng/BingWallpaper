@@ -95,9 +95,8 @@ import io.reactivex.schedulers.Schedulers;
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
-import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.model.Config;
-import me.liaoheng.wallpaper.service.BingWallpaperCheckIntentService;
+import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.service.LiveWallpaperService;
 import me.liaoheng.wallpaper.ui.SettingsActivity;
@@ -824,13 +823,13 @@ public class BingWallpaperUtils {
     }
 
     public static void checkRunningService(Context context, String TAG) {
-        Intent intent = checkRunningServiceIntent(context, TAG, true);
+        Intent intent = checkRunningServiceIntent(context, TAG);
         if (intent != null) {
             BingWallpaperIntentService.start(context, intent);
         }
     }
 
-    public static Intent checkRunningServiceIntent(Context context, String TAG, boolean check) {
+    public static Intent checkRunningServiceIntent(Context context, String TAG) {
         boolean enableLog = isEnableLogProvider(context);
         Intent intent = new Intent(context, BingWallpaperIntentService.class);
         if (isConnected(context)) {
@@ -866,10 +865,6 @@ public class BingWallpaperUtils {
             }
             return null;
         }
-    }
-
-    public static void startCheckService(Context context, String TAG) {
-        BingWallpaperCheckIntentService.start(context, TAG);
     }
 
     public static void runningService(Context context, String TAG) {

@@ -15,9 +15,9 @@ import com.github.liaoheng.common.util.L;
 import java.io.File;
 import java.io.IOException;
 
-import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.model.Config;
+import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.IUIHelper;
@@ -118,7 +118,7 @@ public class BingWallpaperIntentService extends IntentService {
         };
         if (image == null) {
             try {
-                image = BingWallpaperUtils.getImage(getApplicationContext(),false);
+                image = BingWallpaperUtils.getImage(getApplicationContext(), false);
             } catch (IOException e) {
                 callback.onError(e);
                 return;
@@ -129,9 +129,19 @@ public class BingWallpaperIntentService extends IntentService {
             }
         }
 
-        L.alog().i(TAG, "load image url : %s", image.getImageUrl());
+        if (config.isBackground()) {
+            if (BingWallpaperUtils.getLastWallpaperImageUrl(this).equals(image.getImageUrl())) {
+                L.alog().i(TAG, "set wallpaper same: %s", image.getImageUrl());
+                if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+                    LogDebugFileUtils.get().i(TAG, "Set wallpaper same: %s", image.getBaseUrl());
+                }
+                return;
+            }
+        }
+
+        L.alog().i(TAG, "set wallpaper url: %s", image.getImageUrl());
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().i(TAG, "Load image url : %s", image.getImageUrl());
+            LogDebugFileUtils.get().i(TAG, "Set wallpaper url: %s", image.getBaseUrl());
         }
 
         try {
@@ -143,9 +153,9 @@ public class BingWallpaperIntentService extends IntentService {
     }
 
     private void failure(Config config, Throwable throwable) {
-        L.alog().e(TAG, throwable, "load image failure");
+        L.alog().e(TAG, throwable, "set wallpaper failure");
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().e(TAG, throwable, "Load image failure");
+            LogDebugFileUtils.get().e(TAG, throwable, "Set wallpaper failure");
         }
         sendSetWallpaperBroadcast(BingWallpaperState.FAIL);
         CrashReportHandle.collectException(getApplicationContext(), TAG, throwable);
@@ -156,15 +166,15 @@ public class BingWallpaperIntentService extends IntentService {
     }
 
     private void success(Config config, Wallpaper image) {
-        L.alog().i(TAG, "load image success");
+        L.alog().i(TAG, "set wallpaper success");
         if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().i(TAG, "Load image success");
+            LogDebugFileUtils.get().i(TAG, "Set wallpaper success");
         }
 
+        BingWallpaperUtils.setLastWallpaperImageUrl(this, image.getImageUrl());
         if (config.isBackground()) {
-            BingWallpaperUtils.setLastWallpaperImageUrl(getApplicationContext(), image.getImageUrl());
             BingWallpaperUtils.taskComplete(this, TAG);
-            showSuccessNotification(image, BingWallpaperUtils.isAutomaticUpdateNotification(getApplicationContext()));
+            showSuccessNotification(image, BingWallpaperUtils.isAutomaticUpdateNotification(this));
         } else {
             showSuccessNotification(image, config.isShowNotification());
         }
@@ -183,8 +193,7 @@ public class BingWallpaperIntentService extends IntentService {
 
     private void downloadAndSetWallpaper(Wallpaper image, Config config)
             throws Exception {
-        String url = image.getImageUrl();
-        File wallpaper = BingWallpaperUtils.getGlideFile(getApplicationContext(), url);
+        File wallpaper = BingWallpaperUtils.getGlideFile(getApplicationContext(), image.getImageUrl());
 
         if (wallpaper == null || !wallpaper.exists()) {
             throw new IOException("Download wallpaper failure");
@@ -195,7 +204,7 @@ public class BingWallpaperIntentService extends IntentService {
         if (!config.isBackground()) {
             return;
         }
-        BingWallpaperUtils.autoSaveWallpaper(this,TAG,image,wallpaper);
+        BingWallpaperUtils.autoSaveWallpaper(this, TAG, image, wallpaper);
     }
 
     private void sendSetWallpaperBroadcast(BingWallpaperState state) {
