@@ -15,18 +15,15 @@ import com.github.liaoheng.common.util.L;
 import java.io.File;
 import java.io.IOException;
 
-import me.liaoheng.wallpaper.model.BingWallpaperState;
+import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
-import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.IUIHelper;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.NotificationUtils;
-import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
 import me.liaoheng.wallpaper.util.UIHelper;
-import me.liaoheng.wallpaper.widget.AppWidget_5x1;
-import me.liaoheng.wallpaper.widget.AppWidget_5x2;
+import me.liaoheng.wallpaper.util.WallpaperUtils;
 
 /**
  * 设置壁纸操作IntentService
@@ -37,18 +34,8 @@ import me.liaoheng.wallpaper.widget.AppWidget_5x2;
 public class BingWallpaperIntentService extends IntentService {
 
     private final String TAG = BingWallpaperIntentService.class.getSimpleName();
-    public final static String ACTION_GET_WALLPAPER_STATE = "me.liaoheng.wallpaper.BING_WALLPAPER_STATE";
-    public final static String EXTRA_GET_WALLPAPER_STATE = "GET_WALLPAPER_STATE";
-    public final static String FLAG_SET_WALLPAPER_STATE = "SET_WALLPAPER_STATE";
-    /**
-     * <p>0. both</p>
-     * <p>1. home</p>
-     * <p>2. lock</p>
-     */
-    public final static String EXTRA_SET_WALLPAPER_MODE = "set_wallpaper_mode";
-    public final static String EXTRA_SET_WALLPAPER_IMAGE = "set_wallpaper_image";
-    public final static String EXTRA_SET_WALLPAPER_CONFIG = "set_wallpaper_config";
     private IUIHelper mUiHelper;
+    private SetWallpaperServiceHelper mServiceHelper;
 
     public BingWallpaperIntentService() {
         super("BingWallpaperIntentService");
@@ -57,8 +44,8 @@ public class BingWallpaperIntentService extends IntentService {
     public static void start(Context context, @Nullable Wallpaper image,
             @NonNull Config config) {
         Intent intent = new Intent(context, BingWallpaperIntentService.class);
-        intent.putExtra(EXTRA_SET_WALLPAPER_IMAGE, image);
-        intent.putExtra(EXTRA_SET_WALLPAPER_CONFIG, config);
+        intent.putExtra(Config.EXTRA_SET_WALLPAPER_IMAGE, image);
+        intent.putExtra(Config.EXTRA_SET_WALLPAPER_CONFIG, config);
         start(context, intent);
     }
 
@@ -70,6 +57,7 @@ public class BingWallpaperIntentService extends IntentService {
     public void onCreate() {
         setIntentRedelivery(true);
         mUiHelper = new UIHelper();
+        mServiceHelper = new SetWallpaperServiceHelper(this, TAG);
         super.onCreate();
     }
 
@@ -92,18 +80,16 @@ public class BingWallpaperIntentService extends IntentService {
         if (intent == null) {
             return;
         }
-        Wallpaper image = intent.getParcelableExtra(EXTRA_SET_WALLPAPER_IMAGE);
-        Config config = intent.getParcelableExtra(EXTRA_SET_WALLPAPER_CONFIG);
+        Wallpaper image = intent.getParcelableExtra(Config.EXTRA_SET_WALLPAPER_IMAGE);
+        Config config = intent.getParcelableExtra(Config.EXTRA_SET_WALLPAPER_CONFIG);
         if (config == null) {
             return;
         }
         L.alog().d(TAG, config.toString());
 
-        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
+        if (BingWallpaperUtils.isEnableLogProvider(this)) {
             LogDebugFileUtils.get().i(TAG, "Starting > %s", config);
         }
-
-        sendSetWallpaperBroadcast(BingWallpaperState.BEGIN);
 
         Callback<Wallpaper> callback = new Callback.EmptyCallback<Wallpaper>() {
             @Override
@@ -118,31 +104,18 @@ public class BingWallpaperIntentService extends IntentService {
         };
         if (image == null) {
             try {
-                image = BingWallpaperUtils.getImage(getApplicationContext(), false);
+                image = BingWallpaperNetworkClient.getWallpaper(this, false);
             } catch (IOException e) {
                 callback.onError(e);
                 return;
             }
         } else {
             if (TextUtils.isEmpty(image.getImageUrl())) {
-                image.setResolutionImageUrl(getApplicationContext());
+                image.setResolutionImageUrl(this);
             }
         }
 
-        if (config.isBackground()) {
-            if (BingWallpaperUtils.getLastWallpaperImageUrl(this).equals(image.getImageUrl())) {
-                L.alog().i(TAG, "set wallpaper same: %s", image.getImageUrl());
-                if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-                    LogDebugFileUtils.get().i(TAG, "Set wallpaper same: %s", image.getBaseUrl());
-                }
-                return;
-            }
-        }
-
-        L.alog().i(TAG, "set wallpaper url: %s", image.getImageUrl());
-        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().i(TAG, "Set wallpaper url: %s", image.getBaseUrl());
-        }
+        mServiceHelper.begin(config, image);
 
         try {
             downloadAndSetWallpaper(image, config);
@@ -153,61 +126,26 @@ public class BingWallpaperIntentService extends IntentService {
     }
 
     private void failure(Config config, Throwable throwable) {
-        L.alog().e(TAG, throwable, "set wallpaper failure");
-        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().e(TAG, throwable, "Set wallpaper failure");
-        }
-        sendSetWallpaperBroadcast(BingWallpaperState.FAIL);
-        CrashReportHandle.collectException(getApplicationContext(), TAG, throwable);
-        if (!config.isBackground() && !config.isShowNotification()) {
-            return;
-        }
-        NotificationUtils.showFailureNotification(getApplicationContext());
+        mServiceHelper.failure(config, throwable);
     }
 
     private void success(Config config, Wallpaper image) {
-        L.alog().i(TAG, "set wallpaper success");
-        if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
-            LogDebugFileUtils.get().i(TAG, "Set wallpaper success");
-        }
-
-        BingWallpaperUtils.setLastWallpaperImageUrl(this, image.getImageUrl());
-        if (config.isBackground()) {
-            BingWallpaperUtils.taskComplete(this, TAG);
-            showSuccessNotification(image, BingWallpaperUtils.isAutomaticUpdateNotification(this));
-        } else {
-            showSuccessNotification(image, config.isShowNotification());
-        }
-
-        AppWidget_5x2.start(this, image);
-        AppWidget_5x1.start(this, image);
-        sendSetWallpaperBroadcast(BingWallpaperState.SUCCESS);
-    }
-
-    private void showSuccessNotification(Wallpaper image, boolean isShow) {
-        NotificationUtils.clearFailureNotification(getApplicationContext());
-        if (isShow) {
-            NotificationUtils.showSuccessNotification(getApplicationContext(), image.getCopyright());
-        }
+        mServiceHelper.success(config, image);
     }
 
     private void downloadAndSetWallpaper(Wallpaper image, Config config)
-            throws Exception {
-        File wallpaper = BingWallpaperUtils.getGlideFile(getApplicationContext(), image.getImageUrl());
+            throws Throwable {
+        File wallpaper = WallpaperUtils.getImageFile(this, image.getImageUrl());
 
         if (wallpaper == null || !wallpaper.exists()) {
             throw new IOException("Download wallpaper failure");
         }
 
-        mUiHelper.setWallpaper(getApplicationContext(), config, wallpaper);
+        mUiHelper.setWallpaper(this, config, wallpaper);
 
         if (!config.isBackground()) {
             return;
         }
-        BingWallpaperUtils.autoSaveWallpaper(this, TAG, image, wallpaper);
-    }
-
-    private void sendSetWallpaperBroadcast(BingWallpaperState state) {
-        SetWallpaperStateBroadcastReceiverHelper.sendSetWallpaperBroadcast(this, state);
+        WallpaperUtils.autoSaveWallpaper(this, TAG, image, wallpaper);
     }
 }

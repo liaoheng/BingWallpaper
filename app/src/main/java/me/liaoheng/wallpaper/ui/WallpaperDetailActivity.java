@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -40,6 +41,7 @@ import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.DownloadHelper;
 import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
+import me.liaoheng.wallpaper.util.WallpaperUtils;
 import me.liaoheng.wallpaper.widget.SeekBarDialogFragment;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
 
@@ -110,12 +112,14 @@ public class WallpaperDetailActivity extends BaseActivity implements
                 new Callback4.EmptyCallback<BingWallpaperState>() {
                     @Override
                     public void onYes(BingWallpaperState bingWallpaperState) {
-                        UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_success);
+                        Toast.makeText(getApplicationContext(), R.string.set_wallpaper_success, Toast.LENGTH_LONG)
+                                .show();
                     }
 
                     @Override
                     public void onNo(BingWallpaperState bingWallpaperState) {
-                        UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_failure);
+                        Toast.makeText(getApplicationContext(), R.string.set_wallpaper_failure, Toast.LENGTH_LONG)
+                                .show();
                     }
 
                     @Override
@@ -205,7 +209,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
     }
 
     private void loadImage() {
-        BingWallpaperUtils.loadImage(GlideApp.with(this).asBitmap()
+        WallpaperUtils.loadImage(GlideApp.with(this).asBitmap()
                         .load(getUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION))
                         .dontAnimate()
                         .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL), mImageView,
@@ -223,7 +227,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
 
                     @Override
                     public void onSuccess(Bitmap bitmap) {
-                        bitmap = BingWallpaperUtils.transformStackBlur(bitmap, mConfig.getStackBlur());
+                        bitmap = WallpaperUtils.transformStackBlur(bitmap, mConfig.getStackBlur());
                         mImageView.setImageBitmap(bitmap);
                     }
 
@@ -289,10 +293,10 @@ public class WallpaperDetailActivity extends BaseActivity implements
                 mResolutionDialog.show();
                 break;
             case R.id.menu_wallpaper_info:
-                    BingWallpaperUtils.openBrowser(this, mWallpaper);
+                BingWallpaperUtils.openBrowser(this, mWallpaper);
                 break;
             case R.id.menu_wallpaper_share:
-                BingWallpaperUtils.shareImage(getApplicationContext(), mConfig,
+                WallpaperUtils.shareImage(this, mConfig,
                         getUrl(BingWallpaperUtils.getResolution(this)),
                         mWallpaper.getCopyright());
                 break;
@@ -324,8 +328,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
         if (mWallpaper == null) {
             return;
         }
-        String url;
-            url = getUrl(BingWallpaperUtils.getResolution(this));
+        String url = getUrl(BingWallpaperUtils.getResolution(this));
         mConfig.setWallpaperMode(type);
         BingWallpaperUtils.showWallpaperDialog(this, mWallpaper.copy(url), mConfig,
                 new Callback4.EmptyCallback<Boolean>() {

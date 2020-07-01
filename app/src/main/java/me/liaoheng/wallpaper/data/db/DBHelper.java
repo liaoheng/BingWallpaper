@@ -12,10 +12,12 @@ import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.data.provider.TasksContract;
 import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
+import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 
 /**
@@ -58,7 +60,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 Objects.requireNonNull(jobScheduler).cancel(JOB_ID);
             } catch (Throwable ignored) {
             } finally {
-                BingWallpaperJobManager.enabled(context);
+                BingWallpaperJobManager.enableSystem(context,
+                        TimeUnit.HOURS.toSeconds(BingWallpaperUtils.getAutomaticUpdateInterval(context)));
             }
         }
     }

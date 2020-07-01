@@ -15,13 +15,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
@@ -34,7 +27,6 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.IntDef;
@@ -47,23 +39,14 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.preference.PreferenceManager;
 
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.bumptech.glide.request.target.Target;
-import com.bumptech.glide.request.transition.Transition;
 import com.github.liaoheng.common.Common;
 import com.github.liaoheng.common.util.AppUtils;
-import com.github.liaoheng.common.util.BitmapUtils;
-import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.DateTimeUtils;
 import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
-import com.github.liaoheng.common.util.MD5Utils;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.UIUtils;
@@ -84,17 +67,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
-import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
@@ -477,7 +455,7 @@ public class BingWallpaperUtils {
                 .getDefaultSharedPreferences(context);
         return Integer.parseInt(Objects.requireNonNull(sharedPreferences
                 .getString(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_INTERVAL,
-                        String.valueOf(Constants.JOB_SCHEDULER_PERIODIC))));
+                        String.valueOf(Constants.DEF_SCHEDULER_PERIODIC))));
     }
 
     public static boolean isMiuiLockScreenSupport(Context context) {
@@ -587,7 +565,8 @@ public class BingWallpaperUtils {
     public static void startWallpaper(Context context, Wallpaper image, Config config) {
         if (BingWallpaperJobManager.LIVE_WALLPAPER == BingWallpaperJobManager.getJobType(context)) {
             Intent intent = new Intent(LiveWallpaperService.UPDATE_LIVE_WALLPAPER);
-            intent.putExtra("image", image);
+            intent.putExtra(Config.EXTRA_SET_WALLPAPER_IMAGE, image);
+            intent.putExtra(Config.EXTRA_SET_WALLPAPER_CONFIG, config);
             context.sendBroadcast(intent);
         } else {
             BingWallpaperIntentService.start(context, image, config);
@@ -678,7 +657,10 @@ public class BingWallpaperUtils {
             return;
         }
         if (Constants.Config.isPhone) {
-            context.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            try {
+                context.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            } catch (Throwable ignored) {
+            }
         }
     }
 
@@ -822,6 +804,15 @@ public class BingWallpaperUtils {
         context.startActivity(Intent.createChooser(emailIntent, context.getString(R.string.send_email)));
     }
 
+    public static Uri getUriForFile(Context context, File file) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return FileProvider.getUriForFile(context,
+                    BuildConfig.APPLICATION_ID + ".fileProvider", file);
+        } else {
+            return Uri.fromFile(file);
+        }
+    }
+
     public static void checkRunningService(Context context, String TAG) {
         Intent intent = checkRunningServiceIntent(context, TAG);
         if (intent != null) {
@@ -855,7 +846,7 @@ public class BingWallpaperUtils {
                     .setWallpaperMode(getAutoModeValue(context))
                     .setBackground(true)
                     .build();
-            intent.putExtra(BingWallpaperIntentService.EXTRA_SET_WALLPAPER_CONFIG, config);
+            intent.putExtra(Config.EXTRA_SET_WALLPAPER_CONFIG, config);
             return intent;
         } else {
             L.alog().d(TAG, "isConnectedOrConnecting :false");
@@ -968,132 +959,16 @@ public class BingWallpaperUtils {
             if (BingWallpaperUtils.isEnableLogProvider(context)) {
                 LogDebugFileUtils.get().i(TAG, "Today complete");
             }
-            TasksUtils.markDoneProvider(context, BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE);
+            TasksUtils.markDoneProvider(context, Constants.TASK_FLAG_SET_WALLPAPER_STATE);
         }
     }
 
     public static boolean isTaskUndone(Context context) {
-        return TasksUtils.isToDaysDoProvider(context, 1, BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE);
+        return TasksUtils.isToDaysDoProvider(context, 1, Constants.TASK_FLAG_SET_WALLPAPER_STATE);
     }
 
     public static void clearTaskComplete(Context context) {
-        TasksUtils.deleteDoneProvider(context, BingWallpaperIntentService.FLAG_SET_WALLPAPER_STATE);
-    }
-
-    //https://github.com/halibobo/WaterMark
-    public static Bitmap waterMark(Context context, Bitmap bitmap, String str) {
-        int destWidth = bitmap.getWidth();
-        int destHeight = bitmap.getHeight();
-        Bitmap icon = Bitmap.createBitmap(destWidth, destHeight, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(icon);
-
-        Paint photoPaint = new Paint();
-        photoPaint.setDither(true);
-        photoPaint.setFilterBitmap(true);
-
-        Rect src = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-        Rect dst = new Rect(0, 0, destWidth, destHeight);
-        canvas.drawBitmap(bitmap, src, dst, photoPaint);
-
-        Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DEV_KERN_TEXT_FLAG);
-        textPaint.setTextSize(DisplayUtils.dp2px(context, 9));
-        textPaint.setTextAlign(Paint.Align.LEFT);
-        textPaint.setTypeface(Typeface.DEFAULT);
-        textPaint.setAntiAlias(true);
-        textPaint.setStrokeWidth(1);
-        textPaint.setAlpha(120);
-        textPaint.setColor(Color.WHITE);
-
-        Rect bounds = new Rect();
-        textPaint.getTextBounds(str, 0, str.length(), bounds);
-
-        canvas.drawText(str, destWidth - bounds.width() - 20, destHeight - bounds.height() / 2F - 5, textPaint);
-        canvas.save();
-        canvas.restore();
-        return icon;
-    }
-
-    public static void shareImage(@NonNull Context context, @NonNull Config config, @NonNull String url,
-            @NonNull final String str) {
-        String key = MD5Utils.md5Hex(url + "_" + config.getStackBlur());
-        Observable<File> fileObservable = Observable.just(str).subscribeOn(Schedulers.io()).map(
-                s -> getImageBitmap(context, config, url)).flatMap(
-                (Function<Bitmap, ObservableSource<File>>) bitmap -> {
-                    File tempFile = CacheUtils.get().get(key);
-                    if (tempFile == null) {
-                        tempFile = CacheUtils.get()
-                                .put(key, BitmapUtils.bitmapToStream(waterMark(context, bitmap, str),
-                                        Bitmap.CompressFormat.JPEG));
-                    }
-                    return Observable.just(tempFile);
-                });
-        Utils.addSubscribe(fileObservable, new Callback.EmptyCallback<File>() {
-            @Override
-            public void onSuccess(File file) {
-                Intent share = new Intent(Intent.ACTION_SEND);
-                share.setType("image/jpeg");
-                share.putExtra(Intent.EXTRA_STREAM, getUriForFile(context, file));
-                share.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(share);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                L.alog().e("Share", e);
-                UIUtils.showToast(context, "Share error");
-            }
-        });
-    }
-
-    public static Uri getUriForFile(Context context, File file) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return FileProvider.getUriForFile(context,
-                    BuildConfig.APPLICATION_ID + ".fileProvider", file);
-        } else {
-            return Uri.fromFile(file);
-        }
-    }
-
-    public static Bitmap getImageBitmap(@NonNull Context context, @NonNull Config config, @NonNull String url)
-            throws ExecutionException, InterruptedException {
-        Bitmap bitmap = GlideApp.with(context).asBitmap().load(url).submit().get();
-        return transformStackBlur(bitmap, config.getStackBlur());
-    }
-
-    public static void loadImage(GlideRequest<Bitmap> request, ImageView imageView,
-            Callback<Bitmap> callback) {
-        request.listener(new RequestListener<Bitmap>() {
-
-            @Override
-            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target,
-                    boolean isFirstResource) {
-                callback.onPostExecute();
-                callback.onError(e);
-                return false;
-            }
-
-            @Override
-            public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
-                    DataSource dataSource,
-                    boolean isFirstResource) {
-                return false;
-            }
-        }).into(new BitmapImageViewTarget(imageView) {
-
-            @Override
-            public void onLoadStarted(Drawable placeholder) {
-                super.onLoadStarted(placeholder);
-                callback.onPreExecute();
-            }
-
-            @Override
-            public void onResourceReady(@NonNull Bitmap resource,
-                    @Nullable Transition<? super Bitmap> transition) {
-                super.onResourceReady(resource, transition);
-                callback.onPostExecute();
-                callback.onSuccess(resource);
-            }
-        });
+        TasksUtils.deleteDoneProvider(context, Constants.TASK_FLAG_SET_WALLPAPER_STATE);
     }
 
     public static boolean checkStoragePermissions(Context context) {
@@ -1121,13 +996,6 @@ public class BingWallpaperUtils {
         }
     }
 
-    public static Bitmap transformStackBlur(Bitmap bitmap, int stackBlur) {
-        if (stackBlur <= 0) {
-            return bitmap;
-        }
-        return toStackBlur(bitmap, stackBlur);
-    }
-
     public static DisplayMetrics getSysResolution(Context context) {
         WindowManager wm = ContextCompat.getSystemService(context, WindowManager.class);
         DisplayMetrics outMetrics = new DisplayMetrics();
@@ -1136,290 +1004,5 @@ public class BingWallpaperUtils {
         }
         wm.getDefaultDisplay().getRealMetrics(outMetrics);
         return outMetrics;
-    }
-
-    //public static Bitmap getGlideBitmap(Context context, String url) throws Exception {
-    //    return GlideApp.with(context)
-    //            .asBitmap()
-    //            .load(url)
-    //            .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-    //            .get(2, TimeUnit.MINUTES);
-    //}
-
-    public static File getGlideFile(Context context, String url) throws Exception {
-        return GlideApp.with(context)
-                .asFile()
-                .load(url)
-                .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-                .get(2, TimeUnit.MINUTES);
-    }
-
-    public static void autoSaveWallpaper(Context context, String TAG, Wallpaper image, File wallpaper) {
-        if (isAutoSave(context)) {
-            try {
-                if (!checkStoragePermissions(context)) {
-                    throw new IOException("Permission denied");
-                }
-                String saveResolution = getSaveResolution(context);
-                String resolution = getResolution(context);
-                if (!saveResolution.equals(resolution)) {
-                    String saveImageUrl = getImageUrl(context, saveResolution,
-                            image.getBaseUrl());
-                    L.alog().i(TAG, "wallpaper save url: " + saveImageUrl);
-                    saveFileToPictureCompat(context, saveImageUrl, getGlideFile(context, saveImageUrl));
-                } else {
-                    saveFileToPictureCompat(context, image.getImageUrl(), wallpaper);
-                }
-            } catch (Throwable e) {
-                CrashReportHandle.saveWallpaper(context, TAG, e);
-            }
-        }
-    }
-
-    public static Wallpaper getImage(Context context, boolean cache) throws IOException {
-        Wallpaper image = BingWallpaperNetworkClient.getBingWallpaperSingleCall(context, cache);
-        image.setResolutionImageUrl(context);
-        return image;
-    }
-
-    /**
-     * Stack Blur v1.0 from
-     * http://www.quasimondo.com/StackBlurForCanvas/StackBlurDemo.html
-     * Java Author: Mario Klingemann <mario at quasimondo.com>
-     * http://incubator.quasimondo.com
-     * <p>
-     * created Feburary 29, 2004
-     * Android port : Yahel Bouaziz <yahel at kayenko.com>
-     * http://www.kayenko.com
-     * ported april 5th, 2012
-     * <p>
-     * This is a compromise between Gaussian Blur and Box blur
-     * It creates much better looking blurs than Box Blur, but is
-     * 7x faster than my Gaussian Blur implementation.
-     * <p>
-     * I called it Stack Blur because this describes best how this
-     * filter works internally: it creates a kind of moving stack
-     * of colors whilst scanning through the image. Thereby it
-     * just has to add one new block of color to the right side
-     * of the stack and remove the leftmost color. The remaining
-     * colors on the topmost layer of the stack are either added on
-     * or reduced by one, depending on if they are on the right or
-     * on the left side of the stack.
-     * <p>
-     * If you are using this algorithm in your code please add
-     * the following line:
-     * Stack Blur Algorithm by Mario Klingemann <mario@quasimondo.com>
-     */
-    @NonNull
-    //TODO Need to optimize, try using ndk
-    public static Bitmap toStackBlur(Bitmap sentBitmap, int radius) {
-        if (radius < 1) {
-            return sentBitmap;
-        }
-        Bitmap bitmap = null;
-        try {
-            bitmap = sentBitmap.copy(sentBitmap.getConfig(), true);
-
-            if (bitmap == null) {
-                return sentBitmap;
-            }
-
-            System.gc();
-
-            int w = bitmap.getWidth();
-            int h = bitmap.getHeight();
-
-            int[] pix = new int[w * h];
-            //Log.e("pix", w + " " + h + " " + pix.length);
-            bitmap.getPixels(pix, 0, w, 0, 0, w, h);
-
-            int wm = w - 1;
-            int hm = h - 1;
-            int wh = w * h;
-            int div = radius + radius + 1;
-
-            int r[] = new int[wh];
-            int g[] = new int[wh];
-            int b[] = new int[wh];
-            int rsum, gsum, bsum, x, y, i, p, yp, yi, yw;
-            int vmin[] = new int[Math.max(w, h)];
-
-            int divsum = (div + 1) >> 1;
-            divsum *= divsum;
-            int dv[] = new int[256 * divsum];
-            for (i = 0; i < 256 * divsum; i++) {
-                dv[i] = (i / divsum);
-            }
-
-            yw = yi = 0;
-
-            int[][] stack = new int[div][3];
-            int stackpointer;
-            int stackstart;
-            int[] sir;
-            int rbs;
-            int r1 = radius + 1;
-            int routsum, goutsum, boutsum;
-            int rinsum, ginsum, binsum;
-
-            for (y = 0; y < h; y++) {
-                rinsum = ginsum = binsum = routsum = goutsum = boutsum = rsum = gsum = bsum = 0;
-                for (i = -radius; i <= radius; i++) {
-                    p = pix[yi + Math.min(wm, Math.max(i, 0))];
-                    sir = stack[i + radius];
-                    sir[0] = (p & 0xff0000) >> 16;
-                    sir[1] = (p & 0x00ff00) >> 8;
-                    sir[2] = (p & 0x0000ff);
-                    rbs = r1 - Math.abs(i);
-                    rsum += sir[0] * rbs;
-                    gsum += sir[1] * rbs;
-                    bsum += sir[2] * rbs;
-                    if (i > 0) {
-                        rinsum += sir[0];
-                        ginsum += sir[1];
-                        binsum += sir[2];
-                    } else {
-                        routsum += sir[0];
-                        goutsum += sir[1];
-                        boutsum += sir[2];
-                    }
-                }
-                stackpointer = radius;
-
-                for (x = 0; x < w; x++) {
-
-                    r[yi] = dv[rsum];
-                    g[yi] = dv[gsum];
-                    b[yi] = dv[bsum];
-
-                    rsum -= routsum;
-                    gsum -= goutsum;
-                    bsum -= boutsum;
-
-                    stackstart = stackpointer - radius + div;
-                    sir = stack[stackstart % div];
-
-                    routsum -= sir[0];
-                    goutsum -= sir[1];
-                    boutsum -= sir[2];
-
-                    if (y == 0) {
-                        vmin[x] = Math.min(x + radius + 1, wm);
-                    }
-                    p = pix[yw + vmin[x]];
-
-                    sir[0] = (p & 0xff0000) >> 16;
-                    sir[1] = (p & 0x00ff00) >> 8;
-                    sir[2] = (p & 0x0000ff);
-
-                    rinsum += sir[0];
-                    ginsum += sir[1];
-                    binsum += sir[2];
-
-                    rsum += rinsum;
-                    gsum += ginsum;
-                    bsum += binsum;
-
-                    stackpointer = (stackpointer + 1) % div;
-                    sir = stack[(stackpointer) % div];
-
-                    routsum += sir[0];
-                    goutsum += sir[1];
-                    boutsum += sir[2];
-
-                    rinsum -= sir[0];
-                    ginsum -= sir[1];
-                    binsum -= sir[2];
-
-                    yi++;
-                }
-                yw += w;
-            }
-            for (x = 0; x < w; x++) {
-                rinsum = ginsum = binsum = routsum = goutsum = boutsum = rsum = gsum = bsum = 0;
-                yp = -radius * w;
-                for (i = -radius; i <= radius; i++) {
-                    yi = Math.max(0, yp) + x;
-
-                    sir = stack[i + radius];
-
-                    sir[0] = r[yi];
-                    sir[1] = g[yi];
-                    sir[2] = b[yi];
-
-                    rbs = r1 - Math.abs(i);
-
-                    rsum += r[yi] * rbs;
-                    gsum += g[yi] * rbs;
-                    bsum += b[yi] * rbs;
-
-                    if (i > 0) {
-                        rinsum += sir[0];
-                        ginsum += sir[1];
-                        binsum += sir[2];
-                    } else {
-                        routsum += sir[0];
-                        goutsum += sir[1];
-                        boutsum += sir[2];
-                    }
-
-                    if (i < hm) {
-                        yp += w;
-                    }
-                }
-                yi = x;
-                stackpointer = radius;
-                for (y = 0; y < h; y++) {
-                    // Preserve alpha channel: ( 0xff000000 & pix[yi] )
-                    pix[yi] = (0xff000000 & pix[yi]) | (dv[rsum] << 16) | (dv[gsum] << 8) | dv[bsum];
-
-                    rsum -= routsum;
-                    gsum -= goutsum;
-                    bsum -= boutsum;
-
-                    stackstart = stackpointer - radius + div;
-                    sir = stack[stackstart % div];
-
-                    routsum -= sir[0];
-                    goutsum -= sir[1];
-                    boutsum -= sir[2];
-
-                    if (x == 0) {
-                        vmin[y] = Math.min(y + r1, hm) * w;
-                    }
-                    p = x + vmin[y];
-
-                    sir[0] = r[p];
-                    sir[1] = g[p];
-                    sir[2] = b[p];
-
-                    rinsum += sir[0];
-                    ginsum += sir[1];
-                    binsum += sir[2];
-
-                    rsum += rinsum;
-                    gsum += ginsum;
-                    bsum += binsum;
-
-                    stackpointer = (stackpointer + 1) % div;
-                    sir = stack[stackpointer];
-
-                    routsum += sir[0];
-                    goutsum += sir[1];
-                    boutsum += sir[2];
-
-                    rinsum -= sir[0];
-                    ginsum -= sir[1];
-                    binsum -= sir[2];
-
-                    yi += w;
-                }
-            }
-
-            //Log.e("pix", w + " " + h + " " + pix.length);
-            bitmap.setPixels(pix, 0, w, 0, 0, w, h);
-        } catch (OutOfMemoryError ignored) {
-        }
-        return bitmap == null ? sentBitmap : bitmap;
     }
 }

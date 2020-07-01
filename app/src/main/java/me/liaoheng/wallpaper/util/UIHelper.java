@@ -31,21 +31,14 @@ public class UIHelper implements IUIHelper {
         File home = wallpaper;
         File lock = wallpaper;
         if (config.getStackBlur() > 0) {
-            String key = MD5Utils.md5Hex(wallpaper.getAbsolutePath() + "_" + config.getStackBlur());
-            File stackBlurFile = CacheUtils.get().get(key);
-            if (stackBlurFile == null) {
-                Bitmap stackBlur = BingWallpaperUtils.toStackBlur(
-                        BitmapFactory.decodeFile(wallpaper.getAbsolutePath()), config.getStackBlur());
-                stackBlurFile = CacheUtils.get().put(key, BitmapUtils.bitmapToStream(stackBlur,
-                        Bitmap.CompressFormat.JPEG));
-            }
+            File blurFile = WallpaperUtils.getImageStackBlurFile(config.getStackBlur(), wallpaper);
             if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_BOTH) {
-                home = stackBlurFile;
-                lock = stackBlurFile;
+                home = blurFile;
+                lock = blurFile;
             } else if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-                home = stackBlurFile;
+                home = blurFile;
             } else if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                lock = stackBlurFile;
+                lock = blurFile;
             }
         }
         int mode = config.getWallpaperMode();

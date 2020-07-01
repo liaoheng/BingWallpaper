@@ -1,5 +1,6 @@
 package me.liaoheng.wallpaper.util;
 
+import android.app.Activity;
 import android.app.WallpaperManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -8,7 +9,6 @@ import android.os.Build;
 import android.widget.Toast;
 
 import androidx.annotation.IntDef;
-import androidx.core.content.ContextCompat;
 
 import com.github.liaoheng.common.util.L;
 
@@ -91,12 +91,12 @@ public class BingWallpaperJobManager {
             int type = BingWallpaperUtils.getAutomaticUpdateType(context);
             if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_AUTO) {
                 if (!enableSystem(context, time)) {
-                    return enableDaemonService(context, time);
+                    return enableLiveService(context, time);
                 }
             } else if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_SYSTEM) {
                 return enableSystem(context, time);
             } else if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_SERVICE) {
-                return enableDaemonService(context, time);
+                return enableLiveService(context, time);
             }
             return true;
         } catch (Exception ignore) {
@@ -104,27 +104,40 @@ public class BingWallpaperJobManager {
         }
     }
 
-    public static void startDaemonService(Context context) {
+    public static int LIVE_WALLPAPER_REQUEST_CODE = 0x99;
+
+    public static void startLiveService(Context context) {
         Intent intent = new Intent(
                 WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER);
         intent.putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
                 new ComponentName(context, LiveWallpaperService.class));
-        ContextCompat.startActivity(context, intent, null);
+        if (context instanceof Activity) {
+            ((Activity) context).startActivityForResult(intent, LIVE_WALLPAPER_REQUEST_CODE);
+        }
     }
 
-    public static boolean enableDaemonService(Context context, long time) {
+    public static boolean enableLiveService(Context context, long time) {
         try {
-            startDaemonService(context);
+            startLiveService(context);
             setJobType(context, LIVE_WALLPAPER);
             if (BingWallpaperUtils.isEnableLog(context)) {
                 LogDebugFileUtils.get()
-                        .i(TAG, "Enable live service interval time : %s", time);
+                        .i(TAG, "Enable live service");
             }
-            L.alog().d(TAG, "enable live service interval time : %s", time);
+            L.alog().d(TAG, "enable live service");
         } catch (Throwable e) {
             return false;
         }
         return true;
+    }
+
+    public static void onActivityResult(Context context, int requestCode, int resultCode) {
+        if (requestCode == LIVE_WALLPAPER_REQUEST_CODE) {
+            if (Activity.RESULT_OK == resultCode) {
+                Intent intent = new Intent(LiveWallpaperService.START_LIVE_WALLPAPER_SCHEDULER);
+                context.sendBroadcast(intent);
+            }
+        }
     }
 
     public static void setJobType(Context context, @JobType int type) {

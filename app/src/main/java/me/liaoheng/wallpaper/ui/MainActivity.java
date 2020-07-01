@@ -61,6 +61,7 @@ import me.liaoheng.wallpaper.util.LanguageContextWrapper;
 import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
 import me.liaoheng.wallpaper.util.TasksUtils;
 import me.liaoheng.wallpaper.util.UIHelper;
+import me.liaoheng.wallpaper.util.WallpaperUtils;
 import me.liaoheng.wallpaper.widget.FeedbackDialog;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
 
@@ -402,7 +403,7 @@ public class MainActivity extends BaseActivity
         if (isDestroyed()) {
             return;
         }
-        BingWallpaperUtils.loadImage(GlideApp.with(this).asBitmap()
+        WallpaperUtils.loadImage(GlideApp.with(this).asBitmap()
                         .load(url)
                         .dontAnimate()
                         .thumbnail(0.5f)
@@ -474,7 +475,7 @@ public class MainActivity extends BaseActivity
         addActionButton(lightMutedSwatch, lightVibrantSwatch,
                 getString(R.string.share),
                 R.drawable.ic_share_24dp, v -> {
-                    BingWallpaperUtils.shareImage(this, mConfig.loadConfig(this).build(),
+                    WallpaperUtils.shareImage(this, mConfig.loadConfig(this).build(),
                             getUrl(), image.getCopyright());
                     mSetWallpaperActionMenu.close(true);
                 });

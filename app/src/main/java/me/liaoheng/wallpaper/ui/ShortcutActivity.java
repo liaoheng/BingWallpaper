@@ -12,7 +12,6 @@ import com.github.liaoheng.common.util.Callback4;
 
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.Config;
-import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 
 /**
@@ -23,7 +22,7 @@ public class ShortcutActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        int mode = getIntent().getIntExtra(BingWallpaperIntentService.EXTRA_SET_WALLPAPER_MODE, -1);
+        int mode = getIntent().getIntExtra(Config.EXTRA_SET_WALLPAPER_MODE, -1);
         if (mode < 0) {
             return;
         }

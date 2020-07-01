@@ -4,9 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+
 import com.github.liaoheng.common.util.Callback4;
+
 import me.liaoheng.wallpaper.model.BingWallpaperState;
-import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.service.SetWallpaperStateBroadcastReceiver;
 
 /**
@@ -22,7 +23,7 @@ public class SetWallpaperStateBroadcastReceiverHelper {
 
     public void register(Context context) {
         context.registerReceiver(mBroadcastReceiver,
-                new IntentFilter(BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE));
+                new IntentFilter(Constants.ACTION_GET_WALLPAPER_STATE));
     }
 
     public void unregister(Context context) {
@@ -32,8 +33,8 @@ public class SetWallpaperStateBroadcastReceiverHelper {
     }
 
     public static void sendSetWallpaperBroadcast(Context context, BingWallpaperState state) {
-        Intent intent = new Intent(BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE);
-        intent.putExtra(BingWallpaperIntentService.EXTRA_GET_WALLPAPER_STATE, state.getState());
+        Intent intent = new Intent(Constants.ACTION_GET_WALLPAPER_STATE);
+        intent.putExtra(Constants.EXTRA_GET_WALLPAPER_STATE, state.getState());
         context.sendBroadcast(intent);
     }
 }

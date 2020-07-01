@@ -12,6 +12,14 @@ import me.liaoheng.wallpaper.util.Constants;
  * @version 2019-07-31 17:00
  */
 public class Config implements Parcelable {
+    /**
+     * <p>0. both</p>
+     * <p>1. home</p>
+     * <p>2. lock</p>
+     */
+    public final static String EXTRA_SET_WALLPAPER_MODE = "set_wallpaper_mode";
+    public final static String EXTRA_SET_WALLPAPER_IMAGE = "set_wallpaper_image";
+    public final static String EXTRA_SET_WALLPAPER_CONFIG = "set_wallpaper_config";
     private int stackBlur;
     @Constants.setWallpaperMode
     private int stackBlurMode;
@@ -22,6 +30,7 @@ public class Config implements Parcelable {
      */
     @Constants.setWallpaperMode
     private int wallpaperMode;
+    private boolean cache;
 
     public static class Builder {
         private int stackBlur;
@@ -97,6 +106,14 @@ public class Config implements Parcelable {
 
     public void setWallpaperMode(@Constants.setWallpaperMode int wallpaperMode) {
         this.wallpaperMode = wallpaperMode;
+    }
+
+    public boolean isCache() {
+        return cache;
+    }
+
+    public void setCache(boolean cache) {
+        this.cache = cache;
     }
 
     @Override

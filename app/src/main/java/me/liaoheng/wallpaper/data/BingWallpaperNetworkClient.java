@@ -50,6 +50,12 @@ public class BingWallpaperNetworkClient {
                 .getBingWallpaper(url, getMkt(locale)).subscribeOn(Schedulers.io());
     }
 
+    public static Wallpaper getWallpaper(Context context, boolean cache) throws IOException {
+        Wallpaper image = getBingWallpaperSingleCall(context, cache);
+        image.setResolutionImageUrl(context);
+        return image;
+    }
+
     public static Wallpaper getBingWallpaperSingleCall(Context context, boolean cache) throws IOException {
         String locale = BingWallpaperUtils.getAutoLocale(context);
         String url = BingWallpaperUtils.getUrl(context);

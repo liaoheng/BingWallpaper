@@ -7,6 +7,7 @@ import android.content.Intent;
 import com.github.liaoheng.common.util.Callback4;
 
 import me.liaoheng.wallpaper.model.BingWallpaperState;
+import me.liaoheng.wallpaper.util.Constants;
 
 /**
  * @author liaoheng
@@ -22,9 +23,9 @@ public class SetWallpaperStateBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (BingWallpaperIntentService.ACTION_GET_WALLPAPER_STATE.equals(intent.getAction())) {
+        if (Constants.ACTION_GET_WALLPAPER_STATE.equals(intent.getAction())) {
             int extra = intent
-                    .getIntExtra(BingWallpaperIntentService.EXTRA_GET_WALLPAPER_STATE, -1);
+                    .getIntExtra(Constants.EXTRA_GET_WALLPAPER_STATE, -1);
             if (extra < 0) {
                 return;
             }

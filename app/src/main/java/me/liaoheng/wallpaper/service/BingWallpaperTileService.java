@@ -10,9 +10,11 @@ import androidx.annotation.RequiresApi;
 import com.github.liaoheng.common.util.Callback4;
 
 import me.liaoheng.wallpaper.R;
+import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
+import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
 
 /**
  * @author liaoheng
@@ -20,6 +22,31 @@ import me.liaoheng.wallpaper.util.Constants;
  */
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class BingWallpaperTileService extends TileService {
+
+    private SetWallpaperStateBroadcastReceiverHelper mReceiverHelper;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mReceiverHelper = new SetWallpaperStateBroadcastReceiverHelper(
+                new Callback4.EmptyCallback<BingWallpaperState>() {
+
+                    @Override
+                    public void onFinish(BingWallpaperState bingWallpaperState) {
+                        getQsTile().setState(Tile.STATE_INACTIVE);
+                        getQsTile().updateTile();
+                    }
+                });
+        mReceiverHelper.register(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        mReceiverHelper.unregister(this);
+        getQsTile().setState(Tile.STATE_INACTIVE);
+        getQsTile().updateTile();
+        super.onDestroy();
+    }
 
     @Override
     public void onClick() {
@@ -31,19 +58,12 @@ public class BingWallpaperTileService extends TileService {
                         .build(), new Callback4.EmptyCallback<Boolean>() {
                     @Override
                     public void onYes(Boolean aBoolean) {
+                        getQsTile().setState(Tile.STATE_ACTIVE);
+                        getQsTile().updateTile();
                         Toast.makeText(getApplicationContext(), getString(R.string.set_wallpaper_running),
                                 Toast.LENGTH_SHORT)
                                 .show();
                     }
                 });
-        Tile tile = getQsTile();
-        if (tile == null) {
-            Toast.makeText(getApplicationContext(), getString(R.string.set_wallpaper_failure),
-                    Toast.LENGTH_SHORT)
-                    .show();
-            return;
-        }
-        tile.setState(Tile.STATE_UNAVAILABLE);
-        tile.updateTile();
     }
 }

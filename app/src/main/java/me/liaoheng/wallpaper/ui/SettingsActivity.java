@@ -3,6 +3,7 @@ package me.liaoheng.wallpaper.ui;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.ListPreference;
@@ -21,6 +23,7 @@ import androidx.preference.SwitchPreference;
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback5;
+import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.ShellUtils;
 import com.github.liaoheng.common.util.UIUtils;
@@ -76,6 +79,12 @@ public class SettingsActivity extends BaseActivity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean("isChangeLanguage", isChangeLanguage);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        BingWallpaperJobManager.onActivityResult(this, requestCode, resultCode);
     }
 
     @Override
@@ -147,7 +156,7 @@ public class SettingsActivity extends BaseActivity {
                 if (fragmentManager != null) {
                     DialogFragment dialogFragment = SeekBarPreferenceDialogFragmentCompat.newInstance(
                             preference.getKey());
-                    dialogFragment.setTargetFragment(this, 0);
+                    dialogFragment.setTargetFragment(this, 1);
                     dialogFragment.show(fragmentManager, "SeekBarDialogPreference");
                 }
             } else {

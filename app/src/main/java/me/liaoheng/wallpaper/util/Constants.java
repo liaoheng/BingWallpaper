@@ -4,7 +4,6 @@ import androidx.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author liaoheng
@@ -19,10 +18,7 @@ public interface Constants {
     int IMAGE_DISK_CACHE_SIZE = 50 * 1024 * 1024; // 50MB
     int HTTP_DISK_CACHE_SIZE = 5 * 1024 * 1024;  // 5MB
 
-    long JOB_SCHEDULER_PERIODIC = 3;//hour
-    long DAEMON_SERVICE_PERIODIC = TimeUnit.MINUTES.toSeconds(30);
-
-    String PIXABAY_BASE_URL = "https://pixabay.com/api/?key=11234205-21f02ee751cd3cd4f1fa49b70&orientation=horizontal&image_type=photo";
+    long DEF_SCHEDULER_PERIODIC = 3;//hour
 
     String LOCAL_BASE_URL = "https://bing.com";
     String GLOBAL_BASE_URL = "https://global.bing.com";
@@ -71,4 +67,9 @@ public interface Constants {
 
     String ACTION_UPDATE_WALLPAPER_COVER_STORY = "me.liaoheng.wallpaper.UPDATE_WALLPAPER_COVER_STORY";
     String EXTRA_UPDATE_WALLPAPER_COVER_STORY = "WALLPAPER_COVER_STORY";
+
+    String ACTION_GET_WALLPAPER_STATE = "me.liaoheng.wallpaper.BING_WALLPAPER_STATE";
+    String EXTRA_GET_WALLPAPER_STATE = "GET_WALLPAPER_STATE";
+
+    String TASK_FLAG_SET_WALLPAPER_STATE = "SET_WALLPAPER_STATE";
 }

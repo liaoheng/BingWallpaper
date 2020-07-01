@@ -1,5 +1,6 @@
 package me.liaoheng.wallpaper.ui;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -110,7 +111,7 @@ public class IntroActivity extends AppIntro {
                     break;
             }
         } else {
-            Toast.makeText(getApplicationContext(),"Setting invalid",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Setting invalid", Toast.LENGTH_LONG).show();
         }
         onSkipPressed(null);
     }
@@ -119,5 +120,11 @@ public class IntroActivity extends AppIntro {
     public void onSkipPressed(Fragment currentFragment) {
         UIUtils.startActivity(this, MainActivity.class);
         finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        BingWallpaperJobManager.onActivityResult(this, requestCode, resultCode);
     }
 }

@@ -49,7 +49,7 @@ public class MiuiHelper {
         }
     }
 
-    private static void lockSetWallpaper(Context context, File wallpaper) throws IOException {
+    public static void lockSetWallpaper(Context context, File wallpaper) throws IOException {
         if (!BingWallpaperUtils.isMiuiLockScreenSupport(context)) {
             throw new IOException("Not enable lock screen support");
         }
@@ -57,7 +57,7 @@ public class MiuiHelper {
     }
 
     private static void homeSetWallpaper(Context context, File wallpaper) throws IOException {
-        wallpaper = UIHelper.cropWallpaper(context, wallpaper);
+        //wallpaper = UIHelper.cropWallpaper(context, wallpaper);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             BingWallpaperUtils.setHomeScreenWallpaper(context, wallpaper);
         } else {
