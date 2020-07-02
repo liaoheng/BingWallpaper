@@ -20,7 +20,6 @@ import com.github.liaoheng.common.util.Utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
@@ -31,6 +30,7 @@ import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.MiuiHelper;
 import me.liaoheng.wallpaper.util.WallpaperUtils;
@@ -41,11 +41,11 @@ import me.liaoheng.wallpaper.util.WallpaperUtils;
  */
 public class LiveWallpaperService extends WallpaperService {
     private final String TAG = LiveWallpaperService.class.getSimpleName();
-    public static final String UPDATE_LIVE_WALLPAPER = "me.liaoheng.wallpaper.UPDATE_LIVE_WALLPAPER";
     public static final String START_LIVE_WALLPAPER_SCHEDULER = "me.liaoheng.wallpaper.START_LIVE_WALLPAPER_SCHEDULER";
+    public static final String UPDATE_LIVE_WALLPAPER = "me.liaoheng.wallpaper.UPDATE_LIVE_WALLPAPER";
     private LiveWallpaperBroadcastReceiver mReceiver;
-    private LiveWallpaperEngine mEngine;
     private SetWallpaperServiceHelper mServiceHelper;
+    private LiveWallpaperEngine mEngine;
 
     @Override
     public Engine onCreateEngine() {
@@ -120,7 +120,7 @@ public class LiveWallpaperService extends WallpaperService {
             if (handler == null) {
                 return;
             }
-            handler.postDelayed(drawRunner, TimeUnit.MINUTES.toMillis(10));
+            handler.postDelayed(drawRunner, Constants.DEF_LIVE_WALLPAPER_CHECK_PERIODIC);
         }
 
         public void loadBingWallpaper(Wallpaper image, Config config) {
@@ -141,7 +141,7 @@ public class LiveWallpaperService extends WallpaperService {
 
                         @Override
                         public void onSuccess(DownloadBitmap d) {
-                            draw(BitmapFactory.decodeFile(d.wallpaper.getAbsolutePath()));
+                            setWallpaper(config, d);
                             mServiceHelper.success(config, d.image);
                         }
 
@@ -189,13 +189,8 @@ public class LiveWallpaperService extends WallpaperService {
 
                         @Override
                         public void onSuccess(DownloadBitmap d) {
-                            draw(BitmapFactory.decodeFile(d.wallpaper.getAbsolutePath()));
-                            try {
-                                MiuiHelper.lockSetWallpaper(mContext, d.wallpaper);
-                            } catch (IOException ignored) {
-                            }
+                            setWallpaper(config, d);
                             mServiceHelper.success(config, d.image);
-                            WallpaperUtils.autoSaveWallpaper(mContext, TAG, d.image, d.wallpaper);
                         }
 
                         @Override
@@ -227,6 +222,21 @@ public class LiveWallpaperService extends WallpaperService {
                 image.wallpaper = WallpaperUtils.getImageFile(mContext, config, image.image.getImageUrl());
                 return Observable.just(image);
             });
+        }
+
+        private void setWallpaper(Config config, DownloadBitmap d) {
+            if (config.isBackground()) {
+                if (BingWallpaperUtils.getLastWallpaperImageUrl(mContext).equals(d.image.getImageUrl())) {
+                    return;
+                }
+                WallpaperUtils.autoSaveWallpaper(mContext, TAG, d.image, d.wallpaper);
+            }
+            draw(BitmapFactory.decodeFile(d.wallpaper.getAbsolutePath()));
+            try {
+                MiuiHelper.lockSetWallpaper(mContext, d.wallpaper);
+            } catch (IOException ignored) {
+            }
+            BingWallpaperUtils.setLastWallpaperImageUrl(mContext, d.image.getImageUrl());
         }
 
         private void draw(Bitmap bitmap) {

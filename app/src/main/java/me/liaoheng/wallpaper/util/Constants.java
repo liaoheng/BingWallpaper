@@ -4,6 +4,7 @@ import androidx.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author liaoheng
@@ -19,6 +20,7 @@ public interface Constants {
     int HTTP_DISK_CACHE_SIZE = 5 * 1024 * 1024;  // 5MB
 
     long DEF_SCHEDULER_PERIODIC = 3;//hour
+    long DEF_LIVE_WALLPAPER_CHECK_PERIODIC = TimeUnit.MINUTES.toMillis(30);
 
     String LOCAL_BASE_URL = "https://bing.com";
     String GLOBAL_BASE_URL = "https://global.bing.com";

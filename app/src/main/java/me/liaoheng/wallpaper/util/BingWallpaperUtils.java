@@ -953,7 +953,7 @@ public class BingWallpaperUtils {
         return SettingTrayPreferences.get(context).getString(Constants.PREF_LAST_WALLPAPER_IMAGE_URL, "");
     }
 
-    public static void taskComplete(Context context, String TAG) {
+    public static void taskComplete(Context context, String TAG, String imageUrl) {
         if (isTaskUndone(context)) {
             L.alog().i(TAG, "today complete");
             if (BingWallpaperUtils.isEnableLogProvider(context)) {

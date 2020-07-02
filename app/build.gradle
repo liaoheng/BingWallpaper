@@ -14,8 +14,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 180
-        versionName "1.8.0"
+        versionCode 181
+        versionName "1.8.1"
     }
 
     def isSigning = true
@@ -63,7 +63,7 @@ android {
     }
 }
 
-def crashlytics = "com.google.firebase:firebase-crashlytics:17.0.1"
+def crashlytics = "com.google.firebase:firebase-crashlytics:17.1.0"
 def firebaseCore = "com.google.firebase:firebase-analytics:17.4.3"
 
 dependencies {

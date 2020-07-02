@@ -54,12 +54,8 @@ public class SetWallpaperServiceHelper {
 
     public void success(Config config, Wallpaper image) {
         L.alog().i(TAG, "set wallpaper success");
-        BingWallpaperUtils.setLastWallpaperImageUrl(mContext, image.getImageUrl());
         if (config.isBackground()) {
-            if (BingWallpaperUtils.isEnableLogProvider(mContext)) {
-                LogDebugFileUtils.get().i(TAG, "Set wallpaper success");
-            }
-            BingWallpaperUtils.taskComplete(mContext, TAG);
+            BingWallpaperUtils.taskComplete(mContext, TAG, image.getImageUrl());
             showSuccessNotification(image, BingWallpaperUtils.isAutomaticUpdateNotification(mContext));
         } else {
             showSuccessNotification(image, config.isShowNotification());

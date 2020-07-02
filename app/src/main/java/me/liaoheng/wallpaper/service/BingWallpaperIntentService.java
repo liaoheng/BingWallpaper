@@ -141,11 +141,13 @@ public class BingWallpaperIntentService extends IntentService {
             throw new IOException("Download wallpaper failure");
         }
 
-        mUiHelper.setWallpaper(this, config, wallpaper);
-
-        if (!config.isBackground()) {
-            return;
+        if (config.isBackground()) {
+            if (BingWallpaperUtils.getLastWallpaperImageUrl(this).equals(image.getImageUrl())) {
+                return;
+            }
+            WallpaperUtils.autoSaveWallpaper(this, TAG, image, wallpaper);
         }
-        WallpaperUtils.autoSaveWallpaper(this, TAG, image, wallpaper);
+        mUiHelper.setWallpaper(this, config, wallpaper);
+        BingWallpaperUtils.setLastWallpaperImageUrl(this, image.getImageUrl());
     }
 }

@@ -2,8 +2,10 @@ package me.liaoheng.wallpaper.ui;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -14,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
@@ -23,7 +26,6 @@ import androidx.preference.SwitchPreference;
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback5;
-import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.ShellUtils;
 import com.github.liaoheng.common.util.UIUtils;
@@ -81,10 +83,22 @@ public class SettingsActivity extends BaseActivity {
         outState.putBoolean("isChangeLanguage", isChangeLanguage);
     }
 
+    public static final String CLOSE_FULLY_AUTOMATIC_UPDATE = "close_fully_automatic_update";
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        BingWallpaperJobManager.onActivityResult(this, requestCode, resultCode);
+        BingWallpaperJobManager.onActivityResult(this, requestCode, resultCode, new Callback5() {
+            @Override
+            public void onAllow() {
+            }
+
+            @Override
+            public void onDeny() {
+                LocalBroadcastManager.getInstance(getApplicationContext())
+                        .sendBroadcast(new Intent(CLOSE_FULLY_AUTOMATIC_UPDATE));
+            }
+        });
     }
 
     @Override
@@ -164,9 +178,26 @@ public class SettingsActivity extends BaseActivity {
             }
         }
 
+        class SettingBroadcastReceiver extends BroadcastReceiver {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (CLOSE_FULLY_AUTOMATIC_UPDATE.equals(intent.getAction())) {
+                    if (mAutoUpdatePreference != null) {
+                        mAutoUpdatePreference.setChecked(false);
+                    }
+                }
+            }
+        }
+
+        private SettingBroadcastReceiver mReceiver;
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+            mReceiver = new SettingBroadcastReceiver();
+            LocalBroadcastManager.getInstance(getContext())
+                    .registerReceiver(mReceiver, new IntentFilter(CLOSE_FULLY_AUTOMATIC_UPDATE));
             mPreferences = SettingTrayPreferences.get(getActivity());
             Preference version = findPreference("pref_version");
             version.setSummary(AppUtils.getVersionInfo(getActivity()).versionName);
@@ -449,6 +480,14 @@ public class SettingsActivity extends BaseActivity {
             super.onPause();
             getPreferenceManager().getSharedPreferences()
                     .unregisterOnSharedPreferenceChangeListener(this);
+        }
+
+        @Override
+        public void onDestroy() {
+            if (mReceiver != null) {
+                LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mReceiver);
+            }
+            super.onDestroy();
         }
     }
 }
