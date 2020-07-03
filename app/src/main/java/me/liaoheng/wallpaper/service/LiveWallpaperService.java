@@ -33,6 +33,7 @@ import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.MiuiHelper;
+import me.liaoheng.wallpaper.util.SettingUtils;
 import me.liaoheng.wallpaper.util.WallpaperUtils;
 
 /**
@@ -142,12 +143,6 @@ public class LiveWallpaperService extends WallpaperService {
                         @Override
                         public void onSuccess(DownloadBitmap d) {
                             setWallpaper(config, d);
-                            mServiceHelper.success(config, d.image);
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            mServiceHelper.failure(config, e);
                         }
                     });
         }
@@ -226,7 +221,7 @@ public class LiveWallpaperService extends WallpaperService {
 
         private void setWallpaper(Config config, DownloadBitmap d) {
             if (config.isBackground()) {
-                if (BingWallpaperUtils.getLastWallpaperImageUrl(mContext).equals(d.image.getImageUrl())) {
+                if (SettingUtils.getLastWallpaperImageUrl(mContext).equals(d.image.getImageUrl())) {
                     return;
                 }
                 WallpaperUtils.autoSaveWallpaper(mContext, TAG, d.image, d.wallpaper);
@@ -236,7 +231,7 @@ public class LiveWallpaperService extends WallpaperService {
                 MiuiHelper.lockSetWallpaper(mContext, d.wallpaper);
             } catch (IOException ignored) {
             }
-            BingWallpaperUtils.setLastWallpaperImageUrl(mContext, d.image.getImageUrl());
+            SettingUtils.setLastWallpaperImageUrl(mContext, d.image.getImageUrl());
         }
 
         private void draw(Bitmap bitmap) {

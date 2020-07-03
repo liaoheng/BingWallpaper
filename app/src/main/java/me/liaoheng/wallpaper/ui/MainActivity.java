@@ -59,6 +59,7 @@ import me.liaoheng.wallpaper.util.DownloadHelper;
 import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.LanguageContextWrapper;
 import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
+import me.liaoheng.wallpaper.util.SettingUtils;
 import me.liaoheng.wallpaper.util.TasksUtils;
 import me.liaoheng.wallpaper.util.UIHelper;
 import me.liaoheng.wallpaper.util.WallpaperUtils;
@@ -150,8 +151,8 @@ public class MainActivity extends BaseActivity
         if (TasksUtils.isOne()) {
             UIUtils.startActivity(this, IntroActivity.class);
             if (!Constants.Config.isPhone) {
-                BingWallpaperUtils.putResolution(this, "1");
-                BingWallpaperUtils.putSaveResolution(this, "1");
+                SettingUtils.putResolution(this, "1");
+                SettingUtils.putSaveResolution(this, "1");
             }
             finish();
             return;
@@ -213,7 +214,7 @@ public class MainActivity extends BaseActivity
         getBingWallpaper();
 
         if (ROM.getROM().isMiui()) {
-            if (BingWallpaperUtils.isMiuiLockScreenSupport(this)) {
+            if (SettingUtils.isMiuiLockScreenSupport(this)) {
                 return;
             }
             String root = PreferenceManager.getDefaultSharedPreferences(this).getString("MIUI_root", "");
@@ -243,10 +244,10 @@ public class MainActivity extends BaseActivity
             screen.setOnCheckedChangeListener(
                     (buttonView, isChecked) -> {
                         if (ShellUtils.hasRootPermission()) {
-                            BingWallpaperUtils.setMiuiLockScreenSupport(getApplicationContext(),
+                            SettingUtils.setMiuiLockScreenSupport(getApplicationContext(),
                                     true);
                         } else {
-                            BingWallpaperUtils.setMiuiLockScreenSupport(getApplicationContext(),
+                            SettingUtils.setMiuiLockScreenSupport(getApplicationContext(),
                                     false);
                             screen.setChecked(false);
                             UIUtils.showToast(getActivity(), R.string.unable_root_permission);
@@ -317,11 +318,11 @@ public class MainActivity extends BaseActivity
     }
 
     private String getUrl() {
-        return getUrl(BingWallpaperUtils.getResolution(this));
+        return getUrl(SettingUtils.getResolution(this));
     }
 
     private String getSaveUrl() {
-        return getUrl(BingWallpaperUtils.getSaveResolution(this));
+        return getUrl(SettingUtils.getSaveResolution(this));
     }
 
     private String getUrl(String resolution) {

@@ -17,8 +17,8 @@ import java.util.concurrent.TimeUnit;
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.data.provider.TasksContract;
 import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
-import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
+import me.liaoheng.wallpaper.util.SettingUtils;
 
 /**
  * @author liaoheng
@@ -61,7 +61,7 @@ public class DBHelper extends SQLiteOpenHelper {
             } catch (Throwable ignored) {
             } finally {
                 BingWallpaperJobManager.enableSystem(context,
-                        TimeUnit.HOURS.toSeconds(BingWallpaperUtils.getAutomaticUpdateInterval(context)));
+                        TimeUnit.HOURS.toSeconds(SettingUtils.getAutomaticUpdateInterval(context)));
             }
         }
     }

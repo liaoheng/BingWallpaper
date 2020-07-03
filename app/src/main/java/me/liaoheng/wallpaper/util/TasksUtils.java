@@ -63,14 +63,18 @@ public class TasksUtils {
     }
 
     public static boolean isToDaysDoProvider(Context context, int day, String tag) {
-        long date;
+        long date = -1;
         try (Cursor cursor = context.getContentResolver()
                 .query(TasksContract.TaskEntry.CONTENT_URI, null, TasksContract.TaskEntry.COLUMN_TAG + "=?",
                         new String[] { tag }, null)) {
             if (cursor != null && cursor.moveToNext()) {
                 date = cursor.getLong(2);
             } else {
-               return true;
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(TasksContract.TaskEntry.COLUMN_TAG, tag);
+                contentValues.put(TasksContract.TaskEntry.COLUMN_DATE, date);
+                context.getContentResolver().insert(TasksContract.TaskEntry.CONTENT_URI, contentValues);
+                return true;
             }
         }
         return isToDaysDo(date, day);
@@ -112,8 +116,9 @@ public class TasksUtils {
                         new String[] { tag });
     }
 
-    public static void deleteDoneProvider(Context context,String tag){
-        context.getContentResolver().delete(TasksContract.TaskEntry.CONTENT_URI,TasksContract.TaskEntry.COLUMN_TAG + "=?",
-                new String[] { tag });
+    public static void deleteDoneProvider(Context context, String tag) {
+        context.getContentResolver()
+                .delete(TasksContract.TaskEntry.CONTENT_URI, TasksContract.TaskEntry.COLUMN_TAG + "=?",
+                        new String[] { tag });
     }
 }

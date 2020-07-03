@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
+
 import java.util.Locale;
 
 /**
@@ -20,7 +22,7 @@ public class LanguageContextWrapper {
     }
 
     public static void init(Context context) {
-        originalLocale = BingWallpaperUtils.getCurrentLocale(context);
+        originalLocale = getCurrentLocale(context);
     }
 
     /**
@@ -28,7 +30,7 @@ public class LanguageContextWrapper {
      */
     public static Context wrap(Context context, Locale locale) {
         Configuration config = context.getResources().getConfiguration();
-        Locale sysLocale = BingWallpaperUtils.getCurrentLocale(context);
+        Locale sysLocale = getCurrentLocale(context);
         if (!sysLocale.equals(locale)) {
             Locale.setDefault(locale);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -40,6 +42,23 @@ public class LanguageContextWrapper {
             context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
         }
         return context.createConfigurationContext(config);
+    }
+
+    public static Locale getCurrentLocale(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return getSystemLocale(context.getResources().getConfiguration());
+        } else {
+            return getSystemLocaleLegacy(context.getResources().getConfiguration());
+        }
+    }
+
+    private static Locale getSystemLocaleLegacy(Configuration config) {
+        return config.locale;
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    private static Locale getSystemLocale(Configuration config) {
+        return config.getLocales().get(0);
     }
 
     public static void setSystemLocaleLegacy(Configuration config, Locale locale) {

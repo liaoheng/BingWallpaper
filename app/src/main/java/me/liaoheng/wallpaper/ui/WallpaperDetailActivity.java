@@ -41,6 +41,7 @@ import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.DownloadHelper;
 import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
+import me.liaoheng.wallpaper.util.SettingUtils;
 import me.liaoheng.wallpaper.util.WallpaperUtils;
 import me.liaoheng.wallpaper.widget.SeekBarDialogFragment;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
@@ -297,7 +298,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
                 break;
             case R.id.menu_wallpaper_share:
                 WallpaperUtils.shareImage(this, mConfig,
-                        getUrl(BingWallpaperUtils.getResolution(this)),
+                        getUrl(SettingUtils.getResolution(this)),
                         mWallpaper.getCopyright());
                 break;
             case R.id.menu_wallpaper_stack_blur:
@@ -309,7 +310,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
     }
 
     private String getSaveUrl() {
-        return getUrl(BingWallpaperUtils.getSaveResolution(this));
+        return getUrl(SettingUtils.getSaveResolution(this));
     }
 
     @Override
@@ -328,7 +329,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
         if (mWallpaper == null) {
             return;
         }
-        String url = getUrl(BingWallpaperUtils.getResolution(this));
+        String url = getUrl(SettingUtils.getResolution(this));
         mConfig.setWallpaperMode(type);
         BingWallpaperUtils.showWallpaperDialog(this, mWallpaper.copy(url), mConfig,
                 new Callback4.EmptyCallback<Boolean>() {

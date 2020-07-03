@@ -22,6 +22,7 @@ import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.IUIHelper;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.NotificationUtils;
+import me.liaoheng.wallpaper.util.SettingUtils;
 import me.liaoheng.wallpaper.util.UIHelper;
 import me.liaoheng.wallpaper.util.WallpaperUtils;
 
@@ -142,12 +143,12 @@ public class BingWallpaperIntentService extends IntentService {
         }
 
         if (config.isBackground()) {
-            if (BingWallpaperUtils.getLastWallpaperImageUrl(this).equals(image.getImageUrl())) {
+            if (SettingUtils.getLastWallpaperImageUrl(this).equals(image.getImageUrl())) {
                 return;
             }
             WallpaperUtils.autoSaveWallpaper(this, TAG, image, wallpaper);
         }
         mUiHelper.setWallpaper(this, config, wallpaper);
-        BingWallpaperUtils.setLastWallpaperImageUrl(this, image.getImageUrl());
+        SettingUtils.setLastWallpaperImageUrl(this, image.getImageUrl());
     }
 }

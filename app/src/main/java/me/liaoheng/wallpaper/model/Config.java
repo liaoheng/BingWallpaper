@@ -4,8 +4,8 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
+import me.liaoheng.wallpaper.util.SettingUtils;
 
 /**
  * @author liaoheng
@@ -42,8 +42,8 @@ public class Config implements Parcelable {
         private int wallpaperMode = Constants.EXTRA_SET_WALLPAPER_MODE_BOTH;
 
         public Builder loadConfig(Context context) {
-            this.stackBlur = BingWallpaperUtils.getSettingStackBlur(context);
-            this.stackBlurMode = BingWallpaperUtils.getSettingStackBlurMode(context);
+            this.stackBlur = SettingUtils.getSettingStackBlur(context);
+            this.stackBlurMode = SettingUtils.getSettingStackBlurMode(context);
             return this;
         }
 

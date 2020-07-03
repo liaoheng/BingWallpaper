@@ -2,7 +2,6 @@ package me.liaoheng.wallpaper.util;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.WallpaperManager;
 import android.content.ComponentName;
@@ -13,7 +12,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -23,13 +21,10 @@ import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.Browser;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.view.WindowManager;
 import android.widget.Toast;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -63,10 +58,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
-import java.util.Objects;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -85,86 +77,24 @@ import me.liaoheng.wallpaper.ui.SettingsActivity;
  */
 public class BingWallpaperUtils {
 
-    public static boolean isCrashReport(Context context) {
-        return SettingTrayPreferences.get(context).getBoolean(SettingsActivity.PREF_CRASH_REPORT, true);
+    public static boolean isEnableLog(Context context) {
+        return SettingUtils.isEnableLog(context);
+    }
+
+    public static boolean isEnableLogProvider(Context context) {
+        return SettingUtils.isEnableLogProvider(context);
     }
 
     public static String getResolutionImageUrl(Context context, Wallpaper image) {
-        return getImageUrl(context, getResolution(context), image.getBaseUrl());
+        return getImageUrl(context, SettingUtils.getResolution(context), image.getBaseUrl());
     }
 
     public static String getImageUrl(Context context, String resolution, String baseUrl) {
         return getBaseUrl(context) + baseUrl + "_" + resolution + ".jpg";
     }
 
-    public static boolean getOnlyWifi(Context context) {
-        return SettingTrayPreferences.get(context)
-                .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI, true);
-    }
-
-    public static String getResolution(Context context) {
-        String[] names = context.getResources()
-                .getStringArray(R.array.pref_set_wallpaper_resolution_name);
-
-        String resolution = SettingTrayPreferences.get(context)
-                .getString(SettingsActivity.PREF_SET_WALLPAPER_RESOLUTION, "0");
-        return names[Integer.parseInt(Objects.requireNonNull(resolution))];
-    }
-
-    public static void putResolution(Context context, String resolution) {
-        PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .edit()
-                .putString(SettingsActivity.PREF_SET_WALLPAPER_RESOLUTION, resolution)
-                .apply();
-        SettingTrayPreferences.get(context)
-                .put(SettingsActivity.PREF_SET_WALLPAPER_RESOLUTION, resolution);
-    }
-
-    public static void putSaveResolution(Context context, String resolution) {
-        PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .edit()
-                .putString(SettingsActivity.PREF_SAVE_WALLPAPER_RESOLUTION, resolution)
-                .apply();
-        SettingTrayPreferences.get(context)
-                .put(SettingsActivity.PREF_SAVE_WALLPAPER_RESOLUTION, resolution);
-    }
-
-    public static String getSaveResolution(Context context) {
-        String[] names = context.getResources()
-                .getStringArray(R.array.pref_set_wallpaper_resolution_name);
-
-        String resolution = SettingTrayPreferences.get(context)
-                .getString(SettingsActivity.PREF_SAVE_WALLPAPER_RESOLUTION, "0");
-        return names[Integer.parseInt(Objects.requireNonNull(resolution))];
-    }
-
-    public static int getAutoModeValue(Context context) {
-        return Integer.parseInt(SettingTrayPreferences.get(context)
-                .getString(SettingsActivity.PREF_SET_WALLPAPER_AUTO_MODE, "0"));
-    }
-
-    public static String getAutoMode(Context context) {
-        String[] names = context.getResources()
-                .getStringArray(R.array.pref_set_wallpaper_auto_mode_name);
-        return names[getAutoModeValue(context)];
-    }
-
-    public static String getCountryName(Context context) {
-        String[] names = context.getResources()
-                .getStringArray(R.array.pref_country_names);
-        return names[getCountryValue(context)];
-    }
-
-    public static int getCountryValue(Context context) {
-        String country = SettingTrayPreferences.get(context)
-                .getString(SettingsActivity.PREF_COUNTRY, "0");
-        return Integer.parseInt(country);
-    }
-
     public static boolean isAutoCountry(Context context) {
-        return getCountryValue(context) == 0;
+        return SettingUtils.getCountryValue(context) == 0;
     }
 
     public static String getUrl(Context context) {
@@ -191,7 +121,7 @@ public class BingWallpaperUtils {
 
     @NonNull
     public static Locale getLocale(Context context) {
-        int auto = getCountryValue(context);
+        int auto = SettingUtils.getCountryValue(context);
         switch (auto) {
             case 1:
                 return Locale.CHINA;
@@ -211,25 +141,8 @@ public class BingWallpaperUtils {
                 return new Locale("fa", "IR");
             default:
                 Locale originalLocale = LanguageContextWrapper.getOriginalLocale();
-                return originalLocale == null ? getCurrentLocale(context) : originalLocale;
+                return originalLocale == null ? LanguageContextWrapper.getCurrentLocale(context) : originalLocale;
         }
-    }
-
-    public static Locale getCurrentLocale(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return getSystemLocale(context.getResources().getConfiguration());
-        } else {
-            return getSystemLocaleLegacy(context.getResources().getConfiguration());
-        }
-    }
-
-    private static Locale getSystemLocaleLegacy(Configuration config) {
-        return config.locale;
-    }
-
-    @TargetApi(Build.VERSION_CODES.N)
-    private static Locale getSystemLocale(Configuration config) {
-        return config.getLocales().get(0);
     }
 
     public static String getAutoLocale(Context context) {
@@ -264,36 +177,8 @@ public class BingWallpaperUtils {
                 return Locale.FRANCE;
             default:
                 Locale originalLocale = LanguageContextWrapper.getOriginalLocale();
-                return originalLocale == null ? getCurrentLocale(context) : originalLocale;
+                return originalLocale == null ? LanguageContextWrapper.getCurrentLocale(context) : originalLocale;
         }
-    }
-
-    public static int getLanguageValue(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        return Integer.parseInt(sharedPreferences.getString(SettingsActivity.PREF_LANGUAGE, "0"));
-    }
-
-    public static String getLanguageName(Context context) {
-        String[] names = context.getResources()
-                .getStringArray(R.array.pref_language_names);
-        return names[getLanguageValue(context)];
-    }
-
-    public static boolean isAlarm(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        return sharedPreferences.getBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE, false);
-    }
-
-    public static String getAlarmTime(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        return sharedPreferences.getString(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME, "");
-    }
-
-    public static boolean isAutoSave(Context context) {
-        return SettingTrayPreferences.get(context).getBoolean(SettingsActivity.PREF_AUTO_SAVE_WALLPAPER_FILE, false);
     }
 
     //https://juejin.im/post/5d0b1739e51d4510a73280cc
@@ -381,7 +266,7 @@ public class BingWallpaperUtils {
      */
     @Nullable
     public static LocalTime getDayUpdateTime(Context context) {
-        String time = getAlarmTime(context);
+        String time = SettingUtils.getAlarmTime(context);
         if (TextUtils.isEmpty(time)) {
             return null;
         }
@@ -402,87 +287,6 @@ public class BingWallpaperUtils {
      */
     public static DateTime checkTime(LocalTime time) {
         return DateTimeUtils.checkTimeToNextDay(time);
-    }
-
-    public static boolean isEnableLog(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        return sharedPreferences
-                .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_LOG, false);
-    }
-
-    public static boolean isEnableLogProvider(Context context) {
-        return SettingTrayPreferences.get(context)
-                .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_LOG, false);
-    }
-
-    @IntDef(value = {
-            AUTOMATIC_UPDATE_TYPE_AUTO,
-            AUTOMATIC_UPDATE_TYPE_SYSTEM,
-            AUTOMATIC_UPDATE_TYPE_SERVICE
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface AutomaticUpdateTypeResult {}
-
-    public final static int AUTOMATIC_UPDATE_TYPE_AUTO = 0;
-    public final static int AUTOMATIC_UPDATE_TYPE_SYSTEM = 1;
-    public final static int AUTOMATIC_UPDATE_TYPE_SERVICE = 2;
-
-    @AutomaticUpdateTypeResult
-    public static int getAutomaticUpdateType(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        String type = sharedPreferences
-                .getString(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_TYPE, "0");
-        return Integer.parseInt(Objects.requireNonNull(type));
-    }
-
-    public static String getAutomaticUpdateTypeName(Context context) {
-        int type = getAutomaticUpdateType(context);
-        String[] names = context.getResources()
-                .getStringArray(R.array.pref_set_wallpaper_day_fully_automatic_update_type_names);
-        return names[type];
-    }
-
-    public static boolean isAutomaticUpdateNotification(Context context) {
-        return SettingTrayPreferences.get(context)
-                .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_NOTIFICATION, true);
-    }
-
-    // hour
-    public static int getAutomaticUpdateInterval(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        return Integer.parseInt(Objects.requireNonNull(sharedPreferences
-                .getString(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_INTERVAL,
-                        String.valueOf(Constants.DEF_SCHEDULER_PERIODIC))));
-    }
-
-    public static boolean isMiuiLockScreenSupport(Context context) {
-        return SettingTrayPreferences.get(context)
-                .getBoolean(SettingsActivity.PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, false);
-    }
-
-    public static boolean setMiuiLockScreenSupport(Context context, boolean support) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        sharedPreferences.edit().putBoolean(SettingsActivity.PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, support).apply();
-        return SettingTrayPreferences.get(context)
-                .put(SettingsActivity.PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, support);
-    }
-
-    public static int getSettingStackBlur(Context context) {
-        return SettingTrayPreferences.get(context).getInt(SettingsActivity.PREF_STACK_BLUR, 0);
-    }
-
-    public static int getSettingStackBlurMode(Context context) {
-        return SettingTrayPreferences.get(context).getInt(SettingsActivity.PREF_STACK_BLUR_MODE, 0);
-    }
-
-    public static String getSettingStackBlurModeName(Context context) {
-        String[] names = context.getResources()
-                .getStringArray(R.array.pref_set_wallpaper_auto_mode_name);
-        return names[getSettingStackBlurMode(context)];
     }
 
     public static void disabledReceiver(Context context, String receiver) {
@@ -618,7 +422,7 @@ public class BingWallpaperUtils {
      * @return true gestures
      */
     public static boolean vivoNavigationGestureEnabled(Context context) {
-        return Settings.Secure.getInt(context.getContentResolver(), "navigation_gesture_on", 0) != 0;
+        return DisplayUtils.vivoNavigationGestureEnabled(context);
     }
 
     /**
@@ -627,7 +431,7 @@ public class BingWallpaperUtils {
      * @return true gestures
      */
     public static boolean miuiNavigationGestureEnabled(Context context) {
-        return Settings.Global.getInt(context.getContentResolver(), "force_fsg_nav_bar", 0) != 0;
+        return DisplayUtils.miuiNavigationGestureEnabled(context);
     }
 
     /**
@@ -636,7 +440,7 @@ public class BingWallpaperUtils {
      * @return true navigation
      */
     public static boolean emuiNavigationEnabled(Context context) {
-        return Settings.Global.getInt(context.getContentResolver(), "navigationbar_is_min", 0) != 1;
+        return DisplayUtils.emuiNavigationEnabled(context);
     }
 
     /**
@@ -647,7 +451,7 @@ public class BingWallpaperUtils {
      */
     public static void showIgnoreBatteryOptimizationSetting(Context context) {
         if (!AppUtils.showIgnoreBatteryOptimizationSetting(context)) {
-            UIUtils.showToast(context, "No support !");
+            Toast.makeText(context, "No support !",Toast.LENGTH_LONG).show();
         }
     }
 
@@ -736,11 +540,11 @@ public class BingWallpaperUtils {
         Locale locale = Locale.getDefault();
         Locale autoLocale = getLocale(context);
         String job = BingWallpaperJobManager.check(context);
-        boolean alarm = isAlarm(context);
-        String alarmTime = getAlarmTime(context);
-        String autoSetMode = getAutoMode(context);
-        int interval = getAutomaticUpdateInterval(context);
-        String resolution = getResolution(context);
+        boolean alarm = SettingUtils.isAlarm(context);
+        String alarmTime = SettingUtils.getAlarmTime(context);
+        String autoSetMode = SettingUtils.getAutoMode(context);
+        int interval = SettingUtils.getAutomaticUpdateInterval(context);
+        String resolution = SettingUtils.getResolution(context);
         DisplayMetrics r = BingWallpaperUtils.getSysResolution(context);
         String SysResolution = r.widthPixels + "x" + r.heightPixels;
 
@@ -789,7 +593,7 @@ public class BingWallpaperUtils {
                 context.getString(R.string.app_name) + " : " + context.getString(R.string.menu_main_feedback),
                 BingWallpaperUtils.getSystemInfo(context));
 
-        if (BingWallpaperUtils.isEnableLog(context)) {
+        if (SettingUtils.isEnableLog(context)) {
             File logFile = LogDebugFileUtils.get().getLogFile();
             if (logFile != null && logFile.exists()) {
                 emailIntent.putExtra(Intent.EXTRA_STREAM, getUriForFile(context, logFile));
@@ -821,10 +625,10 @@ public class BingWallpaperUtils {
     }
 
     public static Intent checkRunningServiceIntent(Context context, String TAG) {
-        boolean enableLog = isEnableLogProvider(context);
+        boolean enableLog = SettingUtils.isEnableLogProvider(context);
         Intent intent = new Intent(context, BingWallpaperIntentService.class);
         if (isConnected(context)) {
-            if (getOnlyWifi(context)) {
+            if (SettingUtils.getOnlyWifi(context)) {
                 if (!NetworkUtils.isWifiConnected(context)) {
                     L.alog().d(TAG, "isWifiConnected :false");
                     if (enableLog) {
@@ -843,7 +647,7 @@ public class BingWallpaperUtils {
                 return null;
             }
             Config config = new Config.Builder().loadConfig(context)
-                    .setWallpaperMode(getAutoModeValue(context))
+                    .setWallpaperMode(SettingUtils.getAutoModeValue(context))
                     .setBackground(true)
                     .build();
             intent.putExtra(Config.EXTRA_SET_WALLPAPER_CONFIG, config);
@@ -945,18 +749,10 @@ public class BingWallpaperUtils {
         return "";
     }
 
-    public static void setLastWallpaperImageUrl(Context context, String url) {
-        SettingTrayPreferences.get(context).put(Constants.PREF_LAST_WALLPAPER_IMAGE_URL, url);
-    }
-
-    public static String getLastWallpaperImageUrl(Context context) {
-        return SettingTrayPreferences.get(context).getString(Constants.PREF_LAST_WALLPAPER_IMAGE_URL, "");
-    }
-
-    public static void taskComplete(Context context, String TAG, String imageUrl) {
+    public static void taskComplete(Context context, String TAG) {
         if (isTaskUndone(context)) {
             L.alog().i(TAG, "today complete");
-            if (BingWallpaperUtils.isEnableLogProvider(context)) {
+            if (SettingUtils.isEnableLogProvider(context)) {
                 LogDebugFileUtils.get().i(TAG, "Today complete");
             }
             TasksUtils.markDoneProvider(context, Constants.TASK_FLAG_SET_WALLPAPER_STATE);
@@ -988,21 +784,10 @@ public class BingWallpaperUtils {
     }
 
     public static boolean isRooted(Context context) {
-        RootBeer rootBeer = new RootBeer(context);
-        if (rootBeer.checkForBusyBoxBinary()) {
-            return rootBeer.isRooted();
-        } else {
-            return rootBeer.isRootedWithoutBusyBoxCheck();
-        }
+        return new RootBeer(context).isRooted();
     }
 
     public static DisplayMetrics getSysResolution(Context context) {
-        WindowManager wm = ContextCompat.getSystemService(context, WindowManager.class);
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        if (wm == null) {
-            return outMetrics;
-        }
-        wm.getDefaultDisplay().getRealMetrics(outMetrics);
-        return outMetrics;
+        return DisplayUtils.getScreenInfo(context, true);
     }
 }

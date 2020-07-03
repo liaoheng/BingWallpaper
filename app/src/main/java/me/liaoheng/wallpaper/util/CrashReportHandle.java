@@ -15,8 +15,6 @@ import java.util.List;
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
 
-import static com.google.firebase.analytics.FirebaseAnalytics.UserProperty.ALLOW_AD_PERSONALIZATION_SIGNALS;
-
 /**
  * @author liaoheng
  * @version 2018-04-23 23:25
@@ -137,6 +135,6 @@ public class CrashReportHandle {
     }
 
     private static boolean check(Context context) {
-        return !BingWallpaperUtils.isCrashReport(context) || BuildConfig.DEBUG;
+        return !SettingUtils.isCrashReport(context) || BuildConfig.DEBUG;
     }
 }

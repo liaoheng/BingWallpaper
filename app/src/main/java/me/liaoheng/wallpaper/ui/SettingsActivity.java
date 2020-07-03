@@ -43,6 +43,7 @@ import me.liaoheng.wallpaper.util.ISettingTrayPreferences;
 import me.liaoheng.wallpaper.util.LanguageContextWrapper;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.SettingTrayPreferences;
+import me.liaoheng.wallpaper.util.SettingUtils;
 import me.liaoheng.wallpaper.widget.SeekBarDialogPreference;
 import me.liaoheng.wallpaper.widget.SeekBarPreferenceDialogFragmentCompat;
 import me.liaoheng.wallpaper.widget.TimePreference;
@@ -271,7 +272,7 @@ public class SettingsActivity extends BaseActivity {
             mLogPreference = findPreference(PREF_SET_WALLPAPER_LOG);
             mCrashPreference = findPreference(PREF_CRASH_REPORT);
             mStackBlurPreference = findPreference(PREF_STACK_BLUR);
-            int stackBlur = BingWallpaperUtils.getSettingStackBlur(getActivity());
+            int stackBlur = SettingUtils.getSettingStackBlur(getActivity());
             mStackBlurPreference.setProgress(stackBlur);
             mStackBlurPreference.setSummary(String.valueOf(stackBlur));
             mStackBlurModePreference = findPreference(PREF_STACK_BLUR_MODE);
@@ -296,14 +297,14 @@ public class SettingsActivity extends BaseActivity {
                         }
                         return false;
                     });
-                    mMIuiLockScreenPreference.setChecked(BingWallpaperUtils.isMiuiLockScreenSupport(getActivity()));
+                    mMIuiLockScreenPreference.setChecked(SettingUtils.isMiuiLockScreenSupport(getActivity()));
                 }
             }
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                 if (ROM.getROM().isMiui()) {
-                    mModeTypeListPreference.setSummary(BingWallpaperUtils.getAutoMode(getActivity()));
-                    mStackBlurModePreference.setSummary(BingWallpaperUtils.getSettingStackBlurModeName(getActivity()));
+                    mModeTypeListPreference.setSummary(SettingUtils.getAutoMode(getActivity()));
+                    mStackBlurModePreference.setSummary(SettingUtils.getSettingStackBlurModeName(getActivity()));
                 } else {
                     ((PreferenceCategory) findPreference("pref_update_group")).removePreference(
                             mModeTypeListPreference);
@@ -311,16 +312,16 @@ public class SettingsActivity extends BaseActivity {
                             mStackBlurModePreference);
                 }
             } else {
-                mModeTypeListPreference.setSummary(BingWallpaperUtils.getAutoMode(getActivity()));
-                mStackBlurModePreference.setSummary(BingWallpaperUtils.getSettingStackBlurModeName(getActivity()));
+                mModeTypeListPreference.setSummary(SettingUtils.getAutoMode(getActivity()));
+                mStackBlurModePreference.setSummary(SettingUtils.getSettingStackBlurModeName(getActivity()));
             }
 
-            mResolutionListPreference.setSummary(BingWallpaperUtils.getResolution(getActivity()));
-            mSaveResolutionListPreference.setSummary(BingWallpaperUtils.getSaveResolution(getActivity()));
-            mCountryListPreference.setSummary(BingWallpaperUtils.getCountryName(getActivity()));
-            mLanguageListPreference.setSummary(BingWallpaperUtils.getLanguageName(getActivity()));
+            mResolutionListPreference.setSummary(SettingUtils.getResolution(getActivity()));
+            mSaveResolutionListPreference.setSummary(SettingUtils.getSaveResolution(getActivity()));
+            mCountryListPreference.setSummary(SettingUtils.getCountryName(getActivity()));
+            mLanguageListPreference.setSummary(SettingUtils.getLanguageName(getActivity()));
 
-            mAutoUpdateTypeListPreference.setSummary(BingWallpaperUtils.getAutomaticUpdateTypeName(getActivity()));
+            mAutoUpdateTypeListPreference.setSummary(SettingUtils.getAutomaticUpdateTypeName(getActivity()));
 
             updateCheckTime();
 
@@ -342,7 +343,7 @@ public class SettingsActivity extends BaseActivity {
         @SuppressLint("StringFormatMatches")
         private void updateCheckTime() {
             mAutoUpdatePreference.setSummary(getString(R.string.pref_auto_update_check_time,
-                    BingWallpaperUtils.getAutomaticUpdateInterval(getActivity())));
+                    SettingUtils.getAutomaticUpdateInterval(getActivity())));
         }
 
         @Override

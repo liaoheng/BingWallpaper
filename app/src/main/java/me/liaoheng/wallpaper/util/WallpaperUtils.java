@@ -49,13 +49,13 @@ import me.liaoheng.wallpaper.model.Wallpaper;
 public class WallpaperUtils {
 
     public static void autoSaveWallpaper(Context context, String TAG, Wallpaper image, File wallpaper) {
-        if (BingWallpaperUtils.isAutoSave(context)) {
+        if (SettingUtils.isAutoSave(context)) {
             try {
                 if (!BingWallpaperUtils.checkStoragePermissions(context)) {
                     throw new IOException("Permission denied");
                 }
-                String saveResolution = BingWallpaperUtils.getSaveResolution(context);
-                String resolution = BingWallpaperUtils.getResolution(context);
+                String saveResolution = SettingUtils.getSaveResolution(context);
+                String resolution = SettingUtils.getResolution(context);
                 if (!saveResolution.equals(resolution)) {
                     String saveImageUrl = BingWallpaperUtils.getImageUrl(context, saveResolution,
                             image.getBaseUrl());

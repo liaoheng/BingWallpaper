@@ -40,14 +40,14 @@ public class BingWallpaperJobManager {
 
     public static void clear(Context context) {
         BingWallpaperUtils.clearTaskComplete(context);
-        BingWallpaperUtils.setLastWallpaperImageUrl(context, "");
+        SettingUtils.setLastWallpaperImageUrl(context, "");
         setJobType(context, NONE);
     }
 
     public static boolean enabled(Context context) {
         clear(context);
         boolean ret = enabled(context,
-                TimeUnit.HOURS.toSeconds(BingWallpaperUtils.getAutomaticUpdateInterval(context)));
+                TimeUnit.HOURS.toSeconds(SettingUtils.getAutomaticUpdateInterval(context)));
         if (!ret) {
             Toast.makeText(context, R.string.enable_job_error, Toast.LENGTH_LONG).show();
         }
@@ -77,14 +77,14 @@ public class BingWallpaperJobManager {
      */
     public static boolean enabled(Context context, long time) {
         try {
-            int type = BingWallpaperUtils.getAutomaticUpdateType(context);
-            if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_AUTO) {
+            int type = SettingUtils.getAutomaticUpdateType(context);
+            if (type == SettingUtils.AUTOMATIC_UPDATE_TYPE_AUTO) {
                 if (!enableSystem(context, time)) {
                     return enableLiveService(context, time);
                 }
-            } else if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_SYSTEM) {
+            } else if (type == SettingUtils.AUTOMATIC_UPDATE_TYPE_SYSTEM) {
                 return enableSystem(context, time);
-            } else if (type == BingWallpaperUtils.AUTOMATIC_UPDATE_TYPE_SERVICE) {
+            } else if (type == SettingUtils.AUTOMATIC_UPDATE_TYPE_SERVICE) {
                 return enableLiveService(context, time);
             }
             return true;
