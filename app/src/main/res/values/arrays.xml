@@ -51,7 +51,7 @@
         <item>@string/pref_country_ja</item>
         <item>@string/pref_country_it</item>
         <item>@string/pref_country_ir</item>
-        <item>Serbia</item>
+        <item>Bulgaria</item>
     </string-array>
 
     <string-array name="pref_country_values">
