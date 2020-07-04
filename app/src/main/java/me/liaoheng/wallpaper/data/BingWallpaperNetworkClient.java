@@ -1,7 +1,6 @@
 package me.liaoheng.wallpaper.data;
 
 import android.content.Context;
-import android.util.AndroidRuntimeException;
 
 import com.github.liaoheng.common.util.ValidateUtils;
 
@@ -33,15 +32,15 @@ public class BingWallpaperNetworkClient {
             int count) {
         String locale = BingWallpaperUtils.getAutoLocale(context);
         String url = BingWallpaperUtils.getUrl(context, index, count, locale);
-        return getBingWallpaper(url, locale).map(bingWallpaper -> {
-            if (bingWallpaper == null || bingWallpaper.getImages() == null || bingWallpaper.getImages().isEmpty()) {
-                throw new AndroidRuntimeException(new IOException("bing wallpaper is not data"));
+        return getBingWallpaper(url, locale).flatMap(bingWallpaper -> {
+            if (bingWallpaper == null || ValidateUtils.isItemEmpty(bingWallpaper.getImages())) {
+                return Observable.error(new IOException("bing wallpaper is not data"));
             }
             List<Wallpaper> wallpapers = new ArrayList<>();
             for (BingWallpaperImage image : bingWallpaper.getImages()) {
                 wallpapers.add(image.to());
             }
-            return wallpapers;
+            return Observable.just(wallpapers);
         });
     }
 

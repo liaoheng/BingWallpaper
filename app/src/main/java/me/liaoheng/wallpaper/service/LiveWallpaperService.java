@@ -82,7 +82,7 @@ public class LiveWallpaperService extends WallpaperService {
                 Wallpaper image = intent.getParcelableExtra(Config.EXTRA_SET_WALLPAPER_IMAGE);
                 Config config = intent.getParcelableExtra(Config.EXTRA_SET_WALLPAPER_CONFIG);
                 if (mEngine != null) {
-                    mEngine.loadBingWallpaper(image, config);
+                    mEngine.setBingWallpaper(image, config);
                 }
             } else if (START_LIVE_WALLPAPER_SCHEDULER.equals(intent.getAction())) {
                 if (mEngine != null) {
@@ -90,7 +90,7 @@ public class LiveWallpaperService extends WallpaperService {
                 }
             }
         }
-    }
+}
 
     static class DownloadBitmap {
         public DownloadBitmap(Wallpaper image) {
@@ -99,6 +99,7 @@ public class LiveWallpaperService extends WallpaperService {
 
         Wallpaper image;
         File wallpaper;
+        File original;
     }
 
     private class LiveWallpaperEngine extends LiveWallpaperService.Engine {
@@ -124,7 +125,7 @@ public class LiveWallpaperService extends WallpaperService {
             handler.postDelayed(drawRunner, Constants.DEF_LIVE_WALLPAPER_CHECK_PERIODIC);
         }
 
-        public void loadBingWallpaper(Wallpaper image, Config config) {
+        public void setBingWallpaper(Wallpaper image, Config config) {
             Observable<DownloadBitmap> observable;
             if (image == null) {
                 observable = Observable.just(true).compose(load());
@@ -132,10 +133,10 @@ public class LiveWallpaperService extends WallpaperService {
                 mServiceHelper.begin(config, image);
                 observable = Observable.just(new DownloadBitmap(image));
             }
-            loadBingWallpaper(observable, config);
+            setBingWallpaper(observable, config);
         }
 
-        public void loadBingWallpaper(Observable<DownloadBitmap> observable, Config config) {
+        public void setBingWallpaper(Observable<DownloadBitmap> observable, Config config) {
             Utils.addSubscribe(
                     observable.subscribeOn(Schedulers.io()).compose(download(config)),
                     new Callback.EmptyCallback<DownloadBitmap>() {
@@ -143,12 +144,9 @@ public class LiveWallpaperService extends WallpaperService {
                         @Override
                         public void onSuccess(DownloadBitmap d) {
                             setWallpaper(config, d);
+                            mServiceHelper.success(config, d.image);
                         }
                     });
-        }
-
-        private void loadBingWallpaper() {
-            loadBingWallpaper(Observable.just(true).compose(load()), new Config.Builder().loadConfig(mContext).build());
         }
 
         public void enable() {
@@ -174,25 +172,11 @@ public class LiveWallpaperService extends WallpaperService {
                     .setShowNotification(true)
                     .loadConfig(mContext)
                     .build();
-            Utils.addSubscribe(
-                    Observable.just(false).subscribeOn(Schedulers.io()).compose(load()).map(
-                            downloadBitmap -> {
-                                mServiceHelper.begin(config, downloadBitmap.image);
-                                return downloadBitmap;
-                            }).compose(download(config)),
-                    new Callback.EmptyCallback<DownloadBitmap>() {
-
-                        @Override
-                        public void onSuccess(DownloadBitmap d) {
-                            setWallpaper(config, d);
-                            mServiceHelper.success(config, d.image);
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            mServiceHelper.failure(config, e);
-                        }
-                    });
+            setBingWallpaper(Observable.just(false).subscribeOn(Schedulers.io()).compose(load()).map(
+                    downloadBitmap -> {
+                        mServiceHelper.begin(config, downloadBitmap.image);
+                        return downloadBitmap;
+                    }).compose(download(config)), config);
         }
 
         private ObservableTransformer<Boolean, DownloadBitmap> load() {
@@ -214,24 +198,22 @@ public class LiveWallpaperService extends WallpaperService {
 
         private ObservableTransformer<DownloadBitmap, DownloadBitmap> download(Config config) {
             return upstream -> upstream.flatMap((Function<DownloadBitmap, ObservableSource<DownloadBitmap>>) image -> {
-                image.wallpaper = WallpaperUtils.getImageFile(mContext, config, image.image.getImageUrl());
+                File original = WallpaperUtils.getImageFile(mContext, image.image.getImageUrl());
+                image.wallpaper = WallpaperUtils.getImageStackBlurFile(config.getStackBlur(), original);
+                image.original = original;
                 return Observable.just(image);
             });
         }
 
         private void setWallpaper(Config config, DownloadBitmap d) {
             if (config.isBackground()) {
-                if (SettingUtils.getLastWallpaperImageUrl(mContext).equals(d.image.getImageUrl())) {
-                    return;
-                }
-                WallpaperUtils.autoSaveWallpaper(mContext, TAG, d.image, d.wallpaper);
+                WallpaperUtils.autoSaveWallpaper(mContext, TAG, d.image, d.original);
             }
             draw(BitmapFactory.decodeFile(d.wallpaper.getAbsolutePath()));
             try {
                 MiuiHelper.lockSetWallpaper(mContext, d.wallpaper);
             } catch (IOException ignored) {
             }
-            SettingUtils.setLastWallpaperImageUrl(mContext, d.image.getImageUrl());
         }
 
         private void draw(Bitmap bitmap) {
@@ -282,6 +264,19 @@ public class LiveWallpaperService extends WallpaperService {
         public void onSurfaceCreated(SurfaceHolder holder) {
             super.onSurfaceCreated(holder);
             loadBingWallpaper();
+        }
+
+        private void loadBingWallpaper() {
+            Config config = new Config.Builder().loadConfig(mContext).build();
+            Utils.addSubscribe(
+                    Observable.just(true).compose(load()).subscribeOn(Schedulers.io()).compose(download(config)),
+                    new Callback.EmptyCallback<DownloadBitmap>() {
+
+                        @Override
+                        public void onSuccess(DownloadBitmap d) {
+                            draw(BitmapFactory.decodeFile(d.wallpaper.getAbsolutePath()));
+                        }
+                    });
         }
 
         @Override

@@ -139,6 +139,8 @@ public class BingWallpaperUtils {
                 return Locale.ITALY;
             case 8:
                 return new Locale("fa", "IR");
+            case 9:
+                return new Locale("bg", "BG");
             default:
                 Locale originalLocale = LanguageContextWrapper.getOriginalLocale();
                 return originalLocale == null ? LanguageContextWrapper.getCurrentLocale(context) : originalLocale;
@@ -451,7 +453,7 @@ public class BingWallpaperUtils {
      */
     public static void showIgnoreBatteryOptimizationSetting(Context context) {
         if (!AppUtils.showIgnoreBatteryOptimizationSetting(context)) {
-            Toast.makeText(context, "No support !",Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "No support !", Toast.LENGTH_LONG).show();
         }
     }
 

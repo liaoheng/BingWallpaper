@@ -143,12 +143,8 @@ public class BingWallpaperIntentService extends IntentService {
         }
 
         if (config.isBackground()) {
-            if (SettingUtils.getLastWallpaperImageUrl(this).equals(image.getImageUrl())) {
-                return;
-            }
             WallpaperUtils.autoSaveWallpaper(this, TAG, image, wallpaper);
         }
         mUiHelper.setWallpaper(this, config, wallpaper);
-        SettingUtils.setLastWallpaperImageUrl(this, image.getImageUrl());
     }
 }
