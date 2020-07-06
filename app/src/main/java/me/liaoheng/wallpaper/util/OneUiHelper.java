@@ -5,6 +5,8 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.github.liaoheng.common.util.AppUtils;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -18,15 +20,15 @@ public class OneUiHelper {
             File lockWallpaper)
             throws IOException {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            BingWallpaperUtils.setWallpaper(context, homeWallpaper);
+            AppUtils.setWallpaper(context, homeWallpaper);
         } else {
             if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
                 homeSetWallpaper(context, homeWallpaper);
             } else if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                BingWallpaperUtils.setLockScreenWallpaper(context, lockWallpaper);
+                AppUtils.setLockScreenWallpaper(context, lockWallpaper);
             } else {
                 homeSetWallpaper(context, homeWallpaper);
-                BingWallpaperUtils.setLockScreenWallpaper(context, lockWallpaper);
+                AppUtils.setLockScreenWallpaper(context, lockWallpaper);
             }
         }
     }
@@ -34,6 +36,6 @@ public class OneUiHelper {
     @RequiresApi(api = Build.VERSION_CODES.N)
     private static void homeSetWallpaper(Context context, File wallpaper) throws IOException {
         //wallpaper = UIHelper.cropWallpaper(context, wallpaper,false);
-        BingWallpaperUtils.setHomeScreenWallpaper(context, wallpaper);
+        AppUtils.setHomeScreenWallpaper(context, wallpaper);
     }
 }

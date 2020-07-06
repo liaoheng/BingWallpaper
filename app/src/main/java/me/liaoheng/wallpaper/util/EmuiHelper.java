@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 
+import com.github.liaoheng.common.util.AppUtils;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -59,15 +61,15 @@ public class EmuiHelper {
             File lockWallpaper)
             throws IOException {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            BingWallpaperUtils.setWallpaper(context, homeWallpaper);
+            AppUtils.setWallpaper(context, homeWallpaper);
         } else {
             if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-                BingWallpaperUtils.setHomeScreenWallpaper(context, homeWallpaper);
+                AppUtils.setHomeScreenWallpaper(context, homeWallpaper);
             } else if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                BingWallpaperUtils.setLockScreenWallpaper(context, lockWallpaper);
+                AppUtils.setLockScreenWallpaper(context, lockWallpaper);
             } else {
-                BingWallpaperUtils.setHomeScreenWallpaper(context, homeWallpaper);
-                BingWallpaperUtils.setLockScreenWallpaper(context, lockWallpaper);
+                AppUtils.setHomeScreenWallpaper(context, homeWallpaper);
+                AppUtils.setLockScreenWallpaper(context, lockWallpaper);
             }
         }
     }

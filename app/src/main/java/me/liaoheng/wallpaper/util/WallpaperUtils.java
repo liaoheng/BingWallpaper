@@ -25,6 +25,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.DisplayUtils;
+import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.MD5Utils;
 import com.github.liaoheng.common.util.UIUtils;
@@ -60,10 +61,10 @@ public class WallpaperUtils {
                     String saveImageUrl = BingWallpaperUtils.getImageUrl(context, saveResolution,
                             image.getBaseUrl());
                     L.alog().i(TAG, "wallpaper save url: %s", saveImageUrl);
-                    BingWallpaperUtils.saveFileToPictureCompat(context, saveImageUrl,
+                    FileUtils.saveFileToPictureCompat(context, saveImageUrl,
                             getImageFile(context, saveImageUrl));
                 } else {
-                    BingWallpaperUtils.saveFileToPictureCompat(context, image.getImageUrl(), wallpaper);
+                    FileUtils.saveFileToPictureCompat(context, image.getImageUrl(), wallpaper);
                 }
             } catch (Throwable ignored) {
             }

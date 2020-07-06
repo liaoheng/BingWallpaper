@@ -3,61 +3,47 @@ package me.liaoheng.wallpaper.util;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.WallpaperManager;
 import android.content.ComponentName;
-import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.ParcelFileDescriptor;
 import android.provider.Browser;
-import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.preference.PreferenceManager;
 
-import com.github.liaoheng.common.Common;
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.DateTimeUtils;
 import com.github.liaoheng.common.util.DisplayUtils;
-import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
+import com.github.liaoheng.common.util.LanguageContextWrapper;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 import com.github.liaoheng.common.util.ValidateUtils;
-import com.google.common.io.Files;
 import com.scottyab.rootbeer.RootBeer;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.Locale;
 
 import io.reactivex.Observable;
@@ -140,7 +126,7 @@ public class BingWallpaperUtils {
             case 8:
                 return new Locale("fa", "IR");
             case 9:
-                return new Locale("bg", "BG");
+                return LocaleList.bgLocale();
             default:
                 Locale originalLocale = LanguageContextWrapper.getOriginalLocale();
                 return originalLocale == null ? LanguageContextWrapper.getCurrentLocale(context) : originalLocale;
@@ -177,88 +163,12 @@ public class BingWallpaperUtils {
                 return LocaleList.nlLocale();
             case 9:
                 return Locale.FRANCE;
+            case 10:
+                return LocaleList.bgLocale();
             default:
                 Locale originalLocale = LanguageContextWrapper.getOriginalLocale();
                 return originalLocale == null ? LanguageContextWrapper.getCurrentLocale(context) : originalLocale;
         }
-    }
-
-    //https://juejin.im/post/5d0b1739e51d4510a73280cc
-    public static Uri saveFileToPictureCompat(Context context, String url, File from) throws Exception {
-        String name = FileUtils.getName(url);
-        String[] split = name.split("=");
-        if (split.length > 1) {
-            name = split[1];
-        }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            return saveFileToPicture(context, name, from);
-        } else {
-            boolean isExternalStorageLegacy = true;
-            try {
-                isExternalStorageLegacy = Environment.isExternalStorageLegacy();
-            } catch (NoSuchMethodError ignored) {
-            }
-            if (isExternalStorageLegacy) {
-                return saveFileToPicture(context, name, from);
-            }
-            return saveFileToPictureQ(context, name, from);
-        }
-    }
-
-    @SuppressWarnings("UnstableApiUsage")
-    public static Uri saveFileToPicture(Context context, String name, File from) throws Exception {
-        File p = new File(Environment.DIRECTORY_PICTURES, Common.getProjectName());
-        File file = new File(FileUtils.getExternalStoragePath(), p.getAbsolutePath());
-        File outFile = FileUtils.createFile(file, name);
-        Files.copy(from, outFile);
-        Uri uri = Uri.fromFile(outFile);
-        context.sendBroadcast(
-                new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
-        return uri;
-    }
-
-    //https://developer.android.com/training/data-storage/files/external-scoped
-    @SuppressWarnings("UnstableApiUsage")
-    @RequiresApi(api = Build.VERSION_CODES.Q)
-    public static Uri saveFileToPictureQ(Context context, String name, File from) throws Exception {
-        Uri uri;
-        ContentValues contentValues = null;
-        try (Cursor query = context.getContentResolver().query(MediaStore.Images.Media.getContentUri(
-                MediaStore.VOLUME_EXTERNAL_PRIMARY), null,
-                MediaStore.Images.Media.DISPLAY_NAME + "='" + name + "' AND "
-                        + MediaStore.Images.Media.OWNER_PACKAGE_NAME + "='"
-                        + context.getPackageName() + "'",
-                null, null)) {
-            if (query != null && query.moveToFirst()) {
-                long id = query.getLong(query.getColumnIndex(MediaStore.Images.Media._ID));
-                uri = ContentUris.withAppendedId(
-                        MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY), id);
-            } else {
-                contentValues = new ContentValues();
-                contentValues.put(MediaStore.Images.Media.DISPLAY_NAME, name);
-                contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-                contentValues.put(MediaStore.Images.Media.IS_PENDING, 1);
-                contentValues.put(MediaStore.Images.Media.RELATIVE_PATH,
-                        Environment.DIRECTORY_PICTURES + File.separator + Common.getProjectName());
-                uri = context.getContentResolver().insert(MediaStore.Images.Media.getContentUri(
-                        MediaStore.VOLUME_EXTERNAL_PRIMARY), contentValues);
-            }
-        }
-
-        if (uri == null) {
-            throw new IOException("getContentResolver uri is null");
-        }
-        ParcelFileDescriptor fd = context.getContentResolver().openFileDescriptor(uri, "w");
-        if (fd == null) {
-            throw new IOException("openFileDescriptor is null");
-        }
-        Files.copy(from, new FileOutputStream(fd.getFileDescriptor()));
-        if (contentValues != null) {
-            contentValues.clear();
-            contentValues.put(MediaStore.Images.Media.IS_PENDING, 0);
-            context.getContentResolver().update(uri, contentValues, null, null);
-        }
-        return uri;
     }
 
     /**
@@ -273,12 +183,6 @@ public class BingWallpaperUtils {
             return null;
         }
         return LocalTime.parse(time);
-    }
-
-    public static void clearDayUpdateTime(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        sharedPreferences.edit().putString(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME,
-                null).apply();
     }
 
     /**
@@ -394,10 +298,7 @@ public class BingWallpaperUtils {
     }
 
     public static int getNavigationBarHeight(Context context) {
-        if (DisplayUtils.hasNavigationBar(context)) {
-            return DisplayUtils.getNavigationBarHeight(context);
-        }
-        return 0;
+        return DisplayUtils.getNavigationBarHeight(context);
     }
 
     public static int getNavigationBarPadding(Context context) {
@@ -532,6 +433,19 @@ public class BingWallpaperUtils {
         }
     }
 
+    public static boolean isOneUi() {
+        try {
+            return getSemPlatform() > 90000;
+        } catch (Throwable ignored) {
+        }
+        return false;
+    }
+
+    private static int getSemPlatform() throws Throwable {
+        Field semPlatformIntField = Build.VERSION.class.getDeclaredField("SEM_PLATFORM_INT");
+        return semPlatformIntField.getInt(null);
+    }
+
     public static String getSystemInfo(Context context) {
         String device = Build.DEVICE;
         String model = Build.MODEL;
@@ -550,7 +464,7 @@ public class BingWallpaperUtils {
         DisplayMetrics r = BingWallpaperUtils.getSysResolution(context);
         String SysResolution = r.widthPixels + "x" + r.heightPixels;
 
-        return "feedback info ------------------------- \n"
+        return "------------feedback info------------- \n"
                 + "sdk: "
                 + Build.VERSION.SDK_INT
                 + " device: "
@@ -586,7 +500,7 @@ public class BingWallpaperUtils {
                 + " interval: "
                 + interval
                 + "\n"
-                + "feedback info ------------------------- \n";
+                + "------------feedback info------------- \n";
     }
 
     public static void sendFeedback(Context context) {
@@ -669,45 +583,7 @@ public class BingWallpaperUtils {
     }
 
     public static boolean isConnected(Context context) {
-        NetworkInfo[] nets = NetworkUtils.getConnManager(context).getAllNetworkInfo();
-        if (nets.length > 0) {
-            for (NetworkInfo net : nets) {
-                if (net.isConnected()) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public static void setWallpaper(Context context, File file, int which) throws IOException {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            try (InputStream fileInputStream = new FileInputStream(file)) {
-                int s = WallpaperManager.getInstance(context)
-                        .setStream(fileInputStream, null, true, which);
-                //if (s == 0) {
-                //    throw new IOException("WallpaperManager error");
-                //}
-            }
-        } else {
-            setWallpaper(context, file);
-        }
-    }
-
-    public static void setWallpaper(Context context, File file) throws IOException {
-        try (InputStream fileInputStream = new FileInputStream(file)) {
-            WallpaperManager.getInstance(context).setStream(fileInputStream);
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public static void setLockScreenWallpaper(Context context, File file) throws IOException {
-        setWallpaper(context, file, WallpaperManager.FLAG_LOCK);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public static void setHomeScreenWallpaper(Context context, File file) throws IOException {
-        setWallpaper(context, file, WallpaperManager.FLAG_SYSTEM);
+        return NetworkUtils.isConnected(context);
     }
 
     public static Observable<Object> clearCache(Context context) {
@@ -747,6 +623,8 @@ public class BingWallpaperUtils {
             return "Translator : @5qx9Pe7Lvj8Fn7zg(Jasper)";
         } else if (locale.getLanguage().equals(Locale.FRANCE.getLanguage())) {
             return "Translator : @Faux-ami(Nicolas)";
+        } else if (locale.getLanguage().equals(LocaleList.bgLocale().getLanguage())) {
+            return "Translator : @trifon71(Trifon Ribnishki)";
         }
         return "";
     }

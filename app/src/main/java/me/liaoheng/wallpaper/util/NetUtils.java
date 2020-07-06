@@ -115,8 +115,8 @@ public class NetUtils {
                                 .load(url1)
                                 .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
                                 .get(2, TimeUnit.MINUTES);
-                        return BingWallpaperUtils.saveFileToPictureCompat(context, url1, temp);
-                    } catch (Exception e) {
+                        return FileUtils.saveFileToPictureCompat(context, url1, temp);
+                    } catch (Throwable e) {
                         throw new SystemRuntimeException(e);
                     } finally {
                         if (temp != null) {

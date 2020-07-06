@@ -5,18 +5,17 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.os.Build;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
 import androidx.annotation.NonNull;
 
+import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.MD5Utils;
 import com.github.liaoheng.common.util.ROM;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 
 import me.liaoheng.wallpaper.model.Config;
 
@@ -46,51 +45,25 @@ public class UIHelper implements IUIHelper {
             MiuiHelper.setWallpaper(context, mode, home, lock);
         } else if (ROM.getROM().isEmui()) {
             EmuiHelper.setWallpaper(context, mode, home, lock);
+        } else if (BingWallpaperUtils.isOneUi()) {
+            OneUiHelper.setWallpaper(context, mode, home, lock);
         } else {
-            try {
-                if (TextUtils.isEmpty(getOneUiVersion(context))) {
-                    OneUiHelper.setWallpaper(context, mode, home, lock);
-                    return;
-                }
-            } catch (Exception ignored) {
-            }
             systemSetWallpaper(context, mode, home, lock);
         }
-    }
-
-    //https://stackoverflow.com/questions/60122037/how-can-i-detect-samsung-one-ui
-    public static String getOneUiVersion(Context context) throws Exception {
-        if (!isSemAvailable(context)) {
-            return ""; // was "1.0" originally but probably just a dummy value for one UI devices
-        }
-        Field semPlatformIntField = Build.VERSION.class.getDeclaredField("SEM_PLATFORM_INT");
-        int version = semPlatformIntField.getInt(null) - 90000;
-        if (version < 0) {
-            // not one ui (could be previous Samsung OS)
-            return "";
-        }
-        return (version / 10000) + "." + ((version % 10000) / 100);
-    }
-
-    public static boolean isSemAvailable(Context context) {
-        return context != null &&
-                (context.getPackageManager().hasSystemFeature("com.samsung.feature.samsung_experience_mobile") ||
-                        context.getPackageManager()
-                                .hasSystemFeature("com.samsung.feature.samsung_experience_mobile_lite"));
     }
 
     private void systemSetWallpaper(Context context, @Constants.setWallpaperMode int mode, File home,
             File lock) throws IOException {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            BingWallpaperUtils.setWallpaper(context, home);
+            AppUtils.setWallpaper(context, home);
         } else {
             if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-                BingWallpaperUtils.setHomeScreenWallpaper(context, home);
+                AppUtils.setHomeScreenWallpaper(context, home);
             } else if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                BingWallpaperUtils.setLockScreenWallpaper(context, lock);
+                AppUtils.setLockScreenWallpaper(context, lock);
             } else {
-                BingWallpaperUtils.setHomeScreenWallpaper(context, home);
-                BingWallpaperUtils.setLockScreenWallpaper(context, lock);
+                AppUtils.setHomeScreenWallpaper(context, home);
+                AppUtils.setLockScreenWallpaper(context, lock);
             }
         }
     }

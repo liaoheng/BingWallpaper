@@ -3,6 +3,7 @@ package me.liaoheng.wallpaper.util;
 import android.content.Context;
 import android.os.Build;
 
+import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.ShellUtils;
 
 import java.io.File;
@@ -59,9 +60,9 @@ public class MiuiHelper {
     private static void homeSetWallpaper(Context context, File wallpaper) throws IOException {
         //wallpaper = UIHelper.cropWallpaper(context, wallpaper);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            BingWallpaperUtils.setHomeScreenWallpaper(context, wallpaper);
+            AppUtils.setHomeScreenWallpaper(context, wallpaper);
         } else {
-            BingWallpaperUtils.setWallpaper(context, wallpaper);
+            AppUtils.setWallpaper(context, wallpaper);
         }
     }
 }

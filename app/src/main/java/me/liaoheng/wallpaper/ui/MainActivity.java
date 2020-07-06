@@ -36,6 +36,7 @@ import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.DisplayUtils;
+import com.github.liaoheng.common.util.LanguageContextWrapper;
 import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.ShellUtils;
 import com.github.liaoheng.common.util.SystemDataException;
@@ -57,7 +58,6 @@ import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.DownloadHelper;
 import me.liaoheng.wallpaper.util.GlideApp;
-import me.liaoheng.wallpaper.util.LanguageContextWrapper;
 import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
 import me.liaoheng.wallpaper.util.SettingUtils;
 import me.liaoheng.wallpaper.util.TasksUtils;
@@ -377,7 +377,7 @@ public class MainActivity extends BaseActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.menu_main_drawer_settings) {
-            UIUtils.startActivityForResult(this, SettingsActivity.class, 123);
+            startActivityForResult(new Intent(this, SettingsActivity.class), 123);
         } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_history_list) {
             UIUtils.startActivity(this, WallpaperHistoryListActivity.class);
         } else if (item.getItemId() == R.id.menu_main_drawer_wallpaper_info) {

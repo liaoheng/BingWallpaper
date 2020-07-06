@@ -26,6 +26,7 @@ import androidx.preference.SwitchPreference;
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback5;
+import com.github.liaoheng.common.util.LanguageContextWrapper;
 import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.ShellUtils;
 import com.github.liaoheng.common.util.UIUtils;
@@ -40,7 +41,6 @@ import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.ISettingTrayPreferences;
-import me.liaoheng.wallpaper.util.LanguageContextWrapper;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.SettingTrayPreferences;
 import me.liaoheng.wallpaper.util.SettingUtils;
@@ -381,7 +381,7 @@ public class SettingsActivity extends BaseActivity {
                             mAutoUpdatePreference.setChecked(false);
                             return;
                         }
-                        BingWallpaperUtils.clearDayUpdateTime(getActivity());
+                        SettingUtils.clearDayUpdateTime(getActivity());
                         BingWallpaperAlarmManager.disabled(getActivity());
                         mTimePreference.setSummary(R.string.pref_not_set_time);
                         mDayUpdatePreference.setChecked(false);

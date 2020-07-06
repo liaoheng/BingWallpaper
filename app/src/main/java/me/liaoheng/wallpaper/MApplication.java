@@ -4,13 +4,13 @@ import android.app.Application;
 
 import com.github.liaoheng.common.Common;
 import com.github.liaoheng.common.util.L;
+import com.github.liaoheng.common.util.LanguageContextWrapper;
 
 import io.reactivex.plugins.RxJavaPlugins;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.CacheUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
-import me.liaoheng.wallpaper.util.LanguageContextWrapper;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.NetUtils;
 import me.liaoheng.wallpaper.util.NotificationUtils;
