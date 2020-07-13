@@ -33,7 +33,6 @@ import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.MiuiHelper;
-import me.liaoheng.wallpaper.util.SettingUtils;
 import me.liaoheng.wallpaper.util.WallpaperUtils;
 
 /**
@@ -57,7 +56,7 @@ public class LiveWallpaperService extends WallpaperService {
     @Override
     public void onCreate() {
         super.onCreate();
-        mServiceHelper = new SetWallpaperServiceHelper(this, "LiveWallpaperService");
+        mServiceHelper = new SetWallpaperServiceHelper(this, TAG);
         mReceiver = new LiveWallpaperBroadcastReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(UPDATE_LIVE_WALLPAPER);
@@ -90,7 +89,7 @@ public class LiveWallpaperService extends WallpaperService {
                 }
             }
         }
-}
+    }
 
     static class DownloadBitmap {
         public DownloadBitmap(Wallpaper image) {
@@ -209,11 +208,15 @@ public class LiveWallpaperService extends WallpaperService {
             if (config.isBackground()) {
                 WallpaperUtils.autoSaveWallpaper(mContext, TAG, d.image, d.original);
             }
-            draw(BitmapFactory.decodeFile(d.wallpaper.getAbsolutePath()));
+            draw(d.wallpaper);
             try {
                 MiuiHelper.lockSetWallpaper(mContext, d.wallpaper);
             } catch (IOException ignored) {
             }
+        }
+
+        private void draw(File file) {
+            draw(BitmapFactory.decodeFile(file.getAbsolutePath()));
         }
 
         private void draw(Bitmap bitmap) {
@@ -274,7 +277,7 @@ public class LiveWallpaperService extends WallpaperService {
 
                         @Override
                         public void onSuccess(DownloadBitmap d) {
-                            draw(BitmapFactory.decodeFile(d.wallpaper.getAbsolutePath()));
+                            draw(d.wallpaper);
                         }
                     });
         }

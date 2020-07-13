@@ -32,6 +32,7 @@ import com.github.liaoheng.common.util.DateTimeUtils;
 import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.LanguageContextWrapper;
+import com.github.liaoheng.common.util.MD5Utils;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.UIUtils;
@@ -669,5 +670,9 @@ public class BingWallpaperUtils {
 
     public static DisplayMetrics getSysResolution(Context context) {
         return DisplayUtils.getScreenInfo(context, true);
+    }
+
+    public static String createKey(String str) {
+        return MD5Utils.md5Hex(str).toLowerCase();
     }
 }

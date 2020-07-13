@@ -22,12 +22,12 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
+import com.commit451.nativestackblur.NativeStackBlur;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
-import com.github.liaoheng.common.util.MD5Utils;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 
@@ -81,10 +81,10 @@ public class WallpaperUtils {
 
     public static File getImageStackBlurFile(int stackBlur, File wallpaper) {
         if (stackBlur > 0) {
-            String key = MD5Utils.md5Hex(wallpaper.getAbsolutePath() + "_blur_" + stackBlur);
+            String key = BingWallpaperUtils.createKey(wallpaper.getAbsolutePath() + "_blur_" + stackBlur);
             File stackBlurFile = CacheUtils.get().get(key);
             if (stackBlurFile == null) {
-                Bitmap bitmap = toStackBlur(BitmapFactory.decodeFile(wallpaper.getAbsolutePath()), stackBlur);
+                Bitmap bitmap = toStackBlur2(BitmapFactory.decodeFile(wallpaper.getAbsolutePath()), stackBlur);
                 return CacheUtils.get().put(key, BitmapUtils.bitmapToStream(bitmap,
                         Bitmap.CompressFormat.JPEG));
             } else {
@@ -96,7 +96,7 @@ public class WallpaperUtils {
     }
 
     public static File getImageWaterMarkFile(@NonNull Context context, File wallpaper, String str) {
-        String key = MD5Utils.md5Hex(wallpaper.getAbsolutePath() + "_mark_" + str);
+        String key = BingWallpaperUtils.createKey(wallpaper.getAbsolutePath() + "_mark_" + str);
         File mark = CacheUtils.get().get(key);
         if (mark == null) {
             Bitmap bitmap = waterMark(context, BitmapFactory.decodeFile(wallpaper.getAbsolutePath()), str);
@@ -111,7 +111,7 @@ public class WallpaperUtils {
         if (stackBlur <= 0) {
             return bitmap;
         }
-        return toStackBlur(bitmap, stackBlur);
+        return toStackBlur2(bitmap, stackBlur);
     }
 
     public static void shareImage(@NonNull Context context, @NonNull Config config, @NonNull String url,
@@ -210,6 +210,11 @@ public class WallpaperUtils {
         return icon;
     }
 
+    @NonNull
+    public static Bitmap toStackBlur2(Bitmap original, int radius) {
+        return NativeStackBlur.process(original, radius);
+    }
+
     /**
      * Stack Blur v1.0 from
      * http://www.quasimondo.com/StackBlurForCanvas/StackBlurDemo.html
@@ -238,8 +243,7 @@ public class WallpaperUtils {
      * the following line:
      * Stack Blur Algorithm by Mario Klingemann <mario@quasimondo.com>
      */
-    @NonNull
-    //TODO Need to optimize, try using ndk
+    @Deprecated
     public static Bitmap toStackBlur(Bitmap sentBitmap, int radius) {
         if (radius < 1) {
             return sentBitmap;

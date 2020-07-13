@@ -13,8 +13,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 182
-        versionName "1.8.2"
+        versionCode 183
+        versionName "1.8.3"
     }
 
     def isSigning = true
@@ -105,6 +105,9 @@ dependencies {
     implementation deps.rxlifecycle3
     implementation deps.rxlifecycle_android3
     implementation deps.joda_time_android
+
+    //https://github.com/Commit451/NativeStackBlur
+    implementation 'com.github.Commit451:NativeStackBlur:1.0.5'
 
     //https://github.com/scottyab/rootbeer
     implementation 'com.github.scottyab:rootbeer:0.0.8'

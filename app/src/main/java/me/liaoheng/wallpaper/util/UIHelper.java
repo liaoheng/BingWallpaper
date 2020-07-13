@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.BitmapUtils;
-import com.github.liaoheng.common.util.MD5Utils;
 import com.github.liaoheng.common.util.ROM;
 
 import java.io.File;
@@ -119,7 +118,7 @@ public class UIHelper implements IUIHelper {
             isCrop = true;
         }
         if (isCrop) {
-            String key = MD5Utils.md5Hex(wallpaper.getAbsolutePath() + "_thumbnail");
+            String key = BingWallpaperUtils.createKey(wallpaper.getAbsolutePath() + "_thumbnail");
             File wallpaperFile = CacheUtils.get().get(key);
             if (wallpaperFile == null) {
                 Bitmap newBitmap = ThumbnailUtils.extractThumbnail(

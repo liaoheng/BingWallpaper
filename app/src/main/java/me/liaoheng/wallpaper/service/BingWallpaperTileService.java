@@ -33,8 +33,7 @@ public class BingWallpaperTileService extends TileService {
 
                     @Override
                     public void onFinish(BingWallpaperState bingWallpaperState) {
-                        getQsTile().setState(Tile.STATE_INACTIVE);
-                        getQsTile().updateTile();
+                        updateState(Tile.STATE_INACTIVE);
                     }
                 });
         mReceiverHelper.register(this);
@@ -43,8 +42,7 @@ public class BingWallpaperTileService extends TileService {
     @Override
     public void onDestroy() {
         mReceiverHelper.unregister(this);
-        getQsTile().setState(Tile.STATE_INACTIVE);
-        getQsTile().updateTile();
+        updateState(Tile.STATE_INACTIVE);
         super.onDestroy();
     }
 
@@ -58,12 +56,19 @@ public class BingWallpaperTileService extends TileService {
                         .build(), new Callback4.EmptyCallback<Boolean>() {
                     @Override
                     public void onYes(Boolean aBoolean) {
-                        getQsTile().setState(Tile.STATE_ACTIVE);
-                        getQsTile().updateTile();
+                        updateState(Tile.STATE_ACTIVE);
                         Toast.makeText(getApplicationContext(), getString(R.string.set_wallpaper_running),
                                 Toast.LENGTH_SHORT)
                                 .show();
                     }
                 });
+    }
+
+    private void updateState(int stateInactive) {
+        if (getQsTile() == null) {
+            return;
+        }
+        getQsTile().setState(stateInactive);
+        getQsTile().updateTile();
     }
 }
