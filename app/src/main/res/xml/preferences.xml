@@ -9,41 +9,33 @@
         <SwitchPreference
                 android:defaultValue="false"
                 android:key="pref_set_wallpaper_day_fully_automatic_update"
-                android:title="@string/pref_auto_update_everyday" />
+                android:title="@string/pref_set_wallpaper_daily_update" />
 
         <ListPreference
                 android:defaultValue="0"
                 android:entries="@array/pref_set_wallpaper_day_fully_automatic_update_type_names"
                 android:entryValues="@array/pref_set_wallpaper_day_fully_automatic_update_type_values"
                 android:key="pref_set_wallpaper_day_fully_automatic_update_type"
-                android:title="@string/pref_set_wallpaper_day_fully_automatic_update_type" />
+                android:title="@string/pref_set_wallpaper_daily_update_mode" />
 
         <ListPreference
                 android:defaultValue="3"
                 android:entries="@array/pref_set_wallpaper_day_fully_automatic_update_interval"
                 android:entryValues="@array/pref_set_wallpaper_day_fully_automatic_update_interval"
                 android:key="pref_set_wallpaper_day_fully_automatic_update_interval"
-                android:summary="@string/pref_set_wallpaper_day_fully_automatic_update_interval_note"
-                android:title="@string/pref_set_wallpaper_day_fully_automatic_update_interval" />
+                android:title="@string/pref_set_wallpaper_daily_update_interval" />
+
+        <me.liaoheng.wallpaper.widget.TimePreference
+                android:key="pref_set_wallpaper_day_auto_update_time"
+                android:negativeButtonText="@android:string/no"
+                android:positiveButtonText="@android:string/ok"
+                android:title="@string/pref_set_wallpaper_daily_update_time" />
 
         <SwitchPreference
                 android:defaultValue="true"
                 android:key="pref_set_wallpaper_day_fully_automatic_update_notification"
-                android:summary="@string/pref_auto_update_everyday_notification_note"
-                android:title="@string/pref_auto_update_everyday_notification" />
-
-        <SwitchPreference
-                android:defaultValue="false"
-                android:key="pref_set_wallpaper_day_auto_update"
-                android:summary="@string/pref_alarm_update_wallpaper_everyday_summary"
-                android:title="@string/pref_alarm_update_wallpaper_everyday" />
-
-        <me.liaoheng.wallpaper.widget.TimePreference
-                android:enabled="false"
-                android:key="pref_set_wallpaper_day_auto_update_time"
-                android:negativeButtonText="@android:string/no"
-                android:positiveButtonText="@android:string/ok"
-                android:title="@string/pref_alarm_update_wallpaper_time" />
+                android:summary="@string/pref_set_wallpaper_daily_update_success_notification_summary"
+                android:title="@string/pref_set_wallpaper_daily_update_success_notification" />
 
         <ListPreference
                 android:defaultValue="0"

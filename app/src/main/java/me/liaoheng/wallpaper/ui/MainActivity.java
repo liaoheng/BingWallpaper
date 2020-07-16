@@ -59,7 +59,7 @@ import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.DownloadHelper;
 import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
-import me.liaoheng.wallpaper.util.SettingUtils;
+import me.liaoheng.wallpaper.util.Settings;
 import me.liaoheng.wallpaper.util.TasksUtils;
 import me.liaoheng.wallpaper.util.UIHelper;
 import me.liaoheng.wallpaper.util.WallpaperUtils;
@@ -151,8 +151,8 @@ public class MainActivity extends BaseActivity
         if (TasksUtils.isOne()) {
             UIUtils.startActivity(this, IntroActivity.class);
             if (!Constants.Config.isPhone) {
-                SettingUtils.putResolution(this, "1");
-                SettingUtils.putSaveResolution(this, "1");
+                Settings.putResolution(this, "1");
+                Settings.putSaveResolution(this, "1");
             }
             finish();
             return;
@@ -214,7 +214,7 @@ public class MainActivity extends BaseActivity
         getBingWallpaper();
 
         if (ROM.getROM().isMiui()) {
-            if (SettingUtils.isMiuiLockScreenSupport(this)) {
+            if (Settings.isMiuiLockScreenSupport(this)) {
                 return;
             }
             String root = PreferenceManager.getDefaultSharedPreferences(this).getString("MIUI_root", "");
@@ -244,10 +244,10 @@ public class MainActivity extends BaseActivity
             screen.setOnCheckedChangeListener(
                     (buttonView, isChecked) -> {
                         if (ShellUtils.hasRootPermission()) {
-                            SettingUtils.setMiuiLockScreenSupport(getApplicationContext(),
+                            Settings.setMiuiLockScreenSupport(getApplicationContext(),
                                     true);
                         } else {
-                            SettingUtils.setMiuiLockScreenSupport(getApplicationContext(),
+                            Settings.setMiuiLockScreenSupport(getApplicationContext(),
                                     false);
                             screen.setChecked(false);
                             UIUtils.showToast(getActivity(), R.string.unable_root_permission);
@@ -318,11 +318,11 @@ public class MainActivity extends BaseActivity
     }
 
     private String getUrl() {
-        return getUrl(SettingUtils.getResolution(this));
+        return getUrl(Settings.getResolution(this));
     }
 
     private String getSaveUrl() {
-        return getUrl(SettingUtils.getSaveResolution(this));
+        return getUrl(Settings.getSaveResolution(this));
     }
 
     private String getUrl(String resolution) {

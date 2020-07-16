@@ -34,28 +34,32 @@
     <!--setting -->
     <string name="pref_auto_update_wallpaper">Daily Update Setting</string>
     <string name="pref_update_only_on_wifi">Wi-Fi only</string>
-    <string name="pref_auto_update_everyday">Auto mode</string>
-    <string name="pref_auto_update_check_every_hour">Check every three hours</string>
+    <string name="pref_set_wallpaper_daily_update">Enable daily update</string>
+    <string name="pref_set_wallpaper_daily_update_mode">Daily update mode</string>
+    <string name="pref_set_wallpaper_daily_update_interval">Scheduler mode interval</string>
+    <!--pref_set_wallpaper_daily_update_interval_summary-->
     <string name="pref_auto_update_check_time">Check every %1$d hours</string>
-    <string name="pref_auto_update_everyday_notification">Auto mode success notification</string>
-    <string name="pref_auto_update_everyday_notification_note">After successful auto update in the background</string>
-    <string name="pref_set_wallpaper_day_fully_automatic_update_type">Auto mode type</string>
+    <string name="pref_set_wallpaper_daily_update_time">Timer mode time</string>
+    <string name="pref_set_wallpaper_daily_update_success_notification">Success notification</string>
+    <string name="pref_set_wallpaper_daily_update_success_notification_summary">After successful in the background</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_auto">Optimal</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_system">Scheduler</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_service">Live wallpaper</string>
-    <string name="pref_set_wallpaper_day_fully_automatic_update_interval">Auto mode check interval</string>
-    <string name="pref_set_wallpaper_day_fully_automatic_update_interval_note">Unit hours, please reset after change</string>
-    <string name="pref_alarm_update_wallpaper_everyday">Timer mode</string>
-    <string name="pref_alarm_update_wallpaper_everyday_summary">Not recommended</string>
-    <string name="pref_alarm_update_wallpaper_time">Set timer time</string>
-    <string name="pref_not_set_time">No time</string>
-    <string name="pref_choose_auto_set_wallpaper_type">Set wallpaper mode</string>
+    <string name="pref_set_wallpaper_day_fully_automatic_update_type_timer">Timer</string>
+    <string name="pref_choose_auto_set_wallpaper_type">Set wallpaper type</string>
     <string name="pref_set_wallpaper_auto_mode_both">Home and lock screen</string>
     <string name="pref_set_wallpaper_auto_mode_home">Home screen</string>
     <string name="pref_set_wallpaper_auto_mode_lock">Lock screen</string>
+    <string name="pref_wallpaper_setting">Wallpaper Setting</string>
+    <string name="pref_choose_set_wallpaper_resolution">Default set resolution</string>
+    <string name="pref_choose_save_resolution">Default save resolution</string>
+    <string name="pref_auto_save_wallpaper_title">Auto save</string>
+    <string name="pref_auto_save_wallpaper_summary">Save wallpaper to photos</string>
+    <string name="pref_stack_blur">Gaussian blur</string>
+    <string name="pref_stack_blur_mode">Wallpaper blur mode</string>
+    <string name="pref_set_miui_lock_screen_wallpaper">MIUI lock screen support</string>
+    <string name="pref_set_miui_lock_screen_wallpaper_note">Need root permission, please use cautious</string>
     <string name="pref_other">Other Setting</string>
-    <string name="pref_choose_set_wallpaper_resolution">Set wallpaper resolution</string>
-    <string name="pref_choose_save_resolution">Default save wallpaper resolution</string>
     <string name="pref_country">Country</string>
     <string name="pref_country_auto">Local</string>
     <string name="pref_country_china">China</string>
@@ -67,19 +71,12 @@
     <string name="pref_country_it">Italy</string>
     <string name="pref_country_ir">Iran</string>
     <string name="pref_language">Language</string>
-    <string name="pref_stack_blur">Gaussian blur</string>
-    <string name="pref_stack_blur_mode">Wallpaper blur mode</string>
     <string name="pref_clear_cache">Clear cache</string>
     <string name="pref_clear_cache_success">Clear cache success</string>
     <string name="pref_log_file">Debug log</string>
-    <string name="pref_set_miui_lock_screen_wallpaper">MIUI lock screen support</string>
-    <string name="pref_set_miui_lock_screen_wallpaper_note">Need root permission, please use cautious</string>
     <string name="pref_crash_report">Usage statistics and crash reports</string>
     <string name="pref_version">Version</string>
     <string name="pref_intro">Open intro</string>
-    <string name="pref_wallpaper_setting">Wallpaper Setting</string>
-    <string name="pref_auto_save_wallpaper_title">Auto save wallpaper</string>
-    <string name="pref_auto_save_wallpaper_summary">Save wallpaper to photos</string>
 
     <!--menu-->
     <string name="menu_main_drawer_wallpaper_info">Wallpaper information</string>
@@ -100,6 +97,7 @@
 
     <!--intro-->
     <string name="intro_update_set">Set automatic update wallpaper</string>
+    <string name="intro_app_explain">App explain</string>
     <string name="intro_hint_welcome">Welcome to Starth Bing Wallpaper</string>
     <string name="intro_hint_whitelist">The app needs to be added to the whitelist of the background admin app, as Brevent, Greenify&#8230;. </string>
     <string name="intro_hint_battery">System battery optimization will make the app can not be performed on time to update the wallpaper, Apps can be added to the battery optimization white list. </string>

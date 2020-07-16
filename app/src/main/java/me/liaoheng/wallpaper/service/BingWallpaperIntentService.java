@@ -22,7 +22,6 @@ import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.IUIHelper;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.NotificationUtils;
-import me.liaoheng.wallpaper.util.SettingUtils;
 import me.liaoheng.wallpaper.util.UIHelper;
 import me.liaoheng.wallpaper.util.WallpaperUtils;
 

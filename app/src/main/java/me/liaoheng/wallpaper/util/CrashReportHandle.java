@@ -135,6 +135,6 @@ public class CrashReportHandle {
     }
 
     private static boolean check(Context context) {
-        return !SettingUtils.isCrashReport(context) || BuildConfig.DEBUG;
+        return !Settings.isCrashReport(context) || BuildConfig.DEBUG;
     }
 }

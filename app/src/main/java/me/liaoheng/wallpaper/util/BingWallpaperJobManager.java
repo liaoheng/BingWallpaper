@@ -7,14 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
-import androidx.annotation.IntDef;
-
 import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.L;
 
+import org.joda.time.LocalTime;
+
 import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.TimeUnit;
 
 import me.liaoheng.wallpaper.R;
@@ -29,7 +27,8 @@ public class BingWallpaperJobManager {
 
     public static void disabled(Context context) {
         WorkerManager.disabled(context);
-        if (getJobType(context) == LIVE_WALLPAPER) {
+        BingWallpaperAlarmManager.disabled(context);
+        if (Settings.getJobType(context) == Settings.LIVE_WALLPAPER) {
             try {
                 WallpaperManager.getInstance(context).clear();
             } catch (IOException ignored) {
@@ -40,57 +39,90 @@ public class BingWallpaperJobManager {
 
     public static void clear(Context context) {
         BingWallpaperUtils.clearTaskComplete(context);
-        SettingUtils.setLastWallpaperImageUrl(context, "");
-        setJobType(context, NONE);
+        Settings.setLastWallpaperImageUrl(context, "");
+        Settings.setJobType(context, Settings.NONE);
     }
 
-    public static boolean enabled(Context context) {
-        clear(context);
-        boolean ret = enabled(context,
-                TimeUnit.HOURS.toSeconds(SettingUtils.getAutomaticUpdateInterval(context)));
-        if (!ret) {
+    public static int enabled(Context context) {
+        int ret = enabledJob(context);
+        if (ret == Settings.NONE) {
             Toast.makeText(context, R.string.enable_job_error, Toast.LENGTH_LONG).show();
         }
         return ret;
     }
 
-    /**
-     * @param time seconds
-     */
-    public static boolean enableSystem(Context context, long time) {
+    @Settings.JobType
+    public static int enabledJob(Context context) {
         try {
-            boolean enabled = WorkerManager.enabled(context, time);
-            setJobType(context, WORKER);
-            if (BingWallpaperUtils.isEnableLog(context)) {
-                LogDebugFileUtils.get()
-                        .i(TAG, "Enable worker interval time : %s", time);
+            clear(context);
+            int type = Settings.getAutomaticUpdateType(context);
+            if (type == Settings.AUTOMATIC_UPDATE_TYPE_AUTO) {
+                if (enableSystem(context)) {
+                    return Settings.WORKER;
+                }
+                if (enableLiveService(context)) {
+                    return Settings.LIVE_WALLPAPER;
+                }
+                if (enableTimer(context)) {
+                    return Settings.TIMER;
+                }
+            } else if (type == Settings.AUTOMATIC_UPDATE_TYPE_SYSTEM) {
+                if (enableSystem(context)) {
+                    return Settings.WORKER;
+                }
+            } else if (type == Settings.AUTOMATIC_UPDATE_TYPE_SERVICE) {
+                if (enableLiveService(context)) {
+                    return Settings.LIVE_WALLPAPER;
+                }
+            } else if (type == Settings.AUTOMATIC_UPDATE_TYPE_TIMER) {
+                if (enableTimer(context)) {
+                    return Settings.TIMER;
+                }
             }
-            L.alog().d(TAG, "enable worker interval time : %s", time);
-            return enabled;
-        } catch (Throwable e) {
-            return false;
+        } catch (Throwable ignore) {
         }
+        return Settings.NONE;
     }
 
-    /**
-     * @param time seconds
-     */
-    public static boolean enabled(Context context, long time) {
+    public static boolean enableSystem(Context context) {
         try {
-            int type = SettingUtils.getAutomaticUpdateType(context);
-            if (type == SettingUtils.AUTOMATIC_UPDATE_TYPE_AUTO) {
-                if (!enableSystem(context, time)) {
-                    return enableLiveService(context, time);
-                }
-            } else if (type == SettingUtils.AUTOMATIC_UPDATE_TYPE_SYSTEM) {
-                return enableSystem(context, time);
-            } else if (type == SettingUtils.AUTOMATIC_UPDATE_TYPE_SERVICE) {
-                return enableLiveService(context, time);
+            long time = TimeUnit.HOURS.toSeconds(Settings.getAutomaticUpdateInterval(context));
+            boolean enabled = WorkerManager.enabled(context, time);
+            Settings.setJobType(context, Settings.WORKER);
+            if (BingWallpaperUtils.isEnableLog(context)) {
+                LogDebugFileUtils.get()
+                        .i(TAG, "Enable scheduler interval time : %s", time);
             }
-            return true;
-        } catch (Exception ignore) {
-            return false;
+            L.alog().d(TAG, "enable scheduler interval time : %s", time);
+            return enabled;
+        } catch (Throwable ignored) {
         }
+        return false;
+    }
+
+    public static boolean enableTimer(Context context) {
+        try {
+            LocalTime updateTime = BingWallpaperUtils.getDayUpdateTime(context);
+            BingWallpaperAlarmManager.enabled(context, updateTime);
+            Settings.setJobType(context, Settings.TIMER);
+            if (BingWallpaperUtils.isEnableLog(context)) {
+                LogDebugFileUtils.get()
+                        .i(TAG, "Enable timer time : %s", updateTime.toString("HH:mm"));
+            }
+            L.alog().d(TAG, "enable timer time : %s", updateTime.toString("HH:mm"));
+            return true;
+        } catch (Throwable ignored) {
+        }
+        return false;
+    }
+
+    public static boolean enableLiveService(Context context) {
+        try {
+            startLiveService(context);
+            return true;
+        } catch (Throwable ignored) {
+        }
+        return false;
     }
 
     public static int LIVE_WALLPAPER_REQUEST_CODE = 0x99;
@@ -105,36 +137,17 @@ public class BingWallpaperJobManager {
         }
     }
 
-    public static boolean enableLiveService(Context context, long time) {
-        try {
-            startLiveService(context);
-            //setJobType(context, LIVE_WALLPAPER);
-            //if (BingWallpaperUtils.isEnableLog(context)) {
-            //    LogDebugFileUtils.get()
-            //            .i(TAG, "Enable live service");
-            //}
-            //L.alog().d(TAG, "enable live service");
-        } catch (Throwable e) {
-            return false;
-        }
-        return true;
-    }
-
-    public static void onActivityResult(Context context, int requestCode, int resultCode) {
-        onActivityResult(context, requestCode, resultCode, null);
-    }
-
     public static void onActivityResult(Context context, int requestCode, int resultCode, Callback5 callback) {
         if (requestCode == LIVE_WALLPAPER_REQUEST_CODE) {
             if (Activity.RESULT_OK == resultCode) {
                 Intent intent = new Intent(LiveWallpaperService.START_LIVE_WALLPAPER_SCHEDULER);
                 context.sendBroadcast(intent);
-                setJobType(context, LIVE_WALLPAPER);
+                Settings.setJobType(context, Settings.LIVE_WALLPAPER);
                 if (BingWallpaperUtils.isEnableLog(context)) {
                     LogDebugFileUtils.get()
-                            .i(TAG, "Enable live service");
+                            .i(TAG, "Enable live wallpaper");
                 }
-                L.alog().d(TAG, "enable live service");
+                L.alog().d(TAG, "enable live wallpaper");
                 if (callback != null) {
                     callback.onAllow();
                 }
@@ -146,45 +159,20 @@ public class BingWallpaperJobManager {
         }
     }
 
-    public static void setJobType(Context context, @JobType int type) {
-        SettingTrayPreferences.get(context).put("bing_wallpaper_job_type", type);
-    }
-
-    @JobType
-    public static int getJobType(Context context) {
-        return SettingTrayPreferences.get(context).getInt("bing_wallpaper_job_type");
-    }
-
-    @IntDef(value = {
-            NONE,
-            GOOGLE_SERVICE,
-            SYSTEM,
-            DAEMON_SERVICE,
-            WORKER,
-            LIVE_WALLPAPER
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface JobType {}
-
-    public final static int NONE = -1;
-    public final static int GOOGLE_SERVICE = 0;
-    public final static int SYSTEM = 1;
-    public final static int DAEMON_SERVICE = 2;
-    public final static int WORKER = 3;
-    public final static int LIVE_WALLPAPER = 4;
-
     public static String check(Context context) {
-        int jobType = getJobType(context);
-        if (jobType == NONE) {
+        int jobType = Settings.getJobType(context);
+        if (jobType == Settings.NONE) {
             return "none";
-        } else if (jobType == LIVE_WALLPAPER) {
+        } else if (jobType == Settings.LIVE_WALLPAPER) {
             return "live_wallpaper";
-        } else if (jobType == WORKER) {
+        } else if (jobType == Settings.WORKER) {
             if (WorkerManager.isScheduled(context)) {
                 return "worker";
             } else {
                 return "worker_error";
             }
+        } else if (jobType == Settings.TIMER) {
+            return "timer(" + BingWallpaperUtils.getDayUpdateTime(context) + ")";
         }
         return String.valueOf(jobType);
     }

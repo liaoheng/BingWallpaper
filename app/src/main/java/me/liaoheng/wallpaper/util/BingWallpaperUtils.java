@@ -65,15 +65,15 @@ import me.liaoheng.wallpaper.ui.SettingsActivity;
 public class BingWallpaperUtils {
 
     public static boolean isEnableLog(Context context) {
-        return SettingUtils.isEnableLog(context);
+        return Settings.isEnableLog(context);
     }
 
     public static boolean isEnableLogProvider(Context context) {
-        return SettingUtils.isEnableLogProvider(context);
+        return Settings.isEnableLogProvider(context);
     }
 
     public static String getResolutionImageUrl(Context context, Wallpaper image) {
-        return getImageUrl(context, SettingUtils.getResolution(context), image.getBaseUrl());
+        return getImageUrl(context, Settings.getResolution(context), image.getBaseUrl());
     }
 
     public static String getImageUrl(Context context, String resolution, String baseUrl) {
@@ -81,7 +81,7 @@ public class BingWallpaperUtils {
     }
 
     public static boolean isAutoCountry(Context context) {
-        return SettingUtils.getCountryValue(context) == 0;
+        return Settings.getCountryValue(context) == 0;
     }
 
     public static String getUrl(Context context) {
@@ -108,7 +108,7 @@ public class BingWallpaperUtils {
 
     @NonNull
     public static Locale getLocale(Context context) {
-        int auto = SettingUtils.getCountryValue(context);
+        int auto = Settings.getCountryValue(context);
         switch (auto) {
             case 1:
                 return Locale.CHINA;
@@ -177,11 +177,11 @@ public class BingWallpaperUtils {
      *
      * @return UTC
      */
-    @Nullable
+    @NonNull
     public static LocalTime getDayUpdateTime(Context context) {
-        String time = SettingUtils.getAlarmTime(context);
+        String time = Settings.getAlarmTime(context);
         if (TextUtils.isEmpty(time)) {
-            return null;
+            return LocalTime.parse(Constants.DEF_TIMER_PERIODIC);
         }
         return LocalTime.parse(time);
     }
@@ -194,20 +194,6 @@ public class BingWallpaperUtils {
      */
     public static DateTime checkTime(LocalTime time) {
         return DateTimeUtils.checkTimeToNextDay(time);
-    }
-
-    public static void disabledReceiver(Context context, String receiver) {
-        settingReceiver(context, receiver, PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
-    }
-
-    public static void enabledReceiver(Context context, String receiver) {
-        settingReceiver(context, receiver, PackageManager.COMPONENT_ENABLED_STATE_ENABLED);
-    }
-
-    public static void settingReceiver(Context context, String receiver, int newState) {
-        ComponentName componentName = new ComponentName(context, receiver);
-        PackageManager pm = context.getPackageManager();
-        pm.setComponentEnabledSetting(componentName, newState, PackageManager.DONT_KILL_APP);
     }
 
     public static void showSaveWallpaperDialog(Context context, Callback5 callback) {
@@ -274,7 +260,7 @@ public class BingWallpaperUtils {
     }
 
     public static void startWallpaper(Context context, Wallpaper image, Config config) {
-        if (BingWallpaperJobManager.LIVE_WALLPAPER == BingWallpaperJobManager.getJobType(context)) {
+        if (Settings.LIVE_WALLPAPER == Settings.getJobType(context)) {
             Intent intent = new Intent(LiveWallpaperService.UPDATE_LIVE_WALLPAPER);
             intent.putExtra(Config.EXTRA_SET_WALLPAPER_IMAGE, image);
             intent.putExtra(Config.EXTRA_SET_WALLPAPER_CONFIG, config);
@@ -457,11 +443,9 @@ public class BingWallpaperUtils {
         Locale locale = Locale.getDefault();
         Locale autoLocale = getLocale(context);
         String job = BingWallpaperJobManager.check(context);
-        boolean alarm = SettingUtils.isAlarm(context);
-        String alarmTime = SettingUtils.getAlarmTime(context);
-        String autoSetMode = SettingUtils.getAutoMode(context);
-        int interval = SettingUtils.getAutomaticUpdateInterval(context);
-        String resolution = SettingUtils.getResolution(context);
+        String autoSetMode = Settings.getAutoMode(context);
+        int interval = Settings.getAutomaticUpdateInterval(context);
+        String resolution = Settings.getResolution(context);
         DisplayMetrics r = BingWallpaperUtils.getSysResolution(context);
         String SysResolution = r.widthPixels + "x" + r.heightPixels;
 
@@ -492,10 +476,6 @@ public class BingWallpaperUtils {
                 + SysResolution
                 + " job: "
                 + job
-                + " alarm: "
-                + alarm
-                + " alarm_time: "
-                + alarmTime
                 + " autoSetMode: "
                 + autoSetMode
                 + " interval: "
@@ -510,7 +490,7 @@ public class BingWallpaperUtils {
                 context.getString(R.string.app_name) + " : " + context.getString(R.string.menu_main_feedback),
                 BingWallpaperUtils.getSystemInfo(context));
 
-        if (SettingUtils.isEnableLog(context)) {
+        if (Settings.isEnableLog(context)) {
             File logFile = LogDebugFileUtils.get().getLogFile();
             if (logFile != null && logFile.exists()) {
                 emailIntent.putExtra(Intent.EXTRA_STREAM, getUriForFile(context, logFile));
@@ -542,10 +522,10 @@ public class BingWallpaperUtils {
     }
 
     public static Intent checkRunningServiceIntent(Context context, String TAG) {
-        boolean enableLog = SettingUtils.isEnableLogProvider(context);
+        boolean enableLog = Settings.isEnableLogProvider(context);
         Intent intent = new Intent(context, BingWallpaperIntentService.class);
         if (isConnected(context)) {
-            if (SettingUtils.getOnlyWifi(context)) {
+            if (Settings.getOnlyWifi(context)) {
                 if (!NetworkUtils.isWifiConnected(context)) {
                     L.alog().d(TAG, "isWifiConnected :false");
                     if (enableLog) {
@@ -564,7 +544,7 @@ public class BingWallpaperUtils {
                 return null;
             }
             Config config = new Config.Builder().loadConfig(context)
-                    .setWallpaperMode(SettingUtils.getAutoModeValue(context))
+                    .setWallpaperMode(Settings.getAutoModeValue(context))
                     .setBackground(true)
                     .build();
             intent.putExtra(Config.EXTRA_SET_WALLPAPER_CONFIG, config);
@@ -633,7 +613,7 @@ public class BingWallpaperUtils {
     public static void taskComplete(Context context, String TAG) {
         if (isTaskUndone(context)) {
             L.alog().i(TAG, "today complete");
-            if (SettingUtils.isEnableLogProvider(context)) {
+            if (Settings.isEnableLogProvider(context)) {
                 LogDebugFileUtils.get().i(TAG, "Today complete");
             }
             TasksUtils.markDoneProvider(context, Constants.TASK_FLAG_SET_WALLPAPER_STATE);

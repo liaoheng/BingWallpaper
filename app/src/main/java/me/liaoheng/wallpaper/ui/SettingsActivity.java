@@ -35,15 +35,14 @@ import com.github.liaoheng.common.util.Utils;
 import org.joda.time.LocalTime;
 
 import me.liaoheng.wallpaper.R;
-import me.liaoheng.wallpaper.service.AutoSetWallpaperBroadcastReceiver;
-import me.liaoheng.wallpaper.util.BingWallpaperAlarmManager;
 import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.ISettingTrayPreferences;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.SettingTrayPreferences;
-import me.liaoheng.wallpaper.util.SettingUtils;
+import me.liaoheng.wallpaper.util.Settings;
 import me.liaoheng.wallpaper.widget.SeekBarDialogPreference;
 import me.liaoheng.wallpaper.widget.SeekBarPreferenceDialogFragmentCompat;
 import me.liaoheng.wallpaper.widget.TimePreference;
@@ -111,17 +110,16 @@ public class SettingsActivity extends BaseActivity {
         super.onBackPressed();
     }
 
+    public static final String PREF_SET_WALLPAPER_DAILY_UPDATE = "pref_set_wallpaper_day_fully_automatic_update";
+    public static final String PREF_SET_WALLPAPER_DAILY_UPDATE_MODE = "pref_set_wallpaper_day_fully_automatic_update_type";
+    public static final String PREF_SET_WALLPAPER_DAILY_UPDATE_INTERVAL = "pref_set_wallpaper_day_fully_automatic_update_interval";
+    public static final String PREF_SET_WALLPAPER_DAILY_UPDATE_TIME = "pref_set_wallpaper_day_auto_update_time";
+    public static final String PREF_SET_WALLPAPER_DAILY_UPDATE_SUCCESS_NOTIFICATION = "pref_set_wallpaper_day_fully_automatic_update_notification";
     public static final String PREF_COUNTRY = "pref_country";
     public static final String PREF_LANGUAGE = "pref_language";
     public static final String PREF_SET_WALLPAPER_RESOLUTION = "pref_set_wallpaper_resolution";
     public static final String PREF_SAVE_WALLPAPER_RESOLUTION = "pref_save_wallpaper_resolution";
     public static final String PREF_SET_WALLPAPER_AUTO_MODE = "pref_set_wallpaper_auto_mode";
-    public static final String PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE = "pref_set_wallpaper_day_fully_automatic_update";
-    public static final String PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_TYPE = "pref_set_wallpaper_day_fully_automatic_update_type";
-    public static final String PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_NOTIFICATION = "pref_set_wallpaper_day_fully_automatic_update_notification";
-    public static final String PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_INTERVAL = "pref_set_wallpaper_day_fully_automatic_update_interval";
-    public static final String PREF_SET_WALLPAPER_DAY_AUTO_UPDATE = "pref_set_wallpaper_day_auto_update";
-    public static final String PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME = "pref_set_wallpaper_day_auto_update_time";
     public static final String PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI = "pref_set_wallpaper_day_auto_update_only_wifi";
     public static final String PREF_SET_WALLPAPER_LOG = "pref_set_wallpaper_debug_log";
     public static final String PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER = "pref_set_miui_lock_screen_wallpaper";
@@ -134,19 +132,18 @@ public class SettingsActivity extends BaseActivity {
             implements SharedPreferences.OnSharedPreferenceChangeListener {
         private ISettingTrayPreferences mPreferences;
 
+        private SwitchPreference mDailyUpdatePreference;
+        private ListPreference mDailyUpdateModeListPreference;
+        private ListPreference mDailyUpdateIntervalPreference;
+        private TimePreference mDailyUpdateTimePreference;
+        private SwitchPreference mDailyUpdateSuccessNotificationPreference;
         private SwitchPreference mOnlyWifiPreference;
         private ListPreference mCountryListPreference;
         private ListPreference mResolutionListPreference;
         private ListPreference mSaveResolutionListPreference;
         private ListPreference mModeTypeListPreference;
-        private TimePreference mTimePreference;
-        private SwitchPreference mDayUpdatePreference;
-        private SwitchPreference mAutoUpdatePreference;
-        private SwitchPreference mAutoUpdateNotificationPreference;
-        private ListPreference mAutoUpdateIntervalPreference;
         private SwitchPreference mLogPreference;
         private SwitchPreference mCrashPreference;
-        private ListPreference mAutoUpdateTypeListPreference;
         private SwitchPreference mMIuiLockScreenPreference;
         private SeekBarDialogPreference mStackBlurPreference;
         private ListPreference mStackBlurModePreference;
@@ -184,8 +181,8 @@ public class SettingsActivity extends BaseActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (CLOSE_FULLY_AUTOMATIC_UPDATE.equals(intent.getAction())) {
-                    if (mAutoUpdatePreference != null) {
-                        mAutoUpdatePreference.setChecked(false);
+                    if (mDailyUpdatePreference != null) {
+                        mDailyUpdatePreference.setChecked(false);
                     }
                 }
             }
@@ -252,31 +249,28 @@ public class SettingsActivity extends BaseActivity {
                 return true;
             });
 
+            mDailyUpdatePreference = findPreference(
+                    PREF_SET_WALLPAPER_DAILY_UPDATE);
+            mDailyUpdateModeListPreference = findPreference(PREF_SET_WALLPAPER_DAILY_UPDATE_MODE);
+            mDailyUpdateIntervalPreference = findPreference(
+                    PREF_SET_WALLPAPER_DAILY_UPDATE_INTERVAL);
+            mDailyUpdateTimePreference = findPreference(PREF_SET_WALLPAPER_DAILY_UPDATE_TIME);
+            mDailyUpdateSuccessNotificationPreference = findPreference(
+                    PREF_SET_WALLPAPER_DAILY_UPDATE_SUCCESS_NOTIFICATION);
             mCountryListPreference = findPreference(PREF_COUNTRY);
             ListPreference mLanguageListPreference = findPreference(PREF_LANGUAGE);
             mResolutionListPreference = findPreference(PREF_SET_WALLPAPER_RESOLUTION);
             mSaveResolutionListPreference = findPreference(PREF_SAVE_WALLPAPER_RESOLUTION);
             mModeTypeListPreference = findPreference(PREF_SET_WALLPAPER_AUTO_MODE);
-            mDayUpdatePreference = findPreference(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE);
-            mTimePreference = findPreference(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME);
-            mAutoUpdateTypeListPreference = findPreference(PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_TYPE);
-
             mOnlyWifiPreference = findPreference(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI);
-            mAutoUpdatePreference = findPreference(
-                    PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE);
-            mAutoUpdateIntervalPreference = findPreference(
-                    PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_INTERVAL);
-            mAutoUpdateNotificationPreference = findPreference(
-                    PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_NOTIFICATION);
             mMIuiLockScreenPreference = findPreference(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER);
             mLogPreference = findPreference(PREF_SET_WALLPAPER_LOG);
             mCrashPreference = findPreference(PREF_CRASH_REPORT);
             mStackBlurPreference = findPreference(PREF_STACK_BLUR);
-            int stackBlur = SettingUtils.getSettingStackBlur(getActivity());
+            int stackBlur = Settings.getSettingStackBlur(getActivity());
             mStackBlurPreference.setProgress(stackBlur);
             mStackBlurPreference.setSummary(String.valueOf(stackBlur));
             mStackBlurModePreference = findPreference(PREF_STACK_BLUR_MODE);
-
             mAutoSaveWallpaperPreference = findPreference(PREF_AUTO_SAVE_WALLPAPER_FILE);
 
             if (!ROM.getROM().isMiui()) {
@@ -297,14 +291,14 @@ public class SettingsActivity extends BaseActivity {
                         }
                         return false;
                     });
-                    mMIuiLockScreenPreference.setChecked(SettingUtils.isMiuiLockScreenSupport(getActivity()));
+                    mMIuiLockScreenPreference.setChecked(Settings.isMiuiLockScreenSupport(getActivity()));
                 }
             }
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                 if (ROM.getROM().isMiui()) {
-                    mModeTypeListPreference.setSummary(SettingUtils.getAutoMode(getActivity()));
-                    mStackBlurModePreference.setSummary(SettingUtils.getSettingStackBlurModeName(getActivity()));
+                    mModeTypeListPreference.setSummary(Settings.getAutoMode(getActivity()));
+                    mStackBlurModePreference.setSummary(Settings.getSettingStackBlurModeName(getActivity()));
                 } else {
                     ((PreferenceCategory) findPreference("pref_update_group")).removePreference(
                             mModeTypeListPreference);
@@ -312,38 +306,67 @@ public class SettingsActivity extends BaseActivity {
                             mStackBlurModePreference);
                 }
             } else {
-                mModeTypeListPreference.setSummary(SettingUtils.getAutoMode(getActivity()));
-                mStackBlurModePreference.setSummary(SettingUtils.getSettingStackBlurModeName(getActivity()));
+                mModeTypeListPreference.setSummary(Settings.getAutoMode(getActivity()));
+                mStackBlurModePreference.setSummary(Settings.getSettingStackBlurModeName(getActivity()));
             }
 
-            mResolutionListPreference.setSummary(SettingUtils.getResolution(getActivity()));
-            mSaveResolutionListPreference.setSummary(SettingUtils.getSaveResolution(getActivity()));
-            mCountryListPreference.setSummary(SettingUtils.getCountryName(getActivity()));
-            mLanguageListPreference.setSummary(SettingUtils.getLanguageName(getActivity()));
+            mResolutionListPreference.setSummary(Settings.getResolution(getActivity()));
+            mSaveResolutionListPreference.setSummary(Settings.getSaveResolution(getActivity()));
+            mCountryListPreference.setSummary(Settings.getCountryName(getActivity()));
+            mLanguageListPreference.setSummary(Settings.getLanguageName(getActivity()));
 
-            mAutoUpdateTypeListPreference.setSummary(SettingUtils.getAutomaticUpdateTypeName(getActivity()));
+            mDailyUpdateModeListPreference.setSummary(Settings.getAutomaticUpdateTypeName(getContext()));
+            mDailyUpdateIntervalPreference.setSummary(getString(R.string.pref_auto_update_check_time,
+                    Settings.getAutomaticUpdateInterval(getContext())));
+            mDailyUpdateTimePreference.setSummary(LocalTime.parse(Constants.DEF_TIMER_PERIODIC).toString("HH:mm"));
 
-            updateCheckTime();
-
-            LocalTime localTime = BingWallpaperUtils.getDayUpdateTime(getActivity());
-
-            if (localTime != null) {
-                mTimePreference.setSummary(localTime.toString("HH:mm"));
-                mTimePreference.setLocalTime(localTime);
-            } else {
-                mTimePreference.setSummary(R.string.pref_not_set_time);
-                mTimePreference.setLocalTime(null);
+            switch (Settings.getAutomaticUpdateType(getContext())) {
+                case Settings.AUTOMATIC_UPDATE_TYPE_AUTO:
+                    int jobType = Settings.getJobType(getContext());
+                    if (jobType == Settings.WORKER) {
+                        initWorkerView();
+                    } else if (jobType == Settings.LIVE_WALLPAPER) {
+                        initLiveView();
+                    } else if (jobType == Settings.TIMER) {
+                        initTimerView();
+                    }
+                    break;
+                case Settings.AUTOMATIC_UPDATE_TYPE_SYSTEM:
+                    initWorkerView();
+                    break;
+                case Settings.AUTOMATIC_UPDATE_TYPE_SERVICE:
+                    initLiveView();
+                    break;
+                case Settings.AUTOMATIC_UPDATE_TYPE_TIMER:
+                    initTimerView();
+                    break;
             }
-            if (mAutoUpdatePreference.isChecked()) {
-                mDayUpdatePreference.setChecked(false);
-            }
-            mTimePreference.setEnabled(mDayUpdatePreference.isChecked());
+        }
+
+        private void initWorkerView() {
+            mDailyUpdateIntervalPreference.setEnabled(true);
+            mDailyUpdateIntervalPreference.setSummary(getString(R.string.pref_auto_update_check_time,
+                    Settings.getAutomaticUpdateInterval(getContext())));
+            mDailyUpdateTimePreference.setEnabled(false);
+        }
+
+        private void initLiveView() {
+            mDailyUpdateIntervalPreference.setEnabled(false);
+            mDailyUpdateTimePreference.setEnabled(false);
+        }
+
+        private void initTimerView() {
+            LocalTime localTime = BingWallpaperUtils.getDayUpdateTime(getContext());
+            mDailyUpdateTimePreference.setEnabled(true);
+            mDailyUpdateTimePreference.setSummary(localTime.toString("HH:mm"));
+            mDailyUpdateTimePreference.setLocalTime(localTime);
+            mDailyUpdateIntervalPreference.setEnabled(false);
         }
 
         @SuppressLint("StringFormatMatches")
         private void updateCheckTime() {
-            mAutoUpdatePreference.setSummary(getString(R.string.pref_auto_update_check_time,
-                    SettingUtils.getAutomaticUpdateInterval(getActivity())));
+            mDailyUpdateIntervalPreference.setSummary(getString(R.string.pref_auto_update_check_time,
+                    Settings.getAutomaticUpdateInterval(getActivity())));
         }
 
         @Override
@@ -375,52 +398,48 @@ public class SettingsActivity extends BaseActivity {
                     mModeTypeListPreference.setSummary(mModeTypeListPreference.getEntry());
                     mPreferences.put(PREF_SET_WALLPAPER_AUTO_MODE, mModeTypeListPreference.getValue());
                     break;
-                case PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE:
-                    if (mAutoUpdatePreference.isChecked()) {
-                        if (!BingWallpaperJobManager.enabled(getActivity())) {
-                            mAutoUpdatePreference.setChecked(false);
+                case PREF_SET_WALLPAPER_DAILY_UPDATE:
+                    if (mDailyUpdatePreference.isChecked()) {
+                        if (BingWallpaperJobManager.enabled(getContext()) == Settings.NONE) {
+                            mDailyUpdatePreference.setChecked(false);
                             return;
                         }
-                        SettingUtils.clearDayUpdateTime(getActivity());
-                        BingWallpaperAlarmManager.disabled(getActivity());
-                        mTimePreference.setSummary(R.string.pref_not_set_time);
-                        mDayUpdatePreference.setChecked(false);
                     } else {
-                        BingWallpaperJobManager.disabled(getActivity());
+                        BingWallpaperJobManager.disabled(getContext());
                     }
-                    mPreferences.put(PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE, mAutoUpdatePreference.isChecked());
+                    mPreferences.put(PREF_SET_WALLPAPER_DAILY_UPDATE, mDailyUpdatePreference.isChecked());
                     break;
-                case PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_TYPE:
-                    mAutoUpdateTypeListPreference.setSummary(mAutoUpdateTypeListPreference.getEntry());
-                    break;
-                case PREF_SET_WALLPAPER_DAY_AUTO_UPDATE:
-                    if (mDayUpdatePreference.isChecked()) {
-                        mAutoUpdatePreference.setChecked(false);
-                        BingWallpaperUtils.enabledReceiver(getActivity(),
-                                AutoSetWallpaperBroadcastReceiver.class.getName());
-                    } else {
-                        BingWallpaperUtils.disabledReceiver(getActivity(),
-                                AutoSetWallpaperBroadcastReceiver.class.getName());
+                case PREF_SET_WALLPAPER_DAILY_UPDATE_MODE:
+                    int type = Integer.parseInt(mDailyUpdateModeListPreference.getValue());
+                    switch (type) {
+                        case Settings.AUTOMATIC_UPDATE_TYPE_AUTO:
+                            mDailyUpdateTimePreference.setEnabled(true);
+                            mDailyUpdateIntervalPreference.setEnabled(true);
+                            break;
+                        case Settings.AUTOMATIC_UPDATE_TYPE_SYSTEM:
+                            initWorkerView();
+                            break;
+                        case Settings.AUTOMATIC_UPDATE_TYPE_SERVICE:
+                            initLiveView();
+                            break;
+                        case Settings.AUTOMATIC_UPDATE_TYPE_TIMER:
+                            initTimerView();
+                            break;
                     }
-                    mTimePreference.setEnabled(mDayUpdatePreference.isChecked());
-                    mPreferences.put(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE, mDayUpdatePreference.isChecked());
+                    mDailyUpdateModeListPreference.setSummary(mDailyUpdateModeListPreference.getEntry());
                     break;
-                case PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_NOTIFICATION:
-                    mPreferences.put(PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_NOTIFICATION,
-                            mAutoUpdateNotificationPreference.isChecked());
-                    break;
-                case PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_INTERVAL:
-                    mPreferences.put(PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_INTERVAL,
-                            mAutoUpdateIntervalPreference.getValue());
+                case PREF_SET_WALLPAPER_DAILY_UPDATE_INTERVAL:
+                    mPreferences.put(PREF_SET_WALLPAPER_DAILY_UPDATE_INTERVAL,
+                            mDailyUpdateIntervalPreference.getValue());
                     updateCheckTime();
                     break;
-                case PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME:
-                    if (mTimePreference.isEnabled()) {
-                        BingWallpaperAlarmManager
-                                .enabled(getActivity(), mTimePreference.getLocalTime());
-                        mPreferences.put(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME,
-                                mTimePreference.getLocalTime().toString());
-                    }
+                case PREF_SET_WALLPAPER_DAILY_UPDATE_TIME:
+                    mPreferences.put(PREF_SET_WALLPAPER_DAILY_UPDATE_TIME,
+                            mDailyUpdateTimePreference.getLocalTime().toString());
+                    break;
+                case PREF_SET_WALLPAPER_DAILY_UPDATE_SUCCESS_NOTIFICATION:
+                    mPreferences.put(PREF_SET_WALLPAPER_DAILY_UPDATE_SUCCESS_NOTIFICATION,
+                            mDailyUpdateSuccessNotificationPreference.isChecked());
                     break;
                 case PREF_SET_WALLPAPER_LOG:
                     mPreferences.put(PREF_SET_WALLPAPER_LOG, mLogPreference.isChecked());

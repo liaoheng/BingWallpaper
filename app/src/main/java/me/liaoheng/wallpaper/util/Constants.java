@@ -2,6 +2,8 @@ package me.liaoheng.wallpaper.util;
 
 import androidx.annotation.IntDef;
 
+import org.joda.time.LocalTime;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +22,7 @@ public interface Constants {
     int HTTP_DISK_CACHE_SIZE = 5 * 1024 * 1024;  // 5MB
 
     long DEF_SCHEDULER_PERIODIC = 3;//hour
+    String DEF_TIMER_PERIODIC = new LocalTime(0, 35).toString();
     long DEF_LIVE_WALLPAPER_CHECK_PERIODIC = TimeUnit.MINUTES.toMillis(35);
 
     String LOCAL_BASE_URL = "https://bing.com";

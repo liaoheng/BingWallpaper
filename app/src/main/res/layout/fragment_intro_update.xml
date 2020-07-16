@@ -1,42 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:padding="20dp">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="20dp">
 
     <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
             android:layout_marginTop="50dp"
+            android:layout_marginBottom="10dp"
             android:text="@string/intro_update_set"
             android:textSize="25sp" />
 
-    <RadioGroup
-            android:id="@+id/intro_update_select_group"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+    <Button
+            android:id="@+id/intro_app_explain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/intro_app_explain" />
 
-        <RadioButton
-                android:id="@+id/intro_update_select_group_item_auto"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/pref_auto_update_everyday" />
-
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:text="@string/pref_auto_update_check_every_hour" />
-
-        <RadioButton
-                android:id="@+id/intro_update_select_group_item_skip"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="@string/app_intro_skip_button" />
-
-    </RadioGroup>
+    <Button
+            android:id="@+id/intro_enable_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/pref_set_wallpaper_daily_update" />
 
 </LinearLayout>

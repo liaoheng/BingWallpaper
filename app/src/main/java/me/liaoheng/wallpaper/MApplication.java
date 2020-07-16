@@ -38,6 +38,7 @@ public class MApplication extends Application {
         NetUtils.get().init(getApplicationContext());
         Constants.Config.isPhone = getString(R.string.screen_type).equals("phone");
         WorkerManager.init(this, BuildConfig.DEBUG);
+        BingWallpaperUtils.isTaskUndone(this);
 
         CrashReportHandle.init(this);
 

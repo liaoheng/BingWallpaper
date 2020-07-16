@@ -12,7 +12,7 @@ import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.NotificationUtils;
 import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
-import me.liaoheng.wallpaper.util.SettingUtils;
+import me.liaoheng.wallpaper.util.Settings;
 import me.liaoheng.wallpaper.widget.AppWidget_5x1;
 import me.liaoheng.wallpaper.widget.AppWidget_5x2;
 
@@ -56,10 +56,10 @@ public class SetWallpaperServiceHelper {
     public void success(Config config, Wallpaper image) {
         L.alog().i(TAG, "set wallpaper success");
         if (config.isBackground()) {
-            if (!SettingUtils.getLastWallpaperImageUrl(mContext).equals(image.getImageUrl())) {
+            if (!Settings.getLastWallpaperImageUrl(mContext).equals(image.getImageUrl())) {
                 BingWallpaperUtils.taskComplete(mContext, TAG);
-                showSuccessNotification(image, SettingUtils.isAutomaticUpdateNotification(mContext));
-                SettingUtils.setLastWallpaperImageUrl(mContext, image.getImageUrl());
+                showSuccessNotification(image, Settings.isAutomaticUpdateNotification(mContext));
+                Settings.setLastWallpaperImageUrl(mContext, image.getImageUrl());
             }
         } else {
             showSuccessNotification(image, config.isShowNotification());

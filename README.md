@@ -1,6 +1,6 @@
 ## Starth Bing Wallpaper
 
-[![API](https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=21)[![GitHub release](https://img.shields.io/github/release/liaoheng/BingWallpaper.svg)](https://github.com/liaoheng/BingWallpaper/releases/latest)
+[![API](https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=21) [![GitHub release](https://img.shields.io/github/release/liaoheng/BingWallpaper.svg)](https://github.com/liaoheng/BingWallpaper/releases/latest)
 
 Starth Bing Wallpaper is a free and open source app, change your device background or lock screen with Bing image of the day. (some non-AOSP systems are not supported lock screen)
 

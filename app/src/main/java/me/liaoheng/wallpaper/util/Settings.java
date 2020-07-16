@@ -17,7 +17,7 @@ import me.liaoheng.wallpaper.ui.SettingsActivity;
  * @author liaoheng
  * @version 2020-07-03 16:35
  */
-public class SettingUtils {
+public class Settings {
 
     public static boolean isCrashReport(Context context) {
         return SettingTrayPreferences.get(context).getBoolean(SettingsActivity.PREF_CRASH_REPORT, true);
@@ -101,22 +101,17 @@ public class SettingUtils {
         return names[getLanguageValue(context)];
     }
 
+    @Deprecated
     public static boolean isAlarm(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
-        return sharedPreferences.getBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE, false);
+        return sharedPreferences.getBoolean("pref_set_wallpaper_day_auto_update", false);
     }
 
     public static String getAlarmTime(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
-        return sharedPreferences.getString(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME, "");
-    }
-
-    public static void clearDayUpdateTime(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        sharedPreferences.edit().putString(SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_TIME,
-                null).apply();
+        return sharedPreferences.getString(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_TIME, "");
     }
 
     public static boolean isAutoSave(Context context) {
@@ -138,7 +133,8 @@ public class SettingUtils {
     @IntDef(value = {
             AUTOMATIC_UPDATE_TYPE_AUTO,
             AUTOMATIC_UPDATE_TYPE_SYSTEM,
-            AUTOMATIC_UPDATE_TYPE_SERVICE
+            AUTOMATIC_UPDATE_TYPE_SERVICE,
+            AUTOMATIC_UPDATE_TYPE_TIMER
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface AutomaticUpdateTypeResult {}
@@ -146,13 +142,14 @@ public class SettingUtils {
     public final static int AUTOMATIC_UPDATE_TYPE_AUTO = 0;
     public final static int AUTOMATIC_UPDATE_TYPE_SYSTEM = 1;
     public final static int AUTOMATIC_UPDATE_TYPE_SERVICE = 2;
+    public final static int AUTOMATIC_UPDATE_TYPE_TIMER = 3;
 
     @AutomaticUpdateTypeResult
     public static int getAutomaticUpdateType(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
         String type = sharedPreferences
-                .getString(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_TYPE, "0");
+                .getString(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_MODE, "0");
         return Integer.parseInt(Objects.requireNonNull(type));
     }
 
@@ -165,7 +162,7 @@ public class SettingUtils {
 
     public static boolean isAutomaticUpdateNotification(Context context) {
         return SettingTrayPreferences.get(context)
-                .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_NOTIFICATION, true);
+                .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_SUCCESS_NOTIFICATION, true);
     }
 
     // hour
@@ -173,7 +170,7 @@ public class SettingUtils {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
         return Integer.parseInt(Objects.requireNonNull(sharedPreferences
-                .getString(SettingsActivity.PREF_SET_WALLPAPER_DAY_FULLY_AUTOMATIC_UPDATE_INTERVAL,
+                .getString(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_INTERVAL,
                         String.valueOf(Constants.DEF_SCHEDULER_PERIODIC))));
     }
 
@@ -210,6 +207,37 @@ public class SettingUtils {
 
     public static String getLastWallpaperImageUrl(Context context) {
         return SettingTrayPreferences.get(context).getString(Constants.PREF_LAST_WALLPAPER_IMAGE_URL, "");
+    }
+
+    @IntDef(value = {
+            NONE,
+            GOOGLE_SERVICE,
+            SYSTEM,
+            DAEMON_SERVICE,
+            WORKER,
+            LIVE_WALLPAPER,
+            TIMER
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface JobType {}
+
+    public final static int NONE = -1;
+    public final static int GOOGLE_SERVICE = 0;
+    public final static int SYSTEM = 1;
+    public final static int DAEMON_SERVICE = 2;
+    public final static int WORKER = 3;
+    public final static int LIVE_WALLPAPER = 4;
+    public final static int TIMER = 5;
+
+    public static final String BING_WALLPAPER_JOB_TYPE = "bing_wallpaper_job_type";
+
+    public static void setJobType(Context context, @JobType int type) {
+        SettingTrayPreferences.get(context).put(BING_WALLPAPER_JOB_TYPE, type);
+    }
+
+    @JobType
+    public static int getJobType(Context context) {
+        return SettingTrayPreferences.get(context).getInt(BING_WALLPAPER_JOB_TYPE);
     }
 
 }

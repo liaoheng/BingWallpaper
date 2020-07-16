@@ -12,13 +12,13 @@ import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
 
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.data.provider.TasksContract;
+import me.liaoheng.wallpaper.ui.SettingsActivity;
 import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.wallpaper.util.Constants;
-import me.liaoheng.wallpaper.util.SettingUtils;
+import me.liaoheng.wallpaper.util.Settings;
 
 /**
  * @author liaoheng
@@ -48,10 +48,21 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
-        BingWallpaperJobManager.setJobType(context, sharedPreferences.getInt("bing_wallpaper_job_type", -1));
+        int type = sharedPreferences.getInt(Settings.BING_WALLPAPER_JOB_TYPE, -1);
+        if (type != -1) {
+            Settings.setJobType(context, type);
+        }
+        sharedPreferences.edit().remove(Settings.BING_WALLPAPER_JOB_TYPE).apply();
+        boolean alarm = Settings.isAlarm(context);
+        if (alarm) {
+            sharedPreferences.edit()
+                    .putString(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_MODE,
+                            String.valueOf(Settings.AUTOMATIC_UPDATE_TYPE_TIMER))
+                    .apply();
+        }
 
-        int jobType = BingWallpaperJobManager.getJobType(context);
-        if (jobType == BingWallpaperJobManager.SYSTEM || jobType == BingWallpaperJobManager.GOOGLE_SERVICE) {
+        int jobType = Settings.getJobType(context);
+        if (jobType == Settings.SYSTEM || jobType == Settings.GOOGLE_SERVICE) {
             try {
                 FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
                 dispatcher.cancel(JOB_TAG);
@@ -60,8 +71,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 Objects.requireNonNull(jobScheduler).cancel(JOB_ID);
             } catch (Throwable ignored) {
             } finally {
-                BingWallpaperJobManager.enableSystem(context,
-                        TimeUnit.HOURS.toSeconds(SettingUtils.getAutomaticUpdateInterval(context)));
+                BingWallpaperJobManager.enableSystem(context);
             }
         }
     }

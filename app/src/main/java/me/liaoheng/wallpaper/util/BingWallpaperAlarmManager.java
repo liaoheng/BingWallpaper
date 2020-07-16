@@ -5,12 +5,11 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
-import com.github.liaoheng.common.util.L;
+import androidx.annotation.NonNull;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
-import androidx.annotation.NonNull;
 import me.liaoheng.wallpaper.service.AutoSetWallpaperBroadcastReceiver;
 
 /**
@@ -19,7 +18,6 @@ import me.liaoheng.wallpaper.service.AutoSetWallpaperBroadcastReceiver;
  */
 public class BingWallpaperAlarmManager {
 
-    private static final String TAG = BingWallpaperAlarmManager.class.getSimpleName();
     private static final int REQUEST_CODE = 0x12;
 
     private static PendingIntent getPendingIntent(Context context) {
@@ -29,17 +27,13 @@ public class BingWallpaperAlarmManager {
                 .getBroadcast(context, REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    private static void clear(Context context) {
+    public static void disabled(Context context) {
         PendingIntent pendingIntent = getPendingIntent(context);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager == null) {
             return;
         }
         alarmManager.cancel(pendingIntent);
-    }
-
-    public static void disabled(Context context) {
-        clear(context);
     }
 
     public static void enabled(Context context, @NonNull LocalTime localTime) {
@@ -56,10 +50,6 @@ public class BingWallpaperAlarmManager {
         alarmManager
                 .setRepeating(AlarmManager.RTC_WAKEUP, time.getMillis(), AlarmManager.INTERVAL_DAY,
                         pendingIntent);
-        if (BingWallpaperUtils.isEnableLog(context)) {
-            LogDebugFileUtils.get().i(TAG, "Set Alarm Repeating Time : %s", time.toString("yyyy-MM-dd HH:mm"));
-        }
-        L.alog().d(TAG, "Set Alarm Repeating Time : %s", time.toString("yyyy-MM-dd HH:mm"));
     }
 
     private static void add(Context context, @NonNull LocalTime localTime) {
