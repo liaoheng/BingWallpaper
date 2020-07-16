@@ -27,7 +27,6 @@ public class IntroActivity extends AppIntro {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        TasksUtils.markOne();
         super.onCreate(savedInstanceState);
         addSlide(new IntroHintFragment());
         addSlide(new IntroUpdateFragment());
@@ -79,12 +78,15 @@ public class IntroActivity extends AppIntro {
 
     @Override
     public void onDonePressed(Fragment currentFragment) {
-        UIUtils.startActivity(this, MainActivity.class);
         onSkipPressed(null);
     }
 
     @Override
     public void onSkipPressed(Fragment currentFragment) {
+        if (TasksUtils.isOne()) {
+            UIUtils.startActivity(this, MainActivity.class);
+        }
+        TasksUtils.markOne();
         finish();
     }
 }

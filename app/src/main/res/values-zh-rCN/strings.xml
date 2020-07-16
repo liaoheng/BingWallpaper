@@ -20,7 +20,7 @@
     <string name="send_email">发送邮件</string>
     <string name="foreground_intent_service_notification_channel">更新壁纸服务通知</string>
     <string name="foreground_intent_service_success_notification_channel">更新壁纸成功通知</string>
-    <string name="enable_job_error">无法开启每日自动更新</string>
+    <string name="enable_job_error">无法开启每日更新</string>
     <string name="request_failed_click_retry">请求失败，请点击重试</string>
     <string name="loading">加载中&#8230;</string>
     <string name="unable_root_permission">无法获取Root权限</string>
@@ -33,22 +33,19 @@
     <!--setting -->
     <string name="pref_auto_update_wallpaper">每日更新设置</string>
     <string name="pref_update_only_on_wifi">只在WIFI下更新</string>
-    <string name="pref_auto_update_everyday">自动模式</string>
-    <string name="pref_auto_update_check_every_hour">三小时检查一次</string>
+    <string name="pref_set_wallpaper_daily_update">开启每日更新</string>
+    <string name="pref_set_wallpaper_daily_update_mode">每日更新模式</string>
+    <string name="pref_set_wallpaper_daily_update_interval">计划任务检查间隔</string>
+    <!--pref_set_wallpaper_daily_update_interval_summary-->
     <string name="pref_auto_update_check_time">每 %1$d 小时检查一次</string>
-    <string name="pref_auto_update_everyday_notification">自动模式成功提示</string>
-    <string name="pref_auto_update_everyday_notification_note">仅在后台更新成功后发出</string>
-    <string name="pref_set_wallpaper_day_fully_automatic_update_type">自动模式类型</string>
+    <string name="pref_set_wallpaper_daily_update_time">定时任务触发时间</string>
+    <string name="pref_set_wallpaper_daily_update_success_notification">成功通知</string>
+    <string name="pref_set_wallpaper_daily_update_success_notification_summary">在后台设置壁纸成功后通知</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_auto">最佳</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_system">计划任务</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_service">动态壁纸</string>
-    <string name="pref_set_wallpaper_day_fully_automatic_update_interval">自动模式检查间隔</string>
-    <string name="pref_set_wallpaper_day_fully_automatic_update_interval_note">单位小时，改变之后请重新设置</string>
-    <string name="pref_alarm_update_wallpaper_everyday">定时模式</string>
-    <string name="pref_alarm_update_wallpaper_everyday_summary">不推荐使用</string>
-    <string name="pref_alarm_update_wallpaper_time">设置定时时间</string>
-    <string name="pref_not_set_time">没有设置时间</string>
-    <string name="pref_choose_auto_set_wallpaper_type">设置壁纸的模式</string>
+    <string name="pref_set_wallpaper_day_fully_automatic_update_type_timer">定时任务</string>
+    <string name="pref_choose_auto_set_wallpaper_type">设置壁纸类型</string>
     <string name="pref_set_wallpaper_auto_mode_both">桌面和锁屏</string>
     <string name="pref_set_wallpaper_auto_mode_home">桌面</string>
     <string name="pref_set_wallpaper_auto_mode_lock">锁屏</string>
@@ -66,13 +63,11 @@
     <string name="pref_country_it">意大利</string>
     <string name="pref_country_ir">伊朗</string>
     <string name="pref_language">语言</string>
-    <string name="pref_stack_blur">高斯模糊</string>
-    <string name="pref_stack_blur_mode">壁纸模糊模式</string>
+    <string name="pref_stack_blur">壁纸模糊</string>
+    <string name="pref_stack_blur_mode">模糊壁纸类型</string>
     <string name="pref_clear_cache">清除缓存</string>
     <string name="pref_clear_cache_success">清除缓存成功</string>
     <string name="pref_log_file">调试日志</string>
-    <string name="pref_pixabay_support">Pixabay 支持(测试)</string>
-    <string name="pref_pixabay_support_note">从Pixabay中随机生成一张图片作为壁纸</string>
     <string name="pref_set_miui_lock_screen_wallpaper">MIUI锁屏支持</string>
     <string name="pref_set_miui_lock_screen_wallpaper_note">需要Root权限，请谨慎使用</string>
     <string name="pref_crash_report">情况统计信息和崩溃报告</string>
@@ -101,6 +96,7 @@
 
     <!--intro-->
     <string name="intro_update_set">设置自动更新壁纸</string>
+    <string name="intro_app_explain">应用说明</string>
     <string name="intro_hint_welcome">欢迎使用Starth必应壁纸</string>
     <string name="intro_hint_whitelist">需要将该应用添加到后台管理应用的白名单中，如黑阀, 绿色守护等。</string>
     <string name="intro_hint_battery">系统电池优化会使应用不能准时执行更新壁纸操作，可以将应用添加到电池优化白名单中。</string>

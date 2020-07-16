@@ -20,7 +20,7 @@
     <string name="send_email">Send email</string>
     <string name="foreground_intent_service_notification_channel">Update wallpaper service notification</string>
     <string name="foreground_intent_service_success_notification_channel">Update wallpaper success notification</string>
-    <string name="enable_job_error">Cannot enable daily automatic update</string>
+    <string name="enable_job_error">Cannot enable daily update</string>
     <string name="request_failed_click_retry">Request failed, please click retry</string>
     <string name="loading">Loading&#8230;</string>
     <string name="unable_root_permission">Unable root permission</string>
@@ -36,10 +36,10 @@
     <string name="pref_update_only_on_wifi">Wi-Fi only</string>
     <string name="pref_set_wallpaper_daily_update">Enable daily update</string>
     <string name="pref_set_wallpaper_daily_update_mode">Daily update mode</string>
-    <string name="pref_set_wallpaper_daily_update_interval">Scheduler mode interval</string>
+    <string name="pref_set_wallpaper_daily_update_interval">Scheduler check interval</string>
     <!--pref_set_wallpaper_daily_update_interval_summary-->
     <string name="pref_auto_update_check_time">Check every %1$d hours</string>
-    <string name="pref_set_wallpaper_daily_update_time">Timer mode time</string>
+    <string name="pref_set_wallpaper_daily_update_time">Timer trigger time</string>
     <string name="pref_set_wallpaper_daily_update_success_notification">Success notification</string>
     <string name="pref_set_wallpaper_daily_update_success_notification_summary">After successful in the background</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_auto">Optimal</string>
@@ -53,10 +53,10 @@
     <string name="pref_wallpaper_setting">Wallpaper Setting</string>
     <string name="pref_choose_set_wallpaper_resolution">Default set resolution</string>
     <string name="pref_choose_save_resolution">Default save resolution</string>
-    <string name="pref_auto_save_wallpaper_title">Auto save</string>
+    <string name="pref_auto_save_wallpaper_title">Auto save wallpaper</string>
     <string name="pref_auto_save_wallpaper_summary">Save wallpaper to photos</string>
-    <string name="pref_stack_blur">Gaussian blur</string>
-    <string name="pref_stack_blur_mode">Wallpaper blur mode</string>
+    <string name="pref_stack_blur">Wallpaper blur</string>
+    <string name="pref_stack_blur_mode">Blur wallpaper type</string>
     <string name="pref_set_miui_lock_screen_wallpaper">MIUI lock screen support</string>
     <string name="pref_set_miui_lock_screen_wallpaper_note">Need root permission, please use cautious</string>
     <string name="pref_other">Other Setting</string>
