@@ -45,3 +45,5 @@ See the [translation page](https://crowdin.com/project/starth-bing-wallpaper) if
 [@Faux-ami(Nicolas)](https://crowdin.com/profile/Faux-ami)
 - **български**(Bulgarian)
 [@trifon71(Trifon Ribnishki)](https://crowdin.com/profile/trifon71)
+- **Slovenčina**(Slovak)
+[@foreteller](https://crowdin.com/profile/foreteller)

@@ -273,26 +273,9 @@ public class SettingsActivity extends BaseActivity {
             mStackBlurModePreference = findPreference(PREF_STACK_BLUR_MODE);
             mAutoSaveWallpaperPreference = findPreference(PREF_AUTO_SAVE_WALLPAPER_FILE);
 
-            if (!ROM.getROM().isMiui()) {
+            if (!ROM.getROM().isMiui() || BingWallpaperUtils.isRooted(getContext())) {
                 ((PreferenceCategory) findPreference("pref_wallpaper_group")).removePreference(
                         mMIuiLockScreenPreference);
-            } else {
-                if (BingWallpaperUtils.isRooted(getContext())) {
-                    mMIuiLockScreenPreference.setOnPreferenceClickListener(preference -> {
-                        if (mMIuiLockScreenPreference.isChecked()) {
-                            if (ShellUtils.hasRootPermission()) {
-                                mPreferences.put(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, true);
-                            } else {
-                                mMIuiLockScreenPreference.setChecked(false);
-                                UIUtils.showToast(getActivity(), R.string.unable_root_permission);
-                            }
-                        } else {
-                            mPreferences.put(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, false);
-                        }
-                        return false;
-                    });
-                    mMIuiLockScreenPreference.setChecked(Settings.isMiuiLockScreenSupport(getActivity()));
-                }
             }
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -470,6 +453,18 @@ public class SettingsActivity extends BaseActivity {
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE }, 111);
                     } else {
                         mPreferences.put(PREF_AUTO_SAVE_WALLPAPER_FILE, false);
+                    }
+                    break;
+                case PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER:
+                    if (mMIuiLockScreenPreference.isChecked()) {
+                        if (ShellUtils.hasRootPermission()) {
+                            mPreferences.put(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, true);
+                        } else {
+                            mMIuiLockScreenPreference.setChecked(false);
+                            UIUtils.showToast(getActivity(), R.string.unable_root_permission);
+                        }
+                    } else {
+                        mPreferences.put(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, false);
                     }
                     break;
             }

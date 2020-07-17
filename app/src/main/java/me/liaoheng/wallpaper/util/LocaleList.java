@@ -20,6 +20,10 @@ public class LocaleList {
         return new Locale("cs", "CZ");
     }
 
+    public static Locale skLocale() {
+        return new Locale("sk", "SK");
+    }
+
     public static Locale nlLocale() {
         return new Locale("nl", "NL");
     }

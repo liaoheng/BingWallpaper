@@ -50,7 +50,7 @@
     <string name="pref_set_wallpaper_auto_mode_home">桌面</string>
     <string name="pref_set_wallpaper_auto_mode_lock">锁屏</string>
     <string name="pref_other">其它设置</string>
-    <string name="pref_choose_set_wallpaper_resolution">设置壁纸的分辨率</string>
+    <string name="pref_choose_set_wallpaper_resolution">默认设置壁纸分辨率</string>
     <string name="pref_choose_save_resolution">默认保存壁纸分辨率</string>
     <string name="pref_country">地区</string>
     <string name="pref_country_auto">本地</string>

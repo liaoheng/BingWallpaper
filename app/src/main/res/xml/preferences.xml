@@ -85,7 +85,6 @@
         <SwitchPreference
                 android:defaultValue="false"
                 android:key="pref_set_miui_lock_screen_wallpaper"
-                android:persistent="false"
                 android:summary="@string/pref_set_miui_lock_screen_wallpaper_note"
                 android:title="@string/pref_set_miui_lock_screen_wallpaper" />
 

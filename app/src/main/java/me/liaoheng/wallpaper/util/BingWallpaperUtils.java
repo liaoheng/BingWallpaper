@@ -3,10 +3,8 @@ package me.liaoheng.wallpaper.util;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -23,7 +21,6 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-import androidx.preference.PreferenceManager;
 
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback4;
@@ -56,7 +53,6 @@ import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.service.LiveWallpaperService;
-import me.liaoheng.wallpaper.ui.SettingsActivity;
 
 /**
  * @author liaoheng
@@ -108,8 +104,7 @@ public class BingWallpaperUtils {
 
     @NonNull
     public static Locale getLocale(Context context) {
-        int auto = Settings.getCountryValue(context);
-        switch (auto) {
+        switch (Settings.getCountryValue(context)) {
             case 1:
                 return Locale.CHINA;
             case 2:
@@ -141,11 +136,9 @@ public class BingWallpaperUtils {
         return language + "-" + country;
     }
 
+    @NonNull
     public static Locale getLanguage(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        int language = Integer.parseInt(sharedPreferences.getString(SettingsActivity.PREF_LANGUAGE, "0"));
-        switch (language) {
+        switch (Settings.getLanguage(context)) {
             case 1:
                 return Locale.US;
             case 2:
@@ -166,6 +159,8 @@ public class BingWallpaperUtils {
                 return Locale.FRANCE;
             case 10:
                 return LocaleList.bgLocale();
+            case 11:
+                return LocaleList.skLocale();
             default:
                 Locale originalLocale = LanguageContextWrapper.getOriginalLocale();
                 return originalLocale == null ? LanguageContextWrapper.getCurrentLocale(context) : originalLocale;
@@ -606,6 +601,8 @@ public class BingWallpaperUtils {
             return "Translator : @Faux-ami(Nicolas)";
         } else if (locale.getLanguage().equals(LocaleList.bgLocale().getLanguage())) {
             return "Translator : @trifon71(Trifon Ribnishki)";
+        } else if (locale.getLanguage().equals(LocaleList.skLocale().getLanguage())) {
+            return "Translator : @foreteller";
         }
         return "";
     }

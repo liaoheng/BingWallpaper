@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--2020-07-16-->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="app_name">Starth Bing Wallpaper</string>
+    <string name="set_wallpaper_running">Nastavujem pozadie prosím počkajte</string>
+    <string name="set_wallpaper_success">Nastavenie pozadia úspešné</string>
+    <string name="set_wallpaper_failure">Nastavenie pozadia zlyhalo</string>
+    <string name="network_unavailable">Nie je dostupná žiadna sieť</string>
+    <string name="connection_timed_out">Vypršal časový limit pripojenia</string>
+    <string name="network_request_error">Chyba siete</string>
+    <string name="load_image_error">Chyba načítania obrázku</string>
+    <string name="download">Stiahnuť&#8230;</string>
+    <string name="pull_refresh">"Potiahnutím obnovíte, "</string>
+    <string name="alert_mobile_data">Používate mobilné dáta, chcete pokračovať?</string>
+    <string name="alert_save_wallpaper_success">Nastavenie pozadia úspešné</string>
+    <string name="alert_save_wallpaper_failure">Chyba nastavenia pozadia</string>
+    <string name="unable_open_url">Nedá sa otvoriť URL</string>
+    <string name="about">O aplikácii</string>
+    <string name="open_source_license">Open source licencia</string>
+    <string name="privacy_policy">Ochrana osobných údajov</string>
+    <string name="send_email">Odoslať email</string>
+    <string name="foreground_intent_service_notification_channel">Notifikácia služby aktualizácie pozadia</string>
+    <string name="foreground_intent_service_success_notification_channel">Notifikácia o úspešnej aktualizácii pozadia</string>
+    <string name="enable_job_error">Nie je možné povoliť dennú aktualizáciu</string>
+    <string name="request_failed_click_retry">Požiadavka zlyhala, kliknite prosím znova</string>
+    <string name="loading">Načítava sa&#8230;</string>
+    <string name="unable_root_permission">Nemám požadované oprávnenie (Root)</string>
+    <string name="unable_required_permission">Nemám požadované oprávnenie</string>
+    <string name="feedback_copied">Spätná väzba je skopírovaná do schránky.</string>
+    <string name="share">Zdieľať</string>
+    <string name="set_wallpaper">Nastaviť pozadie</string>
+    <string name="miui_root_dialog_hint">Používate MIUI, nastavenie pozadia zámku obrazovky vyžaduje oprávnenie ROOT! A je potrebné povoliť manuálne v NASTAVENIACH.</string>
+    <string name="save">Uložiť</string>
+    <!--setting -->
+    <string name="pref_auto_update_wallpaper">Nastavenie dennej aktualizácie</string>
+    <string name="pref_update_only_on_wifi">Iba cez Wi-Fi</string>
+    <string name="pref_set_wallpaper_daily_update">Povoliť dennú aktualizáciu</string>
+    <string name="pref_set_wallpaper_daily_update_mode">Spôsob dennej aktualizácie</string>
+    <string name="pref_set_wallpaper_daily_update_interval">Nastavenie intervalu plánu dennej aktualizácie</string>
+    <!--pref_set_wallpaper_daily_update_interval_summary-->
+    <string name="pref_auto_update_check_time">Kontrolovať každé %1$d hodiny</string>
+    <string name="pref_set_wallpaper_daily_update_time">Čas spustenia časovača</string>
+    <string name="pref_set_wallpaper_daily_update_success_notification">Notifikácia o úspešnej aktualizácii</string>
+    <string name="pref_set_wallpaper_daily_update_success_notification_summary">Notifikácia o úspešnej aktualizácii na pozadí</string>
+    <string name="pref_set_wallpaper_day_fully_automatic_update_type_auto">Optimálne</string>
+    <string name="pref_set_wallpaper_day_fully_automatic_update_type_system">Plánovač</string>
+    <string name="pref_set_wallpaper_day_fully_automatic_update_type_service">Automatická služba aktualizácie</string>
+    <string name="pref_set_wallpaper_day_fully_automatic_update_type_timer">Časovač</string>
+    <string name="pref_choose_auto_set_wallpaper_type">Nastaviť typ pozadia</string>
+    <string name="pref_set_wallpaper_auto_mode_both">Domovská a uzamykacia obrazovka</string>
+    <string name="pref_set_wallpaper_auto_mode_home">Domovská obrazovka</string>
+    <string name="pref_set_wallpaper_auto_mode_lock">Uzamykacia obrazovka</string>
+    <string name="pref_wallpaper_setting">Nastavenia pozadia</string>
+    <string name="pref_choose_set_wallpaper_resolution">Predvolené rozlíšenie</string>
+    <string name="pref_choose_save_resolution">Predvolené rozlíšenie pre uloženie obrázku</string>
+    <string name="pref_auto_save_wallpaper_title">Automaticky ukladať pozadie</string>
+    <string name="pref_auto_save_wallpaper_summary">Uložiť obrázok medzi Fotky</string>
+    <string name="pref_stack_blur">Rozostrenie pozadia</string>
+    <string name="pref_stack_blur_mode">Typ rozostrenia pozadia</string>
+    <string name="pref_set_miui_lock_screen_wallpaper">Podpora uzamykacej obrazovky MIUI</string>
+    <string name="pref_set_miui_lock_screen_wallpaper_note">Potrebujete povolenie ROOT, postupujte opatrne</string>
+    <string name="pref_other">Ďalšie nastavenia</string>
+    <string name="pref_country">Štát</string>
+    <string name="pref_country_auto">Miestne</string>
+    <string name="pref_country_china">Čína</string>
+    <string name="pref_country_usa">USA</string>
+    <string name="pref_country_gb">UK</string>
+    <string name="pref_country_fr">Francúzsko</string>
+    <string name="pref_country_de">Nemecko</string>
+    <string name="pref_country_ja">Japonsko</string>
+    <string name="pref_country_it">Taliansko</string>
+    <string name="pref_country_ir">Irán</string>
+    <string name="pref_language">Jazyk</string>
+    <string name="pref_clear_cache">Vyčistiť vyrovnávaciu pamäť</string>
+    <string name="pref_clear_cache_success">Vymazané</string>
+    <string name="pref_log_file">Záznamy o chybách</string>
+    <string name="pref_crash_report">Využitie údajov a správy o zlyhaní</string>
+    <string name="pref_version">Verzia</string>
+    <string name="pref_intro">Úvod</string>
+    <!--menu-->
+    <string name="menu_main_drawer_wallpaper_info">Informácie o pozadí</string>
+    <string name="menu_main_setting">Nastavenia</string>
+    <string name="menu_main_wallpaper_history_list">História pozadí</string>
+    <string name="menu_main_help">Pomoc</string>
+    <string name="menu_main_feedback">Spätná väzba</string>
+    <!--wallpaper detail-->
+    <string name="bing_only_two_week">Bing je k dispozícii pre posledné 2 týždne</string>
+    <string name="menu_save_wallpaper">Uložiť obrázok pozadia</string>
+    <string name="menu_wallpaper_resolution">Rozlíšenie</string>
+    <string name="menu_wallpaper_info">Informácie</string>
+    <string name="detail_wallpaper_resolution_influences">Ukážka a rozlíšenie na stiahnutie</string>
+    <string name="menu_set_wallpaper_mode_home">Nastaviť ako pozadie domovskej obrazovky</string>
+    <string name="menu_set_wallpaper_mode_lock">Nastaviť ako pozadie uzamykacej obrazovky</string>
+    <string name="menu_set_wallpaper_mode_both">Domovská a uzamykacia obrazovka</string>
+    <!--intro-->
+    <string name="intro_update_set">Nastaviť automatickú aktualizáciu pozadia</string>
+    <string name="intro_app_explain">Popis aplikácie</string>
+    <string name="intro_hint_welcome">Vitajte v aplikácii Starth Bing Wallpaper</string>
+    <string name="intro_hint_whitelist">Aplikáciu je nutné pridať k výnimkám optimalizácie batérie, ako napr. Brevent, Greenify&#8230;. </string>
+    <string name="intro_hint_battery">Funkcia Optimalizácie batérie spôsobí, že aplikácia nebude schopná vykonávať aktualizáciu pozadia. Aplikácie je možné pridať do výnimiek. </string>
+    <string name="ignore_battery_optimization">Ignorovať Optimalizáciu batérie</string>
+</resources>
