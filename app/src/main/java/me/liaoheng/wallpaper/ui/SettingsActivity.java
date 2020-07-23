@@ -301,7 +301,9 @@ public class SettingsActivity extends BaseActivity {
             mDailyUpdateModeListPreference.setSummary(Settings.getAutomaticUpdateTypeName(getContext()));
             mDailyUpdateIntervalPreference.setSummary(getString(R.string.pref_auto_update_check_time,
                     Settings.getAutomaticUpdateInterval(getContext())));
-            mDailyUpdateTimePreference.setSummary(LocalTime.parse(Constants.DEF_TIMER_PERIODIC).toString("HH:mm"));
+            LocalTime time = LocalTime.parse(Constants.DEF_TIMER_PERIODIC);
+            mDailyUpdateTimePreference.setSummary(time.toString("HH:mm"));
+            mDailyUpdateTimePreference.setLocalTime(time);
 
             switch (Settings.getAutomaticUpdateType(getContext())) {
                 case Settings.AUTOMATIC_UPDATE_TYPE_AUTO:
