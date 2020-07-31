@@ -74,9 +74,7 @@ dependencies {
     implementation 'androidx.work:work-runtime:2.4.0'
     implementation 'com.firebase:firebase-jobdispatcher:0.8.6'
     if (isFirebase) {
-        implementation(firebaseCore){
-            exclude module: "play-services-ads-identifier"
-        }
+        implementation firebaseCore
     } else {
         printf("not exists google-services.json")
         compileOnly firebaseCore
