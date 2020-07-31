@@ -59,6 +59,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     .putString(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_MODE,
                             String.valueOf(Settings.AUTOMATIC_UPDATE_TYPE_TIMER))
                     .apply();
+            sharedPreferences.edit().remove("pref_set_wallpaper_day_auto_update").apply();
         }
 
         int jobType = Settings.getJobType(context);

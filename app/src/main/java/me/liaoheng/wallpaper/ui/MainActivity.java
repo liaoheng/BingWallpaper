@@ -225,11 +225,7 @@ public class MainActivity extends BaseActivity
                     .edit()
                     .putString("MIUI_root", BuildConfig.VERSION_NAME)
                     .apply();
-            if (BingWallpaperUtils.isRooted(this)) {
-                showMiuiDialog(true);
-                return;
-            }
-            showMiuiDialog(false);
+            showMiuiDialog(BingWallpaperUtils.isRooted(this));
         }
     }
 
@@ -400,7 +396,7 @@ public class MainActivity extends BaseActivity
         if (!Constants.Config.isPhone) {
             u = Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION_LANDSCAPE;
         }
-        String url = BingWallpaperUtils.getImageUrl(getApplicationContext(), u, image.getBaseUrl());
+        String url = BingWallpaperUtils.getImageUrl(this, u, image.getBaseUrl());
         if (isDestroyed()) {
             return;
         }
