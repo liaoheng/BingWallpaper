@@ -438,7 +438,7 @@ public class BingWallpaperUtils {
         Locale locale = Locale.getDefault();
         Locale autoLocale = getLocale(context);
         String job = BingWallpaperJobManager.check(context);
-        String autoSetMode = Settings.getAutoMode(context);
+        int autoSetMode = Settings.getAutoModeValue(context);
         int interval = Settings.getAutomaticUpdateInterval(context);
         String resolution = Settings.getResolution(context);
         DisplayMetrics r = BingWallpaperUtils.getSysResolution(context);
