@@ -2,6 +2,9 @@ package me.liaoheng.wallpaper;
 
 import android.app.Application;
 
+import androidx.annotation.NonNull;
+import androidx.work.Configuration;
+
 import com.github.liaoheng.common.Common;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.LanguageContextWrapper;
@@ -21,7 +24,7 @@ import me.liaoheng.wallpaper.util.WorkerManager;
  * @author liaoheng
  * @version 2016-09-19 11:34
  */
-public class MApplication extends Application {
+public class MApplication extends Application implements Configuration.Provider {
 
     @Override
     public void onCreate() {
@@ -37,11 +40,16 @@ public class MApplication extends Application {
         RxJavaPlugins.setErrorHandler(throwable -> L.alog().w("RxJavaPlugins", throwable));
         NetUtils.get().init(getApplicationContext());
         Constants.Config.isPhone = getString(R.string.screen_type).equals("phone");
-        WorkerManager.init(this, BuildConfig.DEBUG);
         BingWallpaperUtils.isTaskUndone(this);
 
         CrashReportHandle.init(this);
 
         NotificationUtils.createNotificationChannels(this);
+    }
+
+    @NonNull
+    @Override
+    public Configuration getWorkManagerConfiguration() {
+        return WorkerManager.getConfig(BuildConfig.DEBUG);
     }
 }
