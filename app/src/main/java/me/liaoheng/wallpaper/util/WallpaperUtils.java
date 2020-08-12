@@ -11,6 +11,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -74,13 +75,13 @@ public class WallpaperUtils {
         }
     }
 
-    private static void saveToFile(Context context, String url, File from) throws IOException {
+    public static Uri saveToFile(Context context, String url, File from) throws IOException {
         String name = FileUtils.getName(url);
         String[] split = name.split("=");
         if (split.length > 1) {
             name = split[1];
         }
-        FileUtils.saveFileToPictureCompat(context, name, from);
+        return FileUtils.saveFileToPictureCompat(context, name, from);
     }
 
     public static File getImageFile(Context context, String url) throws Exception {

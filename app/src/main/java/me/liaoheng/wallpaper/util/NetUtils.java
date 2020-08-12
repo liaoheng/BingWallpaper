@@ -9,7 +9,6 @@ import com.bumptech.glide.request.target.Target;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
-import com.github.liaoheng.common.util.SystemRuntimeException;
 import com.github.liaoheng.common.util.Utils;
 
 import java.io.File;
@@ -107,17 +106,18 @@ public class NetUtils {
 
     public Disposable downloadImageToFile(final Context context, String url, Callback<Uri> callback) {
         Observable<Uri> observable = Observable.just(url).subscribeOn(Schedulers.io())
-                .map(url1 -> {
+                .flatMap(u -> {
                     File temp = null;
                     try {
                         temp = GlideApp.with(context)
                                 .asFile()
-                                .load(url1)
+                                .load(u)
                                 .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
                                 .get(2, TimeUnit.MINUTES);
-                        return FileUtils.saveFileToPictureCompat(context, url1, temp);
+                        L.alog().i("NetUtils", "wallpaper download url: %s", u);
+                        return Observable.just(WallpaperUtils.saveToFile(context, u, temp));
                     } catch (Throwable e) {
-                        throw new SystemRuntimeException(e);
+                        return Observable.error(e);
                     } finally {
                         if (temp != null) {
                             FileUtils.delete(temp);
