@@ -3,6 +3,7 @@ package me.liaoheng.wallpaper.util;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -17,10 +18,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.preference.PreferenceManager;
 
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback4;
@@ -32,6 +35,7 @@ import com.github.liaoheng.common.util.LanguageContextWrapper;
 import com.github.liaoheng.common.util.MD5Utils;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.ROM;
+import com.github.liaoheng.common.util.ShellUtils;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 import com.github.liaoheng.common.util.ValidateUtils;
@@ -651,5 +655,66 @@ public class BingWallpaperUtils {
 
     public static String createKey(String str) {
         return MD5Utils.md5Hex(str).toLowerCase();
+    }
+
+    public static void fixSetting(Context context) {
+        if (Settings.getJobType(context) == Settings.TIMER) {
+            if (Settings.getAutomaticUpdateType(context) != Settings.AUTOMATIC_UPDATE_TYPE_TIMER) {
+                BingWallpaperJobManager.forceDisabled(context);
+                if (BingWallpaperJobManager.enabled(context) == Settings.LIVE_WALLPAPER) {
+                    Settings.disableDailyUpdate(context);
+                }
+                UIUtils.showToast(context, "Fix daily update setting");
+            }
+        }
+    }
+
+    public static void fixSettingOnActivityResult(Context context, int requestCode, int resultCode) {
+        BingWallpaperJobManager.onActivityResult(context, requestCode, resultCode, new Callback5.EmptyCallback() {
+            @Override
+            public void onAllow() {
+                Settings.enableDailyUpdate(context, Settings.AUTOMATIC_UPDATE_TYPE_SERVICE);
+            }
+        });
+    }
+
+    public static void showMiuiDialog(Context context) {
+        if (ROM.getROM().isMiui()) {
+            if (Settings.isMiuiLockScreenSupport(context)) {
+                return;
+            }
+            String root = PreferenceManager.getDefaultSharedPreferences(context).getString("MIUI_root", "");
+            if (!TextUtils.isEmpty(root)) {
+                return;
+            }
+            PreferenceManager.getDefaultSharedPreferences(context)
+                    .edit()
+                    .putString("MIUI_root", BuildConfig.VERSION_NAME)
+                    .apply();
+            showMiuiDialog(context, BingWallpaperUtils.isRooted(context));
+        }
+    }
+
+    public static void showMiuiDialog(Context context, boolean turn) {
+        AlertDialog alertDialog = new AlertDialog.Builder(context).setView(R.layout.dialog_miui)
+                .setPositiveButton(android.R.string.no,
+                        (dialog, which) -> {
+                        }).create();
+        SwitchCompat screen = alertDialog.findViewById(R.id.dialog_miui_lock_screen);
+        if (turn) {
+            screen.setOnCheckedChangeListener(
+                    (buttonView, isChecked) -> {
+                        if (ShellUtils.hasRootPermission()) {
+                            Settings.setMiuiLockScreenSupport(context, true);
+                        } else {
+                            Settings.setMiuiLockScreenSupport(context, false);
+                            screen.setChecked(false);
+                            UIUtils.showToast(context, R.string.unable_root_permission);
+                        }
+                    });
+        } else {
+            UIUtils.viewGone(screen);
+        }
+        alertDialog.show();
     }
 }

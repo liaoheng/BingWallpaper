@@ -273,7 +273,7 @@ public class SettingsActivity extends BaseActivity {
             mStackBlurModePreference = findPreference(PREF_STACK_BLUR_MODE);
             mAutoSaveWallpaperPreference = findPreference(PREF_AUTO_SAVE_WALLPAPER_FILE);
 
-            if (!ROM.getROM().isMiui() || BingWallpaperUtils.isRooted(getContext())) {
+            if (!ROM.getROM().isMiui()) {
                 ((PreferenceCategory) findPreference("pref_wallpaper_group")).removePreference(
                         mMIuiLockScreenPreference);
             }
@@ -392,7 +392,6 @@ public class SettingsActivity extends BaseActivity {
                     } else {
                         BingWallpaperJobManager.disabled(getContext());
                     }
-                    mPreferences.put(PREF_SET_WALLPAPER_DAILY_UPDATE, mDailyUpdatePreference.isChecked());
                     break;
                 case PREF_SET_WALLPAPER_DAILY_UPDATE_MODE:
                     int type = Integer.parseInt(mDailyUpdateModeListPreference.getValue());

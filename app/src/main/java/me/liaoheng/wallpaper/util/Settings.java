@@ -166,6 +166,23 @@ public class Settings {
         return names[type];
     }
 
+    public static void disableDailyUpdate(Context context) {
+        PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .edit()
+                .remove(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE)
+                .remove(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_MODE)
+                .apply();
+    }
+
+    public static void enableDailyUpdate(Context context, @AutomaticUpdateTypeResult int type) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .putBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE, true)
+                .putString(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_MODE, String.valueOf(type))
+                .apply();
+    }
+
     public static boolean isAutomaticUpdateNotification(Context context) {
         return SettingTrayPreferences.get(context)
                 .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_SUCCESS_NOTIFICATION, true);

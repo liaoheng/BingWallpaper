@@ -12,8 +12,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 195
-        versionName "1.9.5"
+        versionCode 199
+        versionName "1.9.9"
     }
 
     def isSigning = true
@@ -80,10 +80,10 @@ dependencies {
         compileOnly firebaseCore
     }
 
-    implementation 'io.sentry:sentry-android-core:2.2.2'
+    implementation 'io.sentry:sentry-android-core:2.3.0'
 
-    implementation 'com.jakewharton:butterknife:10.2.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
+    implementation 'com.jakewharton:butterknife:10.2.3'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'
 
     implementation deps.gson
     implementation deps.glide
@@ -100,6 +100,9 @@ dependencies {
     implementation deps.rxlifecycle3
     implementation deps.rxlifecycle_android3
     implementation deps.joda_time_android
+
+    //https://github.com/google/conscrypt/
+    implementation 'org.conscrypt:conscrypt-android:2.5.0'
 
     //https://github.com/Commit451/NativeStackBlur
     implementation 'com.github.Commit451:NativeStackBlur:1.0.5'

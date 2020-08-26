@@ -58,12 +58,17 @@ public class IntroActivity extends AppIntro {
 
         @OnClick(R.id.intro_enable_update)
         void enable() {
-            UIUtils.startActivity(getActivity(), SettingsActivity.class);
+            UIUtils.startActivity(getContext(), SettingsActivity.class);
         }
 
         @OnClick(R.id.intro_app_explain)
         void explain() {
-            BingWallpaperUtils.openBrowser(getActivity(), "https://github.com/liaoheng/BingWallpaper/wiki");
+            BingWallpaperUtils.openBrowser(getContext(), "https://github.com/liaoheng/BingWallpaper/wiki");
+        }
+
+        @OnClick(R.id.intro_miui_tips)
+        void miuiTips() {
+            BingWallpaperUtils.showMiuiDialog(getContext(), BingWallpaperUtils.isRooted(getContext()));
         }
 
         @Nullable

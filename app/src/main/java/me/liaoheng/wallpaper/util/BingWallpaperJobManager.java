@@ -37,6 +37,16 @@ public class BingWallpaperJobManager {
         clear(context);
     }
 
+    public static void forceDisabled(Context context) {
+        WorkerManager.disabled(context);
+        BingWallpaperAlarmManager.disabled(context);
+        try {
+            WallpaperManager.getInstance(context).clear();
+        } catch (IOException ignored) {
+        }
+        clear(context);
+    }
+
     public static void clear(Context context) {
         BingWallpaperUtils.clearTaskComplete(context);
         Settings.setLastWallpaperImageUrl(context, "");

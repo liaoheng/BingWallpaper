@@ -1,5 +1,6 @@
 package me.liaoheng.wallpaper.util;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ShareCompat;
 
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -54,6 +56,7 @@ public class WallpaperUtils {
         if (!Settings.isAutoSave(context)) {
             return;
         }
+        File saveFile= new File(wallpaper.toURI());
         try {
             if (!BingWallpaperUtils.checkStoragePermissions(context)) {
                 throw new IOException("Permission denied");
@@ -64,9 +67,9 @@ public class WallpaperUtils {
             if (!saveResolution.equals(resolution)) {
                 saveImageUrl = BingWallpaperUtils.getImageUrl(context, saveResolution,
                         image.getBaseUrl());
-                wallpaper = getImageFile(context, saveImageUrl);
+                saveFile = getImageFile(context, saveImageUrl);
             }
-            saveToFile(context, saveImageUrl, wallpaper);
+            saveToFile(context, saveImageUrl, saveFile);
             L.alog().i(TAG, "wallpaper save url: %s", saveImageUrl);
         } catch (Throwable e) {
             if (BingWallpaperUtils.isEnableLogProvider(context)) {
@@ -138,10 +141,10 @@ public class WallpaperUtils {
             @Override
             public void onSuccess(File file) {
                 UIUtils.dismissDialog(dialog);
-                Intent share = new Intent(Intent.ACTION_SEND);
-                share.setType("image/jpeg");
-                share.putExtra(Intent.EXTRA_STREAM, BingWallpaperUtils.getUriForFile(context, file));
-                share.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                Intent share = ShareCompat.IntentBuilder.from((Activity) context)
+                        .setType("image/jpeg")
+                        .setStream(BingWallpaperUtils.getUriForFile(context, file))
+                        .getIntent();
                 context.startActivity(share);
             }
 

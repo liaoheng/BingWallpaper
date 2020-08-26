@@ -11,8 +11,11 @@ import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.Utils;
 
+import org.conscrypt.Conscrypt;
+
 import java.io.File;
 import java.io.IOException;
+import java.security.Security;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -68,7 +71,7 @@ public class NetUtils {
         if (PreferenceManager
                 .getDefaultSharedPreferences(context).getBoolean("pref_doh", false)) {
             builder.dns(new DnsOverHttps.Builder()
-                    .client(new OkHttpClient.Builder().build())
+                    .client(new OkHttpClient.Builder().build()).includeIPv6(false)
                     .url(HttpUrl.get("https://cloudflare-dns.com/dns-query"))
                     .build());
         }
@@ -76,14 +79,14 @@ public class NetUtils {
     }
 
     public void init(Context context) {
-        //Security.insertProviderAt(Conscrypt.newProvider(), 1);
+        Security.insertProviderAt(Conscrypt.newProvider(), 1);
         Retrofit.Builder factory = new Retrofit.Builder().baseUrl(Constants.LOCAL_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
         OkHttpClient.Builder simpleBuilder = initOkHttpClientBuilder(context, 60, 30);
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(message -> L.alog().d("NetUtils", message));
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         if (BuildConfig.DEBUG) {
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor(message -> L.alog().d("NetUtils", message));
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
             simpleBuilder.addInterceptor(logging);
         }
         try {

@@ -13,6 +13,7 @@ import io.sentry.android.core.SentryAndroid;
 import io.sentry.core.Sentry;
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
+import me.liaoheng.wallpaper.model.Config;
 
 /**
  * @author liaoheng
@@ -98,14 +99,17 @@ public class CrashReportHandle {
         collectException(context, TAG, null, t);
     }
 
-    public static void collectException(Context context, String TAG, String msg, Throwable t) {
+    public static void collectException(Context context, String TAG, Config config, Throwable t) {
         if (check(context)) {
             return;
         }
         try {
             Sentry.setTag("tag", TAG);
             Sentry.setExtra("Feedback info", BingWallpaperUtils.getSystemInfo(context));
-            Sentry.captureException(t, msg);
+            if (config != null) {
+                Sentry.setExtra("Config", config.toString());
+            }
+            Sentry.captureException(t);
         } catch (Exception ignored) {
         }
     }

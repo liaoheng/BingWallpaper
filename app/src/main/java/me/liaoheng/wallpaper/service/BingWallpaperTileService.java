@@ -13,8 +13,8 @@ import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
-import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
+import me.liaoheng.wallpaper.util.Settings;
 
 /**
  * @author liaoheng
@@ -50,7 +50,7 @@ public class BingWallpaperTileService extends TileService {
     public void onClick() {
         super.onClick();
         BingWallpaperUtils.setWallpaper(getApplicationContext(), null,
-                new Config.Builder().setWallpaperMode(Constants.EXTRA_SET_WALLPAPER_MODE_BOTH)
+                new Config.Builder().setWallpaperMode(Settings.getAutoModeValue(this))
                         .setBackground(false)
                         .setShowNotification(true)
                         .build(), new Callback4.EmptyCallback<Boolean>() {

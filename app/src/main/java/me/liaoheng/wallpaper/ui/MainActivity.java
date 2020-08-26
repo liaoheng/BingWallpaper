@@ -1,7 +1,6 @@
 package me.liaoheng.wallpaper.ui;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -21,12 +20,10 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.palette.graphics.Palette;
-import androidx.preference.PreferenceManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.request.target.Target;
@@ -38,7 +35,6 @@ import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.LanguageContextWrapper;
 import com.github.liaoheng.common.util.ROM;
-import com.github.liaoheng.common.util.ShellUtils;
 import com.github.liaoheng.common.util.SystemDataException;
 import com.github.liaoheng.common.util.UIUtils;
 import com.google.android.material.navigation.NavigationView;
@@ -46,7 +42,6 @@ import com.google.android.material.navigation.NavigationView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
@@ -213,46 +208,8 @@ public class MainActivity extends BaseActivity
 
         getBingWallpaper();
 
-        if (ROM.getROM().isMiui()) {
-            if (Settings.isMiuiLockScreenSupport(this)) {
-                return;
-            }
-            String root = PreferenceManager.getDefaultSharedPreferences(this).getString("MIUI_root", "");
-            if (!TextUtils.isEmpty(root)) {
-                return;
-            }
-            PreferenceManager.getDefaultSharedPreferences(this)
-                    .edit()
-                    .putString("MIUI_root", BuildConfig.VERSION_NAME)
-                    .apply();
-            showMiuiDialog(BingWallpaperUtils.isRooted(this));
-        }
-    }
-
-    private void showMiuiDialog(boolean turn) {
-        View view = UIUtils.inflate(this, R.layout.dialog_miui);
-        AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view)
-                .setPositiveButton(android.R.string.no,
-                        (dialog, which) -> {
-                        }).create();
-        SwitchCompat screen = view.findViewById(R.id.dialog_miui_lock_screen);
-        if (turn) {
-            screen.setOnCheckedChangeListener(
-                    (buttonView, isChecked) -> {
-                        if (ShellUtils.hasRootPermission()) {
-                            Settings.setMiuiLockScreenSupport(getApplicationContext(),
-                                    true);
-                        } else {
-                            Settings.setMiuiLockScreenSupport(getApplicationContext(),
-                                    false);
-                            screen.setChecked(false);
-                            UIUtils.showToast(getActivity(), R.string.unable_root_permission);
-                        }
-                    });
-        } else {
-            UIUtils.viewGone(screen);
-        }
-        alertDialog.show();
+        BingWallpaperUtils.showMiuiDialog(this);
+        BingWallpaperUtils.fixSetting(this);
     }
 
     @SuppressLint({ "SetTextI18n", "CheckResult" })
@@ -368,6 +325,7 @@ public class MainActivity extends BaseActivity
                 recreate();
             }
         }
+        BingWallpaperUtils.fixSettingOnActivityResult(this, requestCode, resultCode);
     }
 
     @Override

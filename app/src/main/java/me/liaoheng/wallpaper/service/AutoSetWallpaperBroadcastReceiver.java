@@ -26,21 +26,19 @@ public class AutoSetWallpaperBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        L.alog().d(TAG, "action : %s", intent.getAction());
-        if (BingWallpaperUtils.isEnableLog(context)) {
-            LogDebugFileUtils.get()
-                    .i(TAG, "action  : %s", intent.getAction());
-        }
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
             AppWidget_5x1.start(context, null);
             AppWidget_5x2.start(context, null);
 
-            int jobType = Settings.getJobType(context);
-            if (jobType == Settings.NONE) {
-                return;
+            if (Settings.getJobType(context) == Settings.TIMER) {
+                BingWallpaperJobManager.enableTimer(context);
             }
-            BingWallpaperJobManager.enableTimer(context);
             return;
+        }
+        L.alog().d(TAG, "timer : %s", intent.getAction());
+        if (BingWallpaperUtils.isEnableLog(context)) {
+            LogDebugFileUtils.get()
+                    .i(TAG, "timer : %s", intent.getAction());
         }
         if (ACTION.equals(intent.getAction())) {
             BingWallpaperUtils.runningService(context, TAG);
