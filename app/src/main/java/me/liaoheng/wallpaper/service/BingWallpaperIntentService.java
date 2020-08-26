@@ -144,6 +144,8 @@ public class BingWallpaperIntentService extends IntentService {
         if (config.isBackground()) {
             WallpaperUtils.autoSaveWallpaper(this, TAG, image, wallpaper);
         }
-        mUiHelper.setWallpaper(this, config, wallpaper);
+        if (mUiHelper != null) {
+            mUiHelper.setWallpaper(this, config, wallpaper);
+        }
     }
 }

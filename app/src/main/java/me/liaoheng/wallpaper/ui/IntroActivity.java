@@ -4,12 +4,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.appintro.AppIntro;
+import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.UIUtils;
 
 import butterknife.BindView;
@@ -17,6 +19,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.Settings;
 import me.liaoheng.wallpaper.util.TasksUtils;
 
 /**
@@ -68,8 +71,12 @@ public class IntroActivity extends AppIntro {
 
         @OnClick(R.id.intro_miui_tips)
         void miuiTips() {
-            BingWallpaperUtils.showMiuiDialog(getContext(), BingWallpaperUtils.isRooted(getContext()));
+            BingWallpaperUtils.showMiuiDialog(getContext(),
+                    !Settings.isMiuiLockScreenSupport(getContext()) && BingWallpaperUtils.isRooted(getContext()));
         }
+
+        @BindView(R.id.intro_miui_tips)
+        Button miuiTips;
 
         @Nullable
         @Override
@@ -77,6 +84,9 @@ public class IntroActivity extends AppIntro {
                 @Nullable Bundle savedInstanceState) {
             View contentView = inflater.inflate(R.layout.fragment_intro_update, container, false);
             ButterKnife.bind(this, contentView);
+            if (ROM.getROM().isMiui()) {
+                UIUtils.viewVisible(miuiTips);
+            }
             return contentView;
         }
     }

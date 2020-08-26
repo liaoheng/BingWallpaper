@@ -121,7 +121,7 @@
                 android:title="@string/pref_clear_cache" />
 
         <SwitchPreference
-                android:defaultValue="false"
+                android:defaultValue="true"
                 android:key="pref_doh"
                 android:summary="DNS over HTTPS(Cloudflare)"
                 android:title="DoH" />

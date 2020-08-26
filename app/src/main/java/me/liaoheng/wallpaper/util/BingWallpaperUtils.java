@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.provider.Browser;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -696,11 +697,12 @@ public class BingWallpaperUtils {
     }
 
     public static void showMiuiDialog(Context context, boolean turn) {
-        AlertDialog alertDialog = new AlertDialog.Builder(context).setView(R.layout.dialog_miui)
+        View view = UIUtils.inflate(context, R.layout.dialog_miui);
+        AlertDialog alertDialog = new AlertDialog.Builder(context).setView(view)
                 .setPositiveButton(android.R.string.no,
                         (dialog, which) -> {
                         }).create();
-        SwitchCompat screen = alertDialog.findViewById(R.id.dialog_miui_lock_screen);
+        SwitchCompat screen = view.findViewById(R.id.dialog_miui_lock_screen);
         if (turn) {
             screen.setOnCheckedChangeListener(
                     (buttonView, isChecked) -> {

@@ -69,7 +69,7 @@ public class NetUtils {
         builder.readTimeout(readTimeout, TimeUnit.SECONDS)
                 .connectTimeout(connectTimeout, TimeUnit.SECONDS);
         if (PreferenceManager
-                .getDefaultSharedPreferences(context).getBoolean("pref_doh", false)) {
+                .getDefaultSharedPreferences(context).getBoolean("pref_doh", true)) {
             builder.dns(new DnsOverHttps.Builder()
                     .client(new OkHttpClient.Builder().build()).includeIPv6(false)
                     .url(HttpUrl.get("https://cloudflare-dns.com/dns-query"))
@@ -110,9 +110,8 @@ public class NetUtils {
     public Disposable downloadImageToFile(final Context context, String url, Callback<Uri> callback) {
         Observable<Uri> observable = Observable.just(url).subscribeOn(Schedulers.io())
                 .flatMap(u -> {
-                    File temp = null;
                     try {
-                        temp = GlideApp.with(context)
+                        File temp = GlideApp.with(context)
                                 .asFile()
                                 .load(u)
                                 .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
@@ -121,10 +120,6 @@ public class NetUtils {
                         return Observable.just(WallpaperUtils.saveToFile(context, u, temp));
                     } catch (Throwable e) {
                         return Observable.error(e);
-                    } finally {
-                        if (temp != null) {
-                            FileUtils.delete(temp);
-                        }
                     }
                 });
         return Utils.addSubscribe(observable, callback);

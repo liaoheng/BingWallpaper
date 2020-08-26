@@ -26,6 +26,7 @@
             android:text="@string/pref_set_wallpaper_daily_update" />
 
     <Button
+            android:visibility="gone"
             android:id="@+id/intro_miui_tips"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

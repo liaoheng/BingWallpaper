@@ -25,7 +25,7 @@ public interface Constants {
     String DEF_TIMER_PERIODIC = new LocalTime(0, 35).toString();
     long DEF_LIVE_WALLPAPER_CHECK_PERIODIC = TimeUnit.MINUTES.toMillis(35);
 
-    String LOCAL_BASE_URL = "https://www.bing.com";
+    String LOCAL_BASE_URL = "https://bing.com";
     String GLOBAL_BASE_URL = "https://global.bing.com";
 
     String BASE_API_URL = "/HPImageArchive.aspx?format=js&idx=%s&n=%s&pid=hp&mtk=%s";
