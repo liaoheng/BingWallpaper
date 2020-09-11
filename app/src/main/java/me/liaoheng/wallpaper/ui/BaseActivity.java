@@ -1,8 +1,17 @@
 package me.liaoheng.wallpaper.ui;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.CheckResult;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.UIUtils;
@@ -11,13 +20,6 @@ import com.trello.rxlifecycle3.LifecycleTransformer;
 import com.trello.rxlifecycle3.RxLifecycle;
 import com.trello.rxlifecycle3.android.ActivityEvent;
 import com.trello.rxlifecycle3.android.RxLifecycleAndroid;
-
-import androidx.annotation.CallSuper;
-import androidx.annotation.CheckResult;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
@@ -52,6 +54,22 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
         setTitle("");
     }
 
+    protected void initTranslucent() {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+            getWindow().addFlags(
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                            | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                            | WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+                            | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            //getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            //getWindow().setStatusBarColor(Color.TRANSPARENT);
+        } else {
+            getWindow().addFlags(
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                            | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
+    }
+
     @Override
     @NonNull
     @CheckResult
@@ -77,10 +95,10 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     @CallSuper
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         BingWallpaperUtils.setPhoneScreen(this);
+        super.onCreate(savedInstanceState);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        super.onCreate(savedInstanceState);
         lifecycleSubject.onNext(ActivityEvent.CREATE);
     }
 

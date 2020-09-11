@@ -40,7 +40,6 @@ public class MApplication extends Application implements Configuration.Provider 
         RxJavaPlugins.setErrorHandler(throwable -> L.alog().w("RxJavaPlugins", throwable));
         NetUtils.get().init(getApplicationContext());
         Constants.Config.isPhone = getString(R.string.screen_type).equals("phone");
-        BingWallpaperUtils.isTaskUndone(this);
 
         CrashReportHandle.init(this);
 

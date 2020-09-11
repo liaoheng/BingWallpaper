@@ -11,11 +11,8 @@ import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.Utils;
 
-import org.conscrypt.Conscrypt;
-
 import java.io.File;
 import java.io.IOException;
-import java.security.Security;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -69,9 +66,9 @@ public class NetUtils {
         builder.readTimeout(readTimeout, TimeUnit.SECONDS)
                 .connectTimeout(connectTimeout, TimeUnit.SECONDS);
         if (PreferenceManager
-                .getDefaultSharedPreferences(context).getBoolean("pref_doh", true)) {
+                .getDefaultSharedPreferences(context).getBoolean("pref_doh", false)) {
             builder.dns(new DnsOverHttps.Builder()
-                    .client(new OkHttpClient.Builder().build()).includeIPv6(false)
+                    .client(new OkHttpClient.Builder().build())
                     .url(HttpUrl.get("https://cloudflare-dns.com/dns-query"))
                     .build());
         }
@@ -79,7 +76,6 @@ public class NetUtils {
     }
 
     public void init(Context context) {
-        Security.insertProviderAt(Conscrypt.newProvider(), 1);
         Retrofit.Builder factory = new Retrofit.Builder().baseUrl(Constants.LOCAL_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());

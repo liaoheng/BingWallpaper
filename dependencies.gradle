@@ -2,3 +2,7 @@ apply from: 'https://raw.githubusercontent.com/liaoheng/common/v0.1.0/dependenci
 //apply from: rootProject.file('./gradle/dependencies.gradle')
 
 ext.deps.put("palette","androidx.palette:palette:1.0.0")
+ext.deps.put("material","com.google.android.material:material:1.2.1")
+ext.deps.put("okhttp","com.squareup.okhttp3:okhttp:4.8.1")
+ext.deps.put("okhttp_doh","com.squareup.okhttp3:okhttp-dnsoverhttps:4.8.1")
+ext.deps.put("okhttp_logging","com.squareup.okhttp3:logging-interceptor:4.8.1")

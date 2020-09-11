@@ -1,6 +1,7 @@
 package me.liaoheng.wallpaper.util;
 
 import android.content.Context;
+import android.util.MalformedJsonException;
 
 import com.bumptech.glide.load.engine.GlideException;
 import com.github.liaoheng.common.util.L;
@@ -8,6 +9,8 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.net.SocketTimeoutException;
 import java.util.List;
+
+import javax.net.ssl.SSLHandshakeException;
 
 import io.sentry.android.core.SentryAndroid;
 import io.sentry.core.Sentry;
@@ -101,6 +104,15 @@ public class CrashReportHandle {
 
     public static void collectException(Context context, String TAG, Config config, Throwable t) {
         if (check(context)) {
+            return;
+        }
+        if (t instanceof LockSetWallpaperException) {
+            return;
+        }
+        if (t instanceof SSLHandshakeException) {
+            return;
+        }
+        if (t instanceof MalformedJsonException) {
             return;
         }
         try {

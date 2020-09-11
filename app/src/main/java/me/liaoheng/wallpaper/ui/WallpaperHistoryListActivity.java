@@ -242,7 +242,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         public WallpaperViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View itemView = inflate(R.layout.view_wallpaper_list_item, parent);
             GridLayoutManager.LayoutParams lp = (GridLayoutManager.LayoutParams) itemView.getLayoutParams();
-            lp.height = (int) (parent.getMeasuredHeight() / 2.5);
+            lp.height = (int) (parent.getMeasuredHeight() / 3);
             itemView.setLayoutParams(lp);
             return new WallpaperViewHolder(itemView);
         }

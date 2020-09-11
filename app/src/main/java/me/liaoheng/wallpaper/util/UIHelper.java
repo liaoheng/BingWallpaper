@@ -26,8 +26,8 @@ public class UIHelper implements IUIHelper {
 
     @Override
     public void setWallpaper(Context context, @NonNull Config config, File wallpaper) throws IOException {
-        File home = wallpaper;
-        File lock = wallpaper;
+        File home = new File(wallpaper.toURI());
+        File lock = new File(wallpaper.toURI());
         if (config.getStackBlur() > 0) {
             File blurFile = WallpaperUtils.getImageStackBlurFile(config.getStackBlur(), wallpaper);
             if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_BOTH) {

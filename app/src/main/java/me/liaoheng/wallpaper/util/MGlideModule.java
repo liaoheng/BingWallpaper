@@ -43,11 +43,12 @@ public class MGlideModule extends AppGlideModule {
 
     @Override
     public void registerComponents(@NonNull Context context, @NonNull Glide glide, @NonNull Registry registry) {
-        OkHttpClient.Builder builder = NetUtils.get().initOkHttpClientBuilder(context, 120, 30);
+        OkHttpClient.Builder builder = NetUtils.get().initOkHttpClientBuilder(context, 120, 60);
         builder.addInterceptor(chain -> {
             Request request = chain.request()
                     .newBuilder()
                     .header("User-Agent", Constants.USER_AGENT)
+                    .header("Accept","image/avif,image/webp,image/apng,image/*,*/*;q=0.8")
                     .build();
             return chain.proceed(request);
         });

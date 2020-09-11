@@ -4,13 +4,17 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +24,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -149,12 +154,10 @@ public class MainActivity extends BaseActivity
                 Settings.putResolution(this, "1");
                 Settings.putSaveResolution(this, "1");
             }
-            finish();
+            finishAfterTransition();
             return;
         }
-        getWindow().addFlags(
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        initTranslucent();
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         initStatusBarAddToolbar();
@@ -172,7 +175,6 @@ public class MainActivity extends BaseActivity
                 UIUtils.toggleVisibility(mCoverStoryTextView);
             }
         });
-
         mSetWallpaperStateBroadcastReceiverHelper = new SetWallpaperStateBroadcastReceiverHelper(
                 new Callback4.EmptyCallback<BingWallpaperState>() {
                     @Override

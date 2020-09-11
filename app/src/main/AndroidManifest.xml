@@ -27,7 +27,7 @@
         <activity
                 android:name=".ui.MainActivity"
                 android:configChanges="screenSize|orientation|keyboardHidden"
-                android:launchMode="singleInstance"
+                android:launchMode="singleTop"
                 android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -123,7 +123,7 @@
                 android:name=".service.LiveWallpaperService"
                 android:enabled="true"
                 android:permission="android.permission.BIND_WALLPAPER"
-                android:process=":background">
+                android:process=":live_wallpaper">
             <intent-filter>
                 <action android:name="android.service.wallpaper.WallpaperService" />
                 <action android:name="me.liaoheng.wallpaper.UPDATE_LIVE_WALLPAPER" />

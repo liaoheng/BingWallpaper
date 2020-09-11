@@ -18,10 +18,10 @@ public class MiuiHelper {
     @SuppressWarnings({ "WeakerAccess" })
     public static void setLockScreenWallpaper(Context context, File wallpaper) throws IOException {
         if (ShellUtils.hasRootPermission()) {
-            setImage(UIHelper.cropWallpaper(context, wallpaper));
+            setImage(UIHelper.cropWallpaper(context, wallpaper, false));
             return;
         }
-        throw new IOException("Not acquired root permission");
+        throw new LockSetWallpaperException("Not acquired root permission");
     }
 
     private static void setImage(File file) throws IOException {
@@ -52,7 +52,7 @@ public class MiuiHelper {
 
     public static void lockSetWallpaper(Context context, File wallpaper) throws IOException {
         if (!Settings.isMiuiLockScreenSupport(context)) {
-            throw new IOException("Not enable lock screen support");
+            throw new LockSetWallpaperException("Not enable lock screen support");
         }
         setLockScreenWallpaper(context, wallpaper);
     }

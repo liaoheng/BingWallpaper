@@ -12,8 +12,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 199
-        versionName "1.9.9"
+        versionCode 10911
+        versionName "1.9.11"
     }
 
     def isSigning = true
@@ -100,9 +100,6 @@ dependencies {
     implementation deps.rxlifecycle3
     implementation deps.rxlifecycle_android3
     implementation deps.joda_time_android
-
-    //https://github.com/google/conscrypt/
-    implementation 'org.conscrypt:conscrypt-android:2.5.0'
 
     //https://github.com/Commit451/NativeStackBlur
     implementation 'com.github.Commit451:NativeStackBlur:1.0.5'

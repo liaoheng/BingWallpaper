@@ -12,7 +12,6 @@ import com.github.liaoheng.common.util.L;
 
 import org.joda.time.LocalTime;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import me.liaoheng.wallpaper.R;
@@ -26,23 +25,17 @@ public class BingWallpaperJobManager {
     private static final String TAG = BingWallpaperJobManager.class.getSimpleName();
 
     public static void disabled(Context context) {
-        WorkerManager.disabled(context);
-        BingWallpaperAlarmManager.disabled(context);
-        if (Settings.getJobType(context) == Settings.LIVE_WALLPAPER) {
-            try {
-                WallpaperManager.getInstance(context).clear();
-            } catch (IOException ignored) {
-            }
-        }
-        clear(context);
+        disabled(context, false);
     }
 
-    public static void forceDisabled(Context context) {
+    public static void disabled(Context context, boolean force) {
         WorkerManager.disabled(context);
         BingWallpaperAlarmManager.disabled(context);
-        try {
-            WallpaperManager.getInstance(context).clear();
-        } catch (IOException ignored) {
+        if (force || Settings.getJobType(context) == Settings.LIVE_WALLPAPER) {
+            try {
+                WallpaperManager.getInstance(context).clear();
+            } catch (Exception ignored) {
+            }
         }
         clear(context);
     }

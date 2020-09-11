@@ -36,7 +36,6 @@ import com.github.liaoheng.common.util.Utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
@@ -56,7 +55,7 @@ public class WallpaperUtils {
         if (!Settings.isAutoSave(context)) {
             return;
         }
-        File saveFile= new File(wallpaper.toURI());
+        File saveFile = new File(wallpaper.toURI());
         try {
             if (!BingWallpaperUtils.checkStoragePermissions(context)) {
                 throw new IOException("Permission denied");
@@ -88,7 +87,7 @@ public class WallpaperUtils {
     }
 
     public static File getImageFile(Context context, String url) throws Exception {
-        return GlideApp.with(context).asFile().load(url).submit().get(2, TimeUnit.MINUTES);
+        return GlideApp.with(context).downloadOnly().load(url).submit().get();
     }
 
     public static File getImageFile(Context context, @NonNull Config config, @NonNull String url) throws Exception {

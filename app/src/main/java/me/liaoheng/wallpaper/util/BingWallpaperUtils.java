@@ -364,7 +364,7 @@ public class BingWallpaperUtils {
         }
         String url = image.getWebUrl();
         String baseUrl = getBaseUrl(context);
-        if (TextUtils.isEmpty(url) || "javascript:void(0)".equals(url)) {
+        if (TextUtils.isEmpty(url) || "javascript:void(0)" .equals(url)) {
             url = baseUrl;
         } else {
             if (!ValidateUtils.isWebUrl(url)) {
@@ -661,7 +661,7 @@ public class BingWallpaperUtils {
     public static void fixSetting(Context context) {
         if (Settings.getJobType(context) == Settings.TIMER) {
             if (Settings.getAutomaticUpdateType(context) != Settings.AUTOMATIC_UPDATE_TYPE_TIMER) {
-                BingWallpaperJobManager.forceDisabled(context);
+                BingWallpaperJobManager.disabled(context, true);
                 if (BingWallpaperJobManager.enabled(context) == Settings.LIVE_WALLPAPER) {
                     Settings.disableDailyUpdate(context);
                 }

@@ -94,8 +94,25 @@ public class WallpaperDetailActivity extends BaseActivity implements
     }
 
     @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putString("SelectedResolution", mSelectedResolution);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mSelectedResolution = savedInstanceState.getString("SelectedResolution");
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         normalScreen();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowManager.LayoutParams lp = this.getWindow().getAttributes();
+            lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
+            getWindow().setAttributes(lp);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallpaper_detail);
         ButterKnife.bind(this);
@@ -188,9 +205,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
     }
 
     private void normalScreen() {
-        getWindow().addFlags(
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-
+        initTranslucent();
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
     }
 
