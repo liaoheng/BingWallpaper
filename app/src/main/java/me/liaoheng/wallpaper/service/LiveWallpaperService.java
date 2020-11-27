@@ -9,13 +9,16 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.media.ThumbnailUtils;
+import android.os.Build;
 import android.os.Handler;
 import android.service.wallpaper.WallpaperService;
 import android.util.DisplayMetrics;
 import android.view.SurfaceHolder;
 
+import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.L;
+import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.Utils;
 
 import java.io.File;
@@ -32,6 +35,7 @@ import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
+import me.liaoheng.wallpaper.util.MiuiHelper;
 import me.liaoheng.wallpaper.util.Settings;
 import me.liaoheng.wallpaper.util.WallpaperUtils;
 
@@ -217,7 +221,32 @@ public class LiveWallpaperService extends WallpaperService {
             if (config.isBackground()) {
                 WallpaperUtils.autoSaveWallpaper(mContext, TAG, d.image, d.original);
             }
-            draw(d.wallpaper);
+            File home = new File(d.original.toURI());
+            File lock = new File(d.original.toURI());
+            if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_BOTH) {
+                home = d.wallpaper;
+                lock = d.wallpaper;
+            } else if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
+                home = d.wallpaper;
+            } else if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
+                lock = d.wallpaper;
+            }
+            draw(home);
+            //set lock wallpaper
+            try {
+                if (BingWallpaperUtils.isROMSystem()) {
+                    if (ROM.getROM().isMiui()) {
+                        MiuiHelper.lockSetWallpaper(getApplicationContext(), lock);
+                    } else {
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                            AppUtils.setWallpaper(getApplicationContext(), lock);
+                        } else {
+                            AppUtils.setLockScreenWallpaper(getApplicationContext(), lock);
+                        }
+                    }
+                }
+            } catch (IOException ignored) {
+            }
         }
 
         private void draw(File file) {

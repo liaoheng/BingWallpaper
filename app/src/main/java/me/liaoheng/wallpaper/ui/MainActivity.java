@@ -4,18 +4,13 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,7 +19,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -113,9 +107,9 @@ public class MainActivity extends BaseActivity
     private Wallpaper mCurWallpaper;
     private boolean isRun;
     private int mActionMenuBottomMargin;
-    private UIHelper mUiHelper = new UIHelper();
+    private final UIHelper mUiHelper = new UIHelper();
     private DownloadHelper mDownloadHelper;
-    private Config.Builder mConfig = new Config.Builder();
+    private final Config.Builder mConfig = new Config.Builder();
 
     @Override
     public void showBottomView() {

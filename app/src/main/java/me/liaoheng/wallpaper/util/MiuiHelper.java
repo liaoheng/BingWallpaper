@@ -18,7 +18,7 @@ public class MiuiHelper {
     @SuppressWarnings({ "WeakerAccess" })
     public static void setLockScreenWallpaper(Context context, File wallpaper) throws IOException {
         if (ShellUtils.hasRootPermission()) {
-            setImage(UIHelper.cropWallpaper(context, wallpaper, false));
+            setImage(UIHelper.cropWallpaper(context, wallpaper,false));
             return;
         }
         throw new LockSetWallpaperException("Not acquired root permission");

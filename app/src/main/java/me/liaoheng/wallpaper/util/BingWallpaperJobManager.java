@@ -14,6 +14,9 @@ import org.joda.time.LocalTime;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.service.LiveWallpaperService;
 
@@ -41,9 +44,12 @@ public class BingWallpaperJobManager {
     }
 
     public static void clear(Context context) {
-        BingWallpaperUtils.clearTaskComplete(context);
-        Settings.setLastWallpaperImageUrl(context, "");
-        Settings.setJobType(context, Settings.NONE);
+        Observable.just("").subscribeOn(Schedulers.io()).map((Function<String, Object>) s -> {
+            BingWallpaperUtils.clearTaskComplete(context);
+            Settings.setLastWallpaperImageUrl(context, "");
+            Settings.setJobType(context, Settings.NONE);
+            return "";
+        }).subscribe();
     }
 
     public static int enabled(Context context) {
@@ -60,11 +66,20 @@ public class BingWallpaperJobManager {
             clear(context);
             int type = Settings.getAutomaticUpdateType(context);
             if (type == Settings.AUTOMATIC_UPDATE_TYPE_AUTO) {
-                if (enableSystem(context)) {
-                    return Settings.WORKER;
-                }
-                if (enableLiveService(context)) {
-                    return Settings.LIVE_WALLPAPER;
+                if (BingWallpaperUtils.isROMSystem()) {
+                    if (enableLiveService(context)) {
+                        return Settings.LIVE_WALLPAPER;
+                    }
+                    if (enableSystem(context)) {
+                        return Settings.WORKER;
+                    }
+                } else {
+                    if (enableSystem(context)) {
+                        return Settings.WORKER;
+                    }
+                    if (enableLiveService(context)) {
+                        return Settings.LIVE_WALLPAPER;
+                    }
                 }
                 if (enableTimer(context)) {
                     return Settings.TIMER;

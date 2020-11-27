@@ -1,5 +1,6 @@
 package me.liaoheng.wallpaper.ui;
 
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -61,8 +62,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
                             | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
                             | WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
                             | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-            //getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            //getWindow().setStatusBarColor(Color.TRANSPARENT);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
         } else {
             getWindow().addFlags(
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN

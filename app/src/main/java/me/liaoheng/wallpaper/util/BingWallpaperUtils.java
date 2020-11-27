@@ -46,7 +46,6 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.Locale;
 
 import io.reactivex.Observable;
@@ -364,7 +363,7 @@ public class BingWallpaperUtils {
         }
         String url = image.getWebUrl();
         String baseUrl = getBaseUrl(context);
-        if (TextUtils.isEmpty(url) || "javascript:void(0)" .equals(url)) {
+        if (TextUtils.isEmpty(url) || "javascript:void(0)".equals(url)) {
             url = baseUrl;
         } else {
             if (!ValidateUtils.isWebUrl(url)) {
@@ -420,17 +419,9 @@ public class BingWallpaperUtils {
         }
     }
 
-    public static boolean isOneUi() {
-        try {
-            return getSemPlatform() > 90000;
-        } catch (Throwable ignored) {
-        }
-        return false;
-    }
-
-    private static int getSemPlatform() throws Throwable {
-        Field semPlatformIntField = Build.VERSION.class.getDeclaredField("SEM_PLATFORM_INT");
-        return semPlatformIntField.getInt(null);
+    public static boolean isROMSystem() {
+        return ROM.getROM().isMiui() || ROM.getROM().isEmui() || ROM.getROM().isOneUi() || ROM.getROM().isOppo()
+                || ROM.getROM().isVivo();
     }
 
     public static String getSystemInfo(Context context) {

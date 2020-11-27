@@ -2,6 +2,7 @@ package me.liaoheng.wallpaper.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -176,7 +177,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
                     Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
                     item.getBaseUrl());
             GlideApp.with(getContext())
-                    .asDrawable()
+                    .asBitmap()
                     .thumbnail(0.3f)
                     .override(width, height)
                     .error(R.drawable.lcn_empty_photo)
@@ -185,7 +186,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         }
     }
 
-    public class ProgressImageViewTarget extends ImageViewTarget<Drawable> {
+    static class ProgressImageViewTarget extends ImageViewTarget<Bitmap> {
         private ProgressBar mProgressBar;
         private ImageView mImageView;
 
@@ -214,14 +215,14 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         }
 
         @Override
-        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
             super.onResourceReady(resource, transition);
             UIUtils.viewGone(mProgressBar);
-            mImageView.setImageDrawable(resource);
+            mImageView.setImageBitmap(resource);
         }
 
         @Override
-        protected void setResource(@Nullable Drawable resource) {
+        protected void setResource(@Nullable Bitmap resource) {
         }
 
         @Override

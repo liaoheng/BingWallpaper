@@ -44,7 +44,7 @@ public class UIHelper implements IUIHelper {
             MiuiHelper.setWallpaper(context, mode, home, lock);
         } else if (ROM.getROM().isEmui()) {
             EmuiHelper.setWallpaper(context, mode, home, lock);
-        } else if (BingWallpaperUtils.isOneUi()) {
+        } else if (ROM.getROM().isOneUi()) {
             OneUiHelper.setWallpaper(context, mode, home, lock);
         } else {
             systemSetWallpaper(context, mode, home, lock);
@@ -114,7 +114,7 @@ public class UIHelper implements IUIHelper {
             width = height;
             height = tmp;
         }
-        if (options.outHeight < height) {
+        if (options.outHeight > height) {
             isCrop = true;
         }
         if (isCrop) {
