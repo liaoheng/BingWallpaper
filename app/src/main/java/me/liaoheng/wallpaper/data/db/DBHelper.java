@@ -25,7 +25,7 @@ import me.liaoheng.wallpaper.util.Settings;
  * @version 2018-01-16 15:44
  */
 public class DBHelper extends SQLiteOpenHelper {
-    private Context context;
+    private final Context context;
     private static final int JOB_ID = 0x483;
     private static final String JOB_TAG = "bing_wallpaper_job_" + JOB_ID;
 
@@ -46,6 +46,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (oldVersion > 193) {
+            return;
+        }
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
         int type = sharedPreferences.getInt(Settings.BING_WALLPAPER_JOB_TYPE, -1);
@@ -60,6 +63,11 @@ public class DBHelper extends SQLiteOpenHelper {
                             String.valueOf(Settings.AUTOMATIC_UPDATE_TYPE_TIMER))
                     .apply();
             sharedPreferences.edit().remove("pref_set_wallpaper_day_auto_update").apply();
+            PreferenceManager
+                    .getDefaultSharedPreferences(context)
+                    .edit()
+                    .putBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE, true)
+                    .apply();
         }
 
         int jobType = Settings.getJobType(context);

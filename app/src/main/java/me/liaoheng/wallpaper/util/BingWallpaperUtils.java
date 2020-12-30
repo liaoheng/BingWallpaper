@@ -31,6 +31,7 @@ import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.DateTimeUtils;
 import com.github.liaoheng.common.util.DisplayUtils;
+import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.LanguageContextWrapper;
 import com.github.liaoheng.common.util.MD5Utils;
@@ -40,6 +41,8 @@ import com.github.liaoheng.common.util.ShellUtils;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 import com.github.liaoheng.common.util.ValidateUtils;
+import com.google.common.base.Strings;
+import com.google.common.io.Files;
 import com.scottyab.rootbeer.RootBeer;
 
 import org.joda.time.DateTime;
@@ -709,5 +712,10 @@ public class BingWallpaperUtils {
             UIUtils.viewGone(screen);
         }
         alertDialog.show();
+    }
+
+    public static String getName(String fullName) {
+        String extension = FileUtils.getExtension(fullName);
+        return Files.getNameWithoutExtension(fullName) + (Strings.isNullOrEmpty(extension) ? "" : "." + extension);
     }
 }

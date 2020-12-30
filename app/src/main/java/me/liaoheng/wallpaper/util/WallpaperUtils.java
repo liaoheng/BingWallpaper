@@ -78,7 +78,7 @@ public class WallpaperUtils {
     }
 
     public static Uri saveToFile(Context context, String url, File from) throws IOException {
-        String name = FileUtils.getName(url);
+        String name = BingWallpaperUtils.getName(url);
         String[] split = name.split("=");
         if (split.length > 1) {
             name = split[1];

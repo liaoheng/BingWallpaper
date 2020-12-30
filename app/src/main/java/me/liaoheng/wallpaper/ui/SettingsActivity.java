@@ -380,6 +380,12 @@ public class SettingsActivity extends BaseActivity {
                     getActivity().recreate();
                     break;
                 case PREF_SET_WALLPAPER_AUTO_MODE:
+                    if (Settings.getJobType(getContext()) == Settings.LIVE_WALLPAPER) {
+                        if (Integer.parseInt(mModeTypeListPreference.getValue())
+                                == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
+                            UIUtils.showToast(getContext(), "single choose lock wallpaper not support!");
+                        }
+                    }
                     mModeTypeListPreference.setSummary(mModeTypeListPreference.getEntry());
                     mPreferences.put(PREF_SET_WALLPAPER_AUTO_MODE, mModeTypeListPreference.getValue());
                     break;

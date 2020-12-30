@@ -179,6 +179,7 @@ public class LiveWallpaperService extends WallpaperService {
             Config config = new Config.Builder().setBackground(true)
                     .setShowNotification(true)
                     .loadConfig(mContext)
+                    .setWallpaperMode(Settings.getAutoModeValue(mContext))
                     .build();
             setBingWallpaper(Observable.just(false).subscribeOn(Schedulers.io()).compose(load()).map(
                     downloadBitmap -> {
@@ -232,6 +233,9 @@ public class LiveWallpaperService extends WallpaperService {
                 lock = d.wallpaper;
             }
             draw(home);
+            if (config.getWallpaperMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
+                return;
+            }
             //set lock wallpaper
             try {
                 if (BingWallpaperUtils.isROMSystem()) {
