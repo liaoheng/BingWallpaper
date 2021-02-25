@@ -46,42 +46,42 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion > 193) {
-            return;
-        }
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        int type = sharedPreferences.getInt(Settings.BING_WALLPAPER_JOB_TYPE, -1);
-        if (type != -1) {
-            Settings.setJobType(context, type);
-        }
-        sharedPreferences.edit().remove(Settings.BING_WALLPAPER_JOB_TYPE).apply();
-        boolean alarm = Settings.isAlarm(context);
-        if (alarm) {
-            sharedPreferences.edit()
-                    .putString(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_MODE,
-                            String.valueOf(Settings.AUTOMATIC_UPDATE_TYPE_TIMER))
-                    .apply();
-            sharedPreferences.edit().remove("pref_set_wallpaper_day_auto_update").apply();
-            PreferenceManager
-                    .getDefaultSharedPreferences(context)
-                    .edit()
-                    .putBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE, true)
-                    .apply();
-        }
-
-        int jobType = Settings.getJobType(context);
-        if (jobType == Settings.SYSTEM || jobType == Settings.GOOGLE_SERVICE) {
-            try {
-                FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
-                dispatcher.cancel(JOB_TAG);
-                JobScheduler jobScheduler = (JobScheduler)
-                        context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-                Objects.requireNonNull(jobScheduler).cancel(JOB_ID);
-            } catch (Throwable ignored) {
-            } finally {
-                BingWallpaperJobManager.enableSystem(context);
-            }
-        }
+        //if (oldVersion > 193) {
+        //    return;
+        //}
+        //SharedPreferences sharedPreferences = PreferenceManager
+        //        .getDefaultSharedPreferences(context);
+        //int type = sharedPreferences.getInt(Settings.BING_WALLPAPER_JOB_TYPE, -1);
+        //if (type != -1) {
+        //    Settings.setJobType(context, type);
+        //}
+        //sharedPreferences.edit().remove(Settings.BING_WALLPAPER_JOB_TYPE).apply();
+        //boolean alarm = Settings.isAlarm(context);
+        //if (alarm) {
+        //    sharedPreferences.edit()
+        //            .putString(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_MODE,
+        //                    String.valueOf(Settings.AUTOMATIC_UPDATE_TYPE_TIMER))
+        //            .apply();
+        //    sharedPreferences.edit().remove("pref_set_wallpaper_day_auto_update").apply();
+        //    PreferenceManager
+        //            .getDefaultSharedPreferences(context)
+        //            .edit()
+        //            .putBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE, true)
+        //            .apply();
+        //}
+        //
+        //int jobType = Settings.getJobType(context);
+        //if (jobType == Settings.SYSTEM || jobType == Settings.GOOGLE_SERVICE) {
+        //    try {
+        //        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
+        //        dispatcher.cancel(JOB_TAG);
+        //        JobScheduler jobScheduler = (JobScheduler)
+        //                context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        //        Objects.requireNonNull(jobScheduler).cancel(JOB_ID);
+        //    } catch (Throwable ignored) {
+        //    } finally {
+        //        BingWallpaperJobManager.enableSystem(context);
+        //    }
+        //}
     }
 }

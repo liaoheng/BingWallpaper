@@ -33,13 +33,17 @@ public class WorkerManager {
      * @param time seconds
      */
     public static boolean enabled(Context context, long time) {
-        PeriodicWorkRequest.Builder builder = new PeriodicWorkRequest.Builder(BingWallpaperWorker.class, time,
-                TimeUnit.SECONDS)
-                .addTag(WORKER_TAG);
+        try {
+            PeriodicWorkRequest.Builder builder = new PeriodicWorkRequest.Builder(BingWallpaperWorker.class, time,
+                    TimeUnit.SECONDS)
+                    .addTag(WORKER_TAG);
 
-        WorkManager.getInstance(context)
-                .enqueueUniquePeriodicWork(WORKER_TAG, ExistingPeriodicWorkPolicy.REPLACE, builder.build());
-        return true;
+            WorkManager.getInstance(context)
+                    .enqueueUniquePeriodicWork(WORKER_TAG, ExistingPeriodicWorkPolicy.REPLACE, builder.build());
+            return true;
+        } catch (Throwable ignored) {
+        }
+        return false;
     }
 
     public static Configuration getConfig(boolean debug) {

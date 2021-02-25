@@ -12,14 +12,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 
 import com.bumptech.glide.request.target.Target;
@@ -43,6 +41,7 @@ import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
 import me.liaoheng.wallpaper.util.Settings;
 import me.liaoheng.wallpaper.util.WallpaperUtils;
+import me.liaoheng.wallpaper.widget.ResolutionDialog;
 import me.liaoheng.wallpaper.widget.SeekBarDialogFragment;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
 
@@ -71,15 +70,12 @@ public class WallpaperDetailActivity extends BaseActivity implements
     @BindView(R.id.bing_wallpaper_detail_cover_story_toggle)
     ToggleImageButton mCoverStoryToggle;
 
-    @BindArray(R.array.pref_set_wallpaper_resolution_name)
-    String[] mResolutions;
-
     @BindArray(R.array.pref_set_wallpaper_resolution_value)
     String[] mResolutionValue;
 
     private String mSelectedResolution;
 
-    private AlertDialog mResolutionDialog;
+    private ResolutionDialog mResolutionDialog;
 
     private Wallpaper mWallpaper;
     private ProgressDialog mSetWallpaperProgressDialog;
@@ -168,16 +164,13 @@ public class WallpaperDetailActivity extends BaseActivity implements
         mBottomView.setPadding(mBottomView.getPaddingLeft(), mBottomView.getPaddingTop(),
                 mBottomView.getPaddingRight(), BingWallpaperUtils.getNavigationBarPadding(this));
 
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_singlechoice);
-        arrayAdapter.addAll(mResolutions);
-
-        mResolutionDialog = new AlertDialog.Builder(this).setTitle(R.string.detail_wallpaper_resolution_influences)
-                .setSingleChoiceItems(arrayAdapter, 2, (dialog, which) -> {
-                    mSelectedResolution = mResolutions[which];
-                    mResolutionDialog.dismiss();
-                    loadImage();
-                })
-                .create();
+        mResolutionDialog = ResolutionDialog.with(this, new Callback4.EmptyCallback<String>() {
+            @Override
+            public void onYes(String resolution) {
+                mSelectedResolution = resolution;
+                loadImage();
+            }
+        });
 
         mSetWallpaperProgressDialog = UIUtils.createProgressDialog(this, getString(R.string.set_wallpaper_running));
         mSetWallpaperProgressDialog.setCancelable(false);

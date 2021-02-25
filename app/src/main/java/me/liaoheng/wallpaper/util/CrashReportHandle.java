@@ -1,5 +1,6 @@
 package me.liaoheng.wallpaper.util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.MalformedJsonException;
 
@@ -7,13 +8,15 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.github.liaoheng.common.util.L;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import java.net.ConnectException;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
 import javax.net.ssl.SSLHandshakeException;
 
+import io.sentry.Sentry;
 import io.sentry.android.core.SentryAndroid;
-import io.sentry.core.Sentry;
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.Config;
@@ -22,6 +25,7 @@ import me.liaoheng.wallpaper.model.Config;
  * @author liaoheng
  * @version 2018-04-23 23:25
  */
+@SuppressLint("MissingPermission")
 public class CrashReportHandle {
     private static boolean isFirebaseAnalytics;
 
@@ -113,6 +117,15 @@ public class CrashReportHandle {
             return;
         }
         if (t instanceof MalformedJsonException) {
+            return;
+        }
+        if (t instanceof ConnectException) {
+            return;
+        }
+        if (t instanceof SocketException) {
+            return;
+        }
+        if (t instanceof SocketTimeoutException) {
             return;
         }
         try {

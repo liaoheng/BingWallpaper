@@ -36,9 +36,14 @@ public class BingWallpaperAlarmManager {
         alarmManager.cancel(pendingIntent);
     }
 
-    public static void enabled(Context context, @NonNull LocalTime localTime) {
-        disabled(context);
-        add(context, localTime);
+    public static boolean enabled(Context context, @NonNull LocalTime localTime) {
+        try {
+            disabled(context);
+            add(context, localTime);
+            return true;
+        } catch (Throwable ignored) {
+        }
+        return false;
     }
 
     private static void add(Context context, DateTime time) {

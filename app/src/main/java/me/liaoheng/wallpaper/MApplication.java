@@ -42,7 +42,6 @@ public class MApplication extends Application implements Configuration.Provider 
         Constants.Config.isPhone = getString(R.string.screen_type).equals("phone");
 
         CrashReportHandle.init(this);
-        BingWallpaperUtils.isTaskUndone(this);
 
         NotificationUtils.createNotificationChannels(this);
     }

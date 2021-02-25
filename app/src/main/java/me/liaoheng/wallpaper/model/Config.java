@@ -30,7 +30,6 @@ public class Config implements Parcelable {
      */
     @Constants.setWallpaperMode
     private int wallpaperMode;
-    private boolean cache;
 
     public static class Builder {
         private int stackBlur;
@@ -106,14 +105,6 @@ public class Config implements Parcelable {
 
     public void setWallpaperMode(@Constants.setWallpaperMode int wallpaperMode) {
         this.wallpaperMode = wallpaperMode;
-    }
-
-    public boolean isCache() {
-        return cache;
-    }
-
-    public void setCache(boolean cache) {
-        this.cache = cache;
     }
 
     @Override

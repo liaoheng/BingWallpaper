@@ -44,10 +44,10 @@ public class BingWallpaperJobManager {
     }
 
     public static void clear(Context context) {
+        Settings.setJobType(context, Settings.NONE);
         Observable.just("").subscribeOn(Schedulers.io()).map((Function<String, Object>) s -> {
             BingWallpaperUtils.clearTaskComplete(context);
             Settings.setLastWallpaperImageUrl(context, "");
-            Settings.setJobType(context, Settings.NONE);
             return "";
         }).subscribe();
     }
@@ -103,35 +103,31 @@ public class BingWallpaperJobManager {
     }
 
     public static boolean enableSystem(Context context) {
-        try {
-            long time = TimeUnit.HOURS.toSeconds(Settings.getAutomaticUpdateInterval(context));
-            boolean enabled = WorkerManager.enabled(context, time);
+        long time = TimeUnit.HOURS.toSeconds(Settings.getAutomaticUpdateInterval(context));
+        boolean enabled = WorkerManager.enabled(context, time);
+        if (enabled) {
             Settings.setJobType(context, Settings.WORKER);
             if (BingWallpaperUtils.isEnableLog(context)) {
                 LogDebugFileUtils.get()
                         .i(TAG, "Enable scheduler interval time : %s", time);
             }
             L.alog().d(TAG, "enable scheduler interval time : %s", time);
-            return enabled;
-        } catch (Throwable ignored) {
         }
-        return false;
+        return enabled;
     }
 
     public static boolean enableTimer(Context context) {
-        try {
-            LocalTime updateTime = BingWallpaperUtils.getDayUpdateTime(context);
-            BingWallpaperAlarmManager.enabled(context, updateTime);
+        LocalTime updateTime = BingWallpaperUtils.getDayUpdateTime(context);
+        boolean enabled = BingWallpaperAlarmManager.enabled(context, updateTime);
+        if (enabled) {
             Settings.setJobType(context, Settings.TIMER);
             if (BingWallpaperUtils.isEnableLog(context)) {
                 LogDebugFileUtils.get()
                         .i(TAG, "Enable timer time : %s", updateTime.toString("HH:mm"));
             }
             L.alog().d(TAG, "enable timer time : %s", updateTime.toString("HH:mm"));
-            return true;
-        } catch (Throwable ignored) {
         }
-        return false;
+        return enabled;
     }
 
     public static boolean enableLiveService(Context context) {

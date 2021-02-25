@@ -70,10 +70,14 @@ public class TasksUtils {
             if (cursor != null && cursor.moveToNext()) {
                 date = cursor.getLong(2);
             } else {
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(TasksContract.TaskEntry.COLUMN_TAG, tag);
-                contentValues.put(TasksContract.TaskEntry.COLUMN_DATE, date);
-                context.getContentResolver().insert(TasksContract.TaskEntry.CONTENT_URI, contentValues);
+                try {
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(TasksContract.TaskEntry.COLUMN_TAG, tag);
+                    contentValues.put(TasksContract.TaskEntry.COLUMN_DATE, date);
+                    context.getContentResolver().insert(TasksContract.TaskEntry.CONTENT_URI, contentValues);
+                } catch (Exception e) {
+                    return false;
+                }
                 return true;
             }
         }
