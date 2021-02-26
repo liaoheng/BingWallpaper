@@ -126,9 +126,9 @@
         <item>GoogleService</item>
         <item>System</item>
         <item>DaemonService</item>
-        <item>Worker</item>
-        <item>LiveWallpaper</item>
-        <item>Timer</item>
+        <item>@string/pref_set_wallpaper_day_fully_automatic_update_type_system</item>
+        <item>@string/pref_set_wallpaper_day_fully_automatic_update_type_service</item>
+        <item>@string/pref_set_wallpaper_day_fully_automatic_update_type_timer</item>
     </string-array>
 
 </resources>

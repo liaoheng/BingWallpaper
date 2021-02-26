@@ -179,14 +179,15 @@ public class WallpaperHistoryListActivity extends BaseActivity {
                     .override(width, height)
                     .error(R.drawable.lcn_empty_photo)
                     .load(imageUrl), mImageView, new Callback.EmptyCallback<Drawable>() {
-                @Override
-                public void onError(Throwable e) {
-                    UIUtils.viewGone(mProgressBar);
-                }
 
                 @Override
                 public void onPreExecute() {
                     UIUtils.viewVisible(mProgressBar);
+                }
+
+                @Override
+                public void onPostExecute() {
+                    UIUtils.viewGone(mProgressBar);
                 }
 
                 @Override

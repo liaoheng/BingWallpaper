@@ -376,38 +376,30 @@ public class MainActivity extends BaseActivity
                     public void onSuccess(@NonNull Drawable drawable) {
                         mWallpaperView.setImageDrawable(drawable);
                         mNavigationHeaderImage.setImageDrawable(drawable);
-                        Bitmap bitmap = BitmapUtils.drawableToBitmap(drawable);
-                        Palette.from(bitmap)
-                                .generate(palette -> {
-                                    int defMuted = ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark);
-                                    int defVibrant = ContextCompat.getColor(getActivity(), R.color.colorAccent);
-                                    int lightMutedSwatch = defMuted;
-                                    int lightVibrantSwatch = defVibrant;
+                        int defMuted = ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark);
+                        int defVibrant = ContextCompat.getColor(getActivity(), R.color.colorAccent);
+                        try {
+                            Bitmap bitmap = BitmapUtils.drawableToBitmap(drawable);
+                            Palette.from(bitmap)
+                                    .generate(palette -> {
+                                        int lightMutedSwatch = defMuted;
+                                        int lightVibrantSwatch = defVibrant;
 
-                                    if (palette != null) {
-                                        lightMutedSwatch = palette.getMutedColor(defMuted);
-                                        lightVibrantSwatch = palette.getVibrantColor(defVibrant);
-                                        if (lightMutedSwatch == defMuted) {
-                                            if (lightVibrantSwatch != defVibrant) {
-                                                lightMutedSwatch = lightVibrantSwatch;
+                                        if (palette != null) {
+                                            lightMutedSwatch = palette.getMutedColor(defMuted);
+                                            lightVibrantSwatch = palette.getVibrantColor(defVibrant);
+                                            if (lightMutedSwatch == defMuted) {
+                                                if (lightVibrantSwatch != defVibrant) {
+                                                    lightMutedSwatch = lightVibrantSwatch;
+                                                }
                                             }
                                         }
-                                    }
 
-                                    mSetWallpaperActionMenu.removeAllMenuButtons();
-                                    mSetWallpaperActionMenu.setMenuButtonColorNormal(lightMutedSwatch);
-                                    mSetWallpaperActionMenu.setMenuButtonColorPressed(lightMutedSwatch);
-                                    mSetWallpaperActionMenu.setMenuButtonColorRipple(lightVibrantSwatch);
-
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                        AddBothActionButton(image, lightMutedSwatch, lightVibrantSwatch, false);
-                                    } else {
-                                        AddBothActionButton(image, lightMutedSwatch, lightVibrantSwatch,
-                                                !ROM.getROM().isMiui());
-                                    }
-
-                                    mSetWallpaperActionMenu.showMenu(true);
-                                });
+                                        initSetWallpaperActionMenu(lightMutedSwatch, lightVibrantSwatch, image);
+                                    });
+                        } catch (OutOfMemoryError e) {
+                            initSetWallpaperActionMenu(defMuted, defVibrant, image);
+                        }
                     }
 
                     @Override
@@ -415,6 +407,22 @@ public class MainActivity extends BaseActivity
                         setBingWallpaperError(e);
                     }
                 });
+    }
+
+    private void initSetWallpaperActionMenu(@ColorInt int lightMutedSwatch, int lightVibrantSwatch, Wallpaper image) {
+        mSetWallpaperActionMenu.removeAllMenuButtons();
+        mSetWallpaperActionMenu.setMenuButtonColorNormal(lightMutedSwatch);
+        mSetWallpaperActionMenu.setMenuButtonColorPressed(lightMutedSwatch);
+        mSetWallpaperActionMenu.setMenuButtonColorRipple(lightVibrantSwatch);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            AddBothActionButton(image, lightMutedSwatch, lightVibrantSwatch, false);
+        } else {
+            AddBothActionButton(image, lightMutedSwatch, lightVibrantSwatch,
+                    !ROM.getROM().isMiui());
+        }
+
+        mSetWallpaperActionMenu.showMenu(true);
     }
 
     private void AddBothActionButton(Wallpaper image, @ColorInt int lightMutedSwatch,
