@@ -121,4 +121,14 @@
         <item>12</item>
     </string-array>
 
+    <string-array name="job_type">
+        <item>None</item>
+        <item>GoogleService</item>
+        <item>System</item>
+        <item>DaemonService</item>
+        <item>Worker</item>
+        <item>LiveWallpaper</item>
+        <item>Timer</item>
+    </string-array>
+
 </resources>

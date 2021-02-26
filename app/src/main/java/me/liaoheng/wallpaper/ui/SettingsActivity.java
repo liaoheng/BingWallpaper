@@ -305,7 +305,7 @@ public class SettingsActivity extends BaseActivity {
             mDailyUpdateTimePreference.setSummary(time.toString("HH:mm"));
             mDailyUpdateTimePreference.setLocalTime(time);
 
-            mDailyUpdatePreference.setSummary(Settings.getJobType(getContext()));
+            mDailyUpdatePreference.setSummary(Settings.getJobTypeString(getContext()));
 
             switch (Settings.getAutomaticUpdateType(getContext())) {
                 case Settings.AUTOMATIC_UPDATE_TYPE_AUTO:

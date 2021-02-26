@@ -260,7 +260,12 @@ public class Settings {
 
     @JobType
     public static int getJobType(Context context) {
-        return SettingTrayPreferences.get(context).getInt(BING_WALLPAPER_JOB_TYPE);
+        return SettingTrayPreferences.get(context).getInt(BING_WALLPAPER_JOB_TYPE, -1);
+    }
+
+    public static String getJobTypeString(Context context) {
+        String[] jts = context.getResources().getStringArray(R.array.job_type);
+        return jts[getJobType(context) + 1];
     }
 
 }
