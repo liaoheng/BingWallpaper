@@ -2,6 +2,7 @@ package me.liaoheng.wallpaper.util;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -13,7 +14,9 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,7 +25,7 @@ import androidx.core.app.ShareCompat;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.bumptech.glide.request.target.DrawableImageViewTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.commit451.nativestackblur.NativeStackBlur;
@@ -50,6 +53,27 @@ import me.liaoheng.wallpaper.model.Wallpaper;
  * @version 2020-07-01 13:40
  */
 public class WallpaperUtils {
+
+    public static boolean isNotSupportedWallpaper(Context context) {
+        WallpaperManager manager = WallpaperManager.getInstance(context);
+        if (manager == null) {
+            Toast.makeText(context, "This device not support wallpaper", Toast.LENGTH_LONG).show();
+            return true;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!manager.isWallpaperSupported()) {
+                Toast.makeText(context, "This device not support wallpaper", Toast.LENGTH_LONG).show();
+                return true;
+            }
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (!manager.isSetWallpaperAllowed()) {
+                Toast.makeText(context, "This device not support set wallpaper", Toast.LENGTH_LONG).show();
+                return true;
+            }
+        }
+        return false;
+    }
 
     public static void autoSaveWallpaper(Context context, String TAG, Wallpaper image, File wallpaper) {
         if (!Settings.isAutoSave(context)) {
@@ -156,12 +180,12 @@ public class WallpaperUtils {
         });
     }
 
-    public static void loadImage(GlideRequest<Bitmap> request, ImageView imageView,
-            Callback<Bitmap> callback) {
-        request.listener(new RequestListener<Bitmap>() {
+    public static void loadImage(GlideRequest<Drawable> request, ImageView imageView,
+            Callback<Drawable> callback) {
+        request.listener(new RequestListener<Drawable>() {
 
             @Override
-            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target,
+            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target,
                     boolean isFirstResource) {
                 callback.onPostExecute();
                 callback.onError(e);
@@ -169,12 +193,12 @@ public class WallpaperUtils {
             }
 
             @Override
-            public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
+            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target,
                     DataSource dataSource,
                     boolean isFirstResource) {
                 return false;
             }
-        }).into(new BitmapImageViewTarget(imageView) {
+        }).into(new DrawableImageViewTarget(imageView) {
 
             @Override
             public void onLoadStarted(Drawable placeholder) {
@@ -183,11 +207,17 @@ public class WallpaperUtils {
             }
 
             @Override
-            public void onResourceReady(@NonNull Bitmap resource,
-                    @Nullable Transition<? super Bitmap> transition) {
+            public void onResourceReady(@NonNull Drawable resource,
+                    @Nullable Transition<? super Drawable> transition) {
                 super.onResourceReady(resource, transition);
                 callback.onPostExecute();
                 callback.onSuccess(resource);
+            }
+
+            @Override
+            public void onDestroy() {
+                callback.onFinish();
+                super.onDestroy();
             }
         });
     }

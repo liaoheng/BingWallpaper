@@ -26,6 +26,9 @@ public class UIHelper implements IUIHelper {
 
     @Override
     public void setWallpaper(Context context, @NonNull Config config, File wallpaper) throws IOException {
+        if (WallpaperUtils.isNotSupportedWallpaper(context)) {
+            return;
+        }
         File home = new File(wallpaper.toURI());
         File lock = new File(wallpaper.toURI());
         if (config.getStackBlur() > 0) {

@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -28,6 +29,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.bumptech.glide.request.target.Target;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.Callback5;
@@ -354,12 +356,12 @@ public class MainActivity extends BaseActivity
         if (isDestroyed()) {
             return;
         }
-        WallpaperUtils.loadImage(GlideApp.with(this).asBitmap()
+        WallpaperUtils.loadImage(GlideApp.with(this).asDrawable()
                         .load(url)
                         .dontAnimate()
                         .thumbnail(0.5f)
                         .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL), mWallpaperView,
-                new Callback.EmptyCallback<Bitmap>() {
+                new Callback.EmptyCallback<Drawable>() {
                     @Override
                     public void onPreExecute() {
                         showSwipeRefreshLayout();
@@ -371,47 +373,41 @@ public class MainActivity extends BaseActivity
                     }
 
                     @Override
-                    public void onSuccess(@NonNull Bitmap bitmap) {
-                        try {
-                            mWallpaperView.setImageBitmap(bitmap);
-                            mNavigationHeaderImage.setImageBitmap(bitmap);
-                            Palette.from(bitmap)
-                                    .generate(palette -> {
-                                        int defMuted = ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark);
-                                        int defVibrant = ContextCompat.getColor(getActivity(), R.color.colorAccent);
-                                        int lightMutedSwatch = defMuted;
-                                        int lightVibrantSwatch = defVibrant;
+                    public void onSuccess(@NonNull Drawable drawable) {
+                        mWallpaperView.setImageDrawable(drawable);
+                        mNavigationHeaderImage.setImageDrawable(drawable);
+                        Bitmap bitmap = BitmapUtils.drawableToBitmap(drawable);
+                        Palette.from(bitmap)
+                                .generate(palette -> {
+                                    int defMuted = ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark);
+                                    int defVibrant = ContextCompat.getColor(getActivity(), R.color.colorAccent);
+                                    int lightMutedSwatch = defMuted;
+                                    int lightVibrantSwatch = defVibrant;
 
-                                        if (palette != null) {
-                                            lightMutedSwatch = palette.getMutedColor(defMuted);
-                                            lightVibrantSwatch = palette.getVibrantColor(defVibrant);
-                                            if (lightMutedSwatch == defMuted) {
-                                                if (lightVibrantSwatch != defVibrant) {
-                                                    lightMutedSwatch = lightVibrantSwatch;
-                                                }
+                                    if (palette != null) {
+                                        lightMutedSwatch = palette.getMutedColor(defMuted);
+                                        lightVibrantSwatch = palette.getVibrantColor(defVibrant);
+                                        if (lightMutedSwatch == defMuted) {
+                                            if (lightVibrantSwatch != defVibrant) {
+                                                lightMutedSwatch = lightVibrantSwatch;
                                             }
                                         }
+                                    }
 
-                                        mSetWallpaperActionMenu.removeAllMenuButtons();
-                                        mSetWallpaperActionMenu.setMenuButtonColorNormal(lightMutedSwatch);
-                                        mSetWallpaperActionMenu.setMenuButtonColorPressed(lightMutedSwatch);
-                                        mSetWallpaperActionMenu.setMenuButtonColorRipple(lightVibrantSwatch);
+                                    mSetWallpaperActionMenu.removeAllMenuButtons();
+                                    mSetWallpaperActionMenu.setMenuButtonColorNormal(lightMutedSwatch);
+                                    mSetWallpaperActionMenu.setMenuButtonColorPressed(lightMutedSwatch);
+                                    mSetWallpaperActionMenu.setMenuButtonColorRipple(lightVibrantSwatch);
 
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                            AddBothActionButton(image, lightMutedSwatch, lightVibrantSwatch, false);
-                                        } else {
-                                            if (ROM.getROM().isMiui()) {
-                                                AddBothActionButton(image, lightMutedSwatch, lightVibrantSwatch, false);
-                                            } else {
-                                                AddBothActionButton(image, lightMutedSwatch, lightVibrantSwatch, true);
-                                            }
-                                        }
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                        AddBothActionButton(image, lightMutedSwatch, lightVibrantSwatch, false);
+                                    } else {
+                                        AddBothActionButton(image, lightMutedSwatch, lightVibrantSwatch,
+                                                !ROM.getROM().isMiui());
+                                    }
 
-                                        mSetWallpaperActionMenu.showMenu(true);
-                                    });
-                        } catch (RuntimeException e) {
-                            setBingWallpaperError(e);
-                        }
+                                    mSetWallpaperActionMenu.showMenu(true);
+                                });
                     }
 
                     @Override

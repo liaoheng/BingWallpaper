@@ -43,6 +43,7 @@ import me.liaoheng.wallpaper.util.ISettingTrayPreferences;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.SettingTrayPreferences;
 import me.liaoheng.wallpaper.util.Settings;
+import me.liaoheng.wallpaper.util.WallpaperUtils;
 import me.liaoheng.wallpaper.widget.SeekBarDialogPreference;
 import me.liaoheng.wallpaper.widget.SeekBarPreferenceDialogFragmentCompat;
 import me.liaoheng.wallpaper.widget.TimePreference;
@@ -327,6 +328,9 @@ public class SettingsActivity extends BaseActivity {
                 case Settings.AUTOMATIC_UPDATE_TYPE_TIMER:
                     initTimerView();
                     break;
+            }
+            if (WallpaperUtils.isNotSupportedWallpaper(getContext())) {
+                mDailyUpdatePreference.setEnabled(false);
             }
         }
 

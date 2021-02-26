@@ -242,14 +242,12 @@ public class LiveWallpaperService extends WallpaperService {
                     if (ROM.getROM().isMiui()) {
                         MiuiHelper.lockSetWallpaper(getApplicationContext(), lock);
                     } else {
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                            AppUtils.setWallpaper(getApplicationContext(), lock);
-                        } else {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                             AppUtils.setLockScreenWallpaper(getApplicationContext(), lock);
                         }
                     }
                 }
-            } catch (IOException ignored) {
+            } catch (Exception ignored) {
             }
         }
 

@@ -153,7 +153,8 @@
         <provider
                 android:name="androidx.work.impl.WorkManagerInitializer"
                 android:authorities="${applicationId}.workmanager-init"
-                tools:node="remove" />
+                tools:node="remove"
+                android:exported="false" />
 
         <meta-data
                 android:name="io.sentry.auto-init"

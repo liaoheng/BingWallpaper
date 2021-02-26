@@ -2,7 +2,6 @@ package me.liaoheng.wallpaper.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -13,12 +12,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import com.bumptech.glide.request.target.ImageViewTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.github.liaoheng.common.adapter.base.BaseRecyclerAdapter;
 import com.github.liaoheng.common.adapter.core.HandleView;
 import com.github.liaoheng.common.adapter.core.RecyclerViewHelper;
@@ -40,6 +36,7 @@ import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.GlideApp;
+import me.liaoheng.wallpaper.util.WallpaperUtils;
 
 /**
  * 壁纸历史列表
@@ -176,59 +173,32 @@ public class WallpaperHistoryListActivity extends BaseActivity {
             String imageUrl = BingWallpaperUtils.getImageUrl(getContext(),
                     Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
                     item.getBaseUrl());
-            GlideApp.with(getContext())
-                    .asBitmap()
+            WallpaperUtils.loadImage(GlideApp.with(getContext())
+                    .asDrawable()
                     .thumbnail(0.3f)
                     .override(width, height)
                     .error(R.drawable.lcn_empty_photo)
-                    .load(imageUrl)
-                    .into(new ProgressImageViewTarget(mImageView, mProgressBar));
-        }
-    }
+                    .load(imageUrl), mImageView, new Callback.EmptyCallback<Drawable>() {
+                @Override
+                public void onError(Throwable e) {
+                    UIUtils.viewGone(mProgressBar);
+                }
 
-    static class ProgressImageViewTarget extends ImageViewTarget<Bitmap> {
-        private ProgressBar mProgressBar;
-        private ImageView mImageView;
+                @Override
+                public void onPreExecute() {
+                    UIUtils.viewVisible(mProgressBar);
+                }
 
-        public ProgressImageViewTarget(ImageView view, ProgressBar mProgressBar) {
-            super(view);
-            this.mProgressBar = mProgressBar;
-            this.mImageView = view;
-        }
+                @Override
+                public void onSuccess(Drawable resource) {
+                    mImageView.setImageDrawable(resource);
+                }
 
-        @Override
-        public void onLoadStarted(@Nullable Drawable placeholder) {
-            super.onLoadStarted(placeholder);
-            UIUtils.viewVisible(mProgressBar);
-        }
-
-        @Override
-        public void onLoadFailed(@Nullable Drawable errorDrawable) {
-            super.onLoadFailed(errorDrawable);
-            UIUtils.viewGone(mProgressBar);
-        }
-
-        @Override
-        public void onLoadCleared(@Nullable Drawable placeholder) {
-            super.onLoadCleared(placeholder);
-            UIUtils.viewGone(mProgressBar);
-        }
-
-        @Override
-        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-            super.onResourceReady(resource, transition);
-            UIUtils.viewGone(mProgressBar);
-            mImageView.setImageBitmap(resource);
-        }
-
-        @Override
-        protected void setResource(@Nullable Bitmap resource) {
-        }
-
-        @Override
-        public void onDestroy() {
-            UIUtils.viewGone(mProgressBar);
-            super.onDestroy();
+                @Override
+                public void onFinish() {
+                    UIUtils.viewGone(mProgressBar);
+                }
+            });
         }
     }
 
@@ -243,7 +213,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         public WallpaperViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View itemView = inflate(R.layout.view_wallpaper_list_item, parent);
             GridLayoutManager.LayoutParams lp = (GridLayoutManager.LayoutParams) itemView.getLayoutParams();
-            lp.height = (int) (parent.getMeasuredHeight() / 3);
+            lp.height = parent.getMeasuredHeight() / 3;
             itemView.setLayoutParams(lp);
             return new WallpaperViewHolder(itemView);
         }

@@ -11,6 +11,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import javax.net.ssl.SSLHandshakeException;
@@ -126,6 +127,9 @@ public class CrashReportHandle {
             return;
         }
         if (t instanceof SocketTimeoutException) {
+            return;
+        }
+        if (t instanceof UnknownHostException) {
             return;
         }
         try {
