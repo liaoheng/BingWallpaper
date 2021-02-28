@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.service.BingWallpaperWorker;
 
 /**
@@ -44,6 +45,10 @@ public class WorkerManager {
         } catch (Throwable ignored) {
         }
         return false;
+    }
+
+    public static void initialize(Context context){
+        WorkManager.initialize(context.getApplicationContext(), WorkerManager.getConfig(BuildConfig.DEBUG));
     }
 
     public static Configuration getConfig(boolean debug) {

@@ -146,6 +146,9 @@ public class BingWallpaperJobManager {
                 WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER);
         intent.putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
                 new ComponentName(context, LiveWallpaperService.class));
+        if (intent.resolveActivity(context.getPackageManager()) == null) {
+            throw new android.content.ActivityNotFoundException("LiveWallpaperService");
+        }
         if (context instanceof Activity) {
             ((Activity) context).startActivityForResult(intent, LIVE_WALLPAPER_REQUEST_CODE);
         }

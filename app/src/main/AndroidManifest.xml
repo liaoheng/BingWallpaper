@@ -156,6 +156,11 @@
                 tools:node="remove"
                 android:exported="false" />
 
+        <provider
+                android:name=".util.WorkManagerInitializer"
+                android:authorities="${applicationId}.WorkManagerInit"
+                android:exported="false" />
+
         <meta-data
                 android:name="io.sentry.auto-init"
                 android:value="false" />

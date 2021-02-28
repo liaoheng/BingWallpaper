@@ -2,9 +2,6 @@ package me.liaoheng.wallpaper;
 
 import android.app.Application;
 
-import androidx.annotation.NonNull;
-import androidx.work.Configuration;
-
 import com.github.liaoheng.common.Common;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.LanguageContextWrapper;
@@ -18,13 +15,12 @@ import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.NetUtils;
 import me.liaoheng.wallpaper.util.NotificationUtils;
 import me.liaoheng.wallpaper.util.TasksUtils;
-import me.liaoheng.wallpaper.util.WorkerManager;
 
 /**
  * @author liaoheng
  * @version 2016-09-19 11:34
  */
-public class MApplication extends Application implements Configuration.Provider {
+public class MApplication extends Application {
 
     @Override
     public void onCreate() {
@@ -44,11 +40,5 @@ public class MApplication extends Application implements Configuration.Provider 
         CrashReportHandle.init(this);
 
         NotificationUtils.createNotificationChannels(this);
-    }
-
-    @NonNull
-    @Override
-    public Configuration getWorkManagerConfiguration() {
-        return WorkerManager.getConfig(BuildConfig.DEBUG);
     }
 }
