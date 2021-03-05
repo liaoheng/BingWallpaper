@@ -440,10 +440,11 @@ public class SettingsActivity extends BaseActivity {
                 case PREF_SET_WALLPAPER_LOG:
                     mPreferences.put(PREF_SET_WALLPAPER_LOG, mLogPreference.isChecked());
                     if (mLogPreference.isChecked()) {
-                        LogDebugFileUtils.init(getContext());
+                        LogDebugFileUtils.create(getContext());
                     } else {
-                        LogDebugFileUtils.get().clearFile();
+                        LogDebugFileUtils.destroy();
                     }
+                    getContext().sendBroadcast(new Intent(Constants.ACTION_DEBUG_LOG));
                     break;
                 case PREF_CRASH_REPORT:
                     mPreferences.put(PREF_CRASH_REPORT, mCrashPreference.isChecked());

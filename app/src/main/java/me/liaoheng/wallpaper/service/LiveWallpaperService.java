@@ -60,11 +60,13 @@ public class LiveWallpaperService extends WallpaperService {
     @Override
     public void onCreate() {
         super.onCreate();
+        LogDebugFileUtils.init(getApplicationContext());
         mServiceHelper = new SetWallpaperServiceHelper(this, TAG);
         mReceiver = new LiveWallpaperBroadcastReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(UPDATE_LIVE_WALLPAPER);
         intentFilter.addAction(START_LIVE_WALLPAPER_SCHEDULER);
+        intentFilter.addAction(Constants.ACTION_DEBUG_LOG);
         registerReceiver(mReceiver, intentFilter);
     }
 
@@ -91,6 +93,8 @@ public class LiveWallpaperService extends WallpaperService {
                 if (mEngine != null) {
                     mEngine.enable();
                 }
+            }else if (Constants.ACTION_DEBUG_LOG.equals(intent.getAction())){
+                LogDebugFileUtils.init(getApplicationContext());
             }
         }
     }

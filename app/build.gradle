@@ -12,8 +12,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 10917
-        versionName "1.9.17"
+        versionCode 10918
+        versionName "1.9.18"
     }
 
     def isSigning = true
@@ -53,7 +53,6 @@ android {
         abortOnError false
     }
     compileOptions {
-        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -66,7 +65,6 @@ dependencies {
     testImplementation deps.junit
     testImplementation 'joda-time:joda-time:2.10.7'
     //android system
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.1'
     implementation deps.annotations
     implementation deps.material
     implementation deps.palette
@@ -118,12 +116,12 @@ dependencies {
     //https://github.com/apl-devs/AppIntro
     implementation 'com.github.AppIntro:AppIntro:6.1.0'
 
-    //    implementation group: "com.github.liaoheng", name: "common-core", version: "0.1.1-SNAPSHOT", changing: true
-    //    implementation group: "com.github.liaoheng", name: "common-adapter", version: "0.1.1-SNAPSHOT", changing: true
-    implementation 'com.github.liaoheng:common-core:0.1.1-SNAPSHOT'
-    implementation 'com.github.liaoheng:common-adapter:0.1.1-SNAPSHOT'
+        implementation group: "com.github.liaoheng", name: "common-core", version: "0.1.1-SNAPSHOT", changing: true
+        implementation group: "com.github.liaoheng", name: "common-adapter", version: "0.1.1-SNAPSHOT", changing: true
+//    implementation 'com.github.liaoheng:common-core:0.1.1-SNAPSHOT'
+//    implementation 'com.github.liaoheng:common-adapter:0.1.1-SNAPSHOT'
 }
-//configurations.all {
-//    // check for updates every build
-//    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-//}
+configurations.all {
+    // check for updates every build
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}

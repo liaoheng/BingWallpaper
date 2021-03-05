@@ -209,7 +209,6 @@ public class WallpaperUtils {
             @Override
             public void onResourceReady(@NonNull Drawable resource,
                     @Nullable Transition<? super Drawable> transition) {
-                super.onResourceReady(resource, transition);
                 callback.onPostExecute();
                 callback.onSuccess(resource);
             }
@@ -217,7 +216,6 @@ public class WallpaperUtils {
             @Override
             public void onDestroy() {
                 callback.onFinish();
-                super.onDestroy();
             }
         });
     }

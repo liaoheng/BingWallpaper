@@ -7,7 +7,6 @@ import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.LanguageContextWrapper;
 
 import io.reactivex.plugins.RxJavaPlugins;
-import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.CacheUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
@@ -29,9 +28,7 @@ public class MApplication extends Application {
         Common.baseInit(this, Constants.PROJECT_NAME, BuildConfig.DEBUG);
         L.init(Constants.PROJECT_NAME, BuildConfig.DEBUG);
         TasksUtils.init(this);
-        if (BingWallpaperUtils.isEnableLog(this)) {
-            LogDebugFileUtils.init(this);
-        }
+        LogDebugFileUtils.init(this);
         CacheUtils.init(this);
         RxJavaPlugins.setErrorHandler(throwable -> L.alog().w("RxJavaPlugins", throwable));
         NetUtils.get().init(getApplicationContext());

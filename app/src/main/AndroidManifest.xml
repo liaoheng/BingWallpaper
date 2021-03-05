@@ -128,6 +128,7 @@
                 <action android:name="android.service.wallpaper.WallpaperService" />
                 <action android:name="me.liaoheng.wallpaper.UPDATE_LIVE_WALLPAPER" />
                 <action android:name="me.liaoheng.wallpaper.START_LIVE_WALLPAPER_SCHEDULER" />
+                <action android:name="me.liaoheng.wallpaper.ACTION_DEBUG_LOG" />
             </intent-filter>
 
             <meta-data

@@ -22,9 +22,22 @@ public class LogDebugFileUtils {
     }
 
     public static void init(Context context) {
-        try {
-            LogFileUtils.get().init(context, "log", "");
-        } catch (IOException ignored) {
+        if (Settings.isEnableLogProvider(context)) {
+            create(context);
+        }else{
+            LogFileUtils.get().close();
         }
+    }
+
+    public static void create(Context context) {
+        try{
+            LogFileUtils.get().open(context, "log", "");
+        }catch (IOException ignored){
+        }
+    }
+
+    public static void destroy() {
+        LogFileUtils.get().close();
+        LogFileUtils.get().clearFile();
     }
 }

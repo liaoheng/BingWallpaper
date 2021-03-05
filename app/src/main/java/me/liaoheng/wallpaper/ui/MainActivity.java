@@ -207,7 +207,6 @@ public class MainActivity extends BaseActivity
         getBingWallpaper();
 
         BingWallpaperUtils.showMiuiDialog(this);
-        BingWallpaperUtils.fixSetting(this);
     }
 
     @SuppressLint({ "SetTextI18n", "CheckResult" })
@@ -323,7 +322,6 @@ public class MainActivity extends BaseActivity
                 recreate();
             }
         }
-        BingWallpaperUtils.fixSettingOnActivityResult(this, requestCode, resultCode);
     }
 
     @Override
