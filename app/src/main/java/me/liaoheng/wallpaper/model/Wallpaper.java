@@ -20,21 +20,23 @@ public class Wallpaper implements Parcelable {
     private String webUrl;
     private String desc;
     private String imageUrl;
+    private String copyrightInfo;
 
     public Wallpaper copy(String imageUrl) {
-        Wallpaper wallpaper = new Wallpaper(dateTime, url, baseUrl, copyright, webUrl, desc);
+        Wallpaper wallpaper = new Wallpaper(dateTime, url, baseUrl, copyright, webUrl, desc, copyrightInfo);
         wallpaper.setImageUrl(imageUrl);
         return wallpaper;
     }
 
     public Wallpaper(String dateTime, String url, String baseUrl, String copyright,
-            String webUrl, String desc) {
+                     String webUrl, String desc, String copyrightInfo) {
         this.dateTime = dateTime;
         this.url = url;
         this.baseUrl = baseUrl;
         this.copyright = copyright;
         this.webUrl = webUrl;
         this.desc = desc;
+        this.copyrightInfo = copyrightInfo;
     }
 
     public String getDateTime() {
@@ -98,6 +100,14 @@ public class Wallpaper implements Parcelable {
                 this);
     }
 
+    public String getCopyrightInfo() {
+        return copyrightInfo;
+    }
+
+    public void setCopyrightInfo(String copyrightInfo) {
+        this.copyrightInfo = copyrightInfo;
+    }
+
     @NonNull
     @Override
     public String toString() {
@@ -118,6 +128,7 @@ public class Wallpaper implements Parcelable {
         copyright = in.readString();
         desc = in.readString();
         imageUrl = in.readString();
+        copyrightInfo = in.readString();
     }
 
     @Override
@@ -128,6 +139,7 @@ public class Wallpaper implements Parcelable {
         dest.writeString(copyright);
         dest.writeString(desc);
         dest.writeString(imageUrl);
+        dest.writeString(copyrightInfo);
     }
 
     @Override

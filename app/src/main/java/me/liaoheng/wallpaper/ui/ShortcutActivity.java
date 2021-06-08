@@ -13,6 +13,7 @@ import com.github.liaoheng.common.util.Callback4;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.Settings;
 
 /**
  * @author liaoheng
@@ -32,6 +33,9 @@ public class ShortcutActivity extends Activity {
                 new Callback4.EmptyCallback<Boolean>() {
                     @Override
                     public void onYes(Boolean aBoolean) {
+                        if (Settings.getJobType(getApplicationContext()) == Settings.LIVE_WALLPAPER) {
+                            return;
+                        }
                         Toast.makeText(getApplicationContext(), getString(R.string.set_wallpaper_running),
                                 Toast.LENGTH_SHORT)
                                 .show();

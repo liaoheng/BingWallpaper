@@ -8,6 +8,7 @@ import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
+import androidx.work.multiprocess.RemoteWorkManager;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -16,7 +17,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.service.BingWallpaperWorker;
 
 /**
@@ -27,7 +27,7 @@ public class WorkerManager {
     private static final String WORKER_TAG = "bing_wallpaper_worker_" + 0x484;
 
     public static void disabled(Context context) {
-        WorkManager.getInstance(context).cancelUniqueWork(WORKER_TAG);
+        RemoteWorkManager.getInstance(context).cancelUniqueWork(WORKER_TAG);
     }
 
     /**
@@ -39,7 +39,7 @@ public class WorkerManager {
                     TimeUnit.SECONDS)
                     .addTag(WORKER_TAG);
 
-            WorkManager.getInstance(context)
+            RemoteWorkManager.getInstance(context)
                     .enqueueUniquePeriodicWork(WORKER_TAG, ExistingPeriodicWorkPolicy.REPLACE, builder.build());
             return true;
         } catch (Throwable ignored) {
@@ -47,13 +47,10 @@ public class WorkerManager {
         return false;
     }
 
-    public static void initialize(Context context){
-        WorkManager.initialize(context.getApplicationContext(), WorkerManager.getConfig(BuildConfig.DEBUG));
-    }
-
     public static Configuration getConfig(boolean debug) {
         return new Configuration.Builder().setMinimumLoggingLevel(debug ? Log.DEBUG : Log.ERROR)
                 .setExecutor(Executors.newSingleThreadExecutor())
+                .setDefaultProcessName("me.liaoheng.wallpaper:background")
                 .build();
     }
 

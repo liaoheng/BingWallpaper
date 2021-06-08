@@ -15,6 +15,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.view.SurfaceHolder;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -42,6 +43,7 @@ import java.io.IOException;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import me.liaoheng.wallpaper.R;
@@ -257,4 +259,36 @@ public class WallpaperUtils {
     public static Bitmap toStackBlur2(Bitmap original, int radius) {
         return NativeStackBlur.process(original, radius);
     }
+
+    public static void drawSurfaceHolder(SurfaceHolder holder, Consumer<Canvas> callback) {
+        if (!holder.getSurface().isValid()) {
+            return;
+        }
+        Canvas canvas = null;
+        try {
+            canvas = holder.lockCanvas();
+            if (canvas != null) {
+                callback.accept(canvas);
+            }
+        } catch (Throwable ignored) {
+        } finally {
+            if (canvas != null) {
+                holder.unlockCanvasAndPost(canvas);
+            }
+        }
+    }
+
+    public static void drawText(Canvas canvas, String text, int textSize, int width, int height) {
+        Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DEV_KERN_TEXT_FLAG);
+        textPaint.setTextSize(textSize);
+        textPaint.setTextAlign(Paint.Align.LEFT);
+        textPaint.setTypeface(Typeface.DEFAULT);
+        textPaint.setAntiAlias(true);
+        textPaint.setStrokeWidth(1);
+        textPaint.setAlpha(120);
+        textPaint.setColor(Color.WHITE);
+
+        canvas.drawText(text, width / 2F - textPaint.measureText(text) / 2, height / 2F, textPaint);
+    }
+
 }

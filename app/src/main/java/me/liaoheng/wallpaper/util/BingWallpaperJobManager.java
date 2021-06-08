@@ -157,8 +157,6 @@ public class BingWallpaperJobManager {
     public static void onActivityResult(Context context, int requestCode, int resultCode, Callback5 callback) {
         if (requestCode == LIVE_WALLPAPER_REQUEST_CODE) {
             if (Activity.RESULT_OK == resultCode) {
-                Intent intent = new Intent(LiveWallpaperService.START_LIVE_WALLPAPER_SCHEDULER);
-                context.sendBroadcast(intent);
                 Settings.setJobType(context, Settings.LIVE_WALLPAPER);
                 if (BingWallpaperUtils.isEnableLog(context)) {
                     LogDebugFileUtils.get()

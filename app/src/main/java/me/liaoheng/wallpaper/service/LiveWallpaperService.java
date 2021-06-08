@@ -7,28 +7,34 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.media.ThumbnailUtils;
 import android.os.Build;
 import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Process;
 import android.service.wallpaper.WallpaperService;
 import android.util.DisplayMetrics;
 import android.view.SurfaceHolder;
 
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback;
+import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.Utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.ObservableTransformer;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
@@ -45,7 +51,6 @@ import me.liaoheng.wallpaper.util.WallpaperUtils;
  */
 public class LiveWallpaperService extends WallpaperService {
     private final String TAG = LiveWallpaperService.class.getSimpleName();
-    public static final String START_LIVE_WALLPAPER_SCHEDULER = "me.liaoheng.wallpaper.START_LIVE_WALLPAPER_SCHEDULER";
     public static final String UPDATE_LIVE_WALLPAPER = "me.liaoheng.wallpaper.UPDATE_LIVE_WALLPAPER";
     private LiveWallpaperBroadcastReceiver mReceiver;
     private SetWallpaperServiceHelper mServiceHelper;
@@ -53,7 +58,7 @@ public class LiveWallpaperService extends WallpaperService {
 
     @Override
     public Engine onCreateEngine() {
-        mEngine = new LiveWallpaperEngine(this);
+        mEngine = new LiveWallpaperEngine();
         return mEngine;
     }
 
@@ -65,18 +70,17 @@ public class LiveWallpaperService extends WallpaperService {
         mReceiver = new LiveWallpaperBroadcastReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(UPDATE_LIVE_WALLPAPER);
-        intentFilter.addAction(START_LIVE_WALLPAPER_SCHEDULER);
         intentFilter.addAction(Constants.ACTION_DEBUG_LOG);
         registerReceiver(mReceiver, intentFilter);
     }
 
     @Override
     public void onDestroy() {
-        mEngine = null;
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);
         }
         super.onDestroy();
+        mEngine = null;
     }
 
     class LiveWallpaperBroadcastReceiver extends BroadcastReceiver {
@@ -89,11 +93,7 @@ public class LiveWallpaperService extends WallpaperService {
                 if (mEngine != null) {
                     mEngine.setBingWallpaper(image, config);
                 }
-            } else if (START_LIVE_WALLPAPER_SCHEDULER.equals(intent.getAction())) {
-                if (mEngine != null) {
-                    mEngine.enable();
-                }
-            }else if (Constants.ACTION_DEBUG_LOG.equals(intent.getAction())){
+            } else if (Constants.ACTION_DEBUG_LOG.equals(intent.getAction())) {
                 LogDebugFileUtils.init(getApplicationContext());
             }
         }
@@ -110,19 +110,27 @@ public class LiveWallpaperService extends WallpaperService {
     }
 
     private class LiveWallpaperEngine extends LiveWallpaperService.Engine {
-        private Context mContext;
         private Handler handler;
-        private Runnable drawRunner;
-        private int width;
-        private int height;
+        private HandlerThread mHandlerThread;
+        private final Runnable drawRunner;
+        private final int width;
+        private final int height;
 
-        public LiveWallpaperEngine(Context context) {
-            mContext = context;
-            DisplayMetrics size = BingWallpaperUtils.getSysResolution(context);
+        public LiveWallpaperEngine() {
+            DisplayMetrics size = BingWallpaperUtils.getSysResolution(getApplicationContext());
             width = size.widthPixels;
             height = size.heightPixels;
             setOffsetNotificationsEnabled(true);
+            mHandlerThread = new HandlerThread(TAG + UUID.randomUUID(), Process.THREAD_PRIORITY_BACKGROUND);
+            mHandlerThread.start();
             drawRunner = this::timing;
+        }
+
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            mHandlerThread.quit();
+            mHandlerThread = null;
         }
 
         private void postDelayed() {
@@ -144,6 +152,7 @@ public class LiveWallpaperService extends WallpaperService {
         }
 
         public void setBingWallpaper(Observable<DownloadBitmap> observable, Config config) {
+            drawLoading();
             Utils.addSubscribe(
                     observable.subscribeOn(Schedulers.io()).compose(download(config)),
                     new Callback.EmptyCallback<DownloadBitmap>() {
@@ -156,6 +165,7 @@ public class LiveWallpaperService extends WallpaperService {
 
                         @Override
                         public void onError(Throwable e) {
+                            drawError(R.string.set_wallpaper_failure);
                             mServiceHelper.failure(config, e);
                         }
                     });
@@ -163,8 +173,8 @@ public class LiveWallpaperService extends WallpaperService {
 
         public void enable() {
             destroy();
-            handler = new Handler();
-            timing();
+            handler = new Handler(mHandlerThread.getLooper());
+            handler.post(this::timing);
         }
 
         private void timing() {
@@ -173,7 +183,7 @@ public class LiveWallpaperService extends WallpaperService {
             if (BingWallpaperUtils.isEnableLogProvider(getApplicationContext())) {
                 LogDebugFileUtils.get().i(TAG, "Timing check...");
             }
-            if (!BingWallpaperUtils.isTaskUndone(mContext)) {
+            if (!BingWallpaperUtils.isTaskUndone(getApplicationContext())) {
                 return;
             }
             setBingWallpaper();
@@ -182,8 +192,8 @@ public class LiveWallpaperService extends WallpaperService {
         private void setBingWallpaper() {
             Config config = new Config.Builder().setBackground(true)
                     .setShowNotification(true)
-                    .loadConfig(mContext)
-                    .setWallpaperMode(Settings.getAutoModeValue(mContext))
+                    .loadConfig(getApplicationContext())
+                    .setWallpaperMode(Settings.getAutoModeValue(getApplicationContext()))
                     .build();
             setBingWallpaper(Observable.just(false).subscribeOn(Schedulers.io()).compose(load()).map(
                     downloadBitmap -> {
@@ -195,13 +205,13 @@ public class LiveWallpaperService extends WallpaperService {
         private ObservableTransformer<Boolean, DownloadBitmap> load() {
             return upstream -> upstream.flatMap((Function<Boolean, ObservableSource<DownloadBitmap>>) force -> {
                 if (!force) {
-                    Intent intent = BingWallpaperUtils.checkRunningServiceIntent(mContext, TAG);
+                    Intent intent = BingWallpaperUtils.checkRunningServiceIntent(getApplicationContext(), TAG);
                     if (intent == null) {
                         return Observable.empty();
                     }
                 }
                 try {
-                    Wallpaper image = BingWallpaperNetworkClient.getWallpaper(mContext, force);
+                    Wallpaper image = BingWallpaperNetworkClient.getWallpaper(getApplicationContext(), force);
                     return Observable.just(new DownloadBitmap(image));
                 } catch (IOException e) {
                     return Observable.error(e);
@@ -212,7 +222,7 @@ public class LiveWallpaperService extends WallpaperService {
         private ObservableTransformer<DownloadBitmap, DownloadBitmap> download(Config config) {
             return upstream -> upstream.flatMap((Function<DownloadBitmap, ObservableSource<DownloadBitmap>>) image -> {
                 try {
-                    File original = WallpaperUtils.getImageFile(mContext, image.image.getImageUrl());
+                    File original = WallpaperUtils.getImageFile(getApplicationContext(), image.image.getImageUrl());
                     image.wallpaper = WallpaperUtils.getImageStackBlurFile(config.getStackBlur(), original);
                     image.original = original;
                 } catch (Exception e) {
@@ -222,9 +232,11 @@ public class LiveWallpaperService extends WallpaperService {
             });
         }
 
+        private File mCurWallpaper;
+
         private void setWallpaper(Config config, DownloadBitmap d) {
             if (config.isBackground()) {
-                WallpaperUtils.autoSaveWallpaper(mContext, TAG, d.image, d.original);
+                WallpaperUtils.autoSaveWallpaper(getApplicationContext(), TAG, d.image, d.original);
             }
             File home = new File(d.original.toURI());
             File lock = new File(d.original.toURI());
@@ -236,7 +248,7 @@ public class LiveWallpaperService extends WallpaperService {
             } else if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
                 lock = d.wallpaper;
             }
-            draw(home);
+            drawWallpaper(home);
             if (config.getWallpaperMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
                 return;
             }
@@ -255,85 +267,94 @@ public class LiveWallpaperService extends WallpaperService {
             }
         }
 
-        private void draw(File file) {
-            draw(BitmapFactory.decodeFile(file.getAbsolutePath()));
+        private void drawLoading() {
+            WallpaperUtils.drawSurfaceHolder(getSurfaceHolder(), canvas -> {
+                draw(canvas, mCurWallpaper);
+                WallpaperUtils.drawText(canvas, getResources().getString(R.string.loading),
+                        DisplayUtils.dp2px(getApplicationContext(), 23), width, height);
+            });
         }
 
-        private void draw(Bitmap bitmap) {
-            SurfaceHolder holder = getSurfaceHolder();
-            if (!holder.getSurface().isValid()) {
-                return;
-            }
-            Canvas canvas = null;
-            try {
-                canvas = holder.lockCanvas();
-                if (canvas != null) {
-                    canvas.drawColor(Color.BLACK);
-                    scaleCenterCrop(bitmap, canvas, height, width);
-                }
-            } catch (Throwable ignored) {
-            } finally {
-                if (canvas != null) {
-                    holder.unlockCanvasAndPost(canvas);
-                }
-            }
+        private void drawError(int text) {
+            WallpaperUtils.drawSurfaceHolder(getSurfaceHolder(), canvas -> {
+                draw(canvas, mCurWallpaper);
+                WallpaperUtils.drawText(canvas, getResources().getString(text),
+                        DisplayUtils.dp2px(getApplicationContext(), 19), width, height);
+            });
         }
 
-        //https://stackoverflow.com/questions/8112715/how-to-crop-bitmap-center-like-imageview
-        public void scaleCenterCrop(Bitmap source, Canvas canvas, int newHeight, int newWidth) {
-            Bitmap newBitmap = ThumbnailUtils.extractThumbnail(source, width, height,
+        private void drawWallpaper(File file) {
+            mCurWallpaper = new File(file.toURI());
+            WallpaperUtils.drawSurfaceHolder(getSurfaceHolder(), canvas -> draw(canvas, file));
+        }
+
+        private void draw(Canvas canvas, File file) {
+            Bitmap bitmap;
+            if (file == null || !file.exists()) {
+                bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.milky_way);
+            } else {
+                bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+            }
+            Bitmap newBitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height,
                     ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
             canvas.drawBitmap(newBitmap, 0, 0, null);
-
-            //int sourceWidth = source.getWidth();
-            //int sourceHeight = source.getHeight();
-            //
-            //float xScale = (float) newWidth / sourceWidth;
-            //float yScale = (float) newHeight / sourceHeight;
-            //float scale = Math.max(xScale, yScale);
-            //
-            //float scaledWidth = scale * sourceWidth;
-            //float scaledHeight = scale * sourceHeight;
-            //
-            //float left = (newWidth - scaledWidth) / 2;
-            //float top = (newHeight - scaledHeight) / 2;
-            //
-            //RectF targetRect = new RectF(left, top, left + scaledWidth, top + scaledHeight);
-            //
-            //canvas.drawBitmap(source, null, targetRect, null);
         }
 
         @Override
         public void onSurfaceCreated(SurfaceHolder holder) {
             super.onSurfaceCreated(holder);
-            loadBingWallpaper();
-            if (Settings.getJobType(getApplicationContext()) == Settings.LIVE_WALLPAPER) {
+            if (isPreview()) {
+                loadBingWallpaper();
+            } else {
                 enable();
             }
         }
 
-        private int loadCount;
+        private Disposable mLoadWallpaperDisposable;
+
+        //https://stackoverflow.com/questions/22066481/rxjava-can-i-use-retry-but-with-delay
+        public class RetryWithDelay implements Function<Observable<? extends Throwable>, Observable<?>> {
+            private final int maxRetries;
+            private final int retryDelayMillis;
+            private int retryCount;
+
+            public RetryWithDelay(final int maxRetries, final int retryDelayMillis) {
+                this.maxRetries = maxRetries;
+                this.retryDelayMillis = retryDelayMillis;
+                this.retryCount = 0;
+            }
+
+            @Override
+            public Observable<?> apply(final Observable<? extends Throwable> attempts) {
+                return attempts
+                        .flatMap((Function<Throwable, Observable<?>>) throwable -> {
+                            if (++retryCount < maxRetries) {
+                                return Observable.timer(retryDelayMillis,
+                                        TimeUnit.SECONDS);
+                            }
+                            return Observable.error(throwable);
+                        });
+            }
+        }
 
         private void loadBingWallpaper() {
-            Config config = new Config.Builder().loadConfig(mContext).build();
-            Utils.addSubscribe(
-                    Observable.just(true).compose(load()).subscribeOn(Schedulers.io()).compose(download(config)),
+            Config config = new Config.Builder().loadConfig(getApplicationContext()).build();
+            mLoadWallpaperDisposable = Utils.addSubscribe(
+                    Observable.just(true)
+                            .compose(load())
+                            .subscribeOn(Schedulers.io())
+                            .compose(download(config)).retryWhen(new RetryWithDelay(6, 5)),
                     new Callback.EmptyCallback<DownloadBitmap>() {
 
                         @Override
                         public void onSuccess(DownloadBitmap d) {
-                            loadCount = 0;
-                            draw(d.wallpaper);
+                            drawWallpaper(d.wallpaper);
                         }
 
                         @Override
                         public void onError(Throwable e) {
-                            loadCount++;
-                            if (loadCount > 3) {
-                                mServiceHelper.failure(config, e);
-                                return;
-                            }
-                            loadBingWallpaper();
+                            drawError(R.string.load_image_error);
+                            mServiceHelper.failure(config, e);
                         }
                     });
         }
@@ -341,6 +362,8 @@ public class LiveWallpaperService extends WallpaperService {
         @Override
         public void onSurfaceDestroyed(SurfaceHolder holder) {
             super.onSurfaceDestroyed(holder);
+            Utils.dispose(mLoadWallpaperDisposable);
+            mCurWallpaper = null;
             destroy();
         }
 

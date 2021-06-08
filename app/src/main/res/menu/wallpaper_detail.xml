@@ -22,6 +22,7 @@
             android:title="@string/menu_wallpaper_info"
             app:showAsAction="ifRoom" />
     <item
+            android:icon="@drawable/ic_blur_circular_24"
             android:id="@+id/menu_wallpaper_stack_blur"
             android:title="@string/pref_stack_blur"
             app:showAsAction="ifRoom" />
@@ -39,5 +40,9 @@
             android:id="@+id/menu_wallpaper_both"
             android:icon="@drawable/ic_smartphone_white_24dp"
             android:title="@string/menu_set_wallpaper_mode_both"
+            app:showAsAction="ifRoom" />
+    <item
+            android:id="@+id/menu_wallpaper_copyright"
+            android:title="Copyright info"
             app:showAsAction="ifRoom" />
 </menu>

@@ -33,12 +33,12 @@ public class BingWallpaperNetworkClient {
         String locale = BingWallpaperUtils.getAutoLocale(context);
         String url = BingWallpaperUtils.getUrl(context, index, count, locale);
         return getBingWallpaper(url, locale).flatMap(bingWallpaper -> {
-            if (bingWallpaper == null || ValidateUtils.isItemEmpty(bingWallpaper.getImages())) {
+            if (ValidateUtils.isItemEmpty(bingWallpaper.getImages())) {
                 return Observable.error(new IOException("bing wallpaper is not data"));
             }
             List<Wallpaper> wallpapers = new ArrayList<>();
             for (BingWallpaperImage image : bingWallpaper.getImages()) {
-                wallpapers.add(image.to());
+                wallpapers.add(image.to(bingWallpaper.getTooltips()));
             }
             return Observable.just(wallpapers);
         });
@@ -76,7 +76,7 @@ public class BingWallpaperNetworkClient {
             if (bingWallpaper == null || ValidateUtils.isItemEmpty(bingWallpaper.getImages())) {
                 throw new IOException("bing wallpaper is not data");
             }
-            return bingWallpaper.getImages().get(0).to();
+            return bingWallpaper.getImages().get(0).to(bingWallpaper.getTooltips());
         } else {
             throw new IOException("bing server response failure");
         }

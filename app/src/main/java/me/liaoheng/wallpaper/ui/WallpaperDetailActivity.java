@@ -79,6 +79,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
 
     private ResolutionDialog mResolutionDialog;
 
+    @NonNull
     private Wallpaper mWallpaper;
     private ProgressDialog mSetWallpaperProgressDialog;
     private SetWallpaperStateBroadcastReceiverHelper mSetWallpaperStateBroadcastReceiverHelper;
@@ -320,6 +321,14 @@ public class WallpaperDetailActivity extends BaseActivity implements
                 SeekBarDialogFragment.newInstance(getString(R.string.pref_stack_blur), mConfig.getStackBlur(), this)
                         .show(getSupportFragmentManager(), "SeekBarDialogFragment");
                 break;
+            case R.id.menu_wallpaper_copyright:
+                UIUtils.showInfoAlertDialog(this, mWallpaper.getCopyrightInfo(), new Callback5.EmptyCallback() {
+                    @Override
+                    public void onAllow() {
+
+                    }
+                });
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -330,7 +339,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-            @NonNull int[] grantResults) {
+                                           @NonNull int[] grantResults) {
         if (mDownloadHelper != null) {
             mDownloadHelper.onRequestPermissionsResult(requestCode, grantResults, getSaveUrl());
         }
@@ -341,9 +350,6 @@ public class WallpaperDetailActivity extends BaseActivity implements
      * @param type 0. both , 1. home , 2. lock
      */
     private void setWallpaper(final int type) {
-        if (mWallpaper == null) {
-            return;
-        }
         String url = getUrl(Settings.getResolution(this));
         mConfig.setWallpaperMode(type);
         BingWallpaperUtils.showWallpaperDialog(this, mWallpaper.copy(url), mConfig,

@@ -21,8 +21,8 @@ public class BingWallpaperImage {
     private String copyrightonly;
     private String desc;
 
-    public Wallpaper to() {
-        return new Wallpaper(enddate, url, urlbase, copyright, copyrightlink, desc);
+    public Wallpaper to(BingWallpaper.ToolTips toolTips) {
+        return new Wallpaper(enddate, url, urlbase, copyright, copyrightlink, desc, toolTips == null ? "" : wp ? toolTips.getWalls() : toolTips.getWalle());
     }
 
     public String getStartdate() {

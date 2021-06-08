@@ -96,9 +96,10 @@
             android:title="@string/pref_other">
 
         <SwitchPreference
-                android:defaultValue="true"
-                android:key="pref_set_wallpaper_day_auto_update_only_wifi"
-                android:title="@string/pref_update_only_on_wifi" />
+            android:layout_height="match_parent"
+            android:defaultValue="true"
+            android:key="pref_set_wallpaper_day_auto_update_only_wifi"
+            android:title="@string/pref_update_only_on_wifi" />
 
 
         <ListPreference

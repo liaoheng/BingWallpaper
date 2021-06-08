@@ -57,6 +57,9 @@ public class BingWallpaperTileService extends TileService {
                     @Override
                     public void onYes(Boolean aBoolean) {
                         updateState(Tile.STATE_ACTIVE);
+                        if (Settings.getJobType(getApplicationContext()) == Settings.LIVE_WALLPAPER) {
+                            return;
+                        }
                         Toast.makeText(getApplicationContext(), getString(R.string.set_wallpaper_running),
                                 Toast.LENGTH_SHORT)
                                 .show();

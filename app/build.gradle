@@ -12,8 +12,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 10920
-        versionName "1.9.20"
+        versionCode 10921
+        versionName "1.9.21"
     }
 
     def isSigning = true
@@ -72,6 +72,7 @@ dependencies {
     implementation deps.preference
 
     implementation 'androidx.work:work-runtime:2.5.0'
+    implementation 'androidx.work:work-multiprocess:2.5.0'
     implementation 'com.firebase:firebase-jobdispatcher:0.8.6'
     if (isFirebase) {
         implementation firebaseCore
@@ -80,7 +81,7 @@ dependencies {
         compileOnly firebaseCore
     }
 
-    implementation 'io.sentry:sentry-android-core:4.3.0'
+    implementation 'io.sentry:sentry-android-core:5.0.0'
 
     implementation 'com.jakewharton:butterknife:10.2.3'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'
