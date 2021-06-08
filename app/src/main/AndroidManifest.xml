@@ -127,7 +127,6 @@
             <intent-filter>
                 <action android:name="android.service.wallpaper.WallpaperService" />
                 <action android:name="me.liaoheng.wallpaper.UPDATE_LIVE_WALLPAPER" />
-                <action android:name="me.liaoheng.wallpaper.START_LIVE_WALLPAPER_SCHEDULER" />
                 <action android:name="me.liaoheng.wallpaper.ACTION_DEBUG_LOG" />
             </intent-filter>
 
@@ -155,11 +154,6 @@
                 android:name="androidx.work.impl.WorkManagerInitializer"
                 android:authorities="${applicationId}.workmanager-init"
                 tools:node="remove"
-                android:exported="false" />
-
-        <provider
-                android:name=".util.WorkManagerInitializer"
-                android:authorities="${applicationId}.WorkManagerInit"
                 android:exported="false" />
 
         <meta-data
