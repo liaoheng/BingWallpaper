@@ -15,8 +15,6 @@ import android.provider.Browser;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.WindowMetrics;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -427,7 +425,8 @@ public class BingWallpaperUtils {
 
     public static boolean isROMSystem() {
         return ROM.getROM().isMiui() || ROM.getROM().isEmui() || ROM.getROM().isOneUi() || ROM.getROM().isOppo()
-                || ROM.getROM().isVivo();
+                || ROM.getROM().isVivo() || ROM.getROM().isColorOS() || ROM.getROM().isFuntouchOS() || ROM.getROM()
+                .isFlyme();
     }
 
     public static String getSystemInfo(Context context) {
@@ -648,21 +647,6 @@ public class BingWallpaperUtils {
     }
 
     public static DisplayMetrics getSysResolution(Context context) {
-        return getScreenInfo(context);
-    }
-
-    public static DisplayMetrics getScreenInfo(@NonNull Context context) {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            WindowManager wm = ContextCompat.getSystemService(context, WindowManager.class);
-            if (wm == null) {
-                return displayMetrics;
-            }
-            WindowMetrics windowMetrics = wm.getCurrentWindowMetrics();
-            displayMetrics.widthPixels = windowMetrics.getBounds().width();
-            displayMetrics.heightPixels = windowMetrics.getBounds().height();
-            return displayMetrics;
-        }
         return DisplayUtils.getScreenInfo(context, true);
     }
 

@@ -32,8 +32,7 @@ public class MApplication extends Application implements Configuration.Provider 
     public void onCreate() {
         super.onCreate();
         LanguageContextWrapper.init(this);
-        L.init(Constants.PROJECT_NAME, BuildConfig.DEBUG);
-        Common.baseInit(this, Constants.PROJECT_NAME, BuildConfig.DEBUG);
+        Common.init(this, Constants.PROJECT_NAME, BuildConfig.DEBUG);
         AppInitializer.getInstance(this).initializeComponent(JodaTimeInitializer.class);
         TasksUtils.init(this);
         LogDebugFileUtils.init(this);
