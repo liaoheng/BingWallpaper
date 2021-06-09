@@ -303,11 +303,11 @@ public class LiveWallpaperService extends WallpaperService {
         @Override
         public void onSurfaceCreated(SurfaceHolder holder) {
             super.onSurfaceCreated(holder);
+            loadBingWallpaper();
             if (isPreview()) {
-                loadBingWallpaper();
-            } else {
-                enable();
+                return;
             }
+            enable();
         }
 
         private Disposable mLoadWallpaperDisposable;

@@ -245,8 +245,11 @@ public class Settings {
     public @interface JobType {}
 
     public final static int NONE = -1;
+    @Deprecated
     public final static int GOOGLE_SERVICE = 0;
+    @Deprecated
     public final static int SYSTEM = 1;
+    @Deprecated
     public final static int DAEMON_SERVICE = 2;
     public final static int WORKER = 3;
     public final static int LIVE_WALLPAPER = 4;

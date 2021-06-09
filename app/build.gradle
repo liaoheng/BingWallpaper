@@ -12,8 +12,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 10921
-        versionName "1.9.21"
+        versionCode 10922
+        versionName "1.9.22"
     }
 
     def isSigning = true
@@ -73,7 +73,6 @@ dependencies {
 
     implementation 'androidx.work:work-runtime:2.5.0'
     implementation 'androidx.work:work-multiprocess:2.5.0'
-    implementation 'com.firebase:firebase-jobdispatcher:0.8.6'
     if (isFirebase) {
         implementation firebaseCore
     } else {
