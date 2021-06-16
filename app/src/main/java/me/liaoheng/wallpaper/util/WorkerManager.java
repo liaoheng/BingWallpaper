@@ -8,7 +8,6 @@ import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
-import androidx.work.multiprocess.RemoteWorkManager;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -27,7 +26,7 @@ public class WorkerManager {
     private static final String WORKER_TAG = "bing_wallpaper_worker_" + 0x484;
 
     public static void disabled(Context context) {
-        RemoteWorkManager.getInstance(context).cancelUniqueWork(WORKER_TAG);
+        WorkManager.getInstance(context).cancelUniqueWork(WORKER_TAG);
     }
 
     /**
@@ -39,7 +38,7 @@ public class WorkerManager {
                     TimeUnit.SECONDS)
                     .addTag(WORKER_TAG);
 
-            RemoteWorkManager.getInstance(context)
+            WorkManager.getInstance(context)
                     .enqueueUniquePeriodicWork(WORKER_TAG, ExistingPeriodicWorkPolicy.REPLACE, builder.build());
             return true;
         } catch (Throwable ignored) {
@@ -50,7 +49,6 @@ public class WorkerManager {
     public static Configuration getConfig(boolean debug) {
         return new Configuration.Builder().setMinimumLoggingLevel(debug ? Log.DEBUG : Log.ERROR)
                 .setExecutor(Executors.newSingleThreadExecutor())
-                .setDefaultProcessName("me.liaoheng.wallpaper:background")
                 .build();
     }
 
