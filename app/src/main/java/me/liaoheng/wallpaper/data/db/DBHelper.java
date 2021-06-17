@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.data.provider.TasksContract;
+import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 
 /**
@@ -15,7 +16,8 @@ import me.liaoheng.wallpaper.util.Constants;
 public class DBHelper extends SQLiteOpenHelper {
 
     public DBHelper(Context context) {
-        super(context, Constants.PROJECT_NAME + ".db", null, BuildConfig.VERSION_CODE);
+        super(context, Constants.PROJECT_NAME + "_" + BingWallpaperUtils.getUserId(context) + "_" + ".db", null,
+                BuildConfig.VERSION_CODE);
     }
 
     private static final String DB_CREATE = "create table " + TasksContract.TaskEntry.TABLE_NAME +

@@ -57,22 +57,25 @@ import me.liaoheng.wallpaper.model.Wallpaper;
 public class WallpaperUtils {
 
     public static boolean isNotSupportedWallpaper(Context context) {
-        WallpaperManager manager = WallpaperManager.getInstance(context);
-        if (manager == null) {
-            Toast.makeText(context, "This device not support wallpaper", Toast.LENGTH_LONG).show();
-            return true;
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!manager.isWallpaperSupported()) {
+        try {
+            WallpaperManager manager = WallpaperManager.getInstance(context);
+            if (manager == null) {
                 Toast.makeText(context, "This device not support wallpaper", Toast.LENGTH_LONG).show();
                 return true;
             }
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            if (!manager.isSetWallpaperAllowed()) {
-                Toast.makeText(context, "This device not support set wallpaper", Toast.LENGTH_LONG).show();
-                return true;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!manager.isWallpaperSupported()) {
+                    Toast.makeText(context, "This device not support wallpaper", Toast.LENGTH_LONG).show();
+                    return true;
+                }
             }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                if (!manager.isSetWallpaperAllowed()) {
+                    Toast.makeText(context, "This device not support set wallpaper", Toast.LENGTH_LONG).show();
+                    return true;
+                }
+            }
+        } catch (Throwable ignored) {
         }
         return false;
     }

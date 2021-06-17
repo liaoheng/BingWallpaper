@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.UserManager;
 import android.provider.Browser;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -49,6 +50,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.Locale;
 
 import io.reactivex.Observable;
@@ -721,5 +723,16 @@ public class BingWallpaperUtils {
     public static String getName(String fullName) {
         String extension = FileUtils.getExtension(fullName);
         return Files.getNameWithoutExtension(fullName) + (Strings.isNullOrEmpty(extension) ? "" : "." + extension);
+    }
+
+    //https://stackoverflow.com/questions/14749504/android-usermanager-check-if-user-is-owner-admin
+    @SuppressWarnings({ "ConstantConditions", "JavaReflectionMemberAccess" })
+    public static int getUserId(Context context) {
+        try {
+            Method getUserHandle = UserManager.class.getMethod("getUserHandle");
+            return (Integer) getUserHandle.invoke(context.getSystemService(Context.USER_SERVICE));
+        } catch (Throwable ignored) {
+        }
+        return 0;
     }
 }

@@ -95,13 +95,8 @@ public class WallpaperDetailActivity extends BaseActivity implements
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putString("SelectedResolution", mSelectedResolution);
+        outState.putParcelable("Wallpaper", mWallpaper);
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        mSelectedResolution = savedInstanceState.getString("SelectedResolution");
     }
 
     @Override
@@ -117,8 +112,12 @@ public class WallpaperDetailActivity extends BaseActivity implements
         ButterKnife.bind(this);
         initStatusBarAddToolbar();
         mConfig = new Config.Builder().build();
-
-        mWallpaper = getIntent().getParcelableExtra("image");
+        if (savedInstanceState != null) {
+            mSelectedResolution = savedInstanceState.getString("SelectedResolution");
+            mWallpaper = savedInstanceState.getParcelable("Wallpaper");
+        } else {
+            mWallpaper = getIntent().getParcelableExtra("image");
+        }
         if (mWallpaper == null) {
             UIUtils.showToast(getApplicationContext(), "unknown error");
             finish();
@@ -244,7 +243,11 @@ public class WallpaperDetailActivity extends BaseActivity implements
                             bitmap = WallpaperUtils.transformStackBlur(bitmap, mConfig.getStackBlur());
                             mImageView.setImageBitmap(bitmap);
                         } catch (OutOfMemoryError e) {
-                            mImageView.setImageDrawable(drawable);
+                            try {
+                                mImageView.setImageDrawable(drawable);
+                            } catch (OutOfMemoryError ex) {
+                                onError(ex);
+                            }
                         }
                     }
 
@@ -339,7 +342,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+            @NonNull int[] grantResults) {
         if (mDownloadHelper != null) {
             mDownloadHelper.onRequestPermissionsResult(requestCode, grantResults, getSaveUrl());
         }
