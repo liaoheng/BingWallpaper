@@ -12,8 +12,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 10923
-        versionName "1.9.23"
+        versionCode 10924
+        versionName "1.9.24"
     }
 
     def isSigning = true
@@ -104,7 +104,7 @@ dependencies {
     implementation 'com.github.Commit451:NativeStackBlur:1.0.5'
 
     //https://github.com/scottyab/rootbeer
-    implementation 'com.github.scottyab:rootbeer:0.0.8'
+    implementation 'com.github.scottyab:rootbeer:0.1.0'
 
     //https://github.com/Clans/FloatingActionButton
     implementation 'com.github.clans:fab:1.6.4'

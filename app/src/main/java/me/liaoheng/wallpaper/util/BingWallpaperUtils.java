@@ -18,15 +18,6 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-import androidx.preference.PreferenceManager;
-
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.Callback5;
@@ -53,6 +44,14 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.preference.PreferenceManager;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -171,6 +170,8 @@ public class BingWallpaperUtils {
                 return LocaleList.bgLocale();
             case 11:
                 return LocaleList.skLocale();
+            case 12:
+                return LocaleList.jaLocale();
             default:
                 Locale originalLocale = LanguageContextWrapper.getOriginalLocale();
                 return originalLocale == null ? LanguageContextWrapper.getCurrentLocale(context) : originalLocale;
@@ -586,28 +587,6 @@ public class BingWallpaperUtils {
                     NetUtils.get().clearCache();
                     return c;
                 }).observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public static String getTranslator(Context context) {
-        Locale locale = getLanguage(context);
-        if (locale.getLanguage().equals(LocaleList.plLocale().getLanguage())) {
-            return "Translator : @dekar16";
-        } else if (locale.getLanguage().equals(LocaleList.ruLocale().getLanguage())) {
-            return "Translator : @tullev(Lev Tulubjev), @FanHamMer(Oleg Popenkov)";
-        } else if (locale.getLanguage().equals(LocaleList.csLocale().getLanguage())) {
-            return "Translator : @foreteller";
-        } else if (locale.getLanguage().equals(Locale.GERMANY.getLanguage())) {
-            return "Translator : @Bergradler";
-        } else if (locale.getLanguage().equals(LocaleList.nlLocale().getLanguage())) {
-            return "Translator : @5qx9Pe7Lvj8Fn7zg(Jasper)";
-        } else if (locale.getLanguage().equals(Locale.FRANCE.getLanguage())) {
-            return "Translator : @Faux-ami(Nicolas)";
-        } else if (locale.getLanguage().equals(LocaleList.bgLocale().getLanguage())) {
-            return "Translator : @trifon71(Trifon Ribnishki)";
-        } else if (locale.getLanguage().equals(LocaleList.skLocale().getLanguage())) {
-            return "Translator : @foreteller";
-        }
-        return "";
     }
 
     public static void taskComplete(Context context, String TAG) {

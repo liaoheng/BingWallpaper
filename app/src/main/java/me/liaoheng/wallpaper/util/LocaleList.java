@@ -31,4 +31,8 @@ public class LocaleList {
     public static Locale bgLocale() {
         return new Locale("bg", "BG");
     }
+
+    public static Locale jaLocale() {
+        return new Locale("ja", "JP");
+    }
 }

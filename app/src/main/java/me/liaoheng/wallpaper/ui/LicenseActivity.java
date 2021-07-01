@@ -30,8 +30,6 @@ import me.liaoheng.wallpaper.util.GlideApp;
  * @version 2017-12-27 22:39
  */
 public class LicenseActivity extends BaseActivity {
-    @BindView(R.id.license_recycler_view)
-    RecyclerView mRecyclerView;
 
     class LicenseAdapter extends BaseRecyclerAdapter<License, LicenseViewHolder> {
 
@@ -42,8 +40,7 @@ public class LicenseActivity extends BaseActivity {
         @NonNull
         @Override
         public LicenseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = inflate(R.layout.view_license_list_item, parent);
-            return new LicenseViewHolder(view);
+            return new LicenseViewHolder(inflate(R.layout.view_license_list_item, parent));
         }
 
         @Override
@@ -98,6 +95,8 @@ public class LicenseActivity extends BaseActivity {
         String text = "Apache License 2.0";
     }
 
+    @BindView(R.id.license_recycler_view)
+    RecyclerView mRecyclerView;
     @BindView(R.id.license_text)
     TextView license;
     @BindView(R.id.license_image)
@@ -155,6 +154,8 @@ public class LicenseActivity extends BaseActivity {
                 "https://github.com/scottyab/rootbeer"));
         licenses.add(new License("joda-time-android", "dlew",
                 "https://github.com/dlew/joda-time-android"));
+        licenses.add(new License("sentry-java", "getsentry",
+                "https://github.com/getsentry/sentry-java","MIT"));
 
         mRecyclerView.setAdapter(new LicenseAdapter(this, licenses));
     }

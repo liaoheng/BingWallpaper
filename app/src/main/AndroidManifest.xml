@@ -48,6 +48,10 @@
                 android:configChanges="screenSize|orientation|keyboardHidden"
                 android:label="@string/open_source_license" />
         <activity
+                android:name=".ui.TranslatorActivity"
+                android:configChanges="screenSize|orientation|keyboardHidden"
+                android:label="Translator" />
+        <activity
                 android:name=".ui.WallpaperHistoryListActivity"
                 android:configChanges="screenSize|orientation|keyboardHidden"
                 android:label="@string/menu_main_wallpaper_history_list" />

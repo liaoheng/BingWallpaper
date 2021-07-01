@@ -10,18 +10,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.preference.ListPreference;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.SwitchPreference;
 
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback;
@@ -34,6 +22,16 @@ import com.github.liaoheng.common.util.Utils;
 
 import org.joda.time.LocalTime;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SwitchPreference;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
@@ -67,15 +65,12 @@ public class SettingsActivity extends BaseActivity {
         setTitle(R.string.menu_main_setting);
         setContentView(R.layout.activity_settings);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (savedInstanceState != null) {
+            isChangeLanguage = savedInstanceState.getBoolean("isChangeLanguage");
+        }
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.settings_layout, new MyPreferenceFragment(), "SettingsFragment")
                 .commit();
-    }
-
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        isChangeLanguage = savedInstanceState.getBoolean("isChangeLanguage");
     }
 
     @Override
@@ -240,13 +235,8 @@ public class SettingsActivity extends BaseActivity {
                         return true;
                     });
 
-            Preference translation = findPreference("pref_translation");
-            String translator = BingWallpaperUtils.getTranslator(getActivity());
-            if (!TextUtils.isEmpty(translator)) {
-                translation.setSummary(translator);
-            }
-            translation.setOnPreferenceClickListener(preference -> {
-                BingWallpaperUtils.openBrowser(getActivity(), "https://crowdin.com/project/starth-bing-wallpaper");
+            findPreference("pref_translation").setOnPreferenceClickListener(preference -> {
+                UIUtils.startActivity(getActivity(), TranslatorActivity.class);
                 return true;
             });
 

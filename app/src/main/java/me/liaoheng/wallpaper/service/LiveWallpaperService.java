@@ -18,7 +18,6 @@ import android.view.SurfaceHolder;
 
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.Utils;
@@ -152,7 +151,6 @@ public class LiveWallpaperService extends WallpaperService {
         }
 
         public void setBingWallpaper(Observable<DownloadBitmap> observable, Config config) {
-            drawLoading();
             Utils.addSubscribe(
                     observable.subscribeOn(Schedulers.io()).compose(download(config)),
                     new Callback.EmptyCallback<DownloadBitmap>() {
@@ -165,7 +163,6 @@ public class LiveWallpaperService extends WallpaperService {
 
                         @Override
                         public void onError(Throwable e) {
-                            drawError(R.string.set_wallpaper_failure);
                             mServiceHelper.failure(config, e);
                         }
                     });
@@ -232,8 +229,6 @@ public class LiveWallpaperService extends WallpaperService {
             });
         }
 
-        private File mCurWallpaper;
-
         private void setWallpaper(Config config, DownloadBitmap d) {
             if (config.isBackground()) {
                 WallpaperUtils.autoSaveWallpaper(getApplicationContext(), TAG, d.image, d.original);
@@ -267,24 +262,7 @@ public class LiveWallpaperService extends WallpaperService {
             }
         }
 
-        private void drawLoading() {
-            WallpaperUtils.drawSurfaceHolder(getSurfaceHolder(), canvas -> {
-                draw(canvas, mCurWallpaper);
-                WallpaperUtils.drawText(canvas, getResources().getString(R.string.loading),
-                        DisplayUtils.dp2px(getApplicationContext(), 23), width, height);
-            });
-        }
-
-        private void drawError(int text) {
-            WallpaperUtils.drawSurfaceHolder(getSurfaceHolder(), canvas -> {
-                draw(canvas, mCurWallpaper);
-                WallpaperUtils.drawText(canvas, getResources().getString(text),
-                        DisplayUtils.dp2px(getApplicationContext(), 19), width, height);
-            });
-        }
-
         private void drawWallpaper(File file) {
-            mCurWallpaper = new File(file.toURI());
             WallpaperUtils.drawSurfaceHolder(getSurfaceHolder(), canvas -> draw(canvas, file));
         }
 
@@ -353,7 +331,6 @@ public class LiveWallpaperService extends WallpaperService {
 
                         @Override
                         public void onError(Throwable e) {
-                            drawError(R.string.load_image_error);
                             mServiceHelper.failure(config, e);
                         }
                     });
@@ -363,7 +340,6 @@ public class LiveWallpaperService extends WallpaperService {
         public void onSurfaceDestroyed(SurfaceHolder holder) {
             super.onSurfaceDestroyed(holder);
             Utils.dispose(mLoadWallpaperDisposable);
-            mCurWallpaper = null;
             destroy();
         }
 
