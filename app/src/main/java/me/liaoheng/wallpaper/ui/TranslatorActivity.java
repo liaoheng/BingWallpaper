@@ -37,7 +37,7 @@ public class TranslatorActivity extends BaseActivity {
         @Override
         public BaseRecyclerViewHolder<Group<Translator>> onCreateGroupHeaderViewHolder(ViewGroup parent, int viewType) {
             TextView textView = new TextView(getContext());
-            textView.setTextSize(DisplayUtils.sp2px(getContext(), 7));
+            textView.setTextSize(DisplayUtils.sp2px(getContext(), 18));
             int border = DisplayUtils.dp2px(getContext(), 3);
             textView.setPadding(border, border, border, border);
             return new TranslatorLanguageViewHolder(textView);

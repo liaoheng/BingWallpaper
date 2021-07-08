@@ -13,7 +13,7 @@
         app:contentPadding="2dp">
 
     <TextView
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:layout_marginEnd="5dp"
             android:layout_marginStart="5dp"

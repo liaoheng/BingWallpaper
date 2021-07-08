@@ -6,14 +6,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import com.github.appintro.AppIntro;
 import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.UIUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -99,6 +98,7 @@ public class IntroActivity extends AppIntro {
     @Override
     public void onSkipPressed(Fragment currentFragment) {
         if (TasksUtils.isOne()) {
+            BingWallpaperUtils.initResolution(this);
             UIUtils.startActivity(this, MainActivity.class);
         }
         TasksUtils.markOne();

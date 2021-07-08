@@ -96,8 +96,7 @@ public class Wallpaper implements Parcelable {
     }
 
     public void setResolutionImageUrl(Context context) {
-        this.imageUrl = BingWallpaperUtils.getResolutionImageUrl(context,
-                this);
+        this.imageUrl = BingWallpaperUtils.getResolutionImageUrl(context, baseUrl);
     }
 
     public String getCopyrightInfo() {

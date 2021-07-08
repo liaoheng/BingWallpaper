@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -15,16 +16,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.palette.graphics.Palette;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.request.target.Target;
 import com.github.clans.fab.FloatingActionButton;
@@ -40,6 +31,15 @@ import com.github.liaoheng.common.util.SystemDataException;
 import com.github.liaoheng.common.util.UIUtils;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.palette.graphics.Palette;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -146,10 +146,6 @@ public class MainActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         if (TasksUtils.isOne()) {
             UIUtils.startActivity(this, IntroActivity.class);
-            if (!Constants.Config.isPhone) {
-                Settings.putResolution(this, "1");
-                Settings.putSaveResolution(this, "1");
-            }
             finishAfterTransition();
             return;
         }
@@ -268,7 +264,7 @@ public class MainActivity extends BaseActivity
     }
 
     private String getUrl() {
-        return getUrl(Settings.getResolution(this));
+        return getUrl(BingWallpaperUtils.getResolution(this));
     }
 
     private String getSaveUrl() {
@@ -343,19 +339,30 @@ public class MainActivity extends BaseActivity
         return true;
     }
 
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        BingWallpaperUtils.initResolution(this);
+        if (mCurWallpaper == null) {
+            getBingWallpaper();
+            return;
+        }
+        setImage(mCurWallpaper);
+    }
+
     private void setImage(Wallpaper image) {
         setTitle(image.getCopyright());
         mHeaderCoverStoryTitleView.setText(image.getCopyright());
-        String u = Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION;
-        if (!Constants.Config.isPhone) {
-            u = Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION_LANDSCAPE;
-        }
-        String url = BingWallpaperUtils.getImageUrl(this, u, image.getBaseUrl());
+        //String u = Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION;
+        //if (!Constants.Config.isPhone) {
+        //    u = Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION_LANDSCAPE;
+        //}
+        //String url = BingWallpaperUtils.getImageUrl(this, u, image.getBaseUrl());
         if (isDestroyed()) {
             return;
         }
         WallpaperUtils.loadImage(GlideApp.with(this).asDrawable()
-                        .load(url)
+                        .load(getUrl())
                         .dontAnimate()
                         .thumbnail(0.5f)
                         .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL), mWallpaperView,

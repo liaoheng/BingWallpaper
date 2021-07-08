@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.os.UserManager;
 import android.provider.Browser;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -77,12 +79,78 @@ public class BingWallpaperUtils {
         return Settings.isEnableLogProvider(context);
     }
 
-    public static String getResolutionImageUrl(Context context, Wallpaper image) {
-        return getImageUrl(context, Settings.getResolution(context), image.getBaseUrl());
+    public static String getResolutionImageUrl(Context context, String baseUrl) {
+        return getImageUrl(context, Settings.getResolution(context), baseUrl);
     }
 
     public static String getImageUrl(Context context, String resolution, String baseUrl) {
         return getBaseUrl(context) + baseUrl + "_" + resolution + ".jpg";
+    }
+
+    public static String getResolution(Context context) {
+        int resolutionValue = Settings.getResolutionValue(context);
+        if (resolutionValue < 10) {
+            boolean portrait = false;
+            if (resolutionValue % 2 == 0) {
+                portrait = true;
+            }
+            if (isPortrait(context)) {
+                if (!portrait) {
+                    resolutionValue--;
+                }
+            } else {
+                if (portrait) {
+                    resolutionValue++;
+                }
+            }
+        }
+        return Settings.getResolution(context, resolutionValue);
+    }
+
+    public static void initResolution(Context context) {
+        String resolution = Constants.Config.isPhone ? "0" : "1";
+        DisplayMetrics screenInfo = DisplayUtils.getScreenInfo(context, true);
+        if (isPortrait(context)) {
+            if (screenInfo.widthPixels <= 720 && screenInfo.widthPixels > 480) {//720p
+                if (Constants.Config.isPhone) {
+                    resolution = "4";
+                } else {
+                    resolution = "5";
+                }
+            } else if (screenInfo.widthPixels <= 480) {//480p
+                if (Constants.Config.isPhone) {
+                    resolution = "2";
+                } else {
+                    resolution = "3";
+                }
+            }
+        }else {
+            if (screenInfo.heightPixels <= 720 && screenInfo.heightPixels > 480) {//720p
+                if (Constants.Config.isPhone) {
+                    resolution = "4";
+                } else {
+                    resolution = "5";
+                }
+            } else if (screenInfo.heightPixels <= 480) {//480p
+                if (Constants.Config.isPhone) {
+                    resolution = "2";
+                } else {
+                    resolution = "3";
+                }
+            }
+        }
+        Settings.putResolution(context, resolution);
+        Settings.putSaveResolution(context, resolution);
+    }
+
+    public static boolean isPortrait(Context context) {
+        return context.getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_PORTRAIT;
+    }
+
+    public static Wallpaper generateUrl(Context context, Wallpaper wallpaper) {
+        wallpaper.setImageUrl(getImageUrl(context, getResolution(context), wallpaper.getBaseUrl()));
+        return wallpaper;
     }
 
     public static boolean isAutoCountry(Context context) {

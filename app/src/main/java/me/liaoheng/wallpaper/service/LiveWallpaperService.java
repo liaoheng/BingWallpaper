@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -13,7 +14,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Process;
 import android.service.wallpaper.WallpaperService;
-import android.util.DisplayMetrics;
 import android.view.SurfaceHolder;
 
 import com.github.liaoheng.common.util.AppUtils;
@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.ObservableTransformer;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import me.liaoheng.wallpaper.R;
@@ -54,6 +54,13 @@ public class LiveWallpaperService extends WallpaperService {
     private LiveWallpaperBroadcastReceiver mReceiver;
     private SetWallpaperServiceHelper mServiceHelper;
     private LiveWallpaperEngine mEngine;
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        if (mEngine != null) {
+            mEngine.displayBingWallpaper(null);
+        }
+    }
 
     @Override
     public Engine onCreateEngine() {
@@ -112,17 +119,22 @@ public class LiveWallpaperService extends WallpaperService {
         private Handler handler;
         private HandlerThread mHandlerThread;
         private final Runnable drawRunner;
-        private final int width;
-        private final int height;
+        private final CompositeDisposable mLoadWallpaperDisposable;
 
         public LiveWallpaperEngine() {
-            DisplayMetrics size = BingWallpaperUtils.getSysResolution(getApplicationContext());
-            width = size.widthPixels;
-            height = size.heightPixels;
+            mLoadWallpaperDisposable = new CompositeDisposable();
             setOffsetNotificationsEnabled(true);
             mHandlerThread = new HandlerThread(TAG + UUID.randomUUID(), Process.THREAD_PRIORITY_BACKGROUND);
             mHandlerThread.start();
             drawRunner = this::timing;
+        }
+
+        public int getWidth() {
+            return BingWallpaperUtils.getSysResolution(getApplicationContext()).widthPixels;
+        }
+
+        public int getHeight() {
+            return BingWallpaperUtils.getSysResolution(getApplicationContext()).heightPixels;
         }
 
         @Override
@@ -151,7 +163,7 @@ public class LiveWallpaperService extends WallpaperService {
         }
 
         public void setBingWallpaper(Observable<DownloadBitmap> observable, Config config) {
-            Utils.addSubscribe(
+            mLoadWallpaperDisposable.add(Utils.addSubscribe(
                     observable.subscribeOn(Schedulers.io()).compose(download(config)),
                     new Callback.EmptyCallback<DownloadBitmap>() {
 
@@ -165,10 +177,13 @@ public class LiveWallpaperService extends WallpaperService {
                         public void onError(Throwable e) {
                             mServiceHelper.failure(config, e);
                         }
-                    });
+                    }));
         }
 
         public void enable() {
+            if (isPreview()) {
+                return;
+            }
             destroy();
             handler = new Handler(mHandlerThread.getLooper());
             handler.post(this::timing);
@@ -209,6 +224,7 @@ public class LiveWallpaperService extends WallpaperService {
                 }
                 try {
                     Wallpaper image = BingWallpaperNetworkClient.getWallpaper(getApplicationContext(), force);
+                    lastWallpaper = BingWallpaperUtils.generateUrl(getApplicationContext(), image);
                     return Observable.just(new DownloadBitmap(image));
                 } catch (IOException e) {
                     return Observable.error(e);
@@ -273,7 +289,7 @@ public class LiveWallpaperService extends WallpaperService {
             } else {
                 bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
             }
-            Bitmap newBitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height,
+            Bitmap newBitmap = ThumbnailUtils.extractThumbnail(bitmap, getWidth(), getHeight(),
                     ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
             canvas.drawBitmap(newBitmap, 0, 0, null);
         }
@@ -281,14 +297,13 @@ public class LiveWallpaperService extends WallpaperService {
         @Override
         public void onSurfaceCreated(SurfaceHolder holder) {
             super.onSurfaceCreated(holder);
-            loadBingWallpaper();
-            if (isPreview()) {
-                return;
-            }
-            enable();
+            displayBingWallpaper(new Callback.EmptyCallback<String>() {
+                @Override
+                public void onSuccess(String o) {
+                    enable();
+                }
+            });
         }
-
-        private Disposable mLoadWallpaperDisposable;
 
         //https://stackoverflow.com/questions/22066481/rxjava-can-i-use-retry-but-with-delay
         public class RetryWithDelay implements Function<Observable<? extends Throwable>, Observable<?>> {
@@ -315,11 +330,20 @@ public class LiveWallpaperService extends WallpaperService {
             }
         }
 
-        private void loadBingWallpaper() {
+        private Wallpaper lastWallpaper;
+
+        private void displayBingWallpaper(Callback<String> callback) {
             Config config = new Config.Builder().loadConfig(getApplicationContext()).build();
-            mLoadWallpaperDisposable = Utils.addSubscribe(
+            ObservableTransformer<Boolean, DownloadBitmap> transformer;
+            if (lastWallpaper == null) {
+                transformer = load();
+            } else {
+                transformer = upstream -> Observable.just(new DownloadBitmap(
+                        BingWallpaperUtils.generateUrl(getApplicationContext(), lastWallpaper)));
+            }
+            mLoadWallpaperDisposable.add(Utils.addSubscribe(
                     Observable.just(true)
-                            .compose(load())
+                            .compose(transformer)
                             .subscribeOn(Schedulers.io())
                             .compose(download(config)).retryWhen(new RetryWithDelay(6, 5)),
                     new Callback.EmptyCallback<DownloadBitmap>() {
@@ -327,13 +351,19 @@ public class LiveWallpaperService extends WallpaperService {
                         @Override
                         public void onSuccess(DownloadBitmap d) {
                             drawWallpaper(d.wallpaper);
+                            if (callback != null) {
+                                callback.onSuccess("");
+                            }
                         }
 
                         @Override
                         public void onError(Throwable e) {
                             mServiceHelper.failure(config, e);
+                            if (callback != null) {
+                                callback.onError(e);
+                            }
                         }
-                    });
+                    }));
         }
 
         @Override

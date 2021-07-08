@@ -50,9 +50,7 @@ public class BingWallpaperNetworkClient {
     }
 
     public static Wallpaper getWallpaper(Context context, boolean cache) throws IOException {
-        Wallpaper image = getBingWallpaperSingleCall(context, cache);
-        image.setResolutionImageUrl(context);
-        return image;
+        return getBingWallpaperSingleCall(context, cache);
     }
 
     public static Wallpaper getBingWallpaperSingleCall(Context context, boolean cache) throws IOException {

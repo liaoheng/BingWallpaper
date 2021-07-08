@@ -3,13 +3,12 @@ package me.liaoheng.wallpaper.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import androidx.annotation.IntDef;
-import androidx.preference.PreferenceManager;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
+import androidx.annotation.IntDef;
+import androidx.preference.PreferenceManager;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.ui.SettingsActivity;
 
@@ -29,12 +28,18 @@ public class Settings {
     }
 
     public static String getResolution(Context context) {
+        return getResolution(context, getResolutionValue(context));
+    }
+
+    public static String getResolution(Context context, int resolution) {
         String[] names = context.getResources()
                 .getStringArray(R.array.pref_set_wallpaper_resolution_name);
+        return names[resolution];
+    }
 
-        String resolution = SettingTrayPreferences.get(context)
-                .getString(SettingsActivity.PREF_SET_WALLPAPER_RESOLUTION, "0");
-        return names[Integer.parseInt(Objects.requireNonNull(resolution))];
+    public static int getResolutionValue(Context context) {
+        return Integer.parseInt(SettingTrayPreferences.get(context)
+                .getString(SettingsActivity.PREF_SET_WALLPAPER_RESOLUTION, "0"));
     }
 
     public static void putResolution(Context context, String resolution) {
