@@ -30,7 +30,7 @@ See the [translation page](https://crowdin.com/project/starth-bing-wallpaper) if
 
 ### Translator
 
-> Thanks for their help
+> Thanks for the contribution of translators!
 
 - **Polski**(Polish)
 [@dekar16](https://crowdin.com/profile/dekar16)
@@ -48,7 +48,8 @@ See the [translation page](https://crowdin.com/project/starth-bing-wallpaper) if
 [@trifon71(Trifon Ribnishki)](https://crowdin.com/profile/trifon71)
 - **Slovenčina**(Slovak)
 [@foreteller](https://crowdin.com/profile/foreteller)
-
+- **日本語**(Japanese)
+[@Rintan](https://crowdin.com/profile/rintan)
 
 ## License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fliaoheng%2FBingWallpaper.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fliaoheng%2FBingWallpaper?ref=badge_large)

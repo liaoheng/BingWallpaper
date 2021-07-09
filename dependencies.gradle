@@ -1,4 +1,4 @@
-apply from: 'https://raw.fastgit.org/liaoheng/common/v0.1.1/dependencies.gradle'
+apply from: 'https://raw.githubusercontent.com/liaoheng/common/v0.1.1/dependencies.gradle'
 //apply from: rootProject.file('./gradle/dependencies.gradle')
 
 ext.deps.put("palette","androidx.palette:palette:1.0.0")
