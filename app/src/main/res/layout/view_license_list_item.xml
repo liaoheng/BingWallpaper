@@ -26,7 +26,7 @@
                     android:layout_gravity="start"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     android:textColor="?colorAccent"
-                    tools:text="BingWallpaper" />
+                    tools:text="@string/app_name" />
 
             <TextView
                     android:id="@+id/view_license_list_item_author"

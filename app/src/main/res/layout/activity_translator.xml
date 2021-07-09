@@ -2,8 +2,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="5dp">
+        android:orientation="vertical">
 
     <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
@@ -18,13 +17,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:orientation="vertical"
-                app:layout_scrollFlags="scroll|enterAlways">
+                app:layout_scrollFlags="scroll">
 
             <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Thanks for the contribution of translators! "
-                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display3"
                     android:textSize="20sp" />
 
             <TextView
@@ -36,11 +35,12 @@
                     android:textSize="16sp" />
 
             <TextView
+                    android:textSize="28sp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                     android:layout_marginTop="15dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Translators:"
-                    android:textSize="20sp"
                     android:textStyle="bold" />
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>

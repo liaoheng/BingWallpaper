@@ -7,13 +7,9 @@
         android:focusable="true"
         android:foreground="?selectableItemBackground"
         android:orientation="vertical"
-        app:cardUseCompatPadding="true"
-        app:cardElevation="1dp"
-        app:cardCornerRadius="6dp"
-        app:contentPadding="2dp">
+        app:cardElevation="1dp">
 
     <TextView
-            android:textSize="16sp"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:layout_marginEnd="5dp"
             android:layout_marginStart="5dp"
@@ -24,6 +20,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:textColor="?colorAccent"
-            tools:text="BingWallpaper" />
+            tools:text="@string/app_name" />
 
 </androidx.cardview.widget.CardView>

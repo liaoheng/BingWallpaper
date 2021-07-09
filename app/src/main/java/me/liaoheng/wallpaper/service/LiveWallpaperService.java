@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -54,13 +53,6 @@ public class LiveWallpaperService extends WallpaperService {
     private LiveWallpaperBroadcastReceiver mReceiver;
     private SetWallpaperServiceHelper mServiceHelper;
     private LiveWallpaperEngine mEngine;
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        if (mEngine != null) {
-            mEngine.displayBingWallpaper(null);
-        }
-    }
 
     @Override
     public Engine onCreateEngine() {
@@ -120,6 +112,7 @@ public class LiveWallpaperService extends WallpaperService {
         private HandlerThread mHandlerThread;
         private final Runnable drawRunner;
         private final CompositeDisposable mLoadWallpaperDisposable;
+        private Wallpaper mLastWallpaper;
 
         public LiveWallpaperEngine() {
             mLoadWallpaperDisposable = new CompositeDisposable();
@@ -130,11 +123,13 @@ public class LiveWallpaperService extends WallpaperService {
         }
 
         public int getWidth() {
-            return BingWallpaperUtils.getSysResolution(getApplicationContext()).widthPixels;
+            return getDesiredMinimumWidth() <= 0 ? BingWallpaperUtils.getSysResolution(
+                    getApplicationContext()).widthPixels : getDesiredMinimumWidth();
         }
 
         public int getHeight() {
-            return BingWallpaperUtils.getSysResolution(getApplicationContext()).heightPixels;
+            return getDesiredMinimumHeight() <= 0 ? BingWallpaperUtils.getSysResolution(
+                    getApplicationContext()).heightPixels : getDesiredMinimumHeight();
         }
 
         @Override
@@ -142,6 +137,7 @@ public class LiveWallpaperService extends WallpaperService {
             super.onDestroy();
             mHandlerThread.quit();
             mHandlerThread = null;
+            mLastWallpaper = null;
         }
 
         private void postDelayed() {
@@ -224,7 +220,7 @@ public class LiveWallpaperService extends WallpaperService {
                 }
                 try {
                     Wallpaper image = BingWallpaperNetworkClient.getWallpaper(getApplicationContext(), force);
-                    lastWallpaper = BingWallpaperUtils.generateUrl(getApplicationContext(), image);
+                    mLastWallpaper = BingWallpaperUtils.generateUrl(getApplicationContext(), image);
                     return Observable.just(new DownloadBitmap(image));
                 } catch (IOException e) {
                     return Observable.error(e);
@@ -295,7 +291,18 @@ public class LiveWallpaperService extends WallpaperService {
         }
 
         @Override
+        public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+            super.onSurfaceChanged(holder, format, width, height);
+            L.alog().d(TAG, "onSurfaceChanged");
+            if (mLastWallpaper == null) {
+                return;
+            }
+            displayBingWallpaper(null);
+        }
+
+        @Override
         public void onSurfaceCreated(SurfaceHolder holder) {
+            L.alog().d(TAG, "onSurfaceCreated");
             super.onSurfaceCreated(holder);
             displayBingWallpaper(new Callback.EmptyCallback<String>() {
                 @Override
@@ -330,16 +337,14 @@ public class LiveWallpaperService extends WallpaperService {
             }
         }
 
-        private Wallpaper lastWallpaper;
-
         private void displayBingWallpaper(Callback<String> callback) {
             Config config = new Config.Builder().loadConfig(getApplicationContext()).build();
             ObservableTransformer<Boolean, DownloadBitmap> transformer;
-            if (lastWallpaper == null) {
+            if (mLastWallpaper == null) {
                 transformer = load();
             } else {
                 transformer = upstream -> Observable.just(new DownloadBitmap(
-                        BingWallpaperUtils.generateUrl(getApplicationContext(), lastWallpaper)));
+                        BingWallpaperUtils.generateUrl(getApplicationContext(), mLastWallpaper)));
             }
             mLoadWallpaperDisposable.add(Utils.addSubscribe(
                     Observable.just(true)

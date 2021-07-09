@@ -11,21 +11,24 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
-
+import com.bumptech.glide.request.target.DrawableThumbnailImageViewTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.github.liaoheng.common.adapter.base.BaseRecyclerAdapter;
 import com.github.liaoheng.common.adapter.core.HandleView;
 import com.github.liaoheng.common.adapter.core.RecyclerViewHelper;
 import com.github.liaoheng.common.adapter.holder.BaseRecyclerViewHolder;
 import com.github.liaoheng.common.util.Callback;
+import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 import com.github.liaoheng.common.util.ValidateUtils;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
@@ -36,7 +39,6 @@ import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.GlideApp;
-import me.liaoheng.wallpaper.util.WallpaperUtils;
 
 /**
  * 壁纸历史列表
@@ -72,13 +74,12 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         mRecyclerViewHelper = builder.setMergedIntoLineSpanSizeLookup().build();
 
         mRecyclerViewHelper.changeToLoadMoreLoading();
-
-        getBingWallpaperList(new Callback.EmptyCallback() {
+        getBingWallpaperList(new Callback5.EmptyCallback() {
             @Override
-            public void onFinish() {
-                getBingWallpaperList(new EmptyCallback() {
+            public void onAllow() {
+                getBingWallpaperList(new Callback5.EmptyCallback() {
                     @Override
-                    public void onFinish() {
+                    public void onAllow() {
                         mWallpaperAdapter.notifyDataSetChanged();
                     }
                 });
@@ -86,7 +87,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         });
     }
 
-    private void getBingWallpaperList(final Callback callback) {
+    private void getBingWallpaperList(final Callback5 callback) {
         Observable<List<Wallpaper>> listObservable = BingWallpaperNetworkClient.getBingWallpaper(this, index,
                 count).compose(this.bindToLifecycle());
         Utils.addSubscribe(listObservable, new Callback.EmptyCallback<List<Wallpaper>>() {
@@ -114,7 +115,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
                 mWallpaperAdapter.addAll(wallpapers);
                 index += wallpapers.size();
                 if (callback != null) {
-                    callback.onFinish();
+                    callback.onAllow();
                 }
             }
 
@@ -173,30 +174,29 @@ public class WallpaperHistoryListActivity extends BaseActivity {
             String imageUrl = BingWallpaperUtils.getImageUrl(getContext(),
                     Constants.WallpaperConfig.WALLPAPER_RESOLUTION,
                     item.getBaseUrl());
-            WallpaperUtils.loadImage(GlideApp.with(getContext())
+
+            GlideApp.with(getContext())
                     .asDrawable()
                     .thumbnail(0.3f)
                     .override(width, height)
                     .error(R.drawable.lcn_empty_photo)
-                    .load(imageUrl), mImageView, new Callback.EmptyCallback<Drawable>() {
-
+                    .load(imageUrl).into(new DrawableThumbnailImageViewTarget(mImageView) {
                 @Override
-                public void onPreExecute() {
+                public void onLoadStarted(@Nullable Drawable placeholder) {
+                    super.onLoadStarted(placeholder);
                     UIUtils.viewVisible(mProgressBar);
                 }
 
                 @Override
-                public void onPostExecute() {
+                public void onResourceReady(@NonNull Drawable resource,
+                        @Nullable Transition<? super Drawable> transition) {
+                    super.onResourceReady(resource, transition);
                     UIUtils.viewGone(mProgressBar);
                 }
 
                 @Override
-                public void onSuccess(Drawable resource) {
-                    mImageView.setImageDrawable(resource);
-                }
-
-                @Override
-                public void onFinish() {
+                public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                    super.onLoadFailed(errorDrawable);
                     UIUtils.viewGone(mProgressBar);
                 }
             });

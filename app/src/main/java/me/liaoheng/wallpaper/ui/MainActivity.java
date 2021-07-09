@@ -31,6 +31,8 @@ import com.github.liaoheng.common.util.SystemDataException;
 import com.github.liaoheng.common.util.UIUtils;
 import com.google.android.material.navigation.NavigationView;
 
+import org.jetbrains.annotations.NotNull;
+
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -50,7 +52,6 @@ import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.BottomViewListener;
-import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.DownloadHelper;
 import me.liaoheng.wallpaper.util.GlideApp;
@@ -342,76 +343,73 @@ public class MainActivity extends BaseActivity
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        BingWallpaperUtils.initResolution(this);
         if (mCurWallpaper == null) {
             getBingWallpaper();
             return;
         }
-        setImage(mCurWallpaper);
+        loadImage(null);
+    }
+
+    private void loadImage(Callback<Drawable> callback) {
+        WallpaperUtils.loadImage(GlideApp.with(this).asDrawable()
+                .load(getUrl())
+                .dontAnimate()
+                .thumbnail(0.5f)
+                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL), mWallpaperView, callback);
     }
 
     private void setImage(Wallpaper image) {
         setTitle(image.getCopyright());
         mHeaderCoverStoryTitleView.setText(image.getCopyright());
-        //String u = Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION;
-        //if (!Constants.Config.isPhone) {
-        //    u = Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION_LANDSCAPE;
-        //}
-        //String url = BingWallpaperUtils.getImageUrl(this, u, image.getBaseUrl());
-        if (isDestroyed()) {
-            return;
-        }
-        WallpaperUtils.loadImage(GlideApp.with(this).asDrawable()
-                        .load(getUrl())
-                        .dontAnimate()
-                        .thumbnail(0.5f)
-                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL), mWallpaperView,
-                new Callback.EmptyCallback<Drawable>() {
-                    @Override
-                    public void onPreExecute() {
-                        showSwipeRefreshLayout();
-                    }
+        loadImage(new Callback.EmptyCallback<Drawable>() {
+            @Override
+            public void onPreExecute() {
+                showSwipeRefreshLayout();
+            }
 
-                    @Override
-                    public void onPostExecute() {
-                        dismissSwipeRefreshLayout();
-                    }
+            @Override
+            public void onPostExecute() {
+                dismissSwipeRefreshLayout();
+            }
 
-                    @Override
-                    public void onSuccess(@NonNull Drawable drawable) {
-                        mWallpaperView.setImageDrawable(drawable);
-                        mNavigationHeaderImage.setImageDrawable(drawable);
-                        int defMuted = ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark);
-                        int defVibrant = ContextCompat.getColor(getActivity(), R.color.colorAccent);
-                        try {
-                            Bitmap bitmap = BitmapUtils.drawableToBitmap(drawable);
-                            Palette.from(bitmap)
-                                    .generate(palette -> {
-                                        int lightMutedSwatch = defMuted;
-                                        int lightVibrantSwatch = defVibrant;
+            @Override
+            public void onSuccess(@NonNull Drawable drawable) {
+                mNavigationHeaderImage.setImageDrawable(drawable);
+                parseWallpaper(drawable, image);
+            }
 
-                                        if (palette != null) {
-                                            lightMutedSwatch = palette.getMutedColor(defMuted);
-                                            lightVibrantSwatch = palette.getVibrantColor(defVibrant);
-                                            if (lightMutedSwatch == defMuted) {
-                                                if (lightVibrantSwatch != defVibrant) {
-                                                    lightMutedSwatch = lightVibrantSwatch;
-                                                }
-                                            }
-                                        }
+            @Override
+            public void onError(Throwable e) {
+                setBingWallpaperError(e);
+            }
+        });
+    }
 
-                                        initSetWallpaperActionMenu(lightMutedSwatch, lightVibrantSwatch, image);
-                                    });
-                        } catch (OutOfMemoryError e) {
-                            initSetWallpaperActionMenu(defMuted, defVibrant, image);
+    private void parseWallpaper(@NotNull Drawable drawable, Wallpaper image) {
+        int defMuted = ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark);
+        int defVibrant = ContextCompat.getColor(getActivity(), R.color.colorAccent);
+        try {
+            Bitmap bitmap = BitmapUtils.drawableToBitmap(drawable);
+            Palette.from(bitmap)
+                    .generate(palette -> {
+                        int lightMutedSwatch = defMuted;
+                        int lightVibrantSwatch = defVibrant;
+
+                        if (palette != null) {
+                            lightMutedSwatch = palette.getMutedColor(defMuted);
+                            lightVibrantSwatch = palette.getVibrantColor(defVibrant);
+                            if (lightMutedSwatch == defMuted) {
+                                if (lightVibrantSwatch != defVibrant) {
+                                    lightMutedSwatch = lightVibrantSwatch;
+                                }
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        setBingWallpaperError(e);
-                    }
-                });
+                        initSetWallpaperActionMenu(lightMutedSwatch, lightVibrantSwatch, image);
+                    });
+        } catch (OutOfMemoryError e) {
+            initSetWallpaperActionMenu(defMuted, defVibrant, image);
+        }
     }
 
     private void initSetWallpaperActionMenu(@ColorInt int lightMutedSwatch, int lightVibrantSwatch, Wallpaper image) {

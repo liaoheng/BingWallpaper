@@ -18,9 +18,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-
 import com.bumptech.glide.request.target.Target;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.Callback;
@@ -28,6 +25,8 @@ import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.UIUtils;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import butterknife.BindArray;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -297,15 +296,10 @@ public class WallpaperDetailActivity extends BaseActivity implements
                 setWallpaper(0);
                 break;
             case R.id.menu_wallpaper_save:
-                BingWallpaperUtils.showSaveWallpaperDialog(this, new Callback5() {
+                BingWallpaperUtils.showSaveWallpaperDialog(this, new Callback5.EmptyCallback() {
                     @Override
                     public void onAllow() {
                         mDownloadHelper.saveWallpaper(getActivity(), getSaveUrl());
-                    }
-
-                    @Override
-                    public void onDeny() {
-
                     }
                 });
                 break;
@@ -325,12 +319,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
                         .show(getSupportFragmentManager(), "SeekBarDialogFragment");
                 break;
             case R.id.menu_wallpaper_copyright:
-                UIUtils.showInfoAlertDialog(this, mWallpaper.getCopyrightInfo(), new Callback5.EmptyCallback() {
-                    @Override
-                    public void onAllow() {
-
-                    }
-                });
+                UIUtils.showInfoAlertDialog(this, mWallpaper.getCopyrightInfo(), new Callback5.EmptyCallback());
                 break;
         }
         return super.onOptionsItemSelected(item);

@@ -36,11 +36,7 @@ public class TranslatorActivity extends BaseActivity {
 
         @Override
         public BaseRecyclerViewHolder<Group<Translator>> onCreateGroupHeaderViewHolder(ViewGroup parent, int viewType) {
-            TextView textView = new TextView(getContext());
-            textView.setTextSize(DisplayUtils.sp2px(getContext(), 18));
-            int border = DisplayUtils.dp2px(getContext(), 3);
-            textView.setPadding(border, border, border, border);
-            return new TranslatorLanguageViewHolder(textView);
+            return new TranslatorLanguageViewHolder(inflate(R.layout.view_translator_list_item_head, parent));
         }
 
         @Override
@@ -56,9 +52,11 @@ public class TranslatorActivity extends BaseActivity {
     }
 
     class TranslatorLanguageViewHolder extends BaseRecyclerViewHolder<Group<Translator>> {
+        TextView title;
 
         public TranslatorLanguageViewHolder(View itemView) {
             super(itemView);
+            title = findViewById(R.id.translator_list_title);
         }
 
         @Override
@@ -66,7 +64,7 @@ public class TranslatorActivity extends BaseActivity {
             if (item == null) {
                 return;
             }
-            ((TextView) itemView).setText(item.getText());
+            title.setText(item.getText());
         }
     }
 

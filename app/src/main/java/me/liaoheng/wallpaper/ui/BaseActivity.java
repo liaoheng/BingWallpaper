@@ -95,7 +95,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     @Override
     @CallSuper
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        BingWallpaperUtils.setPhoneScreen(this);
         super.onCreate(savedInstanceState);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

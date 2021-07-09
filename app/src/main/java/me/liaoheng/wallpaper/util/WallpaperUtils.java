@@ -19,10 +19,6 @@ import android.view.SurfaceHolder;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ShareCompat;
-
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
@@ -41,6 +37,9 @@ import com.github.liaoheng.common.util.Utils;
 import java.io.File;
 import java.io.IOException;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ShareCompat;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.functions.Consumer;
@@ -192,8 +191,10 @@ public class WallpaperUtils {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target,
                     boolean isFirstResource) {
-                callback.onPostExecute();
-                callback.onError(e);
+                if (callback != null) {
+                    callback.onPostExecute();
+                    callback.onError(e);
+                }
                 return false;
             }
 
@@ -208,19 +209,19 @@ public class WallpaperUtils {
             @Override
             public void onLoadStarted(Drawable placeholder) {
                 super.onLoadStarted(placeholder);
-                callback.onPreExecute();
+                if (callback != null) {
+                    callback.onPreExecute();
+                }
             }
 
             @Override
             public void onResourceReady(@NonNull Drawable resource,
                     @Nullable Transition<? super Drawable> transition) {
-                callback.onPostExecute();
-                callback.onSuccess(resource);
-            }
-
-            @Override
-            public void onDestroy() {
-                callback.onFinish();
+                super.onResourceReady(resource, transition);
+                if (callback != null) {
+                    callback.onPostExecute();
+                    callback.onSuccess(resource);
+                }
             }
         });
     }
