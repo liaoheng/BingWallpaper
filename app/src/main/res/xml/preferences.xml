@@ -2,16 +2,19 @@
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
+            android:contentDescription="@string/pref_auto_update_wallpaper"
             android:key="pref_update_group"
             android:persistent="false"
             android:title="@string/pref_auto_update_wallpaper">
 
         <SwitchPreference
+                android:contentDescription="@string/pref_set_wallpaper_daily_update"
                 android:defaultValue="false"
                 android:key="pref_set_wallpaper_day_fully_automatic_update"
                 android:title="@string/pref_set_wallpaper_daily_update" />
 
         <ListPreference
+                android:contentDescription="@string/pref_set_wallpaper_daily_update_mode"
                 android:defaultValue="0"
                 android:entries="@array/pref_set_wallpaper_day_fully_automatic_update_type_names"
                 android:entryValues="@array/pref_set_wallpaper_day_fully_automatic_update_type_values"
@@ -19,6 +22,7 @@
                 android:title="@string/pref_set_wallpaper_daily_update_mode" />
 
         <ListPreference
+                android:contentDescription="@string/pref_set_wallpaper_daily_update_interval"
                 android:defaultValue="3"
                 android:entries="@array/pref_set_wallpaper_day_fully_automatic_update_interval"
                 android:entryValues="@array/pref_set_wallpaper_day_fully_automatic_update_interval"
@@ -26,18 +30,21 @@
                 android:title="@string/pref_set_wallpaper_daily_update_interval" />
 
         <me.liaoheng.wallpaper.widget.TimePreference
+                android:contentDescription="@string/pref_set_wallpaper_daily_update_time"
                 android:key="pref_set_wallpaper_day_auto_update_time"
                 android:negativeButtonText="@android:string/no"
                 android:positiveButtonText="@android:string/ok"
                 android:title="@string/pref_set_wallpaper_daily_update_time" />
 
         <SwitchPreference
+                android:contentDescription="@string/pref_set_wallpaper_daily_update_success_notification"
                 android:defaultValue="true"
                 android:key="pref_set_wallpaper_day_fully_automatic_update_notification"
                 android:summary="@string/pref_set_wallpaper_daily_update_success_notification_summary"
                 android:title="@string/pref_set_wallpaper_daily_update_success_notification" />
 
         <ListPreference
+                android:contentDescription="@string/pref_choose_auto_set_wallpaper_type"
                 android:defaultValue="0"
                 android:entries="@array/pref_set_wallpaper_auto_mode_name"
                 android:entryValues="@array/pref_set_wallpaper_auto_mode_value"
@@ -47,10 +54,12 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+            android:contentDescription="@string/pref_wallpaper_setting"
             android:key="pref_wallpaper_group"
             android:persistent="false"
             android:title="@string/pref_wallpaper_setting">
         <ListPreference
+                android:contentDescription="@string/pref_choose_set_wallpaper_resolution"
                 android:defaultValue="0"
                 android:entries="@array/pref_set_wallpaper_resolution_name"
                 android:entryValues="@array/pref_set_wallpaper_resolution_value"
@@ -58,6 +67,7 @@
                 android:title="@string/pref_choose_set_wallpaper_resolution" />
 
         <ListPreference
+                android:contentDescription="@string/pref_choose_save_resolution"
                 android:defaultValue="0"
                 android:entries="@array/pref_set_wallpaper_resolution_name"
                 android:entryValues="@array/pref_set_wallpaper_resolution_value"
@@ -65,17 +75,20 @@
                 android:title="@string/pref_choose_save_resolution" />
 
         <SwitchPreference
+                android:contentDescription="@string/pref_auto_save_wallpaper_title"
                 android:defaultValue="false"
                 android:key="pref_auto_save_wallpaper_file"
                 android:summary="@string/pref_auto_save_wallpaper_summary"
                 android:title="@string/pref_auto_save_wallpaper_title" />
 
         <me.liaoheng.wallpaper.widget.SeekBarDialogPreference
+                android:contentDescription="@string/pref_stack_blur"
                 android:defaultValue="0"
                 android:key="pref_stack_blur"
                 android:title="@string/pref_stack_blur" />
 
         <ListPreference
+                android:contentDescription="@string/pref_stack_blur_mode"
                 android:defaultValue="0"
                 android:entries="@array/pref_set_wallpaper_auto_mode_name"
                 android:entryValues="@array/pref_set_wallpaper_auto_mode_value"
@@ -83,6 +96,7 @@
                 android:title="@string/pref_stack_blur_mode" />
 
         <SwitchPreference
+                android:contentDescription="@string/pref_set_miui_lock_screen_wallpaper"
                 android:defaultValue="false"
                 android:key="pref_set_miui_lock_screen_wallpaper"
                 android:summary="@string/pref_set_miui_lock_screen_wallpaper_note"
@@ -91,18 +105,21 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+            android:contentDescription="@string/pref_other"
             android:key="pref_other_group"
             android:persistent="false"
             android:title="@string/pref_other">
 
         <SwitchPreference
-            android:layout_height="match_parent"
-            android:defaultValue="true"
-            android:key="pref_set_wallpaper_day_auto_update_only_wifi"
-            android:title="@string/pref_update_only_on_wifi" />
+                android:layout_height="match_parent"
+                android:contentDescription="@string/pref_update_only_on_wifi"
+                android:defaultValue="true"
+                android:key="pref_set_wallpaper_day_auto_update_only_wifi"
+                android:title="@string/pref_update_only_on_wifi" />
 
 
         <ListPreference
+                android:contentDescription="@string/pref_country"
                 android:defaultValue="0"
                 android:entries="@array/pref_country_names"
                 android:entryValues="@array/pref_country_values"
@@ -110,6 +127,7 @@
                 android:title="@string/pref_country" />
 
         <ListPreference
+                android:contentDescription="@string/pref_language"
                 android:defaultValue="0"
                 android:entries="@array/pref_language_names"
                 android:entryValues="@array/pref_language_values"
@@ -117,52 +135,64 @@
                 android:title="@string/pref_language" />
 
         <Preference
+                android:contentDescription="@string/pref_clear_cache"
                 android:key="pref_clear_cache"
                 android:persistent="false"
                 android:title="@string/pref_clear_cache" />
 
         <SwitchPreference
+                android:contentDescription="DNS over HTTPS(Cloudflare)"
                 android:defaultValue="false"
                 android:key="pref_doh"
                 android:summary="DNS over HTTPS(Cloudflare)"
                 android:title="DoH" />
 
         <SwitchPreference
+                android:contentDescription="@string/pref_log_file"
                 android:defaultValue="false"
                 android:key="pref_set_wallpaper_debug_log"
                 android:summary="sdcard/Android/data/{package}/log/debug_log.txt"
                 android:title="@string/pref_log_file" />
 
         <SwitchPreference
+                android:contentDescription="@string/pref_crash_report"
                 android:defaultValue="true"
                 android:key="pref_crash_report"
                 android:title="@string/pref_crash_report" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/about">
+    <PreferenceCategory
+            android:contentDescription="@string/about"
+            android:title="@string/about">
         <Preference
+                android:contentDescription="@string/pref_version"
                 android:key="pref_version"
                 android:persistent="false"
                 android:title="@string/pref_version" />
         <Preference
+                android:contentDescription="Github"
                 android:key="pref_github"
                 android:persistent="false"
                 android:summary="github.com/liaoheng/BingWallpaper"
                 android:title="Github" />
         <Preference
+                android:contentDescription="Translator"
                 android:key="pref_translation"
                 android:persistent="false"
                 android:summary="crowdin.com/project/starth-bing-wallpaper"
                 android:title="Translator" />
         <Preference
+                android:contentDescription="@string/pref_intro"
                 android:key="pref_intro"
                 android:persistent="false"
                 android:title="@string/pref_intro" />
         <Preference
+                android:contentDescription="@string/open_source_license"
                 android:key="pref_license"
                 android:persistent="false"
                 android:title="@string/open_source_license" />
         <Preference
+                android:contentDescription="@string/privacy_policy"
                 android:key="pref_privacy_policy"
                 android:persistent="false"
                 android:title="@string/privacy_policy">

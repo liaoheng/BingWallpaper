@@ -281,7 +281,7 @@ public class LiveWallpaperService extends WallpaperService {
         private void draw(Canvas canvas, File file) {
             Bitmap bitmap;
             if (file == null || !file.exists()) {
-                bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.milky_way);
+                bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_background);
             } else {
                 bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
             }

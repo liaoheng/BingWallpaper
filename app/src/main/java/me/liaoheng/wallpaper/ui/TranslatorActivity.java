@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.github.liaoheng.common.adapter.holder.BaseRecyclerViewHolder;
 import com.github.liaoheng.common.adapter.model.Group;
-import com.github.liaoheng.common.util.DisplayUtils;
 
 import java.util.ArrayList;
 import java.util.List;

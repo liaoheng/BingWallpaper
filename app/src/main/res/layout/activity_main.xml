@@ -14,6 +14,7 @@
                 android:id="@+id/bing_wallpaper_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:contentDescription="Wallpaper image"
                 android:scaleType="centerCrop" />
 
         <TextView
@@ -40,6 +41,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="?actionBarSize"
                     android:background="@color/color_3000"
+                    android:contentDescription="Drawer menu"
                     android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                     app:navigationIcon="@drawable/ic_drawer_home"
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
@@ -105,6 +107,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginBottom="10dp"
+                android:contentDescription="Operational menu"
                 android:visibility="invisible"
                 app:layout_anchor="@id/bing_wallpaper_view"
                 app:layout_anchorGravity="bottom|end"

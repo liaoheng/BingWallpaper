@@ -7,9 +7,9 @@
     <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
+            android:background="@android:color/transparent"
             app:elevation="0dp">
 
         <LinearLayout
@@ -19,6 +19,12 @@
                 android:orientation="vertical"
                 app:layout_scrollFlags="scroll">
 
+            <ImageView
+                    android:src="@drawable/ic_translation_black"
+                    android:scaleType="fitStart"
+                    android:layout_width="wrap_content"
+                    android:layout_height="90dp" />
+
             <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -27,29 +33,29 @@
                     android:textSize="20sp" />
 
             <TextView
-                    android:layout_marginTop="5dp"
                     android:id="@+id/translator_desc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
                     android:autoLink="web"
                     android:textSize="16sp" />
 
             <TextView
-                    android:textSize="28sp"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                    android:layout_marginTop="15dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
                     android:text="Translators:"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                    android:textSize="28sp"
                     android:textStyle="bold" />
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-            android:layout_marginTop="5dp"
             android:id="@+id/translator_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
