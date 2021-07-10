@@ -11,7 +11,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_background" />
+            android:src="@drawable/background" />
 
     <LinearLayout
             android:layout_width="match_parent"

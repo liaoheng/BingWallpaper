@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -16,23 +16,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.bumptech.glide.request.target.Target;
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
-import com.github.liaoheng.common.util.BitmapUtils;
-import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.Callback4;
-import com.github.liaoheng.common.util.Callback5;
-import com.github.liaoheng.common.util.DisplayUtils;
-import com.github.liaoheng.common.util.LanguageContextWrapper;
-import com.github.liaoheng.common.util.ROM;
-import com.github.liaoheng.common.util.SystemDataException;
-import com.github.liaoheng.common.util.UIUtils;
-import com.google.android.material.navigation.NavigationView;
-
-import org.jetbrains.annotations.NotNull;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -44,7 +27,27 @@ import androidx.palette.graphics.Palette;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
+import com.github.liaoheng.common.util.Callback;
+import com.github.liaoheng.common.util.Callback4;
+import com.github.liaoheng.common.util.Callback5;
+import com.github.liaoheng.common.util.DisplayUtils;
+import com.github.liaoheng.common.util.LanguageContextWrapper;
+import com.github.liaoheng.common.util.ROM;
+import com.github.liaoheng.common.util.SystemDataException;
+import com.github.liaoheng.common.util.UIUtils;
+import com.google.android.material.navigation.NavigationView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import java.io.File;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
@@ -52,6 +55,7 @@ import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.BottomViewListener;
+import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.DownloadHelper;
 import me.liaoheng.wallpaper.util.GlideApp;
@@ -62,6 +66,7 @@ import me.liaoheng.wallpaper.util.UIHelper;
 import me.liaoheng.wallpaper.util.WallpaperUtils;
 import me.liaoheng.wallpaper.widget.FeedbackDialog;
 import me.liaoheng.wallpaper.widget.ToggleImageButton;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 壁纸主界面
@@ -78,7 +83,7 @@ public class MainActivity extends BaseActivity
     }
 
     @BindView(R.id.bing_wallpaper_view)
-    ImageView mWallpaperView;
+    SubsamplingScaleImageView mWallpaperView;
     @BindView(R.id.bing_wallpaper_error)
     TextView mErrorTextView;
     @BindView(R.id.bing_wallpaper_cover_story_text)
@@ -154,6 +159,7 @@ public class MainActivity extends BaseActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         initStatusBarAddToolbar();
+        mWallpaperView.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP);
 
         mActionMenuBottomMargin = DisplayUtils.dp2px(this, 10);
         mUiHelper.register(this, this);
@@ -332,7 +338,7 @@ public class MainActivity extends BaseActivity
                 BingWallpaperUtils.openBrowser(this, mCurWallpaper);
             }
         } else if (item.getItemId() == R.id.menu_main_drawer_help) {
-            BingWallpaperUtils.openBrowser(this, "https://github.com/liaoheng/BingWallpaper/blob/image/HELP.md");
+            BingWallpaperUtils.openBrowser(this, "https://github.com/liaoheng/BingWallpaper/wiki");
         } else if (item.getItemId() == R.id.menu_main_drawer_feedback) {
             UIUtils.showDialog(mFeedbackDialog);
         }
@@ -350,46 +356,76 @@ public class MainActivity extends BaseActivity
         loadImage(null);
     }
 
-    private void loadImage(Callback<Drawable> callback) {
-        WallpaperUtils.loadImage(GlideApp.with(this).asDrawable()
+    private void loadImage(Callback<File> callback) {
+        WallpaperUtils.loadImage(GlideApp.with(this).asFile()
                 .load(getUrl())
                 .dontAnimate()
                 .thumbnail(0.5f)
                 .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL), mWallpaperView, callback);
     }
 
+    private void loadMenuImage() {
+        GlideApp.with(this)
+                .asBitmap()
+                .load(getUrl(Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION))
+                .dontAnimate()
+                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                .addListener(new RequestListener<Bitmap>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e,
+                            Object model, Target<Bitmap> target, boolean isFirstResource) {
+                        setBingWallpaperError(e);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
+                            DataSource dataSource, boolean isFirstResource) {
+                        return false;
+                    }
+                })
+                .into(new BitmapImageViewTarget(mNavigationHeaderImage) {
+
+                    @Override
+                    public void onResourceReady(@NonNull @NotNull Bitmap resource,
+                            @Nullable Transition<? super Bitmap> transition) {
+                        super.onResourceReady(resource, transition);
+                        parseWallpaper(resource, mCurWallpaper);
+                        loadImage(new Callback.EmptyCallback<File>() {
+                            @Override
+                            public void onPreExecute() {
+                                showSwipeRefreshLayout();
+                            }
+
+                            @Override
+                            public void onPostExecute() {
+                                dismissSwipeRefreshLayout();
+                            }
+
+                            @Override
+                            public void onSuccess(File file) {
+                                mWallpaperView.setImage(ImageSource.uri(Uri.fromFile(file)));
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                setBingWallpaperError(e);
+                            }
+                        });
+                    }
+                });
+    }
+
     private void setImage(Wallpaper image) {
         setTitle(image.getCopyright());
         mHeaderCoverStoryTitleView.setText(image.getCopyright());
-        loadImage(new Callback.EmptyCallback<Drawable>() {
-            @Override
-            public void onPreExecute() {
-                showSwipeRefreshLayout();
-            }
-
-            @Override
-            public void onPostExecute() {
-                dismissSwipeRefreshLayout();
-            }
-
-            @Override
-            public void onSuccess(@NonNull Drawable drawable) {
-                mNavigationHeaderImage.setImageDrawable(drawable);
-                parseWallpaper(drawable, image);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                setBingWallpaperError(e);
-            }
-        });
+        loadMenuImage();
     }
 
-    private void parseWallpaper(@NotNull Drawable drawable, Wallpaper image) {
+    private void parseWallpaper(@NotNull Bitmap bitmap, Wallpaper image) {
         int defMuted = ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark);
         int defVibrant = ContextCompat.getColor(getActivity(), R.color.colorAccent);
         try {
-            Bitmap bitmap = BitmapUtils.drawableToBitmap(drawable);
             Palette.from(bitmap)
                     .generate(palette -> {
                         int lightMutedSwatch = defMuted;

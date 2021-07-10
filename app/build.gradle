@@ -12,8 +12,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 10925
-        versionName "1.9.25"
+        versionCode 10926
+        versionName "1.9.26"
     }
 
     def isSigning = true
@@ -114,6 +114,9 @@ dependencies {
 
     //https://github.com/apl-devs/AppIntro
     implementation 'com.github.AppIntro:AppIntro:6.1.0'
+
+    //https://github.com/davemorrissey/subsampling-scale-image-view
+    implementation 'com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0'
 
 //    implementation group: "com.github.liaoheng", name: "common-core", version: "0.1.1-SNAPSHOT", changing: true
 //    implementation group: "com.github.liaoheng", name: "common-adapter", version: "0.1.1-SNAPSHOT", changing: true

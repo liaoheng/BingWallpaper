@@ -1,6 +1,5 @@
 package me.liaoheng.wallpaper.util;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.WallpaperManager;
 import android.content.Context;
@@ -16,16 +15,19 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.view.SurfaceHolder;
-import android.widget.ImageView;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ShareCompat;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.DrawableImageViewTarget;
+import com.bumptech.glide.request.target.CustomViewTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.commit451.nativestackblur.NativeStackBlur;
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.DisplayUtils;
@@ -33,21 +35,17 @@ import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
-
-import java.io.File;
-import java.io.IOException;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ShareCompat;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import java.io.File;
+import java.io.IOException;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author liaoheng
@@ -128,11 +126,11 @@ public class WallpaperUtils {
             File stackBlurFile = CacheUtils.get().get(key);
             if (stackBlurFile == null) {
                 Bitmap bitmap = toStackBlur2(BitmapFactory.decodeFile(wallpaper.getAbsolutePath()), stackBlur);
-                return CacheUtils.get().put(key, BitmapUtils.bitmapToStream(bitmap,
+                stackBlurFile = CacheUtils.get().put(key, BitmapUtils.bitmapToStream(bitmap,
                         Bitmap.CompressFormat.JPEG));
-            } else {
-                return stackBlurFile;
+                bitmap.recycle();
             }
+            return stackBlurFile;
         } else {
             return wallpaper;
         }
@@ -143,11 +141,11 @@ public class WallpaperUtils {
         File mark = CacheUtils.get().get(key);
         if (mark == null) {
             Bitmap bitmap = waterMark(context, BitmapFactory.decodeFile(wallpaper.getAbsolutePath()), str);
-            return CacheUtils.get().put(key, BitmapUtils.bitmapToStream(bitmap,
+            mark = CacheUtils.get().put(key, BitmapUtils.bitmapToStream(bitmap,
                     Bitmap.CompressFormat.JPEG));
-        } else {
-            return mark;
+            bitmap.recycle();
         }
+        return mark;
     }
 
     public static Bitmap transformStackBlur(Bitmap bitmap, int stackBlur) {
@@ -168,8 +166,9 @@ public class WallpaperUtils {
             @Override
             public void onSuccess(File file) {
                 UIUtils.dismissDialog(dialog);
-                Intent share = ShareCompat.IntentBuilder.from((Activity) context)
+                Intent share = new ShareCompat.IntentBuilder(context)
                         .setType("image/jpeg")
+                        .setText(BingWallpaperUtils.getName(url))
                         .setStream(BingWallpaperUtils.getUriForFile(context, file))
                         .getIntent();
                 context.startActivity(share);
@@ -184,12 +183,12 @@ public class WallpaperUtils {
         });
     }
 
-    public static void loadImage(GlideRequest<Drawable> request, ImageView imageView,
-            Callback<Drawable> callback) {
-        request.listener(new RequestListener<Drawable>() {
+    public static void loadImage(GlideRequest<File> request, SubsamplingScaleImageView imageView,
+            Callback<File> callback) {
+        request.addListener(new RequestListener<File>() {
 
             @Override
-            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target,
+            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<File> target,
                     boolean isFirstResource) {
                 if (callback != null) {
                     callback.onPostExecute();
@@ -199,28 +198,36 @@ public class WallpaperUtils {
             }
 
             @Override
-            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target,
+            public boolean onResourceReady(File resource, Object model, Target<File> target,
                     DataSource dataSource,
                     boolean isFirstResource) {
                 return false;
             }
-        }).into(new DrawableImageViewTarget(imageView) {
+        }).into(new CustomViewTarget<SubsamplingScaleImageView, File>(imageView) {
+            @Override
+            public void onLoadFailed(@Nullable Drawable errorDrawable) {
+            }
 
             @Override
-            public void onLoadStarted(Drawable placeholder) {
-                super.onLoadStarted(placeholder);
+            public void onResourceReady(@NonNull @NotNull File resource,
+                    @Nullable Transition<? super File> transition) {
                 if (callback != null) {
-                    callback.onPreExecute();
+                    callback.onPostExecute();
+                    callback.onSuccess(resource);
+                } else {
+                    view.setImage(ImageSource.uri(Uri.fromFile(resource)));
                 }
             }
 
             @Override
-            public void onResourceReady(@NonNull Drawable resource,
-                    @Nullable Transition<? super Drawable> transition) {
-                super.onResourceReady(resource, transition);
+            protected void onResourceCleared(@Nullable Drawable placeholder) {
+            }
+
+            @Override
+            public void onResourceLoading(Drawable placeholder) {
+                super.onResourceLoading(placeholder);
                 if (callback != null) {
-                    callback.onPostExecute();
-                    callback.onSuccess(resource);
+                    callback.onPreExecute();
                 }
             }
         });

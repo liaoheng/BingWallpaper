@@ -1,6 +1,9 @@
 package me.liaoheng.wallpaper.util;
 
 import android.content.Context;
+import com.github.liaoheng.common.util.FileUtils;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @author liaoheng
@@ -14,7 +17,14 @@ public class CacheUtils {
     }
 
     public static void init(Context context) {
-        get().init(context, "temp");
+        try {
+            get().init(getTempFile(context));
+        } catch (IOException ignored) {
+        }
+    }
+
+    public static File getTempFile(Context context) throws IOException {
+        return FileUtils.getProjectSpaceCacheDirectory(context, "temp");
     }
 
 }

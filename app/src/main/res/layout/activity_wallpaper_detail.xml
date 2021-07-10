@@ -1,10 +1,11 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:background="@android:color/black"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <ImageView
+    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
             android:id="@+id/bing_wallpaper_detail_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

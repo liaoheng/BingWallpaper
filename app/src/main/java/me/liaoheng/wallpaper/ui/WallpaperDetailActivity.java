@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -13,23 +13,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.bumptech.glide.request.target.Target;
-import com.github.liaoheng.common.util.BitmapUtils;
-import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.Callback4;
-import com.github.liaoheng.common.util.Callback5;
-import com.github.liaoheng.common.util.UIUtils;
-
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import butterknife.BindArray;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.bumptech.glide.request.target.Target;
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+import com.github.liaoheng.common.util.Callback;
+import com.github.liaoheng.common.util.Callback4;
+import com.github.liaoheng.common.util.Callback5;
+import com.github.liaoheng.common.util.UIUtils;
+import java.io.File;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.model.Config;
@@ -56,7 +55,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
         SeekBarDialogFragment.SeekBarDialogFragmentCallback {
 
     @BindView(R.id.bing_wallpaper_detail_image)
-    ImageView mImageView;
+    SubsamplingScaleImageView mImageView;
     @BindView(R.id.bing_wallpaper_detail_bottom)
     View mBottomView;
     @BindView(R.id.bing_wallpaper_detail_bottom_text)
@@ -122,6 +121,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
             finish();
             return;
         }
+        mImageView.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP);
 
         mSetWallpaperStateBroadcastReceiverHelper = new SetWallpaperStateBroadcastReceiverHelper(
                 new Callback4.EmptyCallback<BingWallpaperState>() {
@@ -219,11 +219,11 @@ public class WallpaperDetailActivity extends BaseActivity implements
     }
 
     private void loadImage() {
-        WallpaperUtils.loadImage(GlideApp.with(this).asDrawable()
+        WallpaperUtils.loadImage(GlideApp.with(this).asFile()
                         .load(getUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION))
                         .dontAnimate()
                         .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL), mImageView,
-                new Callback.EmptyCallback<Drawable>() {
+                new Callback.EmptyCallback<File>() {
                     @Override
                     public void onPreExecute() {
                         mProgressBar.post(() -> mProgressBar.setVisibility(View.VISIBLE));
@@ -236,17 +236,13 @@ public class WallpaperDetailActivity extends BaseActivity implements
                     }
 
                     @Override
-                    public void onSuccess(Drawable drawable) {
+                    public void onSuccess(File file) {
                         try {
-                            Bitmap bitmap = BitmapUtils.drawableToBitmap(drawable);
+                            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
                             bitmap = WallpaperUtils.transformStackBlur(bitmap, mConfig.getStackBlur());
-                            mImageView.setImageBitmap(bitmap);
+                            mImageView.setImage(ImageSource.bitmap(bitmap));
                         } catch (OutOfMemoryError e) {
-                            try {
-                                mImageView.setImageDrawable(drawable);
-                            } catch (OutOfMemoryError ex) {
-                                onError(ex);
-                            }
+                            onError(e);
                         }
                     }
 

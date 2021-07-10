@@ -7,31 +7,30 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.media.ThumbnailUtils;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PointF;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Process;
 import android.service.wallpaper.WallpaperService;
 import android.view.SurfaceHolder;
-
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.Utils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.ObservableTransformer;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.Config;
@@ -112,7 +111,7 @@ public class LiveWallpaperService extends WallpaperService {
         private HandlerThread mHandlerThread;
         private final Runnable drawRunner;
         private final CompositeDisposable mLoadWallpaperDisposable;
-        private Wallpaper mLastWallpaper;
+        private File mLastFile;
 
         public LiveWallpaperEngine() {
             mLoadWallpaperDisposable = new CompositeDisposable();
@@ -137,7 +136,6 @@ public class LiveWallpaperService extends WallpaperService {
             super.onDestroy();
             mHandlerThread.quit();
             mHandlerThread = null;
-            mLastWallpaper = null;
         }
 
         private void postDelayed() {
@@ -220,7 +218,7 @@ public class LiveWallpaperService extends WallpaperService {
                 }
                 try {
                     Wallpaper image = BingWallpaperNetworkClient.getWallpaper(getApplicationContext(), force);
-                    mLastWallpaper = BingWallpaperUtils.generateUrl(getApplicationContext(), image);
+                    BingWallpaperUtils.generateUrl(getApplicationContext(), image);
                     return Observable.just(new DownloadBitmap(image));
                 } catch (IOException e) {
                     return Observable.error(e);
@@ -255,6 +253,7 @@ public class LiveWallpaperService extends WallpaperService {
             } else if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
                 lock = d.wallpaper;
             }
+            mLastFile = home;
             drawWallpaper(home);
             if (config.getWallpaperMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
                 return;
@@ -275,29 +274,76 @@ public class LiveWallpaperService extends WallpaperService {
         }
 
         private void drawWallpaper(File file) {
-            WallpaperUtils.drawSurfaceHolder(getSurfaceHolder(), canvas -> draw(canvas, file));
-        }
-
-        private void draw(Canvas canvas, File file) {
             Bitmap bitmap;
-            if (file == null || !file.exists()) {
-                bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_background);
+            if (!file.exists()) {
+                bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background);
             } else {
                 bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
             }
-            Bitmap newBitmap = ThumbnailUtils.extractThumbnail(bitmap, getWidth(), getHeight(),
-                    ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-            canvas.drawBitmap(newBitmap, 0, 0, null);
+            WallpaperUtils.drawSurfaceHolder(getSurfaceHolder(), canvas -> draw(canvas, bitmap));
+        }
+
+        private Paint mBitmapPaint;
+        private Matrix mMatrix;
+        private PointF mTranslate;
+        private PointF mPendingCenter;
+
+        private void draw(Canvas canvas, Bitmap bitmap) {
+            if (mBitmapPaint == null) {
+                mBitmapPaint = new Paint();
+                mBitmapPaint.setAntiAlias(true);
+                mBitmapPaint.setFilterBitmap(true);
+                mBitmapPaint.setDither(true);
+            }
+            if (mMatrix == null) {
+                mMatrix = new Matrix();
+            }
+            mMatrix.reset();
+            if (mPendingCenter == null) {
+                mPendingCenter = new PointF();
+            }
+            if (mTranslate == null) {
+                mTranslate = new PointF();
+            }
+
+            float scale = Math.max(getWidth() / (float) sWidth(bitmap), getHeight() / (float) sHeight(bitmap));
+
+            mPendingCenter.x = sWidth(bitmap) / 2F;
+            mPendingCenter.y = sHeight(bitmap) / 2F;
+
+            mTranslate.x = (getWidth() / 2F) - (scale * mPendingCenter.x);
+            mTranslate.y = (getHeight() / 2F) - (scale * mPendingCenter.y);
+
+            mMatrix.setScale(scale, scale);
+            mMatrix.postTranslate(mTranslate.x, mTranslate.y);
+            canvas.drawBitmap(bitmap, mMatrix, mBitmapPaint);
+            bitmap.recycle();
+        }
+
+        private int sWidth(Bitmap bitmap) {
+            if (BingWallpaperUtils.isPortrait(getApplicationContext())) {
+                return bitmap.getWidth();
+            } else {
+                return bitmap.getHeight();
+            }
+        }
+
+        private int sHeight(Bitmap bitmap) {
+            if (BingWallpaperUtils.isPortrait(getApplicationContext())) {
+                return bitmap.getHeight();
+            } else {
+                return bitmap.getWidth();
+            }
         }
 
         @Override
         public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
             super.onSurfaceChanged(holder, format, width, height);
             L.alog().d(TAG, "onSurfaceChanged");
-            if (mLastWallpaper == null) {
+            if (mLastFile == null) {
                 return;
             }
-            displayBingWallpaper(null);
+            drawWallpaper(mLastFile);
         }
 
         @Override
@@ -339,16 +385,9 @@ public class LiveWallpaperService extends WallpaperService {
 
         private void displayBingWallpaper(Callback<String> callback) {
             Config config = new Config.Builder().loadConfig(getApplicationContext()).build();
-            ObservableTransformer<Boolean, DownloadBitmap> transformer;
-            if (mLastWallpaper == null) {
-                transformer = load();
-            } else {
-                transformer = upstream -> Observable.just(new DownloadBitmap(
-                        BingWallpaperUtils.generateUrl(getApplicationContext(), mLastWallpaper)));
-            }
             mLoadWallpaperDisposable.add(Utils.addSubscribe(
                     Observable.just(true)
-                            .compose(transformer)
+                            .compose(load())
                             .subscribeOn(Schedulers.io())
                             .compose(download(config)).retryWhen(new RetryWithDelay(6, 5)),
                     new Callback.EmptyCallback<DownloadBitmap>() {
@@ -375,6 +414,10 @@ public class LiveWallpaperService extends WallpaperService {
         public void onSurfaceDestroyed(SurfaceHolder holder) {
             super.onSurfaceDestroyed(holder);
             Utils.dispose(mLoadWallpaperDisposable);
+            mBitmapPaint = null;
+            mMatrix = null;
+            mTranslate = null;
+            mPendingCenter = null;
             destroy();
         }
 
