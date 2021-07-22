@@ -3,19 +3,16 @@ package me.liaoheng.wallpaper.widget;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.SeekBar;
-import android.widget.TextView;
+
 import androidx.preference.DialogPreference;
 import androidx.preference.PreferenceDialogFragmentCompat;
-import me.liaoheng.wallpaper.R;
+import me.liaoheng.wallpaper.databinding.ViewPreferenceSeekbarBinding;
 
 /**
  * @author liaoheng
  * @version 2019-08-01 15:22
  */
 public class SeekBarPreferenceDialogFragmentCompat extends PreferenceDialogFragmentCompat {
-
-    private SeekBar mSeekBar;
-    private TextView mSeekBarValue;
 
     public static SeekBarPreferenceDialogFragmentCompat newInstance(String key) {
         final SeekBarPreferenceDialogFragmentCompat
@@ -26,22 +23,26 @@ public class SeekBarPreferenceDialogFragmentCompat extends PreferenceDialogFragm
         return fragment;
     }
 
+    private ViewPreferenceSeekbarBinding mViewBinding;
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onBindDialogView(View view) {
         super.onBindDialogView(view);
-        mSeekBar = view.findViewById(R.id.seekbar);
-        mSeekBarValue = view.findViewById(R.id.seekbar_value);
-        mSeekBar.setMax(100);
+        mViewBinding = ViewPreferenceSeekbarBinding.bind(view);
+        mViewBinding.seekbar.setMax(100);
         DialogPreference preference = getPreference();
         if (preference instanceof SeekBarDialogPreference) {
             SeekBarDialogPreference seekBarDialogPreference = (SeekBarDialogPreference) preference;
-            mSeekBar.setProgress(seekBarDialogPreference.getProgress());
-            mSeekBarValue.setText(String.valueOf(seekBarDialogPreference.getProgress()));
+            mViewBinding.seekbar.setProgress(seekBarDialogPreference.getProgress());
+            mViewBinding.seekbarValue.setText(String.valueOf(seekBarDialogPreference.getProgress()));
         }
-        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        mViewBinding.seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                mSeekBarValue.setText(String.valueOf(progress));
+                mViewBinding.seekbarValue.setText(String.valueOf(progress));
             }
 
             @Override
@@ -56,13 +57,18 @@ public class SeekBarPreferenceDialogFragmentCompat extends PreferenceDialogFragm
         });
     }
 
+    /**
+     * Called when the Dialog is closed.
+     *
+     * @param positiveResult Whether the Dialog was accepted or canceled.
+     */
     @Override
     public void onDialogClosed(boolean positiveResult) {
         if (positiveResult) {
             DialogPreference preference = getPreference();
             if (preference instanceof SeekBarDialogPreference) {
                 SeekBarDialogPreference seekBarDialogPreference = ((SeekBarDialogPreference) preference);
-                int progress = mSeekBar.getProgress();
+                int progress = mViewBinding.seekbar.getProgress();
                 seekBarDialogPreference.setProgress(progress);
                 if (seekBarDialogPreference.callChangeListener(progress)) {
                     seekBarDialogPreference.save(progress);

@@ -2,15 +2,15 @@ package me.liaoheng.wallpaper.widget;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.view.View;
+import android.view.LayoutInflater;
 import android.widget.SeekBar;
-import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-import com.github.liaoheng.common.util.UIUtils;
 import me.liaoheng.wallpaper.R;
+import me.liaoheng.wallpaper.databinding.ViewPreferenceSeekbarBinding;
 
 /**
  * @author liaoheng
@@ -18,8 +18,6 @@ import me.liaoheng.wallpaper.R;
  */
 public class SeekBarDialogFragment extends DialogFragment {
 
-    private SeekBar mSeekBar;
-    private TextView mSeekBarValue;
     private SeekBarDialogFragmentCallback mCallback;
 
     public static SeekBarDialogFragment newInstance(String title, int value, SeekBarDialogFragmentCallback callback) {
@@ -41,17 +39,16 @@ public class SeekBarDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        View view = UIUtils.inflate(getActivity(), R.layout.view_preference_seekbar, null);
-        mSeekBar = view.findViewById(R.id.seekbar);
-        mSeekBarValue = view.findViewById(R.id.seekbar_value);
+        ViewPreferenceSeekbarBinding binding = ViewPreferenceSeekbarBinding.inflate(
+                LayoutInflater.from(requireContext()));
         int value = getArguments().getInt("value");
         String title = getArguments().getString("title");
-        mSeekBar.setProgress(value);
-        mSeekBarValue.setText(String.valueOf(mSeekBar.getProgress()));
-        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        binding.seekbar.setProgress(value);
+        binding.seekbarValue.setText(String.valueOf(binding.seekbar.getProgress()));
+        binding.seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                mSeekBarValue.setText(String.valueOf(progress));
+                binding.seekbarValue.setText(String.valueOf(progress));
             }
 
             @Override
@@ -65,9 +62,9 @@ public class SeekBarDialogFragment extends DialogFragment {
             }
         });
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setTitle(title);
-        builder.setView(view).setPositiveButton(R.string.lcm_ok, (dialog, which) -> {
+        builder.setView(binding.getRoot()).setPositiveButton(R.string.lcm_ok, (dialog, which) -> {
             if (mCallback != null) {
-                mCallback.onSeekBarValue(mSeekBar.getProgress());
+                mCallback.onSeekBarValue(binding.seekbar.getProgress());
             }
         }).setNegativeButton(R.string.lcm_no, (dialog, which) -> {
         });

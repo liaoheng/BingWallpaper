@@ -54,7 +54,6 @@ public class BingWallpaperIntentService extends IntentService {
 
     @Override
     public void onCreate() {
-        setIntentRedelivery(true);
         mUiHelper = new UIHelper();
         mServiceHelper = new SetWallpaperServiceHelper(this, TAG);
         super.onCreate();

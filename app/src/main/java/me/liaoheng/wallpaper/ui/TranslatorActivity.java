@@ -1,115 +1,33 @@
 package me.liaoheng.wallpaper.ui;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.text.Html;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.github.liaoheng.common.adapter.holder.BaseRecyclerViewHolder;
 import com.github.liaoheng.common.adapter.model.Group;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import me.liaoheng.wallpaper.R;
-import me.liaoheng.wallpaper.util.BaseGroupRecyclerAdapter;
-import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.adapter.TranslatorAdapter;
+import me.liaoheng.wallpaper.databinding.ActivityTranslatorBinding;
+import me.liaoheng.wallpaper.model.Translator;
 
 /**
  * @author liaoheng
  * @date 2021-07-01 10:32
  */
 public class TranslatorActivity extends BaseActivity {
-    class TranslatorAdapter extends BaseGroupRecyclerAdapter<Translator> {
-
-        public TranslatorAdapter(Context context, List<Group<Translator>> list) {
-            super(context, list);
-        }
-
-        @Override
-        public BaseRecyclerViewHolder<Group<Translator>> onCreateGroupHeaderViewHolder(ViewGroup parent, int viewType) {
-            return new TranslatorLanguageViewHolder(inflate(R.layout.view_translator_list_item_head, parent));
-        }
-
-        @Override
-        public BaseRecyclerViewHolder<Group<Translator>> onCreateGroupFooterViewHolder(ViewGroup parent, int viewType) {
-            return null;
-        }
-
-        @Override
-        public BaseRecyclerViewHolder<Group<Translator>> onCreateGroupContentViewHolder(ViewGroup parent,
-                int viewType) {
-            return new TranslatorViewHolder(inflate(R.layout.view_translator_list_item, parent));
-        }
-    }
-
-    class TranslatorLanguageViewHolder extends BaseRecyclerViewHolder<Group<Translator>> {
-        TextView title;
-
-        public TranslatorLanguageViewHolder(View itemView) {
-            super(itemView);
-            title = findViewById(R.id.translator_list_title);
-        }
-
-        @Override
-        public void onHandle(@Nullable Group<Translator> item, int position) {
-            if (item == null) {
-                return;
-            }
-            title.setText(item.getText());
-        }
-    }
-
-    class TranslatorViewHolder extends BaseRecyclerViewHolder<Group<Translator>> {
-
-        @BindView(R.id.translator_list_name)
-        TextView name;
-
-        public TranslatorViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
-
-        @Override
-        public void onHandle(@Nullable Group<Translator> item, int position) {
-            if (item == null || item.getContent() == null) {
-                return;
-            }
-            itemView.setOnClickListener(v -> BingWallpaperUtils.openBrowser(getContext(), item.getContent().url));
-            name.setText(item.getContent().name);
-        }
-    }
-
-    static class Translator {
-        public Translator(String name, String url) {
-            this.name = name;
-            this.url = url;
-        }
-
-        String name;
-        String url;
-    }
-
-    @BindView(R.id.translator_recycler_view)
-    RecyclerView mRecyclerView;
-    @BindView(R.id.translator_desc)
-    TextView desc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_translator);
-        ButterKnife.bind(this);
+        ActivityTranslatorBinding binding = ActivityTranslatorBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         String text = "if you want to help translation the app, "
                 + "please click: https://crowdin.com/project/starth-bing-wallpaper";
-        desc.setText(Html.fromHtml(text));
+        binding.translatorDesc.setText(Html.fromHtml(text));
 
         List<Group<Translator>> translators = new ArrayList<>();
 
@@ -140,10 +58,10 @@ public class TranslatorActivity extends BaseActivity {
 
         translators.add(new Group<>(Group.GroupType.HEADER, "日本語(Japanese)"));
         addTranslator(translators, "@Rintan", "https://crowdin.com/profile/rintan");
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setAdapter(new TranslatorAdapter(this, translators));
 
+        binding.translatorRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        binding.translatorRecyclerView.setHasFixedSize(true);
+        binding.translatorRecyclerView.setAdapter(new TranslatorAdapter(this, translators));
     }
 
     private void addTranslator(List<Group<Translator>> translators, String name, String url) {

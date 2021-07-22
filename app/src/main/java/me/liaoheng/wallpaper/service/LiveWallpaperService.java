@@ -16,21 +16,24 @@ import android.os.HandlerThread;
 import android.os.Process;
 import android.service.wallpaper.WallpaperService;
 import android.view.SurfaceHolder;
+
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.Utils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.ObservableTransformer;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import java.io.File;
-import java.io.IOException;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.Config;
@@ -112,23 +115,17 @@ public class LiveWallpaperService extends WallpaperService {
         private final Runnable drawRunner;
         private final CompositeDisposable mLoadWallpaperDisposable;
         private File mLastFile;
+        private int mWidth;
+        private int mHeight;
 
         public LiveWallpaperEngine() {
+            mWidth = BingWallpaperUtils.getSysResolution(getApplicationContext()).widthPixels;
+            mHeight = BingWallpaperUtils.getSysResolution(getApplicationContext()).heightPixels;
             mLoadWallpaperDisposable = new CompositeDisposable();
             setOffsetNotificationsEnabled(true);
             mHandlerThread = new HandlerThread(TAG + UUID.randomUUID(), Process.THREAD_PRIORITY_BACKGROUND);
             mHandlerThread.start();
             drawRunner = this::timing;
-        }
-
-        public int getWidth() {
-            return getDesiredMinimumWidth() <= 0 ? BingWallpaperUtils.getSysResolution(
-                    getApplicationContext()).widthPixels : getDesiredMinimumWidth();
-        }
-
-        public int getHeight() {
-            return getDesiredMinimumHeight() <= 0 ? BingWallpaperUtils.getSysResolution(
-                    getApplicationContext()).heightPixels : getDesiredMinimumHeight();
         }
 
         @Override
@@ -280,7 +277,7 @@ public class LiveWallpaperService extends WallpaperService {
             } else {
                 bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
             }
-            WallpaperUtils.drawSurfaceHolder(getSurfaceHolder(), canvas -> draw(canvas, bitmap));
+            WallpaperUtils.drawSurfaceHolder(getSurfaceHolder(), canvas -> draw(canvas, bitmap, mWidth, mHeight));
         }
 
         private Paint mBitmapPaint;
@@ -288,7 +285,7 @@ public class LiveWallpaperService extends WallpaperService {
         private PointF mTranslate;
         private PointF mPendingCenter;
 
-        private void draw(Canvas canvas, Bitmap bitmap) {
+        private void draw(Canvas canvas, Bitmap bitmap, int width, int height) {
             if (mBitmapPaint == null) {
                 mBitmapPaint = new Paint();
                 mBitmapPaint.setAntiAlias(true);
@@ -306,13 +303,13 @@ public class LiveWallpaperService extends WallpaperService {
                 mTranslate = new PointF();
             }
 
-            float scale = Math.max(getWidth() / (float) sWidth(bitmap), getHeight() / (float) sHeight(bitmap));
+            float scale = Math.max(width / (float) sWidth(bitmap), height / (float) sHeight(bitmap));
 
             mPendingCenter.x = sWidth(bitmap) / 2F;
             mPendingCenter.y = sHeight(bitmap) / 2F;
 
-            mTranslate.x = (getWidth() / 2F) - (scale * mPendingCenter.x);
-            mTranslate.y = (getHeight() / 2F) - (scale * mPendingCenter.y);
+            mTranslate.x = (width / 2F) - (scale * mPendingCenter.x);
+            mTranslate.y = (height / 2F) - (scale * mPendingCenter.y);
 
             mMatrix.setScale(scale, scale);
             mMatrix.postTranslate(mTranslate.x, mTranslate.y);
@@ -339,7 +336,9 @@ public class LiveWallpaperService extends WallpaperService {
         @Override
         public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
             super.onSurfaceChanged(holder, format, width, height);
-            L.alog().d(TAG, "onSurfaceChanged");
+            L.alog().d(TAG, "onSurfaceChanged  w:%s h:%s", width, height);
+            mWidth = width;
+            mHeight = height;
             if (mLastFile == null) {
                 return;
             }
@@ -414,11 +413,11 @@ public class LiveWallpaperService extends WallpaperService {
         public void onSurfaceDestroyed(SurfaceHolder holder) {
             super.onSurfaceDestroyed(holder);
             Utils.dispose(mLoadWallpaperDisposable);
+            destroy();
             mBitmapPaint = null;
             mMatrix = null;
             mTranslate = null;
             mPendingCenter = null;
-            destroy();
         }
 
         private void destroy() {

@@ -13,14 +13,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import butterknife.BindArray;
-import butterknife.BindView;
-import butterknife.ButterKnife;
+
 import com.bumptech.glide.request.target.Target;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
@@ -28,8 +22,13 @@ import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.UIUtils;
+
 import java.io.File;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import me.liaoheng.wallpaper.R;
+import me.liaoheng.wallpaper.databinding.ActivityWallpaperDetailBinding;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
@@ -43,7 +42,6 @@ import me.liaoheng.wallpaper.util.Settings;
 import me.liaoheng.wallpaper.util.WallpaperUtils;
 import me.liaoheng.wallpaper.widget.ResolutionDialog;
 import me.liaoheng.wallpaper.widget.SeekBarDialogFragment;
-import me.liaoheng.wallpaper.widget.ToggleImageButton;
 
 /**
  * 壁纸详情
@@ -54,30 +52,12 @@ import me.liaoheng.wallpaper.widget.ToggleImageButton;
 public class WallpaperDetailActivity extends BaseActivity implements
         SeekBarDialogFragment.SeekBarDialogFragmentCallback {
 
-    @BindView(R.id.bing_wallpaper_detail_image)
-    SubsamplingScaleImageView mImageView;
-    @BindView(R.id.bing_wallpaper_detail_bottom)
-    View mBottomView;
-    @BindView(R.id.bing_wallpaper_detail_bottom_text)
-    TextView mBottomTextView;
-    @BindView(R.id.bing_wallpaper_detail_loading)
-    ProgressBar mProgressBar;
-    @BindView(R.id.bing_wallpaper_detail_error)
-    TextView mErrorTextView;
-
-    @BindView(R.id.bing_wallpaper_detail_cover_story_text)
-    TextView mCoverStoryTextView;
-    @BindView(R.id.bing_wallpaper_detail_cover_story_toggle)
-    ToggleImageButton mCoverStoryToggle;
-
-    @BindArray(R.array.pref_set_wallpaper_resolution_value)
-    String[] mResolutionValue;
+    private ActivityWallpaperDetailBinding mViewBinding;
 
     private String mSelectedResolution;
 
     private ResolutionDialog mResolutionDialog;
 
-    @NonNull
     private Wallpaper mWallpaper;
     private ProgressDialog mSetWallpaperProgressDialog;
     private SetWallpaperStateBroadcastReceiverHelper mSetWallpaperStateBroadcastReceiverHelper;
@@ -106,8 +86,8 @@ public class WallpaperDetailActivity extends BaseActivity implements
             getWindow().setAttributes(lp);
         }
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_wallpaper_detail);
-        ButterKnife.bind(this);
+        mViewBinding = ActivityWallpaperDetailBinding.inflate(getLayoutInflater());
+        setContentView(mViewBinding.getRoot());
         initStatusBarAddToolbar();
         mConfig = new Config.Builder().build();
         if (savedInstanceState != null) {
@@ -121,7 +101,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
             finish();
             return;
         }
-        mImageView.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP);
+        mViewBinding.bingWallpaperDetailImage.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP);
 
         mSetWallpaperStateBroadcastReceiverHelper = new SetWallpaperStateBroadcastReceiverHelper(
                 new Callback4.EmptyCallback<BingWallpaperState>() {
@@ -143,27 +123,30 @@ public class WallpaperDetailActivity extends BaseActivity implements
                     }
                 });
 
-        ((View) mCoverStoryToggle.getParent()).setOnClickListener(v -> mCoverStoryToggle.toggle());
-        mCoverStoryToggle.setOnCheckedChangeListener((view, isChecked) -> {
-            if (mCoverStoryTextView.getVisibility() == View.VISIBLE) {
-                UIUtils.viewVisible(mBottomTextView);
+        ((View) mViewBinding.bingWallpaperDetailCoverStoryToggle.getParent()).setOnClickListener(
+                v -> mViewBinding.bingWallpaperDetailCoverStoryToggle.toggle());
+        mViewBinding.bingWallpaperDetailCoverStoryToggle.setOnCheckedChangeListener((view, isChecked) -> {
+            if (mViewBinding.bingWallpaperDetailCoverStoryText.getVisibility() == View.VISIBLE) {
+                UIUtils.viewVisible(mViewBinding.bingWallpaperDetailBottomText);
             } else {
-                UIUtils.viewGone(mBottomTextView);
+                UIUtils.viewGone(mViewBinding.bingWallpaperDetailBottomText);
             }
-            UIUtils.toggleVisibility(mCoverStoryTextView);
+            UIUtils.toggleVisibility(mViewBinding.bingWallpaperDetailCoverStoryText);
         });
 
-        mBottomTextView.setText(mWallpaper.getCopyright());
+        mViewBinding.bingWallpaperDetailBottomText.setText(mWallpaper.getCopyright());
 
         if (TextUtils.isEmpty(mWallpaper.getDesc())) {
-            UIUtils.viewParentGone(mCoverStoryToggle.getParent());
+            UIUtils.viewParentGone(mViewBinding.bingWallpaperDetailCoverStoryToggle.getParent());
         } else {
-            UIUtils.viewParentVisible(mCoverStoryToggle.getParent());
-            mCoverStoryTextView.setText(mWallpaper.getDesc());
+            UIUtils.viewParentVisible(mViewBinding.bingWallpaperDetailCoverStoryToggle.getParent());
+            mViewBinding.bingWallpaperDetailCoverStoryText.setText(mWallpaper.getDesc());
         }
 
-        mBottomView.setPadding(mBottomView.getPaddingLeft(), mBottomView.getPaddingTop(),
-                mBottomView.getPaddingRight(), BingWallpaperUtils.getNavigationBarPadding(this));
+        mViewBinding.bingWallpaperDetailBottom.setPadding(mViewBinding.bingWallpaperDetailBottom.getPaddingLeft(),
+                mViewBinding.bingWallpaperDetailBottom.getPaddingTop(),
+                mViewBinding.bingWallpaperDetailBottom.getPaddingRight(),
+                BingWallpaperUtils.getNavigationBarPadding(this));
 
         mResolutionDialog = ResolutionDialog.with(this, new Callback4.EmptyCallback<String>() {
             @Override
@@ -176,7 +159,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
         mSetWallpaperProgressDialog = UIUtils.createProgressDialog(this, getString(R.string.set_wallpaper_running));
         mSetWallpaperProgressDialog.setCancelable(false);
         mDownloadHelper = new DownloadHelper(this, TAG);
-        mImageView.setOnClickListener(v -> toggleToolbar());
+        mViewBinding.bingWallpaperDetailImage.setOnClickListener(v -> toggleToolbar());
         loadImage();
     }
 
@@ -184,11 +167,11 @@ public class WallpaperDetailActivity extends BaseActivity implements
         if (getSupportActionBar().isShowing()) {
             getSupportActionBar().hide();
             fullScreen();
-            UIUtils.viewGone(mBottomView);
+            UIUtils.viewGone(mViewBinding.bingWallpaperDetailBottom);
         } else {
             getSupportActionBar().show();
             normalScreen();
-            UIUtils.viewVisible(mBottomView);
+            UIUtils.viewVisible(mViewBinding.bingWallpaperDetailBottom);
         }
     }
 
@@ -222,17 +205,19 @@ public class WallpaperDetailActivity extends BaseActivity implements
         WallpaperUtils.loadImage(GlideApp.with(this).asFile()
                         .load(getUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION))
                         .dontAnimate()
-                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL), mImageView,
+                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL), mViewBinding.bingWallpaperDetailImage,
                 new Callback.EmptyCallback<File>() {
                     @Override
                     public void onPreExecute() {
-                        mProgressBar.post(() -> mProgressBar.setVisibility(View.VISIBLE));
-                        UIUtils.viewGone(mErrorTextView);
+                        mViewBinding.bingWallpaperDetailLoading.post(
+                                () -> mViewBinding.bingWallpaperDetailLoading.setVisibility(View.VISIBLE));
+                        UIUtils.viewGone(mViewBinding.bingWallpaperDetailError);
                     }
 
                     @Override
                     public void onPostExecute() {
-                        mProgressBar.post(() -> mProgressBar.setVisibility(View.GONE));
+                        mViewBinding.bingWallpaperDetailLoading.post(
+                                () -> mViewBinding.bingWallpaperDetailLoading.setVisibility(View.GONE));
                     }
 
                     @Override
@@ -240,7 +225,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
                         try {
                             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
                             bitmap = WallpaperUtils.transformStackBlur(bitmap, mConfig.getStackBlur());
-                            mImageView.setImage(ImageSource.bitmap(bitmap));
+                            mViewBinding.bingWallpaperDetailImage.setImage(ImageSource.bitmap(bitmap));
                         } catch (OutOfMemoryError e) {
                             onError(e);
                         }
@@ -249,8 +234,8 @@ public class WallpaperDetailActivity extends BaseActivity implements
                     @Override
                     public void onError(Throwable e) {
                         String error = CrashReportHandle.loadFailed(getApplicationContext(), TAG, e);
-                        mErrorTextView.setText(error);
-                        UIUtils.viewVisible(mErrorTextView);
+                        mViewBinding.bingWallpaperDetailError.setText(error);
+                        UIUtils.viewVisible(mViewBinding.bingWallpaperDetailError);
                     }
                 });
     }
@@ -281,42 +266,32 @@ public class WallpaperDetailActivity extends BaseActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_wallpaper_home:
-                setWallpaper(1);
-                break;
-            case R.id.menu_wallpaper_lock:
-                setWallpaper(2);
-                break;
-            case R.id.menu_wallpaper_both:
-                setWallpaper(0);
-                break;
-            case R.id.menu_wallpaper_save:
-                BingWallpaperUtils.showSaveWallpaperDialog(this, new Callback5.EmptyCallback() {
-                    @Override
-                    public void onAllow() {
-                        mDownloadHelper.saveWallpaper(getActivity(), getSaveUrl());
-                    }
-                });
-                break;
-            case R.id.menu_wallpaper_resolution:
-                mResolutionDialog.show();
-                break;
-            case R.id.menu_wallpaper_info:
-                BingWallpaperUtils.openBrowser(this, mWallpaper);
-                break;
-            case R.id.menu_wallpaper_share:
-                WallpaperUtils.shareImage(this, mConfig,
-                        getUrl(Settings.getResolution(this)),
-                        mWallpaper.getCopyright());
-                break;
-            case R.id.menu_wallpaper_stack_blur:
-                SeekBarDialogFragment.newInstance(getString(R.string.pref_stack_blur), mConfig.getStackBlur(), this)
-                        .show(getSupportFragmentManager(), "SeekBarDialogFragment");
-                break;
-            case R.id.menu_wallpaper_copyright:
-                UIUtils.showInfoAlertDialog(this, mWallpaper.getCopyrightInfo(), new Callback5.EmptyCallback());
-                break;
+        if (item.getItemId() == R.id.menu_wallpaper_home) {
+            setWallpaper(1);
+        } else if (item.getItemId() == R.id.menu_wallpaper_lock) {
+            setWallpaper(2);
+        } else if (item.getItemId() == R.id.menu_wallpaper_both) {
+            setWallpaper(0);
+        } else if (item.getItemId() == R.id.menu_wallpaper_save) {
+            BingWallpaperUtils.showSaveWallpaperDialog(this, new Callback5.EmptyCallback() {
+                @Override
+                public void onAllow() {
+                    mDownloadHelper.saveWallpaper(getActivity(), getSaveUrl());
+                }
+            });
+        } else if (item.getItemId() == R.id.menu_wallpaper_resolution) {
+            mResolutionDialog.show();
+        } else if (item.getItemId() == R.id.menu_wallpaper_info) {
+            BingWallpaperUtils.openBrowser(this, mWallpaper);
+        } else if (item.getItemId() == R.id.menu_wallpaper_share) {
+            WallpaperUtils.shareImage(this, mConfig,
+                    getUrl(Settings.getResolution(this)),
+                    mWallpaper.getCopyright());
+        } else if (item.getItemId() == R.id.menu_wallpaper_stack_blur) {
+            SeekBarDialogFragment.newInstance(getString(R.string.pref_stack_blur), mConfig.getStackBlur(), this)
+                    .show(getSupportFragmentManager(), "SeekBarDialogFragment");
+        } else if (item.getItemId() == R.id.menu_wallpaper_copyright) {
+            UIUtils.showInfoAlertDialog(this, mWallpaper.getCopyrightInfo(), new Callback5.EmptyCallback());
         }
         return super.onOptionsItemSelected(item);
     }

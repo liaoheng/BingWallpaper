@@ -16,7 +16,7 @@ import android.os.UserManager;
 import android.provider.Browser;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
+import android.view.Surface;
 import android.view.View;
 import android.widget.Toast;
 
@@ -88,7 +88,16 @@ public class BingWallpaperUtils {
     }
 
     public static String getResolution(Context context) {
+        return getResolution(context, false);
+    }
+
+    public static String getResolution(Context context, boolean excludeUHD) {
         int resolutionValue = Settings.getResolutionValue(context);
+        if (excludeUHD) {
+            if (resolutionValue == 11) {
+                resolutionValue = 10;
+            }
+        }
         if (resolutionValue < 10) {
             boolean portrait = false;
             if (resolutionValue % 2 == 0) {
@@ -124,7 +133,7 @@ public class BingWallpaperUtils {
                     resolution = "3";
                 }
             }
-        }else {
+        } else {
             if (screenInfo.heightPixels <= 720 && screenInfo.heightPixels > 480) {//720p
                 if (Constants.Config.isPhone) {
                     resolution = "4";
@@ -146,6 +155,19 @@ public class BingWallpaperUtils {
     public static boolean isPortrait(Context context) {
         return context.getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_PORTRAIT;
+    }
+
+    //https://stackoverflow.com/questions/2795833/check-orientation-on-android-phone
+    public static boolean isPortrait2(Context context) {
+        int rotation = context.getDisplay().getRotation();
+        if (rotation == Surface.ROTATION_0) {//"portrait"
+            return true;
+        } else if (rotation == Surface.ROTATION_90) {//"landscape"
+            return false;
+        } else if (rotation == Surface.ROTATION_180) {
+            return true;//"reverse portrait"
+        }
+        return false;//"reverse landscape"
     }
 
     public static Wallpaper generateUrl(Context context, Wallpaper wallpaper) {

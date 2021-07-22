@@ -186,34 +186,35 @@ public class SettingsActivity extends BaseActivity {
 
         private SettingBroadcastReceiver mReceiver;
 
+        @SuppressWarnings("ConstantConditions")
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             mReceiver = new SettingBroadcastReceiver();
-            LocalBroadcastManager.getInstance(getContext())
+            LocalBroadcastManager.getInstance(requireContext())
                     .registerReceiver(mReceiver, new IntentFilter(CLOSE_FULLY_AUTOMATIC_UPDATE));
-            mPreferences = SettingTrayPreferences.get(getActivity());
+            mPreferences = SettingTrayPreferences.get(requireContext());
             Preference version = findPreference("pref_version");
-            version.setSummary(AppUtils.getVersionInfo(getActivity()).versionName);
+            version.setSummary(AppUtils.getVersionInfo(requireContext()).versionName);
 
             findPreference("pref_github").setOnPreferenceClickListener(preference -> {
-                BingWallpaperUtils.openBrowser(getActivity(), "https://github.com/liaoheng/BingWallpaper");
+                BingWallpaperUtils.openBrowser(requireContext(), "https://github.com/liaoheng/BingWallpaper");
                 return true;
             });
 
             findPreference("pref_intro").setOnPreferenceClickListener(preference -> {
-                UIUtils.startActivity(getActivity(), IntroActivity.class);
+                UIUtils.startActivity(requireContext(), IntroActivity.class);
                 return true;
             });
 
             findPreference("pref_license").setOnPreferenceClickListener(preference -> {
-                UIUtils.startActivity(getActivity(), LicenseActivity.class);
+                UIUtils.startActivity(requireContext(), LicenseActivity.class);
                 return true;
             });
 
             findPreference("pref_clear_cache").setOnPreferenceClickListener(
                     preference -> {
-                        UIUtils.showYNAlertDialog(getActivity(), getString(R.string.pref_clear_cache) + "?",
+                        UIUtils.showYNAlertDialog(requireContext(), getString(R.string.pref_clear_cache) + "?",
                                 new Callback5() {
                                     @Override
                                     public void onAllow() {
@@ -221,7 +222,7 @@ public class SettingsActivity extends BaseActivity {
                                                 new Callback.EmptyCallback<Object>() {
                                                     @Override
                                                     public void onSuccess(Object o) {
-                                                        UIUtils.showToast(getActivity(),
+                                                        UIUtils.showToast(requireContext(),
                                                                 R.string.pref_clear_cache_success);
                                                     }
                                                 });
@@ -236,7 +237,7 @@ public class SettingsActivity extends BaseActivity {
                     });
 
             findPreference("pref_translation").setOnPreferenceClickListener(preference -> {
-                UIUtils.startActivity(getActivity(), TranslatorActivity.class);
+                UIUtils.startActivity(requireContext(), TranslatorActivity.class);
                 return true;
             });
 
@@ -271,7 +272,7 @@ public class SettingsActivity extends BaseActivity {
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                 if (ROM.getROM().isMiui()) {
-                    mModeTypeListPreference.setSummary(Settings.getAutoMode(getActivity()));
+                    mModeTypeListPreference.setSummary(Settings.getAutoMode(requireContext()));
                     mStackBlurModePreference.setSummary(Settings.getSettingStackBlurModeName(getActivity()));
                 } else {
                     ((PreferenceCategory) findPreference("pref_update_group")).removePreference(
@@ -280,27 +281,27 @@ public class SettingsActivity extends BaseActivity {
                             mStackBlurModePreference);
                 }
             } else {
-                mModeTypeListPreference.setSummary(Settings.getAutoMode(getActivity()));
-                mStackBlurModePreference.setSummary(Settings.getSettingStackBlurModeName(getActivity()));
+                mModeTypeListPreference.setSummary(Settings.getAutoMode(requireContext()));
+                mStackBlurModePreference.setSummary(Settings.getSettingStackBlurModeName(requireContext()));
             }
 
             mResolutionListPreference.setSummary(Settings.getResolution(getActivity()));
-            mSaveResolutionListPreference.setSummary(Settings.getSaveResolution(getActivity()));
-            mCountryListPreference.setSummary(Settings.getCountryName(getActivity()));
-            mLanguageListPreference.setSummary(Settings.getLanguageName(getActivity()));
+            mSaveResolutionListPreference.setSummary(Settings.getSaveResolution(requireContext()));
+            mCountryListPreference.setSummary(Settings.getCountryName(requireContext()));
+            mLanguageListPreference.setSummary(Settings.getLanguageName(requireContext()));
 
-            mDailyUpdateModeListPreference.setSummary(Settings.getAutomaticUpdateTypeName(getContext()));
+            mDailyUpdateModeListPreference.setSummary(Settings.getAutomaticUpdateTypeName(requireContext()));
             mDailyUpdateIntervalPreference.setSummary(getString(R.string.pref_auto_update_check_time,
-                    Settings.getAutomaticUpdateInterval(getContext())));
+                    Settings.getAutomaticUpdateInterval(requireContext())));
             LocalTime time = LocalTime.parse(Constants.DEF_TIMER_PERIODIC);
             mDailyUpdateTimePreference.setSummary(time.toString("HH:mm"));
             mDailyUpdateTimePreference.setLocalTime(time);
 
-            mDailyUpdatePreference.setSummary(Settings.getJobTypeString(getContext()));
+            mDailyUpdatePreference.setSummary(Settings.getJobTypeString(requireContext()));
 
-            switch (Settings.getAutomaticUpdateType(getContext())) {
+            switch (Settings.getAutomaticUpdateType(requireContext())) {
                 case Settings.AUTOMATIC_UPDATE_TYPE_AUTO:
-                    int jobType = Settings.getJobType(getContext());
+                    int jobType = Settings.getJobType(requireContext());
                     if (jobType == Settings.WORKER) {
                         initWorkerView();
                     } else if (jobType == Settings.LIVE_WALLPAPER) {
@@ -319,7 +320,7 @@ public class SettingsActivity extends BaseActivity {
                     initTimerView();
                     break;
             }
-            if (WallpaperUtils.isNotSupportedWallpaper(getContext())) {
+            if (WallpaperUtils.isNotSupportedWallpaper(requireContext())) {
                 mDailyUpdatePreference.setEnabled(false);
             }
         }
@@ -327,7 +328,7 @@ public class SettingsActivity extends BaseActivity {
         private void initWorkerView() {
             mDailyUpdateIntervalPreference.setEnabled(true);
             mDailyUpdateIntervalPreference.setSummary(getString(R.string.pref_auto_update_check_time,
-                    Settings.getAutomaticUpdateInterval(getContext())));
+                    Settings.getAutomaticUpdateInterval(requireContext())));
             mDailyUpdateTimePreference.setEnabled(false);
         }
 
@@ -337,7 +338,7 @@ public class SettingsActivity extends BaseActivity {
         }
 
         private void initTimerView() {
-            LocalTime localTime = BingWallpaperUtils.getDayUpdateTime(getContext());
+            LocalTime localTime = BingWallpaperUtils.getDayUpdateTime(requireContext());
             mDailyUpdateTimePreference.setEnabled(true);
             mDailyUpdateTimePreference.setSummary(localTime.toString("HH:mm"));
             mDailyUpdateTimePreference.setLocalTime(localTime);
@@ -371,15 +372,15 @@ public class SettingsActivity extends BaseActivity {
                     BingWallpaperUtils.clearNetCache().subscribe();
                     break;
                 case PREF_LANGUAGE:
-                    LanguageContextWrapper.wrap(getActivity(), BingWallpaperUtils.getLanguage(getContext()));
+                    LanguageContextWrapper.wrap(requireContext(), BingWallpaperUtils.getLanguage(requireContext()));
                     isChangeLanguage = true;
-                    getActivity().recreate();
+                    requireActivity().recreate();
                     break;
                 case PREF_SET_WALLPAPER_AUTO_MODE:
-                    if (Settings.getJobType(getContext()) == Settings.LIVE_WALLPAPER) {
+                    if (Settings.getJobType(requireContext()) == Settings.LIVE_WALLPAPER) {
                         if (Integer.parseInt(mModeTypeListPreference.getValue())
                                 == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                            UIUtils.showToast(getContext(), "single choose lock wallpaper not support!");
+                            UIUtils.showToast(requireContext(), "single choose lock wallpaper not support!");
                         }
                     }
                     mModeTypeListPreference.setSummary(mModeTypeListPreference.getEntry());
@@ -387,12 +388,12 @@ public class SettingsActivity extends BaseActivity {
                     break;
                 case PREF_SET_WALLPAPER_DAILY_UPDATE:
                     if (mDailyUpdatePreference.isChecked()) {
-                        if (BingWallpaperJobManager.enabled(getContext()) == Settings.NONE) {
+                        if (BingWallpaperJobManager.enabled(requireContext()) == Settings.NONE) {
                             mDailyUpdatePreference.setChecked(false);
                             return;
                         }
                     } else {
-                        BingWallpaperJobManager.disabled(getContext());
+                        BingWallpaperJobManager.disabled(requireContext());
                     }
                     break;
                 case PREF_SET_WALLPAPER_DAILY_UPDATE_MODE:
@@ -430,11 +431,11 @@ public class SettingsActivity extends BaseActivity {
                 case PREF_SET_WALLPAPER_LOG:
                     mPreferences.put(PREF_SET_WALLPAPER_LOG, mLogPreference.isChecked());
                     if (mLogPreference.isChecked()) {
-                        LogDebugFileUtils.create(getContext());
+                        LogDebugFileUtils.create(requireContext());
                     } else {
                         LogDebugFileUtils.destroy();
                     }
-                    getContext().sendBroadcast(new Intent(Constants.ACTION_DEBUG_LOG));
+                    requireContext().sendBroadcast(new Intent(Constants.ACTION_DEBUG_LOG));
                     break;
                 case PREF_CRASH_REPORT:
                     mPreferences.put(PREF_CRASH_REPORT, mCrashPreference.isChecked());
@@ -465,7 +466,7 @@ public class SettingsActivity extends BaseActivity {
                             mPreferences.put(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, true);
                         } else {
                             mMIuiLockScreenPreference.setChecked(false);
-                            UIUtils.showToast(getActivity(), R.string.unable_root_permission);
+                            UIUtils.showToast(requireContext(), R.string.unable_root_permission);
                         }
                     } else {
                         mPreferences.put(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, false);
@@ -504,7 +505,7 @@ public class SettingsActivity extends BaseActivity {
         @Override
         public void onDestroy() {
             if (mReceiver != null) {
-                LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mReceiver);
+                LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(mReceiver);
             }
             super.onDestroy();
         }

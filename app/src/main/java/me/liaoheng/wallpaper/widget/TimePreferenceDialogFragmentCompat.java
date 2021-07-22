@@ -4,14 +4,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.View;
-import android.widget.TimePicker;
-
-import androidx.preference.DialogPreference;
-import androidx.preference.PreferenceDialogFragmentCompat;
 
 import org.joda.time.LocalTime;
 
-import me.liaoheng.wallpaper.R;
+import androidx.preference.DialogPreference;
+import androidx.preference.PreferenceDialogFragmentCompat;
+import me.liaoheng.wallpaper.databinding.ViewPreferenceTimeBinding;
 
 /**
  * The Dialog for the {@link TimePreference}.
@@ -21,13 +19,7 @@ import me.liaoheng.wallpaper.R;
 public class TimePreferenceDialogFragmentCompat extends PreferenceDialogFragmentCompat {
 
     /**
-     * The TimePicker widget
-     */
-    private TimePicker mTimePicker;
-
-    /**
-     * Creates a new Instance of the TimePreferenceDialogFragment and stores the key of the
-     * related Preference
+     * Creates a new Instance of the TimePreferenceDialogFragment and stores the key of the related Preference
      *
      * @param key The key of the related Preference
      * @return A new Instance of the TimePreferenceDialogFragment
@@ -38,9 +30,10 @@ public class TimePreferenceDialogFragmentCompat extends PreferenceDialogFragment
         final Bundle b = new Bundle(1);
         b.putString(ARG_KEY, key);
         fragment.setArguments(b);
-
         return fragment;
     }
+
+    private ViewPreferenceTimeBinding mViewBinding;
 
     /**
      * {@inheritDoc}
@@ -48,14 +41,14 @@ public class TimePreferenceDialogFragmentCompat extends PreferenceDialogFragment
     @Override
     protected void onBindDialogView(View view) {
         super.onBindDialogView(view);
-        mTimePicker = view.findViewById(R.id.time);
+        mViewBinding = ViewPreferenceTimeBinding.bind(view);
 
         DialogPreference preference = getPreference();
         if (preference instanceof TimePreference) {
             TimePreference timePreference = ((TimePreference) preference);
-            mTimePicker.setIs24HourView(DateFormat.is24HourFormat(getContext()));
-            mTimePicker.setCurrentHour(timePreference.getLocalTime().getHourOfDay());
-            mTimePicker.setCurrentMinute(timePreference.getLocalTime().getMinuteOfHour());
+            mViewBinding.time.setIs24HourView(DateFormat.is24HourFormat(getContext()));
+            mViewBinding.time.setCurrentHour(timePreference.getLocalTime().getHourOfDay());
+            mViewBinding.time.setCurrentMinute(timePreference.getLocalTime().getMinuteOfHour());
         }
     }
 
@@ -70,11 +63,11 @@ public class TimePreferenceDialogFragmentCompat extends PreferenceDialogFragment
             int hours;
             int minutes;
             if (Build.VERSION.SDK_INT >= 23) {
-                hours = mTimePicker.getHour();
-                minutes = mTimePicker.getMinute();
+                hours = mViewBinding.time.getHour();
+                minutes = mViewBinding.time.getMinute();
             } else {
-                hours = mTimePicker.getCurrentHour();
-                minutes = mTimePicker.getCurrentMinute();
+                hours = mViewBinding.time.getCurrentHour();
+                minutes = mViewBinding.time.getCurrentMinute();
             }
 
             DialogPreference preference = getPreference();

@@ -16,17 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.palette.graphics.Palette;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import butterknife.BindView;
-import butterknife.ButterKnife;
+
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
@@ -36,7 +26,6 @@ import com.bumptech.glide.request.transition.Transition;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.Callback5;
@@ -46,10 +35,22 @@ import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.SystemDataException;
 import com.github.liaoheng.common.util.UIUtils;
 import com.google.android.material.navigation.NavigationView;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.palette.graphics.Palette;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
+import me.liaoheng.wallpaper.databinding.ActivityMainBinding;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
@@ -65,8 +66,6 @@ import me.liaoheng.wallpaper.util.TasksUtils;
 import me.liaoheng.wallpaper.util.UIHelper;
 import me.liaoheng.wallpaper.util.WallpaperUtils;
 import me.liaoheng.wallpaper.widget.FeedbackDialog;
-import me.liaoheng.wallpaper.widget.ToggleImageButton;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * 壁纸主界面
@@ -82,42 +81,21 @@ public class MainActivity extends BaseActivity
         super.attachBaseContext(LanguageContextWrapper.wrap(context, BingWallpaperUtils.getLanguage(context)));
     }
 
-    @BindView(R.id.bing_wallpaper_view)
-    SubsamplingScaleImageView mWallpaperView;
-    @BindView(R.id.bing_wallpaper_error)
-    TextView mErrorTextView;
-    @BindView(R.id.bing_wallpaper_cover_story_text)
-    TextView mCoverStoryTextView;
-    TextView mHeaderCoverStoryTitleView;
-    @BindView(R.id.bing_wallpaper_cover_story_toggle)
-    ToggleImageButton mCoverStoryToggle;
-    @BindView(R.id.bing_wallpaper_cover_story)
-    View mCoverStoryView;
-    @BindView(R.id.bing_wallpaper_bottom)
-    View mBottomView;
+    private ImageView mNavigationHeaderImage;
+    private TextView mNavigationHeaderCoverStoryTitleView;
 
-    @BindView(R.id.bing_wallpaper_swipe_refresh)
-    SwipeRefreshLayout mSwipeRefreshLayout;
-
-    @BindView(R.id.drawer_layout)
-    DrawerLayout mDrawerLayout;
-    @BindView(R.id.navigation_drawer)
-    NavigationView mNavigationView;
-    @BindView(R.id.bing_wallpaper_set_menu)
-    FloatingActionMenu mSetWallpaperActionMenu;
+    private ActivityMainBinding mViewBinding;
 
     private Dialog mFeedbackDialog;
-
-    private ImageView mNavigationHeaderImage;
 
     private SetWallpaperStateBroadcastReceiverHelper mSetWallpaperStateBroadcastReceiverHelper;
     @Nullable
     private Wallpaper mCurWallpaper;
     private boolean isRun;
     private int mActionMenuBottomMargin;
-    private final UIHelper mUiHelper = new UIHelper();
+    private UIHelper mUiHelper;
     private DownloadHelper mDownloadHelper;
-    private final Config.Builder mConfig = new Config.Builder();
+    private Config.Builder mConfig;
 
     @Override
     public void showBottomView() {
@@ -128,23 +106,25 @@ public class MainActivity extends BaseActivity
     }
 
     public void showBottomView(int navigationBarHeight) {
-        UIUtils.viewVisible(mBottomView);
-        ViewGroup.LayoutParams layoutParams = mBottomView.getLayoutParams();
+        UIUtils.viewVisible(mViewBinding.bingWallpaperBottom);
+        ViewGroup.LayoutParams layoutParams = mViewBinding.bingWallpaperBottom.getLayoutParams();
         layoutParams.height = navigationBarHeight;
-        mBottomView.setLayoutParams(layoutParams);
+        mViewBinding.bingWallpaperBottom.setLayoutParams(layoutParams);
 
-        ViewGroup.MarginLayoutParams menuLayoutParams = (ViewGroup.MarginLayoutParams) mSetWallpaperActionMenu.getLayoutParams();
+        ViewGroup.MarginLayoutParams menuLayoutParams = (ViewGroup.MarginLayoutParams) mViewBinding.bingWallpaperSetMenu
+                .getLayoutParams();
         menuLayoutParams.bottomMargin = mActionMenuBottomMargin + navigationBarHeight;
-        mSetWallpaperActionMenu.setLayoutParams(menuLayoutParams);
+        mViewBinding.bingWallpaperSetMenu.setLayoutParams(menuLayoutParams);
     }
 
     @Override
     public void hideBottomView() {
-        UIUtils.viewGone(mBottomView);
+        UIUtils.viewGone(mViewBinding.bingWallpaperBottom);
 
-        ViewGroup.MarginLayoutParams menuLayoutParams = (ViewGroup.MarginLayoutParams) mSetWallpaperActionMenu.getLayoutParams();
+        ViewGroup.MarginLayoutParams menuLayoutParams = (ViewGroup.MarginLayoutParams) mViewBinding.bingWallpaperSetMenu
+                .getLayoutParams();
         menuLayoutParams.bottomMargin = mActionMenuBottomMargin;
-        mSetWallpaperActionMenu.setLayoutParams(menuLayoutParams);
+        mViewBinding.bingWallpaperSetMenu.setLayoutParams(menuLayoutParams);
     }
 
     @Override
@@ -156,22 +136,25 @@ public class MainActivity extends BaseActivity
             return;
         }
         initTranslucent();
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        mViewBinding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(mViewBinding.getRoot());
         initStatusBarAddToolbar();
-        mWallpaperView.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP);
+        mViewBinding.bingWallpaperView.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP);
 
         mActionMenuBottomMargin = DisplayUtils.dp2px(this, 10);
+        mConfig = new Config.Builder();
+        mUiHelper = new UIHelper();
         mUiHelper.register(this, this);
 
         mFeedbackDialog = FeedbackDialog.create(this);
 
-        mNavigationView.setNavigationItemSelectedListener(this);
+        mViewBinding.navigationDrawer.setNavigationItemSelectedListener(this);
 
-        ((View) mCoverStoryToggle.getParent()).setOnClickListener(v -> mCoverStoryToggle.toggle());
-        mCoverStoryToggle.setOnCheckedChangeListener((view, isChecked) -> {
+        ((View) mViewBinding.bingWallpaperCoverStoryToggle.getParent()).setOnClickListener(
+                v -> mViewBinding.bingWallpaperCoverStoryToggle.toggle());
+        mViewBinding.bingWallpaperCoverStoryToggle.setOnCheckedChangeListener((view, isChecked) -> {
             if (mCurWallpaper != null) {
-                UIUtils.toggleVisibility(mCoverStoryTextView);
+                UIUtils.toggleVisibility(mViewBinding.bingWallpaperCoverStoryText);
             }
         });
         mSetWallpaperStateBroadcastReceiverHelper = new SetWallpaperStateBroadcastReceiverHelper(
@@ -194,16 +177,16 @@ public class MainActivity extends BaseActivity
                     }
                 });
 
-        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+        mViewBinding.bingWallpaperSwipeRefresh.setOnRefreshListener(() -> {
             if (isRun) {
                 UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_running);
             } else {
                 getBingWallpaper();
             }
         });
-
-        mNavigationHeaderImage = mNavigationView.getHeaderView(0).findViewById(R.id.navigation_header_image);
-        mHeaderCoverStoryTitleView = mNavigationView.getHeaderView(0)
+        mNavigationHeaderImage = mViewBinding.navigationDrawer.getHeaderView(0)
+                .findViewById(R.id.navigation_header_image);
+        mNavigationHeaderCoverStoryTitleView = mViewBinding.navigationDrawer.getHeaderView(0)
                 .findViewById(R.id.navigation_header_cover_story_title);
         mDownloadHelper = new DownloadHelper(this, TAG);
 
@@ -215,7 +198,7 @@ public class MainActivity extends BaseActivity
     @SuppressLint({ "SetTextI18n", "CheckResult" })
     private void getBingWallpaper() {
         if (!BingWallpaperUtils.isConnected(getApplicationContext())) {
-            mErrorTextView.setText(getString(R.string.network_unavailable));
+            mViewBinding.bingWallpaperError.setText(getString(R.string.network_unavailable));
             return;
         }
         showSwipeRefreshLayout();
@@ -230,10 +213,10 @@ public class MainActivity extends BaseActivity
                     }
                     mCurWallpaper = bingWallpaperImage;
                     if (TextUtils.isEmpty(bingWallpaperImage.getDesc())) {
-                        UIUtils.viewParentGone(mCoverStoryTextView.getParent());
+                        UIUtils.viewParentGone(mViewBinding.bingWallpaperCoverStoryText.getParent());
                     } else {
-                        UIUtils.viewParentVisible(mCoverStoryTextView.getParent());
-                        mCoverStoryTextView.setText(bingWallpaperImage.getDesc());
+                        UIUtils.viewParentVisible(mViewBinding.bingWallpaperCoverStoryText.getParent());
+                        mViewBinding.bingWallpaperCoverStoryText.setText(bingWallpaperImage.getDesc());
                     }
 
                     setImage(bingWallpaperImage);
@@ -244,7 +227,7 @@ public class MainActivity extends BaseActivity
     private void setBingWallpaperError(Throwable throwable) {
         dismissProgressDialog();
         String error = CrashReportHandle.loadFailed(this, TAG, throwable);
-        mErrorTextView.setText(getString(R.string.pull_refresh) + error);
+        mViewBinding.bingWallpaperError.setText(getString(R.string.pull_refresh) + error);
     }
 
     /**
@@ -265,13 +248,14 @@ public class MainActivity extends BaseActivity
                     @Override
                     public void onYes(Boolean aBoolean) {
                         isRun = true;
-                        mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(true));
+                        mViewBinding.bingWallpaperSwipeRefresh.post(
+                                () -> mViewBinding.bingWallpaperSwipeRefresh.setRefreshing(true));
                     }
                 });
     }
 
     private String getUrl() {
-        return getUrl(BingWallpaperUtils.getResolution(this));
+        return getUrl(BingWallpaperUtils.getResolution(this, true));
     }
 
     private String getSaveUrl() {
@@ -290,31 +274,31 @@ public class MainActivity extends BaseActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId_ = item.getItemId();
         if (itemId_ == android.R.id.home) {
-            mDrawerLayout.openDrawer(GravityCompat.START);
+            mViewBinding.drawerLayout.openDrawer(GravityCompat.START);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void dismissSwipeRefreshLayout() {
-        mSetWallpaperActionMenu.post(() -> mSetWallpaperActionMenu.showMenu(true));
+        mViewBinding.bingWallpaperSetMenu.post(() -> mViewBinding.bingWallpaperSetMenu.showMenu(true));
         dismissProgressDialog();
     }
 
     private void dismissProgressDialog() {
         isRun = false;
-        mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(false));
+        mViewBinding.bingWallpaperSwipeRefresh.post(() -> mViewBinding.bingWallpaperSwipeRefresh.setRefreshing(false));
     }
 
     private void showSwipeRefreshLayout() {
-        mErrorTextView.setText("");
+        mViewBinding.bingWallpaperError.setText("");
         showProgressDialog();
     }
 
     private void showProgressDialog() {
         isRun = true;
-        mSetWallpaperActionMenu.hideMenu(true);
-        mSwipeRefreshLayout.post(() -> mSwipeRefreshLayout.setRefreshing(true));
+        mViewBinding.bingWallpaperSetMenu.hideMenu(true);
+        mViewBinding.bingWallpaperSwipeRefresh.post(() -> mViewBinding.bingWallpaperSwipeRefresh.setRefreshing(true));
     }
 
     @Override
@@ -342,7 +326,7 @@ public class MainActivity extends BaseActivity
         } else if (item.getItemId() == R.id.menu_main_drawer_feedback) {
             UIUtils.showDialog(mFeedbackDialog);
         }
-        mDrawerLayout.closeDrawers();
+        mViewBinding.drawerLayout.closeDrawers();
         return true;
     }
 
@@ -361,10 +345,13 @@ public class MainActivity extends BaseActivity
                 .load(getUrl())
                 .dontAnimate()
                 .thumbnail(0.5f)
-                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL), mWallpaperView, callback);
+                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL), mViewBinding.bingWallpaperView, callback);
     }
 
     private void loadMenuImage() {
+        if (isDestroyed()) {
+            return;
+        }
         GlideApp.with(this)
                 .asBitmap()
                 .load(getUrl(Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION))
@@ -404,7 +391,7 @@ public class MainActivity extends BaseActivity
 
                             @Override
                             public void onSuccess(File file) {
-                                mWallpaperView.setImage(ImageSource.uri(Uri.fromFile(file)));
+                                mViewBinding.bingWallpaperView.setImage(ImageSource.uri(Uri.fromFile(file)));
                             }
 
                             @Override
@@ -417,8 +404,11 @@ public class MainActivity extends BaseActivity
     }
 
     private void setImage(Wallpaper image) {
+        if (isDestroyed()) {
+            return;
+        }
         setTitle(image.getCopyright());
-        mHeaderCoverStoryTitleView.setText(image.getCopyright());
+        mNavigationHeaderCoverStoryTitleView.setText(image.getCopyright());
         loadMenuImage();
     }
 
@@ -449,10 +439,10 @@ public class MainActivity extends BaseActivity
     }
 
     private void initSetWallpaperActionMenu(@ColorInt int lightMutedSwatch, int lightVibrantSwatch, Wallpaper image) {
-        mSetWallpaperActionMenu.removeAllMenuButtons();
-        mSetWallpaperActionMenu.setMenuButtonColorNormal(lightMutedSwatch);
-        mSetWallpaperActionMenu.setMenuButtonColorPressed(lightMutedSwatch);
-        mSetWallpaperActionMenu.setMenuButtonColorRipple(lightVibrantSwatch);
+        mViewBinding.bingWallpaperSetMenu.removeAllMenuButtons();
+        mViewBinding.bingWallpaperSetMenu.setMenuButtonColorNormal(lightMutedSwatch);
+        mViewBinding.bingWallpaperSetMenu.setMenuButtonColorPressed(lightMutedSwatch);
+        mViewBinding.bingWallpaperSetMenu.setMenuButtonColorRipple(lightVibrantSwatch);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             AddBothActionButton(image, lightMutedSwatch, lightVibrantSwatch, false);
@@ -461,7 +451,7 @@ public class MainActivity extends BaseActivity
                     !ROM.getROM().isMiui());
         }
 
-        mSetWallpaperActionMenu.showMenu(true);
+        mViewBinding.bingWallpaperSetMenu.showMenu(true);
     }
 
     private void AddBothActionButton(Wallpaper image, @ColorInt int lightMutedSwatch,
@@ -471,7 +461,7 @@ public class MainActivity extends BaseActivity
                 R.drawable.ic_share_24dp, v -> {
                     WallpaperUtils.shareImage(this, mConfig.loadConfig(this).build(),
                             getUrl(), image.getCopyright());
-                    mSetWallpaperActionMenu.close(true);
+                    mViewBinding.bingWallpaperSetMenu.close(true);
                 });
 
         addActionButton(lightMutedSwatch, lightVibrantSwatch,
@@ -483,7 +473,7 @@ public class MainActivity extends BaseActivity
                     BingWallpaperUtils.showSaveWallpaperDialog(this, new Callback5() {
                         @Override
                         public void onAllow() {
-                            mSetWallpaperActionMenu.close(true);
+                            mViewBinding.bingWallpaperSetMenu.close(true);
                             mDownloadHelper.saveWallpaper(getActivity(), getSaveUrl());
                         }
 
@@ -499,14 +489,14 @@ public class MainActivity extends BaseActivity
                     getString(R.string.pref_set_wallpaper_auto_mode_home),
                     R.drawable.ic_home_white_24dp, v -> {
                         setWallpaper(1);
-                        mSetWallpaperActionMenu.close(true);
+                        mViewBinding.bingWallpaperSetMenu.close(true);
                     });
 
             addActionButton(lightMutedSwatch, lightVibrantSwatch,
                     getString(R.string.pref_set_wallpaper_auto_mode_lock),
                     R.drawable.ic_lock_white_24dp, v -> {
                         setWallpaper(2);
-                        mSetWallpaperActionMenu.close(true);
+                        mViewBinding.bingWallpaperSetMenu.close(true);
                     });
         }
 
@@ -514,7 +504,7 @@ public class MainActivity extends BaseActivity
                 mini ? getString(R.string.set_wallpaper) : getString(R.string.pref_set_wallpaper_auto_mode_both),
                 R.drawable.ic_smartphone_white_24dp, v -> {
                     setWallpaper(0);
-                    mSetWallpaperActionMenu.close(true);
+                    mViewBinding.bingWallpaperSetMenu.close(true);
                 });
     }
 
@@ -527,7 +517,7 @@ public class MainActivity extends BaseActivity
         actionButton.setColorRipple(lightVibrantSwatch);
         actionButton.setImageResource(resId);
         actionButton.setButtonSize(FloatingActionButton.SIZE_MINI);
-        mSetWallpaperActionMenu.addMenuButton(actionButton);
+        mViewBinding.bingWallpaperSetMenu.addMenuButton(actionButton);
         actionButton.setLabelColors(lightMutedSwatch, lightMutedSwatch, lightVibrantSwatch);
         actionButton.setOnClickListener(listener);
     }
@@ -550,7 +540,9 @@ public class MainActivity extends BaseActivity
 
     @Override
     protected void onDestroy() {
-        mUiHelper.unregister(this);
+        if (mUiHelper != null) {
+            mUiHelper.unregister(this);
+        }
         if (mDownloadHelper != null) {
             mDownloadHelper.destroy();
         }

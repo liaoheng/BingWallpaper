@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.github.appintro.AppIntro;
 import com.github.liaoheng.common.util.ROM;
@@ -13,10 +12,8 @@ import com.github.liaoheng.common.util.UIUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import me.liaoheng.wallpaper.R;
+import me.liaoheng.wallpaper.databinding.FragmentIntroHintBinding;
+import me.liaoheng.wallpaper.databinding.FragmentIntroUpdateBinding;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Settings;
 import me.liaoheng.wallpaper.util.TasksUtils;
@@ -35,58 +32,49 @@ public class IntroActivity extends AppIntro {
     }
 
     public static class IntroHintFragment extends Fragment {
-        @BindView(R.id.intro_hint_ignore_battery_optimization)
-        View ignore;
-
-        @OnClick(R.id.intro_hint_ignore_battery_optimization)
-        void ignoreBatteryOptimization() {
-            BingWallpaperUtils.showIgnoreBatteryOptimizationSetting(getActivity());
-        }
 
         @Nullable
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                 @Nullable Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.fragment_intro_hint, container, false);
-            ButterKnife.bind(this, view);
+            FragmentIntroHintBinding binding = FragmentIntroHintBinding.inflate(inflater, container, false);
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                UIUtils.viewVisible(ignore);
+                UIUtils.viewVisible(binding.introHintIgnoreBatteryOptimization);
             }
-            return view;
+            binding.introHintIgnoreBatteryOptimization.setOnClickListener(
+                    v -> BingWallpaperUtils.showIgnoreBatteryOptimizationSetting(requireContext()));
+            return binding.getRoot();
         }
     }
 
     public static class IntroUpdateFragment extends Fragment {
 
-        @OnClick(R.id.intro_enable_update)
         void enable() {
-            UIUtils.startActivity(getContext(), SettingsActivity.class);
+            UIUtils.startActivity(requireContext(), SettingsActivity.class);
         }
 
-        @OnClick(R.id.intro_app_explain)
         void explain() {
-            BingWallpaperUtils.openBrowser(getContext(), "https://github.com/liaoheng/BingWallpaper/wiki");
+            BingWallpaperUtils.openBrowser(requireContext(), "https://github.com/liaoheng/BingWallpaper/wiki");
         }
 
-        @OnClick(R.id.intro_miui_tips)
         void miuiTips() {
-            BingWallpaperUtils.showMiuiDialog(getContext(),
-                    !Settings.isMiuiLockScreenSupport(getContext()) && BingWallpaperUtils.isRooted(getContext()));
+            BingWallpaperUtils.showMiuiDialog(requireContext(),
+                    !Settings.isMiuiLockScreenSupport(requireContext()) && BingWallpaperUtils.isRooted(
+                            requireContext()));
         }
-
-        @BindView(R.id.intro_miui_tips)
-        Button miuiTips;
 
         @Nullable
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                 @Nullable Bundle savedInstanceState) {
-            View contentView = inflater.inflate(R.layout.fragment_intro_update, container, false);
-            ButterKnife.bind(this, contentView);
+            FragmentIntroUpdateBinding binding = FragmentIntroUpdateBinding.inflate(inflater, container, false);
             if (ROM.getROM().isMiui()) {
-                UIUtils.viewVisible(miuiTips);
+                UIUtils.viewVisible(binding.introMiuiTips);
             }
-            return contentView;
+            binding.introMiuiTips.setOnClickListener(v -> miuiTips());
+            binding.introAppExplain.setOnClickListener(v -> explain());
+            binding.introEnableUpdate.setOnClickListener(v -> enable());
+            return binding.getRoot();
         }
     }
 

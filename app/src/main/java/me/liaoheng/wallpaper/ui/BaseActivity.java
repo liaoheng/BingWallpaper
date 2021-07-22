@@ -7,13 +7,6 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.CheckResult;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.UIUtils;
 import com.trello.rxlifecycle3.LifecycleProvider;
@@ -22,10 +15,17 @@ import com.trello.rxlifecycle3.RxLifecycle;
 import com.trello.rxlifecycle3.android.ActivityEvent;
 import com.trello.rxlifecycle3.android.RxLifecycleAndroid;
 
+import java.util.Objects;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.CheckResult;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 import me.liaoheng.wallpaper.R;
-import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 
 /**
  * 基础通用 RxJava Lifecycle Activity
@@ -139,12 +139,10 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 }
