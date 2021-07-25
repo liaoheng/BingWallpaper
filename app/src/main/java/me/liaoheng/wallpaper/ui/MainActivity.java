@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.net.Uri;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -16,15 +16,19 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.palette.graphics.Palette;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
-import com.davemorrissey.labs.subscaleview.ImageSource;
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
@@ -35,19 +39,8 @@ import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.SystemDataException;
 import com.github.liaoheng.common.util.UIUtils;
 import com.google.android.material.navigation.NavigationView;
-
-import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
-
-import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.palette.graphics.Palette;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import java.io.File;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.databinding.ActivityMainBinding;
@@ -66,6 +59,7 @@ import me.liaoheng.wallpaper.util.TasksUtils;
 import me.liaoheng.wallpaper.util.UIHelper;
 import me.liaoheng.wallpaper.util.WallpaperUtils;
 import me.liaoheng.wallpaper.widget.FeedbackDialog;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 壁纸主界面
@@ -139,7 +133,6 @@ public class MainActivity extends BaseActivity
         mViewBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(mViewBinding.getRoot());
         initStatusBarAddToolbar();
-        mViewBinding.bingWallpaperView.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP);
 
         mActionMenuBottomMargin = DisplayUtils.dp2px(this, 10);
         mConfig = new Config.Builder();
@@ -337,7 +330,12 @@ public class MainActivity extends BaseActivity
             getBingWallpaper();
             return;
         }
-        loadImage(null);
+        loadImage(new Callback.EmptyCallback<File>() {
+            @Override
+            public void onSuccess(File file) {
+                mViewBinding.bingWallpaperView.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+            }
+        });
     }
 
     private void loadImage(Callback<File> callback) {
@@ -391,7 +389,8 @@ public class MainActivity extends BaseActivity
 
                             @Override
                             public void onSuccess(File file) {
-                                mViewBinding.bingWallpaperView.setImage(ImageSource.uri(Uri.fromFile(file)));
+                                mViewBinding.bingWallpaperView.setImageBitmap(
+                                        BitmapFactory.decodeFile(file.getAbsolutePath()));
                             }
 
                             @Override

@@ -15,6 +15,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.view.SurfaceHolder;
+import android.view.View;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,8 +27,6 @@ import com.bumptech.glide.request.target.CustomViewTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.commit451.nativestackblur.NativeStackBlur;
-import com.davemorrissey.labs.subscaleview.ImageSource;
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.DisplayUtils;
@@ -77,6 +76,34 @@ public class WallpaperUtils {
         return false;
     }
 
+    public static void autoSaveWallpaper(Context context, String TAG, Wallpaper image) {
+        if (!Settings.isAutoSave(context)) {
+            return;
+        }
+        if (!BingWallpaperUtils.checkStoragePermissions(context)) {
+            return;
+        }
+        String imageUrl = BingWallpaperUtils.getImageUrl(context, Settings.getSaveResolution(context),
+                image.getBaseUrl());
+        Utils.addSubscribe(Observable.just(imageUrl)
+                        .subscribeOn(Schedulers.io())
+                        .retryWhen(new RetryWithDelay(3, 10))
+                        .map(url -> WallpaperUtils.getImageFile(context, url)),
+                new Callback.EmptyCallback<File>() {
+                    @Override
+                    public void onSuccess(File file) {
+                        saveWallpaper(context, TAG, imageUrl, file);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (BingWallpaperUtils.isEnableLogProvider(context)) {
+                            LogDebugFileUtils.get().e(TAG, e, "Auto download wallpaper failure");
+                        }
+                    }
+                });
+    }
+
     public static void autoSaveWallpaper(Context context, String TAG, Wallpaper image, File wallpaper) {
         if (!Settings.isAutoSave(context)) {
             return;
@@ -94,11 +121,21 @@ public class WallpaperUtils {
                         image.getBaseUrl());
                 saveFile = getImageFile(context, saveImageUrl);
             }
-            saveToFile(context, saveImageUrl, saveFile);
-            L.alog().i(TAG, "wallpaper save url: %s", saveImageUrl);
+            saveWallpaper(context, TAG, saveImageUrl, saveFile);
         } catch (Throwable e) {
             if (BingWallpaperUtils.isEnableLogProvider(context)) {
                 LogDebugFileUtils.get().e(TAG, e, "Auto download wallpaper failure");
+            }
+        }
+    }
+
+    private static void saveWallpaper(Context context, String TAG, String imageUrl, File file) {
+        try {
+            saveToFile(context, imageUrl, file);
+            L.alog().i(TAG, "wallpaper save url: %s", imageUrl);
+        } catch (IOException e) {
+            if (BingWallpaperUtils.isEnableLogProvider(context)) {
+                LogDebugFileUtils.get().e(TAG, e, "Auto download wallpaper save failure");
             }
         }
     }
@@ -183,7 +220,7 @@ public class WallpaperUtils {
         });
     }
 
-    public static void loadImage(GlideRequest<File> request, SubsamplingScaleImageView imageView,
+    public static <T extends View> void loadImage(GlideRequest<File> request, T imageView,
             Callback<File> callback) {
         request.addListener(new RequestListener<File>() {
 
@@ -203,7 +240,7 @@ public class WallpaperUtils {
                     boolean isFirstResource) {
                 return false;
             }
-        }).into(new CustomViewTarget<SubsamplingScaleImageView, File>(imageView) {
+        }).into(new CustomViewTarget<T, File>(imageView) {
             @Override
             public void onLoadFailed(@Nullable Drawable errorDrawable) {
             }
@@ -214,8 +251,6 @@ public class WallpaperUtils {
                 if (callback != null) {
                     callback.onPostExecute();
                     callback.onSuccess(resource);
-                } else {
-                    view.setImage(ImageSource.uri(Uri.fromFile(resource)));
                 }
             }
 

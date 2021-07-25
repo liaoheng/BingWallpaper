@@ -4,22 +4,17 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
-
-import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.L;
-
-import java.io.File;
-import java.io.IOException;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import com.github.liaoheng.common.util.Callback;
+import com.github.liaoheng.common.util.L;
+import java.io.File;
+import java.io.IOException;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
-import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.IUIHelper;
-import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.NotificationUtils;
 import me.liaoheng.wallpaper.util.UIHelper;
 import me.liaoheng.wallpaper.util.WallpaperUtils;
@@ -85,10 +80,6 @@ public class BingWallpaperIntentService extends IntentService {
         }
         L.alog().d(TAG, config.toString());
 
-        if (BingWallpaperUtils.isEnableLogProvider(this)) {
-            LogDebugFileUtils.get().i(TAG, "Starting > %s", config);
-        }
-
         Callback<Wallpaper> callback = new Callback.EmptyCallback<Wallpaper>() {
             @Override
             public void onSuccess(Wallpaper bingWallpaperImage) {
@@ -100,6 +91,9 @@ public class BingWallpaperIntentService extends IntentService {
                 failure(config, e);
             }
         };
+
+        mServiceHelper.begin(config);
+
         if (image == null) {
             try {
                 image = BingWallpaperNetworkClient.getWallpaper(this, false);
@@ -113,8 +107,6 @@ public class BingWallpaperIntentService extends IntentService {
                 image.setResolutionImageUrl(this);
             }
         }
-
-        mServiceHelper.begin(config, image);
 
         try {
             downloadAndSetWallpaper(image, config);

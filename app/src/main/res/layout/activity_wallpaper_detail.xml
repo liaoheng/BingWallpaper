@@ -5,8 +5,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+    <ImageView
             android:id="@+id/bing_wallpaper_detail_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:transitionName="bing_wallpaper_detail_image"/>
+
+    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+            android:visibility="gone"
+            android:id="@+id/bing_wallpaper_detail_subscale_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"

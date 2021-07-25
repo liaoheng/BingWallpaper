@@ -1,9 +1,7 @@
 package me.liaoheng.wallpaper.service;
 
 import android.content.Context;
-
 import com.github.liaoheng.common.util.L;
-
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
@@ -29,14 +27,12 @@ public class SetWallpaperServiceHelper {
         TAG = tag;
     }
 
-    public void begin(Config config, Wallpaper image) {
+    public void begin(Config config) {
         sendSetWallpaperBroadcast(BingWallpaperState.BEGIN);
 
-        L.alog().i(TAG, "set wallpaper url: %s", image.getImageUrl());
-        if (config.isBackground()) {
-            if (BingWallpaperUtils.isEnableLogProvider(mContext)) {
-                LogDebugFileUtils.get().i(TAG, "Set wallpaper url: %s", image.getBaseUrl());
-            }
+        L.alog().i(TAG, "start set wallpaper : %s", config);
+        if (BingWallpaperUtils.isEnableLogProvider(mContext)) {
+            LogDebugFileUtils.get().i(TAG, "Start set wallpaper : %s", config);
         }
     }
 

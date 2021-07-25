@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -14,7 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import com.bumptech.glide.request.target.Target;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
@@ -22,11 +24,7 @@ import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.UIUtils;
-
 import java.io.File;
-
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.databinding.ActivityWallpaperDetailBinding;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
@@ -101,7 +99,8 @@ public class WallpaperDetailActivity extends BaseActivity implements
             finish();
             return;
         }
-        mViewBinding.bingWallpaperDetailImage.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP);
+        mViewBinding.bingWallpaperDetailSubscaleView.setMinimumScaleType(
+                SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP);
 
         mSetWallpaperStateBroadcastReceiverHelper = new SetWallpaperStateBroadcastReceiverHelper(
                 new Callback4.EmptyCallback<BingWallpaperState>() {
@@ -202,10 +201,14 @@ public class WallpaperDetailActivity extends BaseActivity implements
     }
 
     private void loadImage() {
+        View image = mViewBinding.bingWallpaperDetailImage;
+        if (!TextUtils.isEmpty(mSelectedResolution) && mSelectedResolution.equals("UHD")) {
+            image = mViewBinding.bingWallpaperDetailSubscaleView;
+        }
         WallpaperUtils.loadImage(GlideApp.with(this).asFile()
                         .load(getUrl(Constants.WallpaperConfig.WALLPAPER_RESOLUTION))
                         .dontAnimate()
-                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL), mViewBinding.bingWallpaperDetailImage,
+                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL), image,
                 new Callback.EmptyCallback<File>() {
                     @Override
                     public void onPreExecute() {
@@ -223,9 +226,19 @@ public class WallpaperDetailActivity extends BaseActivity implements
                     @Override
                     public void onSuccess(File file) {
                         try {
-                            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                            bitmap = WallpaperUtils.transformStackBlur(bitmap, mConfig.getStackBlur());
-                            mViewBinding.bingWallpaperDetailImage.setImage(ImageSource.bitmap(bitmap));
+                            if (!TextUtils.isEmpty(mSelectedResolution) && mSelectedResolution.equals("UHD")) {
+                                mViewBinding.bingWallpaperDetailSubscaleView.setVisibility(View.VISIBLE);
+                                mViewBinding.bingWallpaperDetailImage.setVisibility(View.GONE);
+                                mViewBinding.bingWallpaperDetailSubscaleView.setImage(
+                                        ImageSource.uri(Uri.fromFile(file)));
+                            } else {
+                                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                                bitmap = WallpaperUtils.transformStackBlur(bitmap, mConfig.getStackBlur());
+                                mViewBinding.bingWallpaperDetailSubscaleView.setVisibility(View.GONE);
+                                mViewBinding.bingWallpaperDetailSubscaleView.recycle();
+                                mViewBinding.bingWallpaperDetailImage.setVisibility(View.VISIBLE);
+                                mViewBinding.bingWallpaperDetailImage.setImageBitmap(bitmap);
+                            }
                         } catch (OutOfMemoryError e) {
                             onError(e);
                         }

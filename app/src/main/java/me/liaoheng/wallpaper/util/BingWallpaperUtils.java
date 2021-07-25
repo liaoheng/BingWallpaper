@@ -18,8 +18,16 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.Surface;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.preference.PreferenceManager;
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.Callback5;
@@ -38,31 +46,20 @@ import com.github.liaoheng.common.util.ValidateUtils;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import com.scottyab.rootbeer.RootBeer;
-
-import org.joda.time.DateTime;
-import org.joda.time.LocalTime;
-
-import java.io.File;
-import java.lang.reflect.Method;
-import java.util.Locale;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-import androidx.preference.PreferenceManager;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import java.io.File;
+import java.lang.reflect.Method;
+import java.util.Locale;
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.service.LiveWallpaperService;
+import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 
 /**
  * @author liaoheng
@@ -159,7 +156,12 @@ public class BingWallpaperUtils {
 
     //https://stackoverflow.com/questions/2795833/check-orientation-on-android-phone
     public static boolean isPortrait2(Context context) {
-        int rotation = context.getDisplay().getRotation();
+        int rotation;
+        //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+        //    rotation = context.getDisplay().getRotation();
+        //}else {
+        rotation = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
+        //}
         if (rotation == Surface.ROTATION_0) {//"portrait"
             return true;
         } else if (rotation == Surface.ROTATION_90) {//"landscape"
