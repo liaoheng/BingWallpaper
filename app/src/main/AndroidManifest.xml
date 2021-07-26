@@ -11,6 +11,9 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
+    <permission android:name="me.liaoheng.wallpaper.permission.UPDATE_LIVE_WALLPAPER" />
+    <uses-permission android:name="me.liaoheng.wallpaper.permission.UPDATE_LIVE_WALLPAPER" />
+
     <uses-feature
             android:name="android.hardware.touchscreen"
             android:required="false" />
@@ -124,8 +127,8 @@
                 android:process=":background" />
 
         <service
-                android:configChanges="screenSize|orientation|keyboardHidden"
                 android:name=".service.LiveWallpaperService"
+                android:configChanges="screenSize|orientation|keyboardHidden"
                 android:enabled="true"
                 android:permission="android.permission.BIND_WALLPAPER"
                 android:process=":live_wallpaper">
@@ -158,8 +161,8 @@
         <provider
                 android:name="androidx.work.impl.WorkManagerInitializer"
                 android:authorities="${applicationId}.workmanager-init"
-                tools:node="remove"
-                android:exported="false" />
+                android:exported="false"
+                tools:node="remove" />
 
         <meta-data
                 android:name="io.sentry.auto-init"

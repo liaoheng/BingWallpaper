@@ -20,14 +20,7 @@ import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-import androidx.preference.PreferenceManager;
+
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.Callback5;
@@ -46,20 +39,31 @@ import com.github.liaoheng.common.util.ValidateUtils;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import com.scottyab.rootbeer.RootBeer;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+
+import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
+
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Locale;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.preference.PreferenceManager;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.service.LiveWallpaperService;
-import org.joda.time.DateTime;
-import org.joda.time.LocalTime;
 
 /**
  * @author liaoheng
@@ -362,7 +366,8 @@ public class BingWallpaperUtils {
             Intent intent = new Intent(LiveWallpaperService.UPDATE_LIVE_WALLPAPER);
             intent.putExtra(Config.EXTRA_SET_WALLPAPER_IMAGE, image);
             intent.putExtra(Config.EXTRA_SET_WALLPAPER_CONFIG, config);
-            context.sendBroadcast(intent);
+            intent.setPackage(context.getPackageName());
+            context.sendBroadcast(intent, LiveWallpaperService.PERMISSION_UPDATE_LIVE_WALLPAPER);
         } else {
             BingWallpaperIntentService.start(context, image, config);
         }

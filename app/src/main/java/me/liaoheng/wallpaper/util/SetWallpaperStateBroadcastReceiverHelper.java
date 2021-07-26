@@ -15,7 +15,7 @@ import me.liaoheng.wallpaper.service.SetWallpaperStateBroadcastReceiver;
  * @version 2019-04-08 10:48
  */
 public class SetWallpaperStateBroadcastReceiverHelper {
-    private BroadcastReceiver mBroadcastReceiver;
+    private final BroadcastReceiver mBroadcastReceiver;
 
     public SetWallpaperStateBroadcastReceiverHelper(Callback4<BingWallpaperState> callback) {
         mBroadcastReceiver = new SetWallpaperStateBroadcastReceiver(callback);
@@ -27,14 +27,13 @@ public class SetWallpaperStateBroadcastReceiverHelper {
     }
 
     public void unregister(Context context) {
-        if (mBroadcastReceiver != null) {
-            context.unregisterReceiver(mBroadcastReceiver);
-        }
+        context.unregisterReceiver(mBroadcastReceiver);
     }
 
     public static void sendSetWallpaperBroadcast(Context context, BingWallpaperState state) {
         Intent intent = new Intent(Constants.ACTION_GET_WALLPAPER_STATE);
         intent.putExtra(Constants.EXTRA_GET_WALLPAPER_STATE, state.getState());
+        intent.setPackage(context.getPackageName());
         context.sendBroadcast(intent);
     }
 }

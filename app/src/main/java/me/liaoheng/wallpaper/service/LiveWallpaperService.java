@@ -17,6 +17,20 @@ import android.os.Message;
 import android.os.Process;
 import android.service.wallpaper.WallpaperService;
 import android.view.SurfaceHolder;
+
+import com.github.liaoheng.common.util.AppUtils;
+import com.github.liaoheng.common.util.Callback;
+import com.github.liaoheng.common.util.L;
+import com.github.liaoheng.common.util.ROM;
+import com.github.liaoheng.common.util.Utils;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import androidx.annotation.NonNull;
 import androidx.collection.LruCache;
 import androidx.lifecycle.Lifecycle;
@@ -24,11 +38,6 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LifecycleRegistry;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import com.github.liaoheng.common.util.AppUtils;
-import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.L;
-import com.github.liaoheng.common.util.ROM;
-import com.github.liaoheng.common.util.Utils;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.ObservableTransformer;
@@ -36,10 +45,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import java.io.File;
-import java.io.IOException;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.Config;
@@ -51,7 +56,6 @@ import me.liaoheng.wallpaper.util.MiuiHelper;
 import me.liaoheng.wallpaper.util.RetryWithDelay;
 import me.liaoheng.wallpaper.util.Settings;
 import me.liaoheng.wallpaper.util.WallpaperUtils;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author liaoheng
@@ -63,6 +67,7 @@ public class LiveWallpaperService extends WallpaperService {
     private MutableLiveData<DownloadBitmap> mSetWallpaper;
     private EnableLiveData mEnableCheck;
     public static final String UPDATE_LIVE_WALLPAPER = "me.liaoheng.wallpaper.UPDATE_LIVE_WALLPAPER";
+    public static final String PERMISSION_UPDATE_LIVE_WALLPAPER = "me.liaoheng.wallpaper.permission.UPDATE_LIVE_WALLPAPER";
     private LiveWallpaperBroadcastReceiver mReceiver;
     private SetWallpaperServiceHelper mServiceHelper;
     private CompositeDisposable mLoadWallpaperDisposable;
@@ -145,7 +150,7 @@ public class LiveWallpaperService extends WallpaperService {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(UPDATE_LIVE_WALLPAPER);
         intentFilter.addAction(Constants.ACTION_DEBUG_LOG);
-        registerReceiver(mReceiver, intentFilter);
+        registerReceiver(mReceiver, intentFilter, PERMISSION_UPDATE_LIVE_WALLPAPER, new Handler(getMainLooper()));
     }
 
     @Override
@@ -499,10 +504,7 @@ public class LiveWallpaperService extends WallpaperService {
             mDrawHandler.sendEmptyMessage(321);
             DownloadBitmap d = mImageCache.get(key(mLastFile));
             if (d == null) {
-                Message message = new Message();
-                message.what = 123;
-                message.obj = new DownloadBitmap(mLastFile.image, mLastFile.config);
-                mDrawHandler.sendMessage(message);
+                mDrawHandler.obtainMessage(123, new DownloadBitmap(mLastFile.image, mLastFile.config));
                 return;
             }
             if (!d.eq(mLastFile)) {
