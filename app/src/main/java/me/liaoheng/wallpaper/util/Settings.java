@@ -135,12 +135,6 @@ public class Settings {
                 .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_LOG, false);
     }
 
-    public static int getLanguage(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        return Integer.parseInt(sharedPreferences.getString(SettingsActivity.PREF_LANGUAGE, "0"));
-    }
-
     @IntDef(value = {
             AUTOMATIC_UPDATE_TYPE_AUTO,
             AUTOMATIC_UPDATE_TYPE_SYSTEM,

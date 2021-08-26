@@ -59,6 +59,13 @@ public class TranslatorActivity extends BaseActivity {
         translators.add(new Group<>(Group.GroupType.HEADER, "日本語(Japanese)"));
         addTranslator(translators, "@Rintan", "https://crowdin.com/profile/rintan");
 
+        translators.add(new Group<>(Group.GroupType.HEADER, "Italiano(Italian)"));
+        addTranslator(translators, "@afe", "https://crowdin.com/profile/afe");
+        addTranslator(translators, "@enrico-sorio(Enrico Sorio)", "https://crowdin.com/profile/enrico-sorio");
+
+        translators.add(new Group<>(Group.GroupType.HEADER, "Español(Spanish)"));
+        addTranslator(translators, "@OCReactive", "https://crowdin.com/profile/ocreactive");
+
         binding.translatorRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         binding.translatorRecyclerView.setHasFixedSize(true);
         binding.translatorRecyclerView.setAdapter(new TranslatorAdapter(this, translators));

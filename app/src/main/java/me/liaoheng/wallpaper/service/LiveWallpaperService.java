@@ -50,6 +50,7 @@ import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.BitmapCache;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.MiuiHelper;
@@ -373,7 +374,8 @@ public class LiveWallpaperService extends WallpaperService {
         private HandlerThread mHandlerThread;
         private Runnable mDrawRunnable;
         private Disposable mDisplayDisposable;
-        private final LruCache<String, DownloadBitmap> mImageCache = new LruCache<>(50);
+        private final LruCache<String, DownloadBitmap> mImageCache = new LruCache<>(8);
+        private final BitmapCache mBitmapCache = new BitmapCache();
         private String TAG = "LiveWallpaperEngine:";
 
         @Override
@@ -430,14 +432,21 @@ public class LiveWallpaperService extends WallpaperService {
 
         private void drawWallpaper(File file) {
             L.alog().d(TAG, "drawWallpaper");
-            Bitmap bitmap;
-            if (file == null || !file.exists()) {
-                bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background);
-            } else {
-                bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+            if (file == null) {
+                return;
             }
+            Bitmap bitmap = mBitmapCache.get(file.getAbsolutePath());
+            if (bitmap == null || bitmap.isRecycled()) {
+                if (file.exists()) {
+                    bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                    mBitmapCache.put(file.getAbsolutePath(), bitmap);
+                } else {
+                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background);
+                }
+            }
+            final Bitmap finalBitmap = bitmap;
             WallpaperUtils.drawSurfaceHolder(getSurfaceHolder(),
-                    canvas -> draw(canvas, bitmap, getSurfaceHolder().getSurfaceFrame().width(),
+                    canvas -> draw(canvas, finalBitmap, getSurfaceHolder().getSurfaceFrame().width(),
                             getSurfaceHolder().getSurfaceFrame().height()));
         }
 
@@ -475,7 +484,6 @@ public class LiveWallpaperService extends WallpaperService {
             mMatrix.setScale(scale, scale);
             mMatrix.postTranslate(mTranslate.x, mTranslate.y);
             canvas.drawBitmap(bitmap, mMatrix, mBitmapPaint);
-            bitmap.recycle();
         }
 
         private int sWidth(Bitmap bitmap) {
@@ -561,6 +569,8 @@ public class LiveWallpaperService extends WallpaperService {
         public void onSurfaceDestroyed(SurfaceHolder holder) {
             super.onSurfaceDestroyed(holder);
             mLifecycleRegistry.setCurrentState(Lifecycle.State.CREATED);
+            mImageCache.evictAll();
+            mBitmapCache.clear();
             L.alog().d(TAG, "onSurfaceDestroyed");
             mBitmapPaint = null;
             mMatrix = null;

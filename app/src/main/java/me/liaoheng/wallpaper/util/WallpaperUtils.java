@@ -17,9 +17,7 @@ import android.os.Build;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ShareCompat;
+
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
@@ -34,17 +32,23 @@ import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.io.IOException;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ShareCompat;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import java.io.File;
-import java.io.IOException;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author liaoheng
@@ -167,10 +171,11 @@ public class WallpaperUtils {
                         Bitmap.CompressFormat.JPEG));
                 bitmap.recycle();
             }
-            return stackBlurFile;
-        } else {
-            return wallpaper;
+            if (stackBlurFile != null && stackBlurFile.exists()) {
+                return stackBlurFile;
+            }
         }
+        return wallpaper;
     }
 
     public static File getImageWaterMarkFile(@NonNull Context context, File wallpaper, String str) {

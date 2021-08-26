@@ -61,7 +61,7 @@ android {
     }
 }
 
-def firebaseCore = "com.google.firebase:firebase-analytics:19.0.0"
+def firebaseCore = "com.google.firebase:firebase-analytics:19.0.1"
 
 dependencies {
     testImplementation deps.robolectric
@@ -82,7 +82,7 @@ dependencies {
         compileOnly firebaseCore
     }
 
-    implementation 'io.sentry:sentry-android-core:5.0.1'
+    implementation 'io.sentry:sentry-android-core:5.1.1'
 
     implementation deps.gson
     implementation deps.glide

@@ -32,7 +32,7 @@ public class LocaleList {
         return new Locale("bg", "BG");
     }
 
-    public static Locale jaLocale() {
-        return new Locale("ja", "JP");
+    public static Locale esLocale() {
+        return new Locale("es", "ES");
     }
 }

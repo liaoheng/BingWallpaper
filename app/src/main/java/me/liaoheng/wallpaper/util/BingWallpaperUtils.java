@@ -243,7 +243,7 @@ public class BingWallpaperUtils {
 
     @NonNull
     public static Locale getLanguage(Context context) {
-        switch (Settings.getLanguage(context)) {
+        switch (Settings.getLanguageValue(context)) {
             case 1:
                 return Locale.US;
             case 2:
@@ -267,7 +267,11 @@ public class BingWallpaperUtils {
             case 11:
                 return LocaleList.skLocale();
             case 12:
-                return LocaleList.jaLocale();
+                return Locale.JAPAN;
+            case 13:
+                return Locale.ITALY;
+            case 14:
+                return LocaleList.esLocale();
             default:
                 Locale originalLocale = LanguageContextWrapper.getOriginalLocale();
                 return originalLocale == null ? LanguageContextWrapper.getCurrentLocale(context) : originalLocale;

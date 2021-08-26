@@ -83,6 +83,8 @@
         <item>български</item>
         <item>Slovenčina</item>
         <item>日本語</item>
+        <item>Italiano</item>
+        <item>Español</item>
     </string-array>
 
     <string-array name="pref_language_values">
@@ -99,6 +101,8 @@
         <item>10</item>
         <item>11</item>
         <item>12</item>
+        <item>13</item>
+        <item>14</item>
     </string-array>
 
     <string-array name="pref_set_wallpaper_day_fully_automatic_update_type_names">
