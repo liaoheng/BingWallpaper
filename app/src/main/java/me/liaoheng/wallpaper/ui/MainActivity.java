@@ -16,13 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.palette.graphics.Palette;
+
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
@@ -39,8 +33,20 @@ import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.SystemDataException;
 import com.github.liaoheng.common.util.UIUtils;
 import com.google.android.material.navigation.NavigationView;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.lifecycle.MutableLiveData;
+import androidx.palette.graphics.Palette;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.databinding.ActivityMainBinding;
@@ -59,7 +65,6 @@ import me.liaoheng.wallpaper.util.TasksUtils;
 import me.liaoheng.wallpaper.util.UIHelper;
 import me.liaoheng.wallpaper.util.WallpaperUtils;
 import me.liaoheng.wallpaper.widget.FeedbackDialog;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * 壁纸主界面
@@ -90,6 +95,7 @@ public class MainActivity extends BaseActivity
     private UIHelper mUiHelper;
     private DownloadHelper mDownloadHelper;
     private Config.Builder mConfig;
+    private final MutableLiveData<Configuration> mConfigurationChangedHandler = new MutableLiveData<>();
 
     @Override
     public void showBottomView() {
@@ -133,6 +139,19 @@ public class MainActivity extends BaseActivity
         mViewBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(mViewBinding.getRoot());
         initStatusBarAddToolbar();
+        mConfigurationChangedHandler.observe(this, configuration -> {
+            if (mCurWallpaper == null) {
+                getBingWallpaper();
+                return;
+            }
+            loadImage(new Callback.EmptyCallback<File>() {
+                @Override
+                public void onSuccess(File file) {
+                    mViewBinding.bingWallpaperView.setImageBitmap(
+                            BitmapFactory.decodeFile(file.getAbsolutePath()));
+                }
+            });
+        });
 
         mActionMenuBottomMargin = DisplayUtils.dp2px(this, 10);
         mConfig = new Config.Builder();
@@ -326,16 +345,7 @@ public class MainActivity extends BaseActivity
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (mCurWallpaper == null) {
-            getBingWallpaper();
-            return;
-        }
-        loadImage(new Callback.EmptyCallback<File>() {
-            @Override
-            public void onSuccess(File file) {
-                mViewBinding.bingWallpaperView.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
-            }
-        });
+        mConfigurationChangedHandler.postValue(newConfig);
     }
 
     private void loadImage(Callback<File> callback) {

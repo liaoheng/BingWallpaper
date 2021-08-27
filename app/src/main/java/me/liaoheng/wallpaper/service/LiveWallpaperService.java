@@ -255,8 +255,7 @@ public class LiveWallpaperService extends WallpaperService {
         mLoadWallpaperDisposable.add(Utils.addSubscribe(
                 Observable.just(true)
                         .subscribeOn(Schedulers.io())
-                        .compose(load(config))
-                        .compose(download()).retryWhen(new RetryWithDelay(6, 5)),
+                        .compose(load(config)).retryWhen(new RetryWithDelay(6, 5)),
                 new Callback.EmptyCallback<DownloadBitmap>() {
 
                     @Override
@@ -292,7 +291,7 @@ public class LiveWallpaperService extends WallpaperService {
         return upstream -> upstream.flatMap((Function<DownloadBitmap, ObservableSource<DownloadBitmap>>) image -> {
             try {
                 Config config = image.config;
-                image.original = WallpaperUtils.getImageFile(this,
+                image.lock = image.home = image.original = WallpaperUtils.getImageFile(this,
                         BingWallpaperUtils.generateUrl(this, image.image).getImageUrl());
                 if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_BOTH) {
                     image.home = WallpaperUtils.getImageStackBlurFile(config.getStackBlur(), image.original);
@@ -358,11 +357,29 @@ public class LiveWallpaperService extends WallpaperService {
         int width;
         int height;
 
+        private void updateSize(SurfaceHolder holder) {
+            width = holder.getSurfaceFrame().width();
+            height = holder.getSurfaceFrame().height();
+        }
+
+        private String key(SurfaceHolder holder) {
+            return key(holder.getSurfaceFrame().width(), holder.getSurfaceFrame().height());
+        }
+
+        private String key() {
+            return key(width, height);
+        }
+
+        private String key(int width, int height) {
+            return image.getBaseUrl() + "_" + width + "_" + height + "_" + config.getStackBlurMode() + "_"
+                    + config.getStackBlur();
+        }
+
         public boolean eq(DownloadBitmap b) {
-            return (image.getBaseUrl() + "_" + config.getStackBlurMode() + "_" + config.getStackBlur() + "_" + width
-                    + "_" + height).equals(
-                    b.image.getBaseUrl() + "_" + b.config.getStackBlurMode() + "_" + b.config.getStackBlur() + "_"
-                            + b.width + "_" + b.height);
+            if (b == null) {
+                return false;
+            }
+            return key(width, height).equals(key(b.width, b.height));
         }
     }
 
@@ -415,6 +432,8 @@ public class LiveWallpaperService extends WallpaperService {
                 mHandlerThread.quitSafely();
                 mHandlerThread = null;
             }
+            mImageCache.evictAll();
+            mBitmapCache.clear();
             mLastFile = null;
             super.onDestroy();
         }
@@ -427,27 +446,29 @@ public class LiveWallpaperService extends WallpaperService {
         }
 
         private void drawWallpaper() {
-            drawWallpaper(mLastFile.home);
+            drawWallpaper(mLastFile);
         }
 
-        private void drawWallpaper(File file) {
-            L.alog().d(TAG, "drawWallpaper");
-            if (file == null) {
+        private void drawWallpaper(DownloadBitmap wallpaper) {
+            if (wallpaper == null) {
                 return;
             }
-            Bitmap bitmap = mBitmapCache.get(file.getAbsolutePath());
+            L.alog().d(TAG, "drawWallpaper : %s", wallpaper.key());
+            if (wallpaper.home == null) {
+                return;
+            }
+            Bitmap bitmap = mBitmapCache.get(wallpaper.key());
             if (bitmap == null || bitmap.isRecycled()) {
-                if (file.exists()) {
-                    bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                    mBitmapCache.put(file.getAbsolutePath(), bitmap);
+                if (wallpaper.home.exists()) {
+                    bitmap = BitmapFactory.decodeFile(wallpaper.home.getAbsolutePath());
+                    mBitmapCache.put(wallpaper.key(), bitmap);
                 } else {
                     bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background);
                 }
             }
             final Bitmap finalBitmap = bitmap;
             WallpaperUtils.drawSurfaceHolder(getSurfaceHolder(),
-                    canvas -> draw(canvas, finalBitmap, getSurfaceHolder().getSurfaceFrame().width(),
-                            getSurfaceHolder().getSurfaceFrame().height()));
+                    canvas -> draw(canvas, finalBitmap, wallpaper.width, wallpaper.height));
         }
 
         private Paint mBitmapPaint;
@@ -510,15 +531,17 @@ public class LiveWallpaperService extends WallpaperService {
                 return;
             }
             mDrawHandler.sendEmptyMessage(321);
-            DownloadBitmap d = mImageCache.get(key(mLastFile));
-            if (d == null) {
-                mDrawHandler.obtainMessage(123, new DownloadBitmap(mLastFile.image, mLastFile.config));
+            DownloadBitmap image = mImageCache.get(mLastFile.key(getSurfaceHolder()));
+            if (image == null) {
+                mDrawHandler.sendMessage(
+                        mDrawHandler.obtainMessage(123, new DownloadBitmap(mLastFile.image, mLastFile.config)));
                 return;
             }
-            if (!d.eq(mLastFile)) {
-                mLastFile = d;
-                postDraw();
+            if (image.eq(mLastFile)) {
+                return;
             }
+            mLastFile = image;
+            postDraw();
         }
 
         @Override
@@ -527,11 +550,11 @@ public class LiveWallpaperService extends WallpaperService {
             super.onSurfaceCreated(holder);
             mLifecycleRegistry.setCurrentState(Lifecycle.State.STARTED);
             if (mDisplayWallpaper != null) {
-                mDisplayWallpaper.observe(this, info -> drawWallpaper(info.home));
+                mDisplayWallpaper.observe(this, this::downloadWallpaper);
             }
             if (!isPreview() && mSetWallpaper != null) {
                 mSetWallpaper.observe(this, info -> {
-                    if (mLastFile != null && info.eq(mLastFile)) {
+                    if (info.eq(mLastFile)) {
                         return;
                     }
                     downloadWallpaper(info);
@@ -549,28 +572,18 @@ public class LiveWallpaperService extends WallpaperService {
 
                         @Override
                         public void onSuccess(DownloadBitmap d) {
-                            d.width = getSurfaceHolder().getSurfaceFrame().width();
-                            d.height = getSurfaceHolder().getSurfaceFrame().height();
+                            d.updateSize(getSurfaceHolder());
                             mLastFile = d;
-                            mImageCache.put(key(d), d);
+                            mImageCache.put(d.key(), d);
                             postDraw();
                         }
                     });
-        }
-
-        private String key(DownloadBitmap b) {
-            int width = getSurfaceHolder().getSurfaceFrame().width();
-            int height = getSurfaceHolder().getSurfaceFrame().height();
-            return b.image.getBaseUrl() + "_" + width + "_" + height + "_" + b.config.getStackBlurMode() + "_"
-                    + b.config.getStackBlur();
         }
 
         @Override
         public void onSurfaceDestroyed(SurfaceHolder holder) {
             super.onSurfaceDestroyed(holder);
             mLifecycleRegistry.setCurrentState(Lifecycle.State.CREATED);
-            mImageCache.evictAll();
-            mBitmapCache.clear();
             L.alog().d(TAG, "onSurfaceDestroyed");
             mBitmapPaint = null;
             mMatrix = null;
