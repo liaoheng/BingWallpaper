@@ -8,7 +8,7 @@
               android:orientation="horizontal">
 
     <SeekBar
-            android:max="100"
+            android:max="10"
             android:id="@+id/seekbar"
             android:layout_width="0dp"
             android:layout_height="match_parent"
