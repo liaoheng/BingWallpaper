@@ -17,7 +17,9 @@ import android.os.Build;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ShareCompat;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
@@ -32,23 +34,17 @@ import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
-
-import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
-import java.io.IOException;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ShareCompat;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import java.io.File;
+import java.io.IOException;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author liaoheng
@@ -80,11 +76,8 @@ public class WallpaperUtils {
         return false;
     }
 
-    public static void autoSaveWallpaper(Context context, String TAG, Wallpaper image) {
+    public static void autoSaveWallpaper(Context context, String tag, Wallpaper image) {
         if (!Settings.isAutoSave(context)) {
-            return;
-        }
-        if (!BingWallpaperUtils.checkStoragePermissions(context)) {
             return;
         }
         String imageUrl = BingWallpaperUtils.getImageUrl(context, Settings.getSaveResolution(context),
@@ -96,27 +89,25 @@ public class WallpaperUtils {
                 new Callback.EmptyCallback<File>() {
                     @Override
                     public void onSuccess(File file) {
-                        saveWallpaper(context, TAG, imageUrl, file);
+                        saveWallpaper(context, tag, imageUrl, file);
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        L.alog().e(tag, e, "auto download wallpaper failure");
                         if (BingWallpaperUtils.isEnableLogProvider(context)) {
-                            LogDebugFileUtils.get().e(TAG, e, "Auto download wallpaper failure");
+                            LogDebugFileUtils.get().e(tag, e, "Auto download wallpaper failure");
                         }
                     }
                 });
     }
 
-    public static void autoSaveWallpaper(Context context, String TAG, Wallpaper image, File wallpaper) {
+    public static void autoSaveWallpaper(Context context, String tag, Wallpaper image, File wallpaper) {
         if (!Settings.isAutoSave(context)) {
             return;
         }
         File saveFile = new File(wallpaper.toURI());
         try {
-            if (!BingWallpaperUtils.checkStoragePermissions(context)) {
-                throw new IOException("Permission denied");
-            }
             String saveResolution = Settings.getSaveResolution(context);
             String resolution = Settings.getResolution(context);
             String saveImageUrl = image.getImageUrl();
@@ -125,10 +116,11 @@ public class WallpaperUtils {
                         image.getBaseUrl());
                 saveFile = getImageFile(context, saveImageUrl);
             }
-            saveWallpaper(context, TAG, saveImageUrl, saveFile);
+            saveWallpaper(context, tag, saveImageUrl, saveFile);
         } catch (Throwable e) {
+            L.alog().e(tag, e, "auto download wallpaper failure");
             if (BingWallpaperUtils.isEnableLogProvider(context)) {
-                LogDebugFileUtils.get().e(TAG, e, "Auto download wallpaper failure");
+                LogDebugFileUtils.get().e(tag, e, "Auto download wallpaper failure");
             }
         }
     }

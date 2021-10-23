@@ -449,7 +449,7 @@ public class LiveWallpaperService extends WallpaperService {
             drawWallpaper(mLastFile);
         }
 
-        private void drawWallpaper(DownloadBitmap wallpaper) {
+        private synchronized void drawWallpaper(DownloadBitmap wallpaper) {
             if (wallpaper == null) {
                 return;
             }
@@ -468,7 +468,8 @@ public class LiveWallpaperService extends WallpaperService {
             }
             final Bitmap finalBitmap = bitmap;
             WallpaperUtils.drawSurfaceHolder(getSurfaceHolder(),
-                    canvas -> draw(canvas, finalBitmap, wallpaper.width, wallpaper.height));
+                    canvas -> draw(canvas, finalBitmap, getSurfaceHolder().getSurfaceFrame().width(),
+                            getSurfaceHolder().getSurfaceFrame().height()));
         }
 
         private Paint mBitmapPaint;
