@@ -34,8 +34,6 @@ import com.github.liaoheng.common.util.SystemDataException;
 import com.github.liaoheng.common.util.UIUtils;
 import com.google.android.material.navigation.NavigationView;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
 
 import androidx.annotation.ColorInt;
@@ -382,7 +380,7 @@ public class MainActivity extends BaseActivity
                 .into(new BitmapImageViewTarget(mNavigationHeaderImage) {
 
                     @Override
-                    public void onResourceReady(@NonNull @NotNull Bitmap resource,
+                    public void onResourceReady(@NonNull Bitmap resource,
                             @Nullable Transition<? super Bitmap> transition) {
                         super.onResourceReady(resource, transition);
                         parseWallpaper(resource, mCurWallpaper);
@@ -421,7 +419,7 @@ public class MainActivity extends BaseActivity
         loadMenuImage();
     }
 
-    private void parseWallpaper(@NotNull Bitmap bitmap, Wallpaper image) {
+    private void parseWallpaper(@NonNull Bitmap bitmap, Wallpaper image) {
         int defMuted = ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark);
         int defVibrant = ContextCompat.getColor(getActivity(), R.color.colorAccent);
         try {

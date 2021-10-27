@@ -24,8 +24,6 @@ import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.Utils;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
@@ -593,7 +591,6 @@ public class LiveWallpaperService extends WallpaperService {
         }
 
         @NonNull
-        @NotNull
         @Override
         public Lifecycle getLifecycle() {
             return mLifecycleRegistry;

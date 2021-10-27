@@ -17,9 +17,7 @@ import android.os.Build;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ShareCompat;
+
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
@@ -34,17 +32,21 @@ import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
+
+import java.io.File;
+import java.io.IOException;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ShareCompat;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import java.io.File;
-import java.io.IOException;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author liaoheng
@@ -95,7 +97,7 @@ public class WallpaperUtils {
                     @Override
                     public void onError(Throwable e) {
                         L.alog().e(tag, e, "auto download wallpaper failure");
-                        if (BingWallpaperUtils.isEnableLogProvider(context)) {
+                        if (Settings.isEnableLogProvider(context)) {
                             LogDebugFileUtils.get().e(tag, e, "Auto download wallpaper failure");
                         }
                     }
@@ -117,21 +119,27 @@ public class WallpaperUtils {
                 saveFile = getImageFile(context, saveImageUrl);
             }
             saveWallpaper(context, tag, saveImageUrl, saveFile);
+            if (Settings.isEnableLogProvider(context)) {
+                LogDebugFileUtils.get().d(tag, "auto save wallpaper url: %s", saveImageUrl);
+            }
         } catch (Throwable e) {
             L.alog().e(tag, e, "auto download wallpaper failure");
-            if (BingWallpaperUtils.isEnableLogProvider(context)) {
+            if (Settings.isEnableLogProvider(context)) {
                 LogDebugFileUtils.get().e(tag, e, "Auto download wallpaper failure");
             }
         }
     }
 
-    private static void saveWallpaper(Context context, String TAG, String imageUrl, File file) {
+    private static void saveWallpaper(Context context, String tag, String imageUrl, File file) {
         try {
             saveToFile(context, imageUrl, file);
-            L.alog().i(TAG, "wallpaper save url: %s", imageUrl);
+            L.alog().i(tag, "auto download wallpaper url: %s", imageUrl);
+            if (Settings.isEnableLogProvider(context)) {
+                LogDebugFileUtils.get().d(tag, "Auto download wallpaper url: %s", imageUrl);
+            }
         } catch (IOException e) {
-            if (BingWallpaperUtils.isEnableLogProvider(context)) {
-                LogDebugFileUtils.get().e(TAG, e, "Auto download wallpaper save failure");
+            if (Settings.isEnableLogProvider(context)) {
+                LogDebugFileUtils.get().e(tag, e, "Auto download wallpaper save failure");
             }
         }
     }
@@ -243,7 +251,7 @@ public class WallpaperUtils {
             }
 
             @Override
-            public void onResourceReady(@NonNull @NotNull File resource,
+            public void onResourceReady(@NonNull File resource,
                     @Nullable Transition<? super File> transition) {
                 if (callback != null) {
                     callback.onPostExecute();

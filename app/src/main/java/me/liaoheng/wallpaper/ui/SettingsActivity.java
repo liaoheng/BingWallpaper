@@ -453,7 +453,7 @@ public class SettingsActivity extends BaseActivity {
                     break;
                 case PREF_AUTO_SAVE_WALLPAPER_FILE:
                     if (mAutoSaveWallpaperPreference.isChecked()) {
-                        BingWallpaperUtils.requestStoragePermissions(requireActivity());
+                        requestPermissions(BingWallpaperUtils.getStoragePermissions(), 111);
                     } else {
                         mPreferences.put(PREF_AUTO_SAVE_WALLPAPER_FILE, false);
                     }

@@ -75,7 +75,7 @@ public class BingWallpaperUtils {
     public static boolean isEnableLog(Context context) {
         return Settings.isEnableLog(context);
     }
-
+    @Deprecated
     public static boolean isEnableLogProvider(Context context) {
         return Settings.isEnableLogProvider(context);
     }
@@ -719,11 +719,13 @@ public class BingWallpaperUtils {
         if (checkStoragePermissions(activity)) {
             return true;
         }
-        ActivityCompat.requestPermissions(activity,
-                new String[] { Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE },
-                111);
+        ActivityCompat.requestPermissions(activity, getStoragePermissions(), 111);
         return false;
+    }
+
+    public static String[] getStoragePermissions(){
+       return new String[] { Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE };
     }
 
     public static boolean isRooted(Context context) {
