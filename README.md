@@ -50,6 +50,13 @@ See the [translation page](https://crowdin.com/project/starth-bing-wallpaper) if
 [@foreteller](https://crowdin.com/profile/foreteller)
 - **日本語**(Japanese)
 [@Rintan](https://crowdin.com/profile/rintan)
+- **Italiano**(Italian)
+[@afe](https://crowdin.com/profile/afe)
+[@enrico-sorio(Enrico Sorio)](https://crowdin.com/profile/enrico-sorio)
+- **Español**(Spanish)
+[@OCReactive](https://crowdin.com/profile/ocreactive)
+- **Português, Brasil**(Portuguese, Brazilian)
+[@andre.jar(André Augusto)](https://crowdin.com/profile/andre.jar)
 
 ## License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fliaoheng%2FBingWallpaper.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fliaoheng%2FBingWallpaper?ref=badge_large)

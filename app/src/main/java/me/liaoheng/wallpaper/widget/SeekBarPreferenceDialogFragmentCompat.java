@@ -32,7 +32,6 @@ public class SeekBarPreferenceDialogFragmentCompat extends PreferenceDialogFragm
     protected void onBindDialogView(View view) {
         super.onBindDialogView(view);
         mViewBinding = ViewPreferenceSeekbarBinding.bind(view);
-        mViewBinding.seekbar.setMax(100);
         DialogPreference preference = getPreference();
         if (preference instanceof SeekBarDialogPreference) {
             SeekBarDialogPreference seekBarDialogPreference = (SeekBarDialogPreference) preference;

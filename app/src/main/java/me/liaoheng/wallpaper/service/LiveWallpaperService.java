@@ -468,7 +468,8 @@ public class LiveWallpaperService extends WallpaperService {
             }
             final Bitmap finalBitmap = bitmap;
             WallpaperUtils.drawSurfaceHolder(getSurfaceHolder(),
-                    canvas -> draw(canvas, finalBitmap, getSurfaceHolder().getSurfaceFrame().width(), getSurfaceHolder().getSurfaceFrame().height()));
+                    canvas -> draw(canvas, finalBitmap, getSurfaceHolder().getSurfaceFrame().width(),
+                            getSurfaceHolder().getSurfaceFrame().height()));
         }
 
         private Paint mBitmapPaint;

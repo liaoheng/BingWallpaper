@@ -1,6 +1,5 @@
 package me.liaoheng.wallpaper.ui;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -454,8 +453,7 @@ public class SettingsActivity extends BaseActivity {
                     break;
                 case PREF_AUTO_SAVE_WALLPAPER_FILE:
                     if (mAutoSaveWallpaperPreference.isChecked()) {
-                        requestPermissions(new String[] { Manifest.permission.READ_EXTERNAL_STORAGE,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE }, 111);
+                        BingWallpaperUtils.requestStoragePermissions(requireActivity());
                     } else {
                         mPreferences.put(PREF_AUTO_SAVE_WALLPAPER_FILE, false);
                     }
@@ -485,7 +483,6 @@ public class SettingsActivity extends BaseActivity {
                     mAutoSaveWallpaperPreference.setChecked(false);
                 }
             }
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
         @Override
