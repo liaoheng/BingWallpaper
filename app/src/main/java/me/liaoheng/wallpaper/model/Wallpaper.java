@@ -5,7 +5,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 
 /**
@@ -13,27 +12,27 @@ import me.liaoheng.wallpaper.util.BingWallpaperUtils;
  * @version 2020-06-23 14:26
  */
 public class Wallpaper implements Parcelable {
-    private String dateTime;
-    private String url;
-    private String baseUrl;
-    private String copyright;
-    private String webUrl;
-    private String desc;
+    private final String title;
+    private final String desc;
+    private final String webUrl;
+    private final String url;
+    private final String baseUrl;
+    private final String dateTime;
+    private final String copyrightInfo;
     private String imageUrl;
-    private String copyrightInfo;
 
     public Wallpaper copy(String imageUrl) {
-        Wallpaper wallpaper = new Wallpaper(dateTime, url, baseUrl, copyright, webUrl, desc, copyrightInfo);
+        Wallpaper wallpaper = new Wallpaper(dateTime, url, baseUrl, title, webUrl, desc, copyrightInfo);
         wallpaper.setImageUrl(imageUrl);
         return wallpaper;
     }
 
-    public Wallpaper(String dateTime, String url, String baseUrl, String copyright,
-                     String webUrl, String desc, String copyrightInfo) {
+    public Wallpaper(String dateTime, String url, String baseUrl, String title,
+            String webUrl, String desc, String copyrightInfo) {
         this.dateTime = dateTime;
         this.url = url;
         this.baseUrl = baseUrl;
-        this.copyright = copyright;
+        this.title = title;
         this.webUrl = webUrl;
         this.desc = desc;
         this.copyrightInfo = copyrightInfo;
@@ -43,48 +42,24 @@ public class Wallpaper implements Parcelable {
         return dateTime;
     }
 
-    public void setDateTime(String dateTime) {
-        this.dateTime = dateTime;
-    }
-
     public String getUrl() {
         return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     public String getBaseUrl() {
         return baseUrl;
     }
 
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
-
-    public String getCopyright() {
-        return copyright;
-    }
-
-    public void setCopyright(String copyright) {
-        this.copyright = copyright;
+    public String getTitle() {
+        return title;
     }
 
     public String getWebUrl() {
         return webUrl;
     }
 
-    public void setWebUrl(String webUrl) {
-        this.webUrl = webUrl;
-    }
-
     public String getDesc() {
         return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
     }
 
     public String getImageUrl() {
@@ -103,19 +78,17 @@ public class Wallpaper implements Parcelable {
         return copyrightInfo;
     }
 
-    public void setCopyrightInfo(String copyrightInfo) {
-        this.copyrightInfo = copyrightInfo;
-    }
-
     @NonNull
     @Override
     public String toString() {
         return "Wallpaper{" +
-                "dateTime='" + dateTime + '\'' +
+                "title='" + title + '\'' +
+                ", desc='" + desc + '\'' +
+                ", webUrl='" + webUrl + '\'' +
                 ", url='" + url + '\'' +
                 ", baseUrl='" + baseUrl + '\'' +
-                ", copyright='" + copyright + '\'' +
-                ", desc='" + desc + '\'' +
+                ", dateTime='" + dateTime + '\'' +
+                ", copyrightInfo='" + copyrightInfo + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
                 '}';
     }
@@ -124,8 +97,9 @@ public class Wallpaper implements Parcelable {
         dateTime = in.readString();
         url = in.readString();
         baseUrl = in.readString();
-        copyright = in.readString();
+        title = in.readString();
         desc = in.readString();
+        webUrl = in.readString();
         imageUrl = in.readString();
         copyrightInfo = in.readString();
     }
@@ -135,8 +109,9 @@ public class Wallpaper implements Parcelable {
         dest.writeString(dateTime);
         dest.writeString(url);
         dest.writeString(baseUrl);
-        dest.writeString(copyright);
+        dest.writeString(title);
         dest.writeString(desc);
+        dest.writeString(webUrl);
         dest.writeString(imageUrl);
         dest.writeString(copyrightInfo);
     }

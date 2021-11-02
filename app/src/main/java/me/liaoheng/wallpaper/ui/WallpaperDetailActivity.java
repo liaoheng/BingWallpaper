@@ -133,7 +133,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
             UIUtils.toggleVisibility(mViewBinding.bingWallpaperDetailCoverStoryText);
         });
 
-        mViewBinding.bingWallpaperDetailBottomText.setText(mWallpaper.getCopyright());
+        mViewBinding.bingWallpaperDetailBottomText.setText(mWallpaper.getTitle());
 
         if (TextUtils.isEmpty(mWallpaper.getDesc())) {
             UIUtils.viewParentGone(mViewBinding.bingWallpaperDetailCoverStoryToggle.getParent());
@@ -299,7 +299,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
         } else if (item.getItemId() == R.id.menu_wallpaper_share) {
             WallpaperUtils.shareImage(this, mConfig,
                     getUrl(Settings.getResolution(this)),
-                    mWallpaper.getCopyright());
+                    mWallpaper.getTitle());
         } else if (item.getItemId() == R.id.menu_wallpaper_stack_blur) {
             SeekBarDialogFragment.newInstance(getString(R.string.pref_stack_blur), mConfig.getStackBlur(), this)
                     .show(getSupportFragmentManager(), "SeekBarDialogFragment");

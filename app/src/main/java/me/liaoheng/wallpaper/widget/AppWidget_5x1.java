@@ -46,7 +46,7 @@ public class AppWidget_5x1 extends BaseAppWidget {
             updateRetry(context, AppWidget_5x1.class, remoteViews);
             return;
         }
-        remoteViews.setTextViewText(R.id.app_widget_title, image.getCopyright());
+        remoteViews.setTextViewText(R.id.app_widget_title, image.getTitle());
         update(context, AppWidget_5x1.class, remoteViews);
     }
 

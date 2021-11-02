@@ -44,7 +44,7 @@
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_auto">Ideal</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_system">Agendador</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_service">Wallpaper dinâmico</string>
-    <string name="pref_set_wallpaper_day_fully_automatic_update_type_timer">Timer</string>
+    <string name="pref_set_wallpaper_day_fully_automatic_update_type_timer">Temporizador</string>
     <string name="pref_choose_auto_set_wallpaper_type">Definir tipo de wallpaper</string>
     <string name="pref_set_wallpaper_auto_mode_both">Tela inicial e de bloqueio</string>
     <string name="pref_set_wallpaper_auto_mode_home">Tela inicial</string>
@@ -60,7 +60,7 @@
     <string name="pref_set_miui_lock_screen_wallpaper_note">Acesso à root necessário, use com cuidado</string>
     <string name="pref_other">Outras configurações</string>
     <string name="pref_country">País</string>
-    <string name="pref_country_auto">Local</string>
+    <string name="pref_country_auto">Localização</string>
     <string name="pref_country_china">China</string>
     <string name="pref_country_usa">EUA</string>
     <string name="pref_country_gb">Reino Unido</string>
@@ -96,6 +96,6 @@
     <string name="intro_app_explain">Explicação do aplicativo</string>
     <string name="intro_hint_welcome">Bem-vindo ao Starth Bing Wallpaper</string>
     <string name="intro_hint_whitelist">O aplicativo precisa ser adicionado à whitelist do app administrador em segundo plano, como o Brevent e Greenify &#8230;. </string>
-    <string name="intro_hint_battery">A otimização da bateria do sistema fará com que o aplicativo não possa ser executado a tempo para atualizar o papel de parede, Apps podem ser adicionados à lista whitelist de otimização de bateria. </string>
+    <string name="intro_hint_battery">A otimização da bateria do sistema fará com que o aplicativo não possa ser executado a tempo para atualizar o papel de parede, Apps podem ser adicionados à whitelist de otimização de bateria. </string>
     <string name="ignore_battery_optimization">Ignorar a otimização de bateria</string>
 </resources>

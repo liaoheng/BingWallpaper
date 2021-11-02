@@ -414,8 +414,8 @@ public class MainActivity extends BaseActivity
         if (isDestroyed()) {
             return;
         }
-        setTitle(image.getCopyright());
-        mNavigationHeaderCoverStoryTitleView.setText(image.getCopyright());
+        setTitle(image.getTitle());
+        mNavigationHeaderCoverStoryTitleView.setText(image.getTitle());
         loadMenuImage();
     }
 
@@ -467,7 +467,7 @@ public class MainActivity extends BaseActivity
                 getString(R.string.share),
                 R.drawable.ic_share_24dp, v -> {
                     WallpaperUtils.shareImage(this, mConfig.loadConfig(this).build(),
-                            getUrl(), image.getCopyright());
+                            getUrl(), image.getTitle());
                     mViewBinding.bingWallpaperSetMenu.close(true);
                 });
 

@@ -32,6 +32,7 @@ import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
+import com.google.common.io.Files;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,9 +41,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ShareCompat;
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.Config;
@@ -197,20 +196,33 @@ public class WallpaperUtils {
         return toStackBlur2(bitmap, stackBlur);
     }
 
+    @SuppressWarnings("UnstableApiUsage")
+    public static File getShareFile(Context context, File file) {
+        try {
+            File share = FileUtils.createFile(FileUtils.getProjectSpaceCacheDirectory(context, "share"),
+                    "share.jpg");
+            Files.copy(file, share);
+            return share;
+        } catch (Exception e) {
+            return file;
+        }
+    }
+
     public static void shareImage(@NonNull Context context, @NonNull Config config, @NonNull String url,
-            @NonNull final String str) {
+            @NonNull final String title) {
         ProgressDialog dialog = UIUtils.showProgressDialog(context, context.getString(R.string.share) + "...");
-        Observable<File> fileObservable = Observable.just(str).subscribeOn(Schedulers.io()).map(
-                s -> getImageFile(context, config, url)).flatMap(
-                (Function<File, ObservableSource<File>>) file -> Observable.just(
-                        getImageWaterMarkFile(context, file, str)));
+        Observable<File> fileObservable = Observable.just("")
+                .subscribeOn(Schedulers.io())
+                .map(s -> getImageFile(context, config, url))
+                .flatMap(file -> Observable.just(getImageWaterMarkFile(context, file, title)))
+                .map(file -> getShareFile(context, file));
         Utils.addSubscribe(fileObservable, new Callback.EmptyCallback<File>() {
             @Override
             public void onSuccess(File file) {
                 UIUtils.dismissDialog(dialog);
                 Intent share = new ShareCompat.IntentBuilder(context)
                         .setType("image/jpeg")
-                        .setText(BingWallpaperUtils.getName(url))
+                        .setText(title)
                         .setStream(BingWallpaperUtils.getUriForFile(context, file))
                         .getIntent();
                 context.startActivity(share);

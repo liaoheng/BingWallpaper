@@ -71,7 +71,7 @@ public class SetWallpaperServiceHelper {
     private void showSuccessNotification(Wallpaper image, boolean isShow) {
         NotificationUtils.clearFailureNotification(mContext);
         if (isShow) {
-            NotificationUtils.showSuccessNotification(mContext, image.getCopyright());
+            NotificationUtils.showSuccessNotification(mContext, image.getTitle());
         }
     }
 

@@ -68,12 +68,12 @@ public class AppWidget_5x2 extends BaseAppWidget {
         //                        update(context, AppWidget_5x2.class, remoteViews);
         //                    });
         //} else
-        if (!TextUtils.isEmpty(image.getCopyright())) {
-            remoteViews.setTextViewText(R.id.app_widget_title, image.getCopyright());
+        if (!TextUtils.isEmpty(image.getTitle())) {
+            remoteViews.setTextViewText(R.id.app_widget_title, image.getTitle());
             remoteViews.setTextViewText(R.id.app_widget_content, image.getDesc());
             update(context, AppWidget_5x2.class, remoteViews);
         } else {
-            remoteViews.setTextViewText(R.id.app_widget_title, image.getCopyright());
+            remoteViews.setTextViewText(R.id.app_widget_title, image.getTitle());
             remoteViews.setTextViewText(R.id.app_widget_content, "");
             update(context, AppWidget_5x2.class, remoteViews);
         }
