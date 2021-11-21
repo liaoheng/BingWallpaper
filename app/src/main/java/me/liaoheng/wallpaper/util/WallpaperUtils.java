@@ -17,7 +17,9 @@ import android.os.Build;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ShareCompat;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
@@ -33,16 +35,11 @@ import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 import com.google.common.io.Files;
-
-import java.io.File;
-import java.io.IOException;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ShareCompat;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import java.io.File;
+import java.io.IOException;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
@@ -144,16 +141,23 @@ public class WallpaperUtils {
     }
 
     public static Uri saveToFile(Context context, String url, File from) throws IOException {
-        String name = BingWallpaperUtils.getName(url);
-        String[] split = name.split("=");
-        if (split.length > 1) {
-            name = split[1];
+        return FileUtils.saveFileToPictureCompat(context, BingWallpaperUtils.getWallpaperName(url), from);
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    public static File getLocalWallpaperFile(Context context, File file) {
+        try {
+            File wallpaper = FileUtils.createFile(FileUtils.getProjectSpaceCacheDirectory(context, "wallpaper"),
+                    "wallpaper.jpg");
+            Files.copy(file, wallpaper);
+            return wallpaper;
+        } catch (Exception e) {
+            return file;
         }
-        return FileUtils.saveFileToPictureCompat(context, name, from);
     }
 
     public static File getImageFile(Context context, String url) throws Exception {
-        return GlideApp.with(context).downloadOnly().load(url).submit().get();
+        return getLocalWallpaperFile(context, GlideApp.with(context).downloadOnly().load(url).submit().get());
     }
 
     public static File getImageFile(Context context, @NonNull Config config, @NonNull String url) throws Exception {
@@ -336,7 +340,10 @@ public class WallpaperUtils {
         } catch (Throwable ignored) {
         } finally {
             if (canvas != null) {
-                holder.unlockCanvasAndPost(canvas);
+                try {
+                    holder.unlockCanvasAndPost(canvas);
+                } catch (Throwable ignored) {
+                }
             }
         }
     }

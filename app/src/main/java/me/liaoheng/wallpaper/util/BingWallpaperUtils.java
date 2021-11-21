@@ -20,7 +20,14 @@ import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.preference.PreferenceManager;
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.Callback5;
@@ -39,31 +46,20 @@ import com.github.liaoheng.common.util.ValidateUtils;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import com.scottyab.rootbeer.RootBeer;
-
-import org.joda.time.DateTime;
-import org.joda.time.LocalTime;
-
-import java.io.File;
-import java.lang.reflect.Method;
-import java.util.Locale;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-import androidx.preference.PreferenceManager;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import java.io.File;
+import java.lang.reflect.Method;
+import java.util.Locale;
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.service.LiveWallpaperService;
+import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 
 /**
  * @author liaoheng
@@ -75,6 +71,7 @@ public class BingWallpaperUtils {
     public static boolean isEnableLog(Context context) {
         return Settings.isEnableLog(context);
     }
+
     @Deprecated
     public static boolean isEnableLogProvider(Context context) {
         return Settings.isEnableLogProvider(context);
@@ -723,8 +720,8 @@ public class BingWallpaperUtils {
         return false;
     }
 
-    public static String[] getStoragePermissions(){
-       return new String[] { Manifest.permission.READ_EXTERNAL_STORAGE,
+    public static String[] getStoragePermissions() {
+        return new String[] { Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE };
     }
 
@@ -807,6 +804,15 @@ public class BingWallpaperUtils {
     public static String getName(String fullName) {
         String extension = FileUtils.getExtension(fullName);
         return Files.getNameWithoutExtension(fullName) + (Strings.isNullOrEmpty(extension) ? "" : "." + extension);
+    }
+
+    public static String getWallpaperName(String url) {
+        String name = getName(url);
+        String[] split = name.split("=");
+        if (split.length > 1) {
+            name = split[1];
+        }
+        return name;
     }
 
     //https://stackoverflow.com/questions/14749504/android-usermanager-check-if-user-is-owner-admin
