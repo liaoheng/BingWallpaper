@@ -228,6 +228,8 @@ public class BingWallpaperUtils {
                 return new Locale("fa", "IR");
             case 9:
                 return LocaleList.bgLocale();
+            case 10:
+                return new Locale("en", "WW");
             default:
                 Locale originalLocale = LanguageContextWrapper.getOriginalLocale();
                 return originalLocale == null ? LanguageContextWrapper.getCurrentLocale(context) : originalLocale;
