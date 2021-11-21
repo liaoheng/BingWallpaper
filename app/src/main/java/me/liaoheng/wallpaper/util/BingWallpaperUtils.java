@@ -189,14 +189,14 @@ public class BingWallpaperUtils {
         return getUrl(context, 0, 1, getAutoLocale(context));
     }
 
-    public static String getUrl(Context context, int index, int count, String mtk) {
+    public static String getUrl(Context context, int index, int count, String mkt) {
         String url;
         if (isAutoCountry(context)) {
             url = Constants.LOCAL_API_URL;
         } else {
             url = Constants.GLOBAL_API_URL;
         }
-        return String.format(url, index, count, mtk);
+        return String.format(url, index, count, mkt);
     }
 
     public static String getBaseUrl(Context context) {
