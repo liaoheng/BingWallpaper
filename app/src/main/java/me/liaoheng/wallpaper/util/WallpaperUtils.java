@@ -17,9 +17,11 @@ import android.os.Build;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ShareCompat;
+
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
@@ -35,11 +37,13 @@ import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 import com.google.common.io.Files;
+
+import java.io.File;
+import java.io.IOException;
+
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import java.io.File;
-import java.io.IOException;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
@@ -148,7 +152,7 @@ public class WallpaperUtils {
     public static File getLocalWallpaperFile(Context context, File file) {
         try {
             File wallpaper = FileUtils.createFile(FileUtils.getProjectSpaceCacheDirectory(context, "wallpaper"),
-                    "wallpaper.jpg");
+                    "wallpaper.w");
             Files.copy(file, wallpaper);
             return wallpaper;
         } catch (Exception e) {

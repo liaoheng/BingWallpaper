@@ -13,10 +13,19 @@ import android.graphics.PointF;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 import android.service.wallpaper.WallpaperService;
 import android.view.SurfaceHolder;
+
+import androidx.annotation.NonNull;
+import androidx.collection.LruCache;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LifecycleRegistry;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback;
@@ -29,13 +38,6 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import androidx.annotation.NonNull;
-import androidx.collection.LruCache;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LifecycleRegistry;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.ObservableTransformer;
@@ -62,7 +64,6 @@ import me.liaoheng.wallpaper.util.WallpaperUtils;
  */
 public class LiveWallpaperService extends WallpaperService {
     private final String TAG = LiveWallpaperService.class.getSimpleName();
-    private MutableLiveData<DownloadBitmap> mDisplayWallpaper;
     private MutableLiveData<DownloadBitmap> mSetWallpaper;
     private EnableLiveData mEnableCheck;
     public static final String UPDATE_LIVE_WALLPAPER = "me.liaoheng.wallpaper.UPDATE_LIVE_WALLPAPER";
@@ -134,7 +135,6 @@ public class LiveWallpaperService extends WallpaperService {
         mHandlerThread.start();
         mCheckHandler = new Handler(mHandlerThread.getLooper());
         mCheckRunnable = this::timing;
-        mDisplayWallpaper = new MutableLiveData<>();
         mSetWallpaper = new MutableLiveData<>();
         mEnableCheck = new EnableLiveData(false);
         mEnableCheck.observeForever(enable -> {
@@ -143,7 +143,6 @@ public class LiveWallpaperService extends WallpaperService {
                 enable();
             }
         });
-        mCheckHandler.postDelayed(this::previewBingWallpaper, 500);
 
         mReceiver = new LiveWallpaperBroadcastReceiver();
         IntentFilter intentFilter = new IntentFilter();
@@ -239,26 +238,6 @@ public class LiveWallpaperService extends WallpaperService {
                         }
                         setWallpaper(config, d);
                         mServiceHelper.success(config, d.image);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mServiceHelper.failure(config, e);
-                    }
-                }));
-    }
-
-    private void previewBingWallpaper() {
-        Config config = new Config.Builder().loadConfig(this).build();
-        mLoadWallpaperDisposable.add(Utils.addSubscribe(
-                Observable.just(true)
-                        .subscribeOn(Schedulers.io())
-                        .compose(load(config)).retryWhen(new RetryWithDelay(6, 5)),
-                new Callback.EmptyCallback<DownloadBitmap>() {
-
-                    @Override
-                    public void onSuccess(DownloadBitmap d) {
-                        mDisplayWallpaper.postValue(d);
                     }
 
                     @Override
@@ -381,12 +360,41 @@ public class LiveWallpaperService extends WallpaperService {
         }
     }
 
+    static class DrawHandler extends Handler {
+        public static final int DOWNLOAD_DRAW = 123;
+
+        public DrawHandler(@NonNull Looper looper) {
+            super(looper);
+        }
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            if (msg.what == DOWNLOAD_DRAW) {
+                onDownloadDraw((DownloadBitmap) msg.obj);
+            }
+        }
+
+        protected void onDownloadDraw(DownloadBitmap info) {}
+
+        public void sendDelayedDownloadDraw(DownloadBitmap info) {
+            removeDownloadDraw();
+            sendMessageDelayed(obtainMessage(DrawHandler.DOWNLOAD_DRAW, info), 800);
+        }
+
+        public void removeDownloadDraw() {
+            removeMessages(DrawHandler.DOWNLOAD_DRAW);
+        }
+
+        public void onDestroy() {
+            removeDownloadDraw();
+        }
+    }
+
     private class LiveWallpaperEngine extends LiveWallpaperService.Engine implements LifecycleOwner {
 
         private final LifecycleRegistry mLifecycleRegistry = new LifecycleRegistry(this);
         private DownloadBitmap mLastFile;
-        private Handler mDrawHandler;
-        private HandlerThread mHandlerThread;
+        private DrawHandler mDrawHandler;
         private Runnable mDrawRunnable;
         private Disposable mDisplayDisposable;
         private final LruCache<String, DownloadBitmap> mImageCache = new LruCache<>(8);
@@ -401,14 +409,11 @@ public class LiveWallpaperService extends WallpaperService {
             setOffsetNotificationsEnabled(true);
             mHandlerThread = new HandlerThread(UUID.randomUUID().toString(), Process.THREAD_PRIORITY_DISPLAY);
             mHandlerThread.start();
-            mDrawHandler = new Handler(mHandlerThread.getLooper()) {
+            mDrawHandler = new DrawHandler(mHandlerThread.getLooper()) {
+
                 @Override
-                public void handleMessage(@NonNull Message msg) {
-                    if (msg.what == 123) {
-                        downloadWallpaper((DownloadBitmap) msg.obj);
-                    } else if (msg.what == 321) {
-                        Utils.dispose(mDisplayDisposable);
-                    }
+                protected void onDownloadDraw(DownloadBitmap info) {
+                    downloadWallpaper(info);
                 }
             };
             mDrawRunnable = this::drawWallpaper;
@@ -423,6 +428,7 @@ public class LiveWallpaperService extends WallpaperService {
             mLifecycleRegistry.setCurrentState(Lifecycle.State.DESTROYED);
             Utils.dispose(mDisplayDisposable);
             if (mDrawHandler != null) {
+                mDrawHandler.onDestroy();
                 mDrawHandler.removeCallbacks(mDrawRunnable);
                 mDrawRunnable = null;
             }
@@ -529,11 +535,10 @@ public class LiveWallpaperService extends WallpaperService {
             if (mLastFile == null) {
                 return;
             }
-            mDrawHandler.sendEmptyMessage(321);
+            mDrawHandler.removeDownloadDraw();
             DownloadBitmap image = mImageCache.get(mLastFile.key(getSurfaceHolder()));
             if (image == null) {
-                mDrawHandler.sendMessage(
-                        mDrawHandler.obtainMessage(123, new DownloadBitmap(mLastFile.image, mLastFile.config)));
+                mDrawHandler.sendDelayedDownloadDraw(new DownloadBitmap(mLastFile.image, mLastFile.config));
                 return;
             }
             if (image.eq(mLastFile)) {
@@ -545,23 +550,44 @@ public class LiveWallpaperService extends WallpaperService {
 
         @Override
         public void onSurfaceCreated(SurfaceHolder holder) {
-            L.alog().d(TAG, "onSurfaceCreated");
             super.onSurfaceCreated(holder);
+            L.alog().d(TAG, "onSurfaceCreated");
             mLifecycleRegistry.setCurrentState(Lifecycle.State.STARTED);
-            if (mDisplayWallpaper != null) {
-                mDisplayWallpaper.observe(this, this::downloadWallpaper);
-            }
             if (!isPreview() && mSetWallpaper != null) {
                 mSetWallpaper.observe(this, info -> {
                     if (info.eq(mLastFile)) {
                         return;
                     }
-                    downloadWallpaper(info);
+                    mDrawHandler.sendDelayedDownloadDraw(info);
                 });
+            }
+            if (isPreview()) {
+                previewBingWallpaper();
             }
         }
 
+        private void previewBingWallpaper() {
+            Config config = new Config.Builder().loadConfig(getApplicationContext()).build();
+            mLoadWallpaperDisposable.add(Utils.addSubscribe(
+                    Observable.just(true)
+                            .subscribeOn(Schedulers.io())
+                            .compose(load(config)).retryWhen(new RetryWithDelay(6, 5)),
+                    new Callback.EmptyCallback<DownloadBitmap>() {
+
+                        @Override
+                        public void onSuccess(DownloadBitmap d) {
+                            mDrawHandler.sendDelayedDownloadDraw(d);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            mServiceHelper.failure(config, e);
+                        }
+                    }));
+        }
+
         private void downloadWallpaper(DownloadBitmap wallpaper) {
+            Utils.dispose(mDisplayDisposable);
             mDisplayDisposable = Utils.addSubscribe(
                     Observable.just(wallpaper)
                             .subscribeOn(Schedulers.io())
