@@ -530,9 +530,7 @@ public class LiveWallpaperService extends WallpaperService {
                     mActionHandler.sendDelayed(DOWNLOAD_DRAW, info, DOWNLOAD_DRAW_DELAY);
                 });
             }
-            if (isPreview()) {
-                previewBingWallpaper();
-            }
+            previewBingWallpaper();
         }
 
         private void previewBingWallpaper() {
