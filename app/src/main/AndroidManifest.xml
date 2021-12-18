@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        package="me.liaoheng.wallpaper">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="me.liaoheng.wallpaper">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -9,77 +9,80 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission
-            android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-            android:maxSdkVersion="28" />
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
     <uses-permission
-            android:name="android.permission.WRITE_SETTINGS"
-            android:maxSdkVersion="22" />
+        android:name="android.permission.WRITE_SETTINGS"
+        android:maxSdkVersion="22" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <permission android:name="me.liaoheng.wallpaper.permission.UPDATE_LIVE_WALLPAPER" />
     <uses-permission android:name="me.liaoheng.wallpaper.permission.UPDATE_LIVE_WALLPAPER" />
 
     <uses-feature
-            android:name="android.hardware.touchscreen"
-            android:required="false" />
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
 
     <application
-            android:name=".MApplication"
-            android:allowBackup="false"
-            android:icon="@mipmap/ic_launcher"
-            android:label="@string/app_name"
-            android:supportsRtl="true"
-            android:theme="@style/AppTheme"
-            tools:ignore="GoogleAppIndexingWarning">
+        android:name=".MApplication"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-                android:name=".ui.MainActivity"
-                android:configChanges="screenSize|orientation|keyboardHidden"
-                android:launchMode="singleTop"
-                android:theme="@style/AppTheme.NoActionBar">
+            android:name=".ui.MainActivity"
+            android:configChanges="screenSize|orientation|keyboardHidden"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <meta-data
-                    android:name="android.app.shortcuts"
-                    android:resource="@xml/shortcuts" />
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
         <activity
-                android:name=".ui.SettingsActivity"
-                android:configChanges="screenSize|orientation|keyboardHidden"
-                android:label="@string/menu_main_setting"
-                android:theme="@style/AppTheme.Settings" />
+            android:name=".ui.SettingsActivity"
+            android:configChanges="screenSize|orientation|keyboardHidden"
+            android:label="@string/menu_main_setting"
+            android:theme="@style/AppTheme.Settings" />
         <activity
-                android:name=".ui.LicenseActivity"
-                android:configChanges="screenSize|orientation|keyboardHidden"
-                android:label="@string/open_source_license" />
+            android:name=".ui.LicenseActivity"
+            android:configChanges="screenSize|orientation|keyboardHidden"
+            android:label="@string/open_source_license" />
         <activity
-                android:name=".ui.TranslatorActivity"
-                android:configChanges="screenSize|orientation|keyboardHidden"
-                android:label="Translator" />
+            android:name=".ui.TranslatorActivity"
+            android:configChanges="screenSize|orientation|keyboardHidden"
+            android:label="Translator" />
         <activity
-                android:name=".ui.WallpaperHistoryListActivity"
-                android:configChanges="screenSize|orientation|keyboardHidden"
-                android:label="@string/menu_main_wallpaper_history_list" />
+            android:name=".ui.WallpaperHistoryListActivity"
+            android:configChanges="screenSize|orientation|keyboardHidden"
+            android:label="@string/menu_main_wallpaper_history_list" />
         <activity
-                android:name=".ui.WallpaperDetailActivity"
-                android:configChanges="screenSize|orientation|keyboardHidden"
-                android:screenOrientation="behind"
-                android:theme="@style/AppTheme.NoActionBar" />
+            android:name=".ui.WallpaperDetailActivity"
+            android:configChanges="screenSize|orientation|keyboardHidden"
+            android:screenOrientation="behind"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
-                android:name=".ui.IntroActivity"
-                android:configChanges="screenSize|orientation|keyboardHidden"
-                android:theme="@style/AppTheme.Intro" />
+            android:name=".ui.IntroActivity"
+            android:configChanges="screenSize|orientation|keyboardHidden"
+            android:theme="@style/AppTheme.Intro" />
         <activity
-                android:name=".ui.ShortcutActivity"
-                android:excludeFromRecents="true"
-                android:launchMode="singleTask"
-                android:taskAffinity=""
-                android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:name=".ui.ShortcutActivity"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
-        <receiver android:name=".widget.AppWidget_5x2">
+        <receiver
+            android:name=".widget.AppWidget_5x2"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="me.liaoheng.wallpaper.UPDATE_WALLPAPER_COVER_STORY" />
@@ -89,11 +92,13 @@
             </intent-filter>
 
             <meta-data
-                    android:name="android.appwidget.provider"
-                    android:resource="@xml/appwidget_5x2" />
+                android:name="android.appwidget.provider"
+                android:resource="@xml/appwidget_5x2" />
         </receiver>
 
-        <receiver android:name=".widget.AppWidget_5x1">
+        <receiver
+            android:name=".widget.AppWidget_5x1"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="me.liaoheng.wallpaper.UPDATE_WALLPAPER_COVER_STORY" />
@@ -102,24 +107,27 @@
             </intent-filter>
 
             <meta-data
-                    android:name="android.appwidget.provider"
-                    android:resource="@xml/appwidget_5x1" />
+                android:name="android.appwidget.provider"
+                android:resource="@xml/appwidget_5x1" />
         </receiver>
 
         <service
-                android:name=".service.BingWallpaperTileService"
-                android:icon="@drawable/ic_notification"
-                android:label="@string/set_wallpaper"
-                android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            android:name=".service.BingWallpaperTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_notification"
+            android:label="@string/set_wallpaper"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
             <meta-data
-                    android:name="android.service.quicksettings.ACTIVE_TILE"
-                    android:value="true" />
+                android:name="android.service.quicksettings.ACTIVE_TILE"
+                android:value="true" />
         </service>
 
-        <receiver android:name=".service.AutoSetWallpaperBroadcastReceiver">
+        <receiver
+            android:name=".service.AutoSetWallpaperBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="me.liaoheng.wallpaper.ALARM_TASK_SCHEDULE" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -127,16 +135,17 @@
         </receiver>
 
         <service
-                android:name=".service.BingWallpaperIntentService"
-                android:exported="false"
-                android:process=":background" />
+            android:name=".service.BingWallpaperIntentService"
+            android:exported="false"
+            android:process=":background" />
 
         <service
-                android:name=".service.LiveWallpaperService"
-                android:configChanges="screenSize|orientation|keyboardHidden"
-                android:enabled="true"
-                android:permission="android.permission.BIND_WALLPAPER"
-                android:process=":live_wallpaper">
+            android:name=".service.LiveWallpaperService"
+            android:configChanges="screenSize|orientation|keyboardHidden"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BIND_WALLPAPER"
+            android:process=":live_wallpaper">
             <intent-filter>
                 <action android:name="android.service.wallpaper.WallpaperService" />
                 <action android:name="me.liaoheng.wallpaper.UPDATE_LIVE_WALLPAPER" />
@@ -144,48 +153,47 @@
             </intent-filter>
 
             <meta-data
-                    android:name="android.service.wallpaper"
-                    android:resource="@xml/live_wallpaper" />
+                android:name="android.service.wallpaper"
+                android:resource="@xml/live_wallpaper" />
         </service>
 
         <provider
-                android:name=".data.provider.TasksProvider"
-                android:authorities="me.liaoheng.wallpaper"
-                android:exported="false" />
+            android:name=".data.provider.TasksProvider"
+            android:authorities="me.liaoheng.wallpaper"
+            android:exported="false" />
 
         <provider
-                android:name="androidx.core.content.FileProvider"
-                android:authorities="${applicationId}.fileProvider"
-                android:exported="false"
-                android:grantUriPermissions="true">
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
-                    android:name="android.support.FILE_PROVIDER_PATHS"
-                    android:resource="@xml/file_paths" />
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
         </provider>
 
         <provider
-                android:name="androidx.startup.InitializationProvider"
-                android:authorities="${applicationId}.androidx-startup"
-                tools:node="remove">
-        </provider>
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            tools:node="remove" />
 
         <meta-data
-                android:name="io.sentry.auto-init"
-                android:value="false" />
+            android:name="io.sentry.auto-init"
+            android:value="false" />
 
         <meta-data
-                android:name="io.sentry.dsn"
-                android:value="https://4fb652547c1649f7a9e1b048d70033fa@o423790.ingest.sentry.io/5354623" />
+            android:name="io.sentry.dsn"
+            android:value="https://4fb652547c1649f7a9e1b048d70033fa@o423790.ingest.sentry.io/5354623" />
 
         <meta-data
-                android:name="firebase_analytics_collection_enabled"
-                android:value="false" />
+            android:name="firebase_analytics_collection_enabled"
+            android:value="false" />
         <meta-data
-                android:name="google_analytics_adid_collection_enabled"
-                android:value="false" />
+            android:name="google_analytics_adid_collection_enabled"
+            android:value="false" />
         <meta-data
-                android:name="android.max_aspect"
-                android:value="2.6" />
+            android:name="android.max_aspect"
+            android:value="2.6" />
     </application>
 
 </manifest>

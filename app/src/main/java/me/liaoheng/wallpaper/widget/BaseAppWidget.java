@@ -59,7 +59,7 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
     private void add(Context context, Class<?> cls, RemoteViews remoteViews, String action, @IdRes int id) {
         Intent intent = new Intent(context, cls);
         intent.setAction(action);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, BingWallpaperUtils.getPendingIntentFlag());
 
         remoteViews.setOnClickPendingIntent(id, pendingIntent);
     }

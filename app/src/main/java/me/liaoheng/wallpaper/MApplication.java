@@ -3,13 +3,14 @@ package me.liaoheng.wallpaper;
 import android.app.Application;
 
 import androidx.annotation.NonNull;
+import androidx.startup.AppInitializer;
 import androidx.work.Configuration;
 
 import com.github.liaoheng.common.Common;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.LanguageContextWrapper;
 
-import net.danlew.android.joda.JodaTimeAndroid;
+import net.danlew.android.joda.JodaTimeInitializer;
 
 import io.reactivex.plugins.RxJavaPlugins;
 import me.liaoheng.wallpaper.util.CacheUtils;
@@ -32,7 +33,7 @@ public class MApplication extends Application implements Configuration.Provider 
         super.onCreate();
         LanguageContextWrapper.init(this);
         Common.init(this, Constants.PROJECT_NAME, BuildConfig.DEBUG);
-        JodaTimeAndroid.init(this);
+        AppInitializer.getInstance(this).initializeComponent(JodaTimeInitializer.class);
         TasksUtils.init(this);
         LogDebugFileUtils.init(this);
         CacheUtils.init(this);

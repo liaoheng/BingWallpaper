@@ -23,8 +23,7 @@ public class BingWallpaperAlarmManager {
     private static PendingIntent getPendingIntent(Context context) {
         Intent intent = new Intent(context, AutoSetWallpaperBroadcastReceiver.class);
         intent.setAction(AutoSetWallpaperBroadcastReceiver.ACTION);
-        return PendingIntent
-                .getBroadcast(context, REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context, REQUEST_CODE, intent, BingWallpaperUtils.getPendingIntentFlag());
     }
 
     public static void disabled(Context context) {

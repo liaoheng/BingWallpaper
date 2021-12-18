@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -20,6 +21,7 @@ import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
@@ -28,6 +30,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.preference.PreferenceManager;
+
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.Callback5;
@@ -46,20 +49,23 @@ import com.github.liaoheng.common.util.ValidateUtils;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import com.scottyab.rootbeer.RootBeer;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+
+import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
+
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Locale;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.service.BingWallpaperIntentService;
 import me.liaoheng.wallpaper.service.LiveWallpaperService;
-import org.joda.time.DateTime;
-import org.joda.time.LocalTime;
 
 /**
  * @author liaoheng
@@ -824,5 +830,13 @@ public class BingWallpaperUtils {
         } catch (Throwable ignored) {
         }
         return 0;
+    }
+
+    public static int getPendingIntentFlag() {
+        int flag = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            flag |= PendingIntent.FLAG_IMMUTABLE;
+        }
+        return flag;
     }
 }

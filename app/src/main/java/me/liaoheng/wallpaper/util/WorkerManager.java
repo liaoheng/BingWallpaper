@@ -9,6 +9,7 @@ import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import com.github.liaoheng.common.util.L;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.List;
@@ -41,7 +42,8 @@ public class WorkerManager {
             WorkManager.getInstance(context)
                     .enqueueUniquePeriodicWork(WORKER_TAG, ExistingPeriodicWorkPolicy.REPLACE, builder.build());
             return true;
-        } catch (Throwable ignored) {
+        } catch (Throwable e) {
+            L.alog().w("WorkerManager", e,"enable work error");
         }
         return false;
     }

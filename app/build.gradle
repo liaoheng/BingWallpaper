@@ -6,14 +6,14 @@ if (isFirebase) {
 }
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdkVersion 31
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        targetSdkVersion 31
         applicationId "me.liaoheng.wallpaper"
-        versionCode 10936
-        versionName "1.9.36"
+        versionCode 10937
+        versionName "1.9.37"
     }
 
     def isSigning = true
@@ -74,7 +74,7 @@ dependencies {
     implementation deps.browser
     implementation deps.preference
 
-    implementation 'androidx.work:work-runtime:2.6.0'
+    implementation 'androidx.work:work-runtime:2.7.1'
     if (isFirebase) {
         implementation firebaseCore
     } else {

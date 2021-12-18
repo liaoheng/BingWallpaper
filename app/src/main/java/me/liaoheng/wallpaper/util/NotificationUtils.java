@@ -48,7 +48,7 @@ public class NotificationUtils {
         Intent resultIntent = new Intent(context, MainActivity.class);
         PendingIntent resultPendingIntent =
                 PendingIntent.getActivity(context, 12, resultIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT);
+                        BingWallpaperUtils.getPendingIntentFlag());
 
         Notification notification = new NotificationCompat.Builder(context,
                 Constants.FOREGROUND_INTENT_SERVICE_SUCCESS_NOTIFICATION_CHANNEL).setSmallIcon(
