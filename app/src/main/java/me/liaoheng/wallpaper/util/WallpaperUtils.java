@@ -173,7 +173,7 @@ public class WallpaperUtils {
             String key = BingWallpaperUtils.createKey(wallpaper.getAbsolutePath() + "_blur_" + stackBlur);
             File stackBlurFile = CacheUtils.get().get(key);
             if (stackBlurFile == null) {
-                Bitmap bitmap = toStackBlur2(BitmapFactory.decodeFile(wallpaper.getAbsolutePath()), stackBlur);
+                Bitmap bitmap = transformStackBlur(BitmapFactory.decodeFile(wallpaper.getAbsolutePath()), stackBlur);
                 stackBlurFile = CacheUtils.get().put(key, BitmapUtils.bitmapToStream(bitmap,
                         Bitmap.CompressFormat.JPEG));
                 bitmap.recycle();
@@ -327,8 +327,8 @@ public class WallpaperUtils {
     }
 
     @NonNull
-    public static Bitmap toStackBlur2(Bitmap original, int radius) {
-        return NativeStackBlur.process(original, radius);
+    static Bitmap toStackBlur2(Bitmap original, int radius) {
+        return NativeStackBlur.process(original, radius * 2);
     }
 
     public static void drawSurfaceHolder(SurfaceHolder holder, Consumer<Canvas> callback) {
