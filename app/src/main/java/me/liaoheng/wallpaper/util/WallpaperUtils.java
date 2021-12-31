@@ -328,7 +328,7 @@ public class WallpaperUtils {
 
     @NonNull
     static Bitmap toStackBlur2(Bitmap original, int radius) {
-        return NativeStackBlur.process(original, radius * 2);
+        return NativeStackBlur.process(original, radius);
     }
 
     public static void drawSurfaceHolder(SurfaceHolder holder, Consumer<Canvas> callback) {
