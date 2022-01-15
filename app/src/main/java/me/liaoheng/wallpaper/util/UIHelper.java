@@ -7,6 +7,8 @@ import android.media.ThumbnailUtils;
 import android.os.Build;
 import android.util.DisplayMetrics;
 
+import androidx.annotation.NonNull;
+
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.ROM;
@@ -14,8 +16,8 @@ import com.github.liaoheng.common.util.ROM;
 import java.io.File;
 import java.io.IOException;
 
-import androidx.annotation.NonNull;
 import me.liaoheng.wallpaper.model.Config;
+import me.liaoheng.wallpaper.model.WallpaperImage;
 
 /**
  * @author liaoheng
@@ -24,23 +26,14 @@ import me.liaoheng.wallpaper.model.Config;
 public class UIHelper implements IUIHelper {
 
     @Override
-    public void setWallpaper(Context context, @NonNull Config config, File wallpaper) throws IOException {
+    public void setWallpaper(Context context, @NonNull Config config, File wallpaper, @NonNull String url)
+            throws IOException {
         if (WallpaperUtils.isNotSupportedWallpaper(context)) {
             throw new IOException("This device not support wallpaper");
         }
-        File home = new File(wallpaper.toURI());
-        File lock = new File(wallpaper.toURI());
-        if (config.getStackBlur() > 0) {
-            File blurFile = WallpaperUtils.getImageStackBlurFile(config.getStackBlur(), wallpaper);
-            if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_BOTH) {
-                home = blurFile;
-                lock = blurFile;
-            } else if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-                home = blurFile;
-            } else if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                lock = blurFile;
-            }
-        }
+        WallpaperImage image = WallpaperUtils.getImageStackBlurFile(config, wallpaper, url);
+        File home = image.getHome();
+        File lock = image.getLock();
         int mode = config.getWallpaperMode();
         if (ROM.getROM().isMiui()) {
             MiuiHelper.setWallpaper(context, mode, home, lock);
