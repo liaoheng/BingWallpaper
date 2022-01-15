@@ -47,6 +47,7 @@ import io.reactivex.schedulers.Schedulers;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
+import me.liaoheng.wallpaper.model.WallpaperImage;
 
 /**
  * @author liaoheng
@@ -165,12 +166,12 @@ public class WallpaperUtils {
     }
 
     public static File getImageFile(Context context, @NonNull Config config, @NonNull String url) throws Exception {
-        return getImageStackBlurFile(config.getStackBlur(), getImageFile(context, url));
+        return getImageStackBlurFile(config.getStackBlur(), getImageFile(context, url), url);
     }
 
-    public static File getImageStackBlurFile(int stackBlur, File wallpaper) {
+    public static File getImageStackBlurFile(int stackBlur, File wallpaper, @NonNull String url) {
         if (stackBlur > 0) {
-            String key = BingWallpaperUtils.createKey(wallpaper.getAbsolutePath() + "_blur_" + stackBlur);
+            String key = BingWallpaperUtils.createKey(url + "_blur_" + stackBlur);
             File stackBlurFile = CacheUtils.get().get(key);
             if (stackBlurFile == null) {
                 Bitmap bitmap = transformStackBlur(BitmapFactory.decodeFile(wallpaper.getAbsolutePath()), stackBlur);
@@ -183,6 +184,22 @@ public class WallpaperUtils {
             }
         }
         return wallpaper;
+    }
+
+    public static WallpaperImage getImageStackBlurFile(@NonNull Config config, File wallpaper, @NonNull String url) {
+        WallpaperImage pair = new WallpaperImage(new File(wallpaper.toURI()), new File(wallpaper.toURI()));
+        if (config.getStackBlur() > 0) {
+            File blurFile = WallpaperUtils.getImageStackBlurFile(config.getStackBlur(), wallpaper, url);
+            if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_BOTH) {
+                pair.setHome(blurFile);
+                pair.setLock(blurFile);
+            } else if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
+                pair.setHome(blurFile);
+            } else if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
+                pair.setLock(blurFile);
+            }
+        }
+        return pair;
     }
 
     public static File getImageWaterMarkFile(@NonNull Context context, File wallpaper, String str) {

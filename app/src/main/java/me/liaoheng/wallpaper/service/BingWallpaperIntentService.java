@@ -4,13 +4,17 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.L;
+
 import java.io.File;
 import java.io.IOException;
+
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
@@ -136,7 +140,7 @@ public class BingWallpaperIntentService extends IntentService {
             WallpaperUtils.autoSaveWallpaper(this, TAG, image, wallpaper);
         }
         if (mUiHelper != null) {
-            mUiHelper.setWallpaper(this, config, wallpaper);
+            mUiHelper.setWallpaper(this, config, wallpaper, image.getImageUrl());
         }
     }
 }

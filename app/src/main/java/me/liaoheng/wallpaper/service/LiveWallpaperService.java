@@ -16,6 +16,7 @@ import android.os.Looper;
 import android.os.Process;
 import android.service.wallpaper.WallpaperService;
 import android.view.SurfaceHolder;
+
 import androidx.annotation.NonNull;
 import androidx.collection.LruCache;
 import androidx.lifecycle.Lifecycle;
@@ -23,11 +24,18 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LifecycleRegistry;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.Utils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.ObservableTransformer;
@@ -35,14 +43,11 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import java.io.File;
-import java.io.IOException;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
+import me.liaoheng.wallpaper.model.WallpaperImage;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.BitmapCache;
 import me.liaoheng.wallpaper.util.Constants;
@@ -260,17 +265,10 @@ public class LiveWallpaperService extends WallpaperService {
     private ObservableTransformer<DownloadBitmap, DownloadBitmap> download() {
         return upstream -> upstream.flatMap((Function<DownloadBitmap, ObservableSource<DownloadBitmap>>) image -> {
             try {
-                Config config = image.config;
-                image.lock = image.home = image.original = WallpaperUtils.getImageFile(this,
+                File original = WallpaperUtils.getImageFile(this,
                         BingWallpaperUtils.generateUrl(this, image.image).getImageUrl());
-                if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_BOTH) {
-                    image.home = WallpaperUtils.getImageStackBlurFile(config.getStackBlur(), image.original);
-                    image.lock = image.home;
-                } else if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-                    image.home = WallpaperUtils.getImageStackBlurFile(config.getStackBlur(), image.original);
-                } else if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                    image.lock = WallpaperUtils.getImageStackBlurFile(config.getStackBlur(), image.original);
-                }
+                image.wallpaper = WallpaperUtils.getImageStackBlurFile(image.config, original,
+                        image.image.getImageUrl());
             } catch (Exception e) {
                 return Observable.error(e);
             }
@@ -283,7 +281,8 @@ public class LiveWallpaperService extends WallpaperService {
         if (config.getWallpaperMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
             return;
         }
-        if (BingWallpaperUtils.isROMSystem()) {
+        if (BingWallpaperUtils.isROMSystem() && d.wallpaper != null && d.wallpaper.getLock() != null
+                && d.wallpaper.getLock().exists()) {
             downloadLockWallpaper(d);
         }
     }
@@ -301,10 +300,10 @@ public class LiveWallpaperService extends WallpaperService {
                         //set lock wallpaper
                         try {
                             if (ROM.getROM().isMiui()) {
-                                MiuiHelper.lockSetWallpaper(getApplicationContext(), d.lock);
+                                MiuiHelper.lockSetWallpaper(getApplicationContext(), d.wallpaper.getLock());
                             } else {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                    AppUtils.setLockScreenWallpaper(getApplicationContext(), d.lock);
+                                    AppUtils.setLockScreenWallpaper(getApplicationContext(), d.wallpaper.getLock());
                                 }
                             }
                         } catch (Exception ignored) {
@@ -320,9 +319,7 @@ public class LiveWallpaperService extends WallpaperService {
         }
 
         Wallpaper image;
-        File original;
-        File home;
-        File lock;
+        WallpaperImage wallpaper;
         Config config;
         int width;
         int height;
@@ -426,13 +423,13 @@ public class LiveWallpaperService extends WallpaperService {
                 return;
             }
             L.alog().d(TAG, "drawWallpaper : %s", wallpaper.key());
-            if (wallpaper.home == null) {
+            if (wallpaper.wallpaper == null || wallpaper.wallpaper.getHome() == null) {
                 return;
             }
             Bitmap bitmap = mBitmapCache.get(wallpaper.key());
             if (bitmap == null || bitmap.isRecycled()) {
-                if (wallpaper.home.exists()) {
-                    bitmap = BitmapFactory.decodeFile(wallpaper.home.getAbsolutePath());
+                if (wallpaper.wallpaper.getHome().exists()) {
+                    bitmap = BitmapFactory.decodeFile(wallpaper.wallpaper.getHome().getAbsolutePath());
                     mBitmapCache.put(wallpaper.key(), bitmap);
                 } else {
                     bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background);
