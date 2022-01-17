@@ -8,8 +8,9 @@ import android.os.Build;
 
 import com.github.liaoheng.common.util.AppUtils;
 
-import java.io.File;
 import java.io.IOException;
+
+import me.liaoheng.wallpaper.model.WallpaperImage;
 
 /**
  * @author liaoheng
@@ -57,19 +58,18 @@ public class EmuiHelper {
         }
     }
 
-    public static void setWallpaper(Context context, @Constants.setWallpaperMode int mode, File homeWallpaper,
-            File lockWallpaper)
+    public static void setWallpaper(Context context, @Constants.setWallpaperMode int mode, WallpaperImage image)
             throws IOException {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            AppUtils.setWallpaper(context, homeWallpaper);
+            AppUtils.setWallpaper(context, image.getHome());
         } else {
             if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-                AppUtils.setHomeScreenWallpaper(context, homeWallpaper);
+                AppUtils.setHomeScreenWallpaper(context, image.getHome());
             } else if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                AppUtils.setLockScreenWallpaper(context, lockWallpaper);
+                AppUtils.setLockScreenWallpaper(context, image.getLock());
             } else {
-                AppUtils.setHomeScreenWallpaper(context, homeWallpaper);
-                AppUtils.setLockScreenWallpaper(context, lockWallpaper);
+                AppUtils.setHomeScreenWallpaper(context, image.getHome());
+                AppUtils.setLockScreenWallpaper(context, image.getLock());
             }
         }
     }

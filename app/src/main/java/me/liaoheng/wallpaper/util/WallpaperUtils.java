@@ -187,7 +187,7 @@ public class WallpaperUtils {
     }
 
     public static WallpaperImage getImageStackBlurFile(@NonNull Config config, File wallpaper, @NonNull String url) {
-        WallpaperImage pair = new WallpaperImage(new File(wallpaper.toURI()), new File(wallpaper.toURI()));
+        WallpaperImage pair = new WallpaperImage(url, new File(wallpaper.toURI()), new File(wallpaper.toURI()));
         if (config.getStackBlur() > 0) {
             File blurFile = WallpaperUtils.getImageStackBlurFile(config.getStackBlur(), wallpaper, url);
             if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_BOTH) {
@@ -202,8 +202,8 @@ public class WallpaperUtils {
         return pair;
     }
 
-    public static File getImageWaterMarkFile(@NonNull Context context, File wallpaper, String str) {
-        String key = BingWallpaperUtils.createKey(wallpaper.getAbsolutePath() + "_mark_" + str);
+    public static File getImageWaterMarkFile(@NonNull Context context, File wallpaper, String str, String url) {
+        String key = BingWallpaperUtils.createKey(url + "_mark_" + str);
         File mark = CacheUtils.get().get(key);
         if (mark == null) {
             Bitmap bitmap = waterMark(context, BitmapFactory.decodeFile(wallpaper.getAbsolutePath()), str);
@@ -239,7 +239,7 @@ public class WallpaperUtils {
         Observable<File> fileObservable = Observable.just("")
                 .subscribeOn(Schedulers.io())
                 .map(s -> getImageFile(context, config, url))
-                .flatMap(file -> Observable.just(getImageWaterMarkFile(context, file, title)))
+                .flatMap(file -> Observable.just(getImageWaterMarkFile(context, file, title, url)))
                 .map(file -> getShareFile(context, file));
         Utils.addSubscribe(fileObservable, new Callback.EmptyCallback<File>() {
             @Override

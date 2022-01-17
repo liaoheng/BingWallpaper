@@ -9,6 +9,8 @@ import com.github.liaoheng.common.util.ShellUtils;
 import java.io.File;
 import java.io.IOException;
 
+import me.liaoheng.wallpaper.model.WallpaperImage;
+
 /**
  * @author liaoheng
  * @version 2018-09-19 15:57
@@ -16,9 +18,9 @@ import java.io.IOException;
 public class MiuiHelper {
 
     @SuppressWarnings({ "WeakerAccess" })
-    public static void setLockScreenWallpaper(Context context, File wallpaper) throws IOException {
+    public static void setLockScreenWallpaper(Context context, WallpaperImage image) throws IOException {
         if (ShellUtils.hasRootPermission()) {
-            setImage(UIHelper.cropWallpaper(context, wallpaper,false));
+            setImage(UIHelper.cropWallpaper(context, image.getLock(), image.getUrl(), false));
             return;
         }
         throw new LockSetWallpaperException("Not acquired root permission");
@@ -34,27 +36,26 @@ public class MiuiHelper {
         }
     }
 
-    public static void setWallpaper(Context context, @Constants.setWallpaperMode int mode, File homeWallpaper,
-            File lockWallpaper)
+    public static void setWallpaper(Context context, @Constants.setWallpaperMode int mode, WallpaperImage image)
             throws IOException {
         if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-            homeSetWallpaper(context, homeWallpaper);
+            homeSetWallpaper(context, image.getHome());
         } else if (mode == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-            lockSetWallpaper(context, lockWallpaper);
+            lockSetWallpaper(context, image);
         } else {
-            homeSetWallpaper(context, homeWallpaper);
+            homeSetWallpaper(context, image.getHome());
             try {
-                lockSetWallpaper(context, lockWallpaper);
+                lockSetWallpaper(context, image);
             } catch (Exception ignored) {
             }
         }
     }
 
-    public static void lockSetWallpaper(Context context, File wallpaper) throws IOException {
+    public static void lockSetWallpaper(Context context, WallpaperImage image) throws IOException {
         if (!Settings.isMiuiLockScreenSupport(context)) {
             throw new LockSetWallpaperException("Not enable lock screen support");
         }
-        setLockScreenWallpaper(context, wallpaper);
+        setLockScreenWallpaper(context, image);
     }
 
     private static void homeSetWallpaper(Context context, File wallpaper) throws IOException {

@@ -123,7 +123,7 @@ public class SettingsActivity extends BaseActivity {
     public static final String PREF_STACK_BLUR_MODE = "pref_stack_blur_mode";
     public static final String PREF_AUTO_SAVE_WALLPAPER_FILE = "pref_auto_save_wallpaper_file";
 
-    public static class MyPreferenceFragment extends PreferenceFragmentCompat
+    public final static class MyPreferenceFragment extends PreferenceFragmentCompat
             implements SharedPreferences.OnSharedPreferenceChangeListener {
         private ISettingTrayPreferences mPreferences;
 
