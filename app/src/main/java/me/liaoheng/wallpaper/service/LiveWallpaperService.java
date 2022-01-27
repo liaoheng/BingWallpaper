@@ -281,10 +281,10 @@ public class LiveWallpaperService extends WallpaperService {
         if (config.getWallpaperMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
             return;
         }
-        if (BingWallpaperUtils.isROMSystem() && d.wallpaper != null && d.wallpaper.getLock() != null
-                && d.wallpaper.getLock().exists()) {
-            downloadLockWallpaper(d);
+        if (ROM.getROM().isMiui() && !Settings.isMiuiLockScreenSupport(getApplicationContext())) {
+            return;
         }
+        downloadLockWallpaper(d);
     }
 
     private void downloadLockWallpaper(DownloadBitmap wallpaper) {
