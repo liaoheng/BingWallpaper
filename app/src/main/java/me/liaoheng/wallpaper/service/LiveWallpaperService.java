@@ -281,7 +281,11 @@ public class LiveWallpaperService extends WallpaperService {
         if (config.getWallpaperMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
             return;
         }
-        if (ROM.getROM().isMiui() && !Settings.isMiuiLockScreenSupport(getApplicationContext())) {
+        //only miui lock wallpaper
+        if (!ROM.getROM().isMiui()) {
+            return;
+        }
+        if (!Settings.isMiuiLockScreenSupport(getApplicationContext())) {
             return;
         }
         downloadLockWallpaper(d);
