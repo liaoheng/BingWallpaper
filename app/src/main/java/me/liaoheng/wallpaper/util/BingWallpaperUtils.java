@@ -767,6 +767,9 @@ public class BingWallpaperUtils {
     }
 
     public static void showMiuiDialog(Context context) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R){
+            return;
+        }
         if (ROM.getROM().isMiui()) {
             if (Settings.isMiuiLockScreenSupport(context)) {
                 return;

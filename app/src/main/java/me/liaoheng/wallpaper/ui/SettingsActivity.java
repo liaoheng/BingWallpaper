@@ -10,6 +10,17 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SwitchPreference;
+
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback5;
@@ -21,16 +32,6 @@ import com.github.liaoheng.common.util.Utils;
 
 import org.joda.time.LocalTime;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.preference.ListPreference;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.SwitchPreference;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
@@ -264,7 +265,7 @@ public class SettingsActivity extends BaseActivity {
             mStackBlurModePreference = findPreference(PREF_STACK_BLUR_MODE);
             mAutoSaveWallpaperPreference = findPreference(PREF_AUTO_SAVE_WALLPAPER_FILE);
 
-            if (!ROM.getROM().isMiui()) {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R || !ROM.getROM().isMiui()) {
                 ((PreferenceCategory) findPreference("pref_wallpaper_group")).removePreference(
                         mMIuiLockScreenPreference);
             }
