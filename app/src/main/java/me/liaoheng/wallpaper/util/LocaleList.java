@@ -39,4 +39,8 @@ public class LocaleList {
     public static Locale ptBRLocale() {
         return new Locale("pt", "BR");
     }
+
+    public static Locale elLocale() {
+        return new Locale("el", "GR");
+    }
 }

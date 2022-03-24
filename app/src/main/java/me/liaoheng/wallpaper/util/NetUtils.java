@@ -11,8 +11,12 @@ import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.Utils;
 
+import org.conscrypt.Conscrypt;
+
 import java.io.File;
 import java.io.IOException;
+import java.security.Security;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -67,15 +71,24 @@ public class NetUtils {
                 .connectTimeout(connectTimeout, TimeUnit.SECONDS);
         if (PreferenceManager
                 .getDefaultSharedPreferences(context).getBoolean("pref_doh", false)) {
-            builder.dns(new DnsOverHttps.Builder()
-                    .client(new OkHttpClient.Builder().build())
-                    .url(HttpUrl.get("https://cloudflare-dns.com/dns-query"))
-                    .build());
+            DnsOverHttps.Builder dns = new DnsOverHttps.Builder()
+                    .client(new OkHttpClient.Builder().build());
+            if (BingWallpaperUtils.getLocale(context) == Locale.CHINA) {
+                dns.url(HttpUrl.get(Constants.DOH_DNSPOD));
+            } else {
+                dns.url(HttpUrl.get(Constants.DOH_CLOUDFLARE));
+            }
+            builder.dns(dns.build());
         }
         return builder;
     }
 
+    private void ssl() {
+        Security.insertProviderAt(Conscrypt.newProvider(), 1);
+    }
+
     public void init(Context context) {
+        ssl();
         Retrofit.Builder factory = new Retrofit.Builder().baseUrl(Constants.LOCAL_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());

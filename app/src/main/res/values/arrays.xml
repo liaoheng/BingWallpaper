@@ -86,6 +86,7 @@
         <item>Italiano</item>
         <item>Español</item>
         <item>Português(Brasil)</item>
+        <item>Ελληνικά</item>
     </string-array>
 
     <string-array name="pref_language_values">
@@ -105,6 +106,7 @@
         <item>13</item>
         <item>14</item>
         <item>15</item>
+        <item>16</item>
     </string-array>
 
     <string-array name="pref_set_wallpaper_day_fully_automatic_update_type_names">

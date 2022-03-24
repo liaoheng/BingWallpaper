@@ -74,6 +74,8 @@ public class LicenseActivity extends BaseActivity {
                 "https://github.com/getsentry/sentry-java", "MIT"));
         licenses.add(new License("subsampling-scale-image-view", "davemorrissey",
                 "https://github.com/davemorrissey/subsampling-scale-image-view"));
+        licenses.add(new License("Conscrypt", "Google Inc.",
+                "https://github.com/google/conscrypt"));
 
         binding.licenseRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         binding.licenseRecyclerView.setHasFixedSize(true);

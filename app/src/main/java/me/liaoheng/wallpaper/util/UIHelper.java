@@ -28,9 +28,10 @@ public class UIHelper implements IUIHelper {
     @Override
     public void setWallpaper(Context context, @NonNull Config config, File wallpaper, @NonNull String url)
             throws IOException {
-        if (WallpaperUtils.isNotSupportedWallpaper(context)) {
-            throw new IOException("This device not support wallpaper");
-        }
+        // Do not check if the wallpaper is available
+        //if (WallpaperUtils.isNotSupportedWallpaper(context)) {
+        //    throw new IOException("This device not support wallpaper");
+        //}
         WallpaperImage image = WallpaperUtils.getImageStackBlurFile(config, wallpaper, url);
         int mode = config.getWallpaperMode();
         if (ROM.getROM().isMiui()) {

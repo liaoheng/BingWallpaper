@@ -57,6 +57,8 @@ See the [translation page](https://crowdin.com/project/starth-bing-wallpaper) if
 [@OCReactive](https://crowdin.com/profile/ocreactive)
 - **Português, Brasil**(Portuguese, Brazilian)
 [@andre.jar(André Augusto)](https://crowdin.com/profile/andre.jar)
+- **Ελληνικά**(Greek)
+[@vasilisI(Vasilis Ilioglou)](https://crowdin.com/profile/vasilisi)
 
 ## License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fliaoheng%2FBingWallpaper.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fliaoheng%2FBingWallpaper?ref=badge_large)

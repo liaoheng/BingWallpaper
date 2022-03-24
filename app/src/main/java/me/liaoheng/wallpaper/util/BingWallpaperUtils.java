@@ -277,6 +277,8 @@ public class BingWallpaperUtils {
                 return LocaleList.esLocale();
             case 15:
                 return LocaleList.ptBRLocale();
+            case 16:
+                return LocaleList.elLocale();
             default:
                 Locale originalLocale = LanguageContextWrapper.getOriginalLocale();
                 return originalLocale == null ? LanguageContextWrapper.getCurrentLocale(context) : originalLocale;
@@ -767,7 +769,7 @@ public class BingWallpaperUtils {
     }
 
     public static void showMiuiDialog(Context context) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R){
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
             return;
         }
         if (ROM.getROM().isMiui()) {

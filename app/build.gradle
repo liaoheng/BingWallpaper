@@ -6,14 +6,14 @@ if (isFirebase) {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion 31
+        targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 10943
-        versionName "1.9.43"
+        versionCode 10944
+        versionName "1.9.44"
     }
 
     def isSigning = true
@@ -32,7 +32,8 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             if (isSigning) signingConfig signingConfigs.config
         }
@@ -66,7 +67,7 @@ def firebaseCore = "com.google.firebase:firebase-analytics:20.0.2"
 dependencies {
     testImplementation deps.robolectric
     testImplementation deps.junit
-    testImplementation 'joda-time:joda-time:2.10.7'
+    testImplementation 'joda-time:joda-time:2.10.13'
     //android system
     implementation deps.annotations
     implementation deps.material
@@ -84,7 +85,8 @@ dependencies {
         compileOnly firebaseCore
     }
 
-    implementation 'io.sentry:sentry-android-core:5.4.1'
+    implementation 'io.sentry:sentry-android-core:5.7.0'
+    implementation 'org.conscrypt:conscrypt-android:2.5.2'
 
     implementation deps.gson
     implementation deps.glide
@@ -115,7 +117,7 @@ dependencies {
     implementation 'net.grandcentrix.tray:tray:0.12.0'
 
     //https://github.com/apl-devs/AppIntro
-    implementation 'com.github.AppIntro:AppIntro:6.1.0'
+    implementation 'com.github.AppIntro:AppIntro:6.2.0'
 
     //https://github.com/davemorrissey/subsampling-scale-image-view
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0'
