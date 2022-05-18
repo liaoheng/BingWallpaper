@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="app_name">Starth Bing Wallpaper</string>
-    <string name="set_wallpaper_running">Definindo wallpaper, aguarde</string>
-    <string name="set_wallpaper_success">Wallpaper definido com sucesso</string>
-    <string name="set_wallpaper_failure">Falha ao definir o wallpaper</string>
+    <string name="set_wallpaper_running">Definindo plano de fundo, aguarde</string>
+    <string name="set_wallpaper_success">Plano de fundo definido com sucesso</string>
+    <string name="set_wallpaper_failure">Falha ao definir o plano de fundo</string>
     <string name="network_unavailable">Nenhuma rede disponível</string>
     <string name="connection_timed_out">A conexão expirou</string>
     <string name="network_request_error">Erro na conexão de rede</string>
     <string name="load_image_error">Erro ao carregar imagem</string>
-    <string name="download">Baixar &#8230;</string>
+    <string name="download">Baixando &#8230;</string>
     <string name="pull_refresh">"Por favor, puxe para atualizar, "</string>
-    <string name="alert_mobile_data">Você está usando os dados móveis, deseja continuar?</string>
-    <string name="alert_save_wallpaper_success">Wallpaper salvo com sucesso</string>
-    <string name="alert_save_wallpaper_failure">Falha ao salvar wallpaper</string>
+    <string name="alert_mobile_data">Você está usando dados móveis, deseja continuar?</string>
+    <string name="alert_save_wallpaper_success">Plano de fundo salvo com sucesso</string>
+    <string name="alert_save_wallpaper_failure">Falha ao salvar o plano de fundo</string>
     <string name="unable_open_url">Não foi possível abrir o URL</string>
     <string name="about">Sobre</string>
     <string name="open_source_license">Licenças de código aberto</string>
@@ -20,15 +20,15 @@
     <string name="send_email">Enviar email</string>
     <string name="foreground_intent_service_notification_channel">Atualizar serviço de notificação</string>
     <string name="foreground_intent_service_success_notification_channel">Serviço de notificação atualizado com sucesso</string>
-    <string name="enable_job_error">Não é possível habilitar a atualização diária</string>
+    <string name="enable_job_error">Não foi possível habilitar a atualização diária</string>
     <string name="request_failed_click_retry">Falha na solicitação, tente novamente</string>
     <string name="loading">Carregando &#8230;</string>
     <string name="unable_root_permission">Permissão de root inválida</string>
     <string name="unable_required_permission">Permissão necessária desativada</string>
     <string name="feedback_copied">O feedback foi copiado para a área de transferência.</string>
     <string name="share">Compartilhar</string>
-    <string name="set_wallpaper">Definir wallpaper</string>
-    <string name="miui_root_dialog_hint">Você está usando a MIUI, os recursos do papel de parede da tela de bloqueio requerem permissão de root e precisam ser ativados manualmente nas Configurações.</string>
+    <string name="set_wallpaper">Definir plano de fundo</string>
+    <string name="miui_root_dialog_hint">Você está usando a MIUI, os recursos do papel de parede e tela de bloqueio requerem permissão de root e precisam ser ativados manualmente nas Configurações.</string>
     <string name="save">Salvar</string>
     <!--setting -->
     <string name="pref_auto_update_wallpaper">Configuração de Atualização Diária</string>
@@ -38,26 +38,26 @@
     <string name="pref_set_wallpaper_daily_update_interval">Intervalo de verificação agendada</string>
     <!--pref_set_wallpaper_daily_update_interval_summary-->
     <string name="pref_auto_update_check_time">Verificar a cada %1$d horas</string>
-    <string name="pref_set_wallpaper_daily_update_time">Tempo de disparo do cronômetro</string>
+    <string name="pref_set_wallpaper_daily_update_time">Hora de ativação do temporizador</string>
     <string name="pref_set_wallpaper_daily_update_success_notification">Notificação de sucesso</string>
     <string name="pref_set_wallpaper_daily_update_success_notification_summary">Depois de sucesso em segundo plano</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_auto">Ideal</string>
-    <string name="pref_set_wallpaper_day_fully_automatic_update_type_system">Agendador</string>
+    <string name="pref_set_wallpaper_day_fully_automatic_update_type_system">Agendamento</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_service">Wallpaper dinâmico</string>
     <string name="pref_set_wallpaper_day_fully_automatic_update_type_timer">Temporizador</string>
-    <string name="pref_choose_auto_set_wallpaper_type">Definir tipo de wallpaper</string>
+    <string name="pref_choose_auto_set_wallpaper_type">Definir tipo de plano de fundo</string>
     <string name="pref_set_wallpaper_auto_mode_both">Tela inicial e de bloqueio</string>
     <string name="pref_set_wallpaper_auto_mode_home">Tela inicial</string>
     <string name="pref_set_wallpaper_auto_mode_lock">Tela de bloqueio</string>
     <string name="pref_wallpaper_setting">Configuração do wallpaper</string>
     <string name="pref_choose_set_wallpaper_resolution">Definir resolução padrão</string>
-    <string name="pref_choose_save_resolution">Padrão da resolução salva</string>
+    <string name="pref_choose_save_resolution">Definir resolução salva</string>
     <string name="pref_auto_save_wallpaper_title">Salvar wallpaper automaticamente</string>
     <string name="pref_auto_save_wallpaper_summary">Salvar wallpaper na galeria</string>
-    <string name="pref_stack_blur">Desfoque do wallpaper</string>
-    <string name="pref_stack_blur_mode">Tipo de desfoque do wallpaper</string>
+    <string name="pref_stack_blur">Desfoque do plano de fundo</string>
+    <string name="pref_stack_blur_mode">Local de desfoque do plano de fundo</string>
     <string name="pref_set_miui_lock_screen_wallpaper">Suporte à Tela de bloqueio MIUI</string>
-    <string name="pref_set_miui_lock_screen_wallpaper_note">Acesso à root necessário, use com cuidado</string>
+    <string name="pref_set_miui_lock_screen_wallpaper_note">Permissão de root necessário, use com cuidado</string>
     <string name="pref_other">Outras configurações</string>
     <string name="pref_country">País</string>
     <string name="pref_country_auto">Localização</string>
@@ -72,7 +72,7 @@
     <string name="pref_language">Idioma</string>
     <string name="pref_clear_cache">Limpar cache</string>
     <string name="pref_clear_cache_success">Cache limpo com sucesso</string>
-    <string name="pref_log_file">Log de depuração</string>
+    <string name="pref_log_file">Registro de depuração</string>
     <string name="pref_crash_report">Estatísticas de uso e relatórios de erro</string>
     <string name="pref_version">Versão</string>
     <string name="pref_intro">Abrir introdução</string>

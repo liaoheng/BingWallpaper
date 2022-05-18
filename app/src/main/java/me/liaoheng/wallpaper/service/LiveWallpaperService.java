@@ -74,6 +74,7 @@ public class LiveWallpaperService extends WallpaperService {
     private CompositeDisposable mLoadWallpaperDisposable;
     private HandlerHelper mCheckHandlerHelper;
     private Runnable mCheckRunnable;
+    private long mCheckPeriodic = Constants.DEF_LIVE_WALLPAPER_CHECK_PERIODIC;
 
     @Override
     public Engine onCreateEngine() {
@@ -142,6 +143,10 @@ public class LiveWallpaperService extends WallpaperService {
             }
         });
 
+        if (ROM.getROM().isEmui()) {
+            mCheckPeriodic = Constants.DEF_LIVE_WALLPAPER_CHECK_PERIODIC_EMUI;
+        }
+
         mReceiver = new LiveWallpaperBroadcastReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(UPDATE_LIVE_WALLPAPER);
@@ -167,7 +172,7 @@ public class LiveWallpaperService extends WallpaperService {
         if (mCheckHandlerHelper == null) {
             return;
         }
-        mCheckHandlerHelper.postDelayed(mCheckRunnable, Constants.DEF_LIVE_WALLPAPER_CHECK_PERIODIC);
+        mCheckHandlerHelper.postDelayed(mCheckRunnable, mCheckPeriodic);
     }
 
     public void enable() {
