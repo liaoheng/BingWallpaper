@@ -52,7 +52,7 @@ public class NotificationUtils {
 
         Notification notification = new NotificationCompat.Builder(context,
                 Constants.FOREGROUND_INTENT_SERVICE_SUCCESS_NOTIFICATION_CHANNEL).setSmallIcon(
-                R.drawable.ic_notification)
+                        R.drawable.ic_notification)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setAutoCancel(true)
@@ -65,7 +65,7 @@ public class NotificationUtils {
     public static void showFailureNotification(Context context) {
         Notification notification = new NotificationCompat.Builder(context,
                 Constants.FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL).setSmallIcon(
-                R.drawable.ic_notification)
+                        R.drawable.ic_notification)
                 .setAutoCancel(true)
                 .setContentText(context.getText(R.string.set_wallpaper_failure))
                 .setContentTitle(context.getText(R.string.app_name)).build();
@@ -76,13 +76,20 @@ public class NotificationUtils {
         NotificationManagerCompat.from(context).cancel(11);
     }
 
-    public static void showStartNotification(Service service) {
-        Notification notification = new NotificationCompat.Builder(service.getApplicationContext(),
+    public static Notification getStartNotification(Context context) {
+        return new NotificationCompat.Builder(context,
                 Constants.FOREGROUND_INTENT_SERVICE_NOTIFICATION_CHANNEL).setSmallIcon(
-                R.drawable.ic_notification)
-                .setContentText(service.getText(R.string.set_wallpaper_running))
-                .setContentTitle(service.getText(R.string.app_name))
+                        R.drawable.ic_notification)
+                .setContentText(context.getText(R.string.set_wallpaper_running))
+                .setContentTitle(context.getText(R.string.app_name))
                 .setBadgeIconType(NotificationCompat.BADGE_ICON_NONE).build();
-        service.startForeground(111 + (int) (Math.random() * 10), notification);// Multiple services
+    }
+
+    public static void showStartNotification(Service service) {
+        service.startForeground(12, getStartNotification(service.getApplicationContext()));
+    }
+
+    public static void showStartNotification(Context context) {
+        NotificationManagerCompat.from(context).notify(12, getStartNotification(context));
     }
 }

@@ -36,7 +36,7 @@ public class AutoSetWallpaperBroadcastReceiver extends BroadcastReceiver {
             return;
         }
         L.alog().d(TAG, "timer : %s", intent.getAction());
-        if (BingWallpaperUtils.isEnableLog(context)) {
+        if (Settings.isEnableLog(context)) {
             LogDebugFileUtils.get()
                     .i(TAG, "timer : %s", intent.getAction());
         }

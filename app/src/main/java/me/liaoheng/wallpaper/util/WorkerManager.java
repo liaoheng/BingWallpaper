@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.work.Configuration;
 import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
@@ -43,9 +44,15 @@ public class WorkerManager {
                     .enqueueUniquePeriodicWork(WORKER_TAG, ExistingPeriodicWorkPolicy.REPLACE, builder.build());
             return true;
         } catch (Throwable e) {
-            L.alog().w("WorkerManager", e,"enable work error");
+            L.alog().w("WorkerManager", e, "enable work error");
         }
         return false;
+    }
+
+    public static void start(Context context) {
+        OneTimeWorkRequest.Builder builder = new OneTimeWorkRequest.Builder(BingWallpaperWorker.class)
+                .addTag(WORKER_TAG);
+        WorkManager.getInstance(context).enqueue(builder.build());
     }
 
     public static Configuration getConfig(boolean debug) {

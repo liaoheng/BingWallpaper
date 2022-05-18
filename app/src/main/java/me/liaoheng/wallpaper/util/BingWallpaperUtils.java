@@ -369,7 +369,6 @@ public class BingWallpaperUtils {
             callback.onYes(true);
         }
         startWallpaper(context, image, config);
-        //BingWallpaperIntentService.start(context, image, config);
     }
 
     public static void startWallpaper(Context context, Wallpaper image, Config config) {
@@ -395,7 +394,6 @@ public class BingWallpaperUtils {
             callback.onYes(true);
         }
         startWallpaper(context, image, config);
-        //BingWallpaperIntentService.start(context, image, config);
     }
 
     public static int getNavigationBarHeight(Context context) {
@@ -667,7 +665,11 @@ public class BingWallpaperUtils {
     }
 
     public static void runningService(Context context, String TAG) {
-        checkRunningService(context, TAG);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+            WorkerManager.start(context);
+        } else {
+            checkRunningService(context, TAG);
+        }
     }
 
     public static boolean isConnected(Context context) {

@@ -12,8 +12,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 10944
-        versionName "1.9.44"
+        versionCode 10945
+        versionName "1.9.45"
     }
 
     def isSigning = true

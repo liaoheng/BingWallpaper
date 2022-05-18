@@ -3,25 +3,14 @@ package me.liaoheng.wallpaper.service;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
-import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.L;
-
-import java.io.File;
-import java.io.IOException;
-
-import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
-import me.liaoheng.wallpaper.util.IUIHelper;
 import me.liaoheng.wallpaper.util.NotificationUtils;
-import me.liaoheng.wallpaper.util.UIHelper;
-import me.liaoheng.wallpaper.util.WallpaperUtils;
 
 /**
  * 设置壁纸操作IntentService
@@ -30,10 +19,8 @@ import me.liaoheng.wallpaper.util.WallpaperUtils;
  * @version 2016-9-19 12:48
  */
 public class BingWallpaperIntentService extends IntentService {
-
     private final String TAG = BingWallpaperIntentService.class.getSimpleName();
-    private IUIHelper mUiHelper;
-    private SetWallpaperServiceHelper mServiceHelper;
+    private SetWallpaperDelegate mSetWallpaperDelegate;
 
     public BingWallpaperIntentService() {
         super("BingWallpaperIntentService");
@@ -53,14 +40,12 @@ public class BingWallpaperIntentService extends IntentService {
 
     @Override
     public void onCreate() {
-        mUiHelper = new UIHelper();
-        mServiceHelper = new SetWallpaperServiceHelper(this, TAG);
+        mSetWallpaperDelegate = new SetWallpaperDelegate(this, TAG);
         super.onCreate();
     }
 
     @Override
     public void onDestroy() {
-        mUiHelper = null;
         stopForeground(true);
         super.onDestroy();
     }
@@ -74,73 +59,6 @@ public class BingWallpaperIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        if (intent == null) {
-            return;
-        }
-        Wallpaper image = intent.getParcelableExtra(Config.EXTRA_SET_WALLPAPER_IMAGE);
-        Config config = intent.getParcelableExtra(Config.EXTRA_SET_WALLPAPER_CONFIG);
-        if (config == null) {
-            return;
-        }
-        L.alog().d(TAG, config.toString());
-
-        Callback<Wallpaper> callback = new Callback.EmptyCallback<Wallpaper>() {
-            @Override
-            public void onSuccess(Wallpaper bingWallpaperImage) {
-                success(config, bingWallpaperImage);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                failure(config, e);
-            }
-        };
-
-        mServiceHelper.begin(config);
-
-        if (image == null) {
-            try {
-                image = BingWallpaperNetworkClient.getWallpaper(this, false);
-                image.setResolutionImageUrl(this);
-            } catch (IOException e) {
-                callback.onError(e);
-                return;
-            }
-        } else {
-            if (TextUtils.isEmpty(image.getImageUrl())) {
-                image.setResolutionImageUrl(this);
-            }
-        }
-
-        try {
-            downloadAndSetWallpaper(image, config);
-            callback.onSuccess(image);
-        } catch (Throwable e) {
-            callback.onError(e);
-        }
-    }
-
-    private void failure(Config config, Throwable throwable) {
-        mServiceHelper.failure(config, throwable);
-    }
-
-    private void success(Config config, Wallpaper image) {
-        mServiceHelper.success(config, image);
-    }
-
-    private void downloadAndSetWallpaper(Wallpaper image, Config config)
-            throws Throwable {
-        File wallpaper = WallpaperUtils.getImageFile(this, image.getImageUrl());
-
-        if (wallpaper == null || !wallpaper.exists()) {
-            throw new IOException("Download wallpaper failure");
-        }
-
-        if (config.isBackground()) {
-            WallpaperUtils.autoSaveWallpaper(this, TAG, image, wallpaper);
-        }
-        if (mUiHelper != null) {
-            mUiHelper.setWallpaper(this, config, wallpaper, image.getImageUrl());
-        }
+        mSetWallpaperDelegate.setWallpaper(intent);
     }
 }
