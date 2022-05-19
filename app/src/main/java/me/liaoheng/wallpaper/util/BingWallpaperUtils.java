@@ -1,13 +1,11 @@
 package me.liaoheng.wallpaper.util;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -52,10 +50,12 @@ import com.scottyab.rootbeer.RootBeer;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormat;
 
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Locale;
+import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -368,10 +368,10 @@ public class BingWallpaperUtils {
         if (callback != null) {
             callback.onYes(true);
         }
-        startWallpaper(context, image, config);
+        startSetWallpaper(context, image, config);
     }
 
-    public static void startWallpaper(Context context, Wallpaper image, Config config) {
+    public static void startSetWallpaper(Context context, Wallpaper image, Config config) {
         if (Settings.LIVE_WALLPAPER == Settings.getJobType(context)) {
             Intent intent = new Intent(LiveWallpaperService.UPDATE_LIVE_WALLPAPER);
             intent.putExtra(Config.EXTRA_SET_WALLPAPER_IMAGE, image);
@@ -379,7 +379,11 @@ public class BingWallpaperUtils {
             intent.setPackage(context.getPackageName());
             context.sendBroadcast(intent, LiveWallpaperService.PERMISSION_UPDATE_LIVE_WALLPAPER);
         } else {
-            BingWallpaperIntentService.start(context, image, config);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                WorkerManager.start(context, image, config);
+            } else {
+                BingWallpaperIntentService.start(context, image, config);
+            }
         }
     }
 
@@ -393,7 +397,7 @@ public class BingWallpaperUtils {
         if (callback != null) {
             callback.onYes(true);
         }
-        startWallpaper(context, image, config);
+        startSetWallpaper(context, image, config);
     }
 
     public static int getNavigationBarHeight(Context context) {
@@ -454,19 +458,6 @@ public class BingWallpaperUtils {
     public static void showIgnoreBatteryOptimizationSetting(Context context) {
         if (!AppUtils.showIgnoreBatteryOptimizationSetting(context)) {
             Toast.makeText(context, "No support !", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    @SuppressLint("SourceLockedOrientationActivity")
-    public static void setPhoneScreen(Activity context) {
-        if (context == null) {
-            return;
-        }
-        if (Constants.Config.isPhone) {
-            try {
-                context.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            } catch (Throwable ignored) {
-            }
         }
     }
 
@@ -619,16 +610,16 @@ public class BingWallpaperUtils {
         }
     }
 
-    public static void checkRunningService(Context context, String TAG) {
-        Intent intent = checkRunningServiceIntent(context, TAG);
-        if (intent != null) {
-            BingWallpaperIntentService.start(context, intent);
+    public static void checkStartSetWallpaper(Context context, String TAG) {
+        Config config = checkRunningToConfig(context, TAG);
+        if (config == null) {
+            return;
         }
+        startSetWallpaper(context, null, config);
     }
 
-    public static Intent checkRunningServiceIntent(Context context, String TAG) {
+    public static boolean checkRunning(Context context, String TAG) {
         boolean enableLog = Settings.isEnableLogProvider(context);
-        Intent intent = new Intent(context, BingWallpaperIntentService.class);
         if (isConnected(context)) {
             if (Settings.getOnlyWifi(context)) {
                 if (!NetworkUtils.isWifiConnected(context)) {
@@ -637,7 +628,7 @@ public class BingWallpaperUtils {
                         LogDebugFileUtils.get()
                                 .i(TAG, "Network not wifi");
                     }
-                    return null;
+                    return false;
                 }
             }
             if (!isTaskUndone(context)) {
@@ -646,30 +637,30 @@ public class BingWallpaperUtils {
                     LogDebugFileUtils.get()
                             .i(TAG, "Already executed");
                 }
-                return null;
+                return false;
             }
-            Config config = new Config.Builder().loadConfig(context)
-                    .setWallpaperMode(Settings.getAutoModeValue(context))
-                    .setBackground(true)
-                    .build();
-            intent.putExtra(Config.EXTRA_SET_WALLPAPER_CONFIG, config);
-            return intent;
+            return true;
         } else {
             L.alog().d(TAG, "isConnectedOrConnecting :false");
             if (enableLog) {
                 LogDebugFileUtils.get()
                         .i(TAG, "Network unavailable");
             }
-            return null;
+            return false;
         }
     }
 
-    public static void runningService(Context context, String TAG) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
-            WorkerManager.start(context);
-        } else {
-            checkRunningService(context, TAG);
+    @Nullable
+    public static Config checkRunningToConfig(Context context, String TAG) {
+        boolean isRunning = checkRunning(context, TAG);
+        if (!isRunning) {
+            return null;
         }
+        return new Config.Builder().loadConfig(context)
+                .setWallpaperMode(Settings.getAutoModeValue(context))
+                .setBackground(true)
+                .setShowNotification(true)
+                .build();
     }
 
     public static boolean isConnected(Context context) {
@@ -747,29 +738,6 @@ public class BingWallpaperUtils {
         return MD5Utils.md5Hex(str).toLowerCase();
     }
 
-    @Deprecated
-    public static void fixSetting(Context context) {
-        if (Settings.getJobType(context) == Settings.TIMER) {
-            if (Settings.getAutomaticUpdateType(context) != Settings.AUTOMATIC_UPDATE_TYPE_TIMER) {
-                BingWallpaperJobManager.disabled(context, true);
-                if (BingWallpaperJobManager.enabled(context) == Settings.LIVE_WALLPAPER) {
-                    Settings.disableDailyUpdate(context);
-                }
-                UIUtils.showToast(context, "Fix daily update setting");
-            }
-        }
-    }
-
-    @Deprecated
-    public static void fixSettingOnActivityResult(Context context, int requestCode, int resultCode) {
-        BingWallpaperJobManager.onActivityResult(context, requestCode, resultCode, new Callback5.EmptyCallback() {
-            @Override
-            public void onAllow() {
-                Settings.enableDailyUpdate(context, Settings.AUTOMATIC_UPDATE_TYPE_SERVICE);
-            }
-        });
-    }
-
     public static void showMiuiDialog(Context context) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
             return;
@@ -825,7 +793,7 @@ public class BingWallpaperUtils {
         if (split.length > 1) {
             name = split[1];
         }
-        return name;
+        return DateTimeFormat.shortDate().print(DateTime.now()) + "_" + name;
     }
 
     //https://stackoverflow.com/questions/14749504/android-usermanager-check-if-user-is-owner-admin
@@ -845,5 +813,10 @@ public class BingWallpaperUtils {
             flag |= PendingIntent.FLAG_IMMUTABLE;
         }
         return flag;
+    }
+
+    public static <T> T getOrDefault(Map<String, Object> map, String key, T defaultValue) {
+        T v;
+        return (((v = (T) map.get(key)) != null) || map.containsKey(key)) ? v : defaultValue;
     }
 }

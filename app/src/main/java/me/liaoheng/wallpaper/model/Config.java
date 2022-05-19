@@ -4,6 +4,10 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.Settings;
 
@@ -150,5 +154,32 @@ public class Config implements Parcelable {
         dest.writeInt(showNotification ? 1 : 0);
         dest.writeInt(background ? 1 : 0);
         dest.writeInt(wallpaperMode);
+    }
+
+    public Map<String, Object> getMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("Config", true);
+        map.put("Config_stackBlur", stackBlur);
+        map.put("Config_stackBlurMode", stackBlurMode);
+        map.put("Config_showNotification", showNotification);
+        map.put("Config_background", background);
+        map.put("Config_wallpaperMode", wallpaperMode);
+        return map;
+    }
+
+    public static Config to(Map<String, Object> map) {
+        boolean isConfig = BingWallpaperUtils.getOrDefault(map, "Config", false);
+        if (!isConfig) {
+            return null;
+        }
+        return new Config(map);
+    }
+
+    public Config(Map<String, Object> map) {
+        stackBlur = BingWallpaperUtils.getOrDefault(map, "Config_stackBlur", 0);
+        stackBlurMode = BingWallpaperUtils.getOrDefault(map, "Config_stackBlurMode", 0);
+        showNotification = BingWallpaperUtils.getOrDefault(map, "Config_showNotification", false);
+        background = BingWallpaperUtils.getOrDefault(map, "Config_background", false);
+        wallpaperMode = BingWallpaperUtils.getOrDefault(map, "Config_wallpaperMode", 0);
     }
 }

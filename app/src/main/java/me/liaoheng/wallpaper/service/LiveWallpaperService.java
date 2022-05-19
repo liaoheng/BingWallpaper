@@ -250,8 +250,8 @@ public class LiveWallpaperService extends WallpaperService {
     private ObservableTransformer<Boolean, DownloadBitmap> load(Config config) {
         return upstream -> upstream.flatMap((Function<Boolean, ObservableSource<DownloadBitmap>>) force -> {
             if (!force) {
-                Intent intent = BingWallpaperUtils.checkRunningServiceIntent(this, TAG);
-                if (intent == null) {
+                boolean isRunning = BingWallpaperUtils.checkRunning(this, TAG);
+                if (!isRunning) {
                     return Observable.empty();
                 }
             }

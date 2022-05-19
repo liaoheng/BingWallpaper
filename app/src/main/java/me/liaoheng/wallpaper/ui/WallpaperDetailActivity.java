@@ -15,8 +15,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+
 import com.bumptech.glide.request.target.Target;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
@@ -24,7 +26,10 @@ import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback4;
 import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.UIUtils;
+
 import java.io.File;
+import java.io.IOException;
+
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.databinding.ActivityWallpaperDetailBinding;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
@@ -233,6 +238,10 @@ public class WallpaperDetailActivity extends BaseActivity implements
                                         ImageSource.uri(Uri.fromFile(file)));
                             } else {
                                 Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                                if (bitmap == null) {
+                                    onError(new IOException("bitmap is null"));
+                                    return;
+                                }
                                 bitmap = WallpaperUtils.transformStackBlur(bitmap, mConfig.getStackBlur());
                                 mViewBinding.bingWallpaperDetailSubscaleView.setVisibility(View.GONE);
                                 mViewBinding.bingWallpaperDetailSubscaleView.recycle();

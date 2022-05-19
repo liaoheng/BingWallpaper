@@ -34,12 +34,16 @@ public class SetWallpaperDelegate {
         mServiceHelper = new SetWallpaperServiceHelper(context, TAG);
     }
 
-    protected void setWallpaper(Intent intent) {
+    public void setWallpaper(Intent intent) {
         if (intent == null) {
             return;
         }
         Wallpaper image = intent.getParcelableExtra(Config.EXTRA_SET_WALLPAPER_IMAGE);
         Config config = intent.getParcelableExtra(Config.EXTRA_SET_WALLPAPER_CONFIG);
+        setWallpaper(image, config);
+    }
+
+    public void setWallpaper(Wallpaper image, Config config) {
         if (config == null) {
             return;
         }

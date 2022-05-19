@@ -1,7 +1,6 @@
 package me.liaoheng.wallpaper.service;
 
 import android.content.Context;
-import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.work.ListenableWorker;
@@ -10,6 +9,10 @@ import androidx.work.WorkerParameters;
 
 import com.github.liaoheng.common.util.L;
 
+import java.util.Map;
+
+import me.liaoheng.wallpaper.model.Config;
+import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.Settings;
@@ -36,11 +39,15 @@ public class BingWallpaperWorker extends Worker {
             LogDebugFileUtils.get()
                     .i(TAG, "action worker id : %s", getId());
         }
-        Intent intent = BingWallpaperUtils.checkRunningServiceIntent(getApplicationContext(), TAG);
-        if (intent == null) {
-            return Result.success();
+        Map<String, Object> map = getInputData().getKeyValueMap();
+        Config config = Config.to(map);
+        if (config == null) {
+            config = BingWallpaperUtils.checkRunningToConfig(getApplicationContext(), TAG);
+            if (config == null) {
+                return Result.success();
+            }
         }
-        mSetWallpaperDelegate.setWallpaper(intent);
+        mSetWallpaperDelegate.setWallpaper(Wallpaper.to(map), config);
         return Result.success();
     }
 }

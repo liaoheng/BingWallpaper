@@ -35,7 +35,7 @@ public class SetWallpaperServiceHelper {
         if (Settings.isEnableLogProvider(mContext)) {
             LogDebugFileUtils.get().i(TAG, "Start set wallpaper : %s", config);
         }
-        if (!config.isBackground() && !config.isShowNotification()) {
+        if (!config.isShowNotification()) {
             return;
         }
         NotificationUtils.showStartNotification(mContext);
@@ -48,7 +48,7 @@ public class SetWallpaperServiceHelper {
         }
         sendSetWallpaperBroadcast(BingWallpaperState.FAIL);
         CrashReportHandle.collectException(mContext, TAG, config, throwable);
-        if (!config.isBackground() && !config.isShowNotification()) {
+        if (!config.isShowNotification()) {
             return;
         }
         NotificationUtils.showFailureNotification(mContext);

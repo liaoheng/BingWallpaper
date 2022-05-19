@@ -174,7 +174,11 @@ public class WallpaperUtils {
             String key = BingWallpaperUtils.createKey(url + "_blur_" + stackBlur);
             File stackBlurFile = CacheUtils.get().get(key);
             if (stackBlurFile == null) {
-                Bitmap bitmap = transformStackBlur(BitmapFactory.decodeFile(wallpaper.getAbsolutePath()), stackBlur);
+                Bitmap bitmap = BitmapFactory.decodeFile(wallpaper.getAbsolutePath());
+                if (bitmap == null) {
+                    return wallpaper;
+                }
+                bitmap = transformStackBlur(bitmap, stackBlur);
                 stackBlurFile = CacheUtils.get().put(key, BitmapUtils.bitmapToStream(bitmap,
                         Bitmap.CompressFormat.JPEG));
                 bitmap.recycle();
@@ -214,7 +218,7 @@ public class WallpaperUtils {
         return mark;
     }
 
-    public static Bitmap transformStackBlur(Bitmap bitmap, int stackBlur) {
+    public static Bitmap transformStackBlur(@NonNull Bitmap bitmap, int stackBlur) {
         if (stackBlur <= 0) {
             return bitmap;
         }

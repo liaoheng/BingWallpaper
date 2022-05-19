@@ -5,6 +5,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 
 /**
@@ -132,4 +136,37 @@ public class Wallpaper implements Parcelable {
             return new Wallpaper[size];
         }
     };
+
+    public Map<String, Object> getMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("Wallpaper", true);
+        map.put("Wallpaper_dateTime", dateTime);
+        map.put("Wallpaper_url", url);
+        map.put("Wallpaper_baseUrl", baseUrl);
+        map.put("Wallpaper_title", title);
+        map.put("Wallpaper_desc", desc);
+        map.put("Wallpaper_webUrl", webUrl);
+        map.put("Wallpaper_imageUrl", imageUrl);
+        map.put("Wallpaper_copyrightInfo", copyrightInfo);
+        return map;
+    }
+
+    public static Wallpaper to(Map<String, Object> map) {
+        boolean isWallpaper = BingWallpaperUtils.getOrDefault(map, "Wallpaper", false);
+        if (!isWallpaper) {
+            return null;
+        }
+        return new Wallpaper(map);
+    }
+
+    public Wallpaper(Map<String, Object> map) {
+        dateTime = BingWallpaperUtils.getOrDefault(map, "Wallpaper_dateTime", null);
+        url = BingWallpaperUtils.getOrDefault(map, "Wallpaper_url", null);
+        baseUrl = BingWallpaperUtils.getOrDefault(map, "Wallpaper_baseUrl", null);
+        title = BingWallpaperUtils.getOrDefault(map, "Wallpaper_title", null);
+        desc = BingWallpaperUtils.getOrDefault(map, "Wallpaper_desc", null);
+        webUrl = BingWallpaperUtils.getOrDefault(map, "Wallpaper_webUrl", null);
+        imageUrl = BingWallpaperUtils.getOrDefault(map, "Wallpaper_imageUrl", null);
+        copyrightInfo = BingWallpaperUtils.getOrDefault(map, "Wallpaper_copyrightInfo", null);
+    }
 }
