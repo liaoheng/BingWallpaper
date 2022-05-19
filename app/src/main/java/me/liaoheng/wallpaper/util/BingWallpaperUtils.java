@@ -793,7 +793,8 @@ public class BingWallpaperUtils {
         if (split.length > 1) {
             name = split[1];
         }
-        return DateTimeFormat.shortDate().print(DateTime.now()) + "_" + name;
+        return DateTimeFormat.forPattern(DateTimeUtils.DATAFORMAT_YYYYMMDD).withLocale(Locale.getDefault()).print(DateTime.now()) + "_"
+                + name;
     }
 
     //https://stackoverflow.com/questions/14749504/android-usermanager-check-if-user-is-owner-admin
