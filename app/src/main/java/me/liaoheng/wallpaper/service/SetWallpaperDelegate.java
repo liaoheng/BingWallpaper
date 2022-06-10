@@ -40,10 +40,10 @@ public class SetWallpaperDelegate {
         }
         Wallpaper image = intent.getParcelableExtra(Config.EXTRA_SET_WALLPAPER_IMAGE);
         Config config = intent.getParcelableExtra(Config.EXTRA_SET_WALLPAPER_CONFIG);
-        setWallpaper(image, config);
+        setWallpaper(image, config, false);
     }
 
-    public void setWallpaper(Wallpaper image, Config config) {
+    public void setWallpaper(Wallpaper image, Config config, boolean showNotification) {
         if (config == null) {
             return;
         }
@@ -61,7 +61,7 @@ public class SetWallpaperDelegate {
             }
         };
 
-        mServiceHelper.begin(config);
+        mServiceHelper.begin(config, showNotification);
 
         if (image == null) {
             try {

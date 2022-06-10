@@ -47,7 +47,7 @@ public class BingWallpaperWorker extends Worker {
                 return Result.success();
             }
         }
-        mSetWallpaperDelegate.setWallpaper(Wallpaper.to(map), config);
+        mSetWallpaperDelegate.setWallpaper(Wallpaper.to(map), config, true);
         return Result.success();
     }
 }

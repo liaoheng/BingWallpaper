@@ -29,11 +29,14 @@ public class SetWallpaperServiceHelper {
         TAG = tag;
     }
 
-    public void begin(Config config) {
+    public void begin(Config config, boolean showNotification) {
         sendSetWallpaperBroadcast(BingWallpaperState.BEGIN);
         L.alog().i(TAG, "start set wallpaper : %s", config);
         if (Settings.isEnableLogProvider(mContext)) {
             LogDebugFileUtils.get().i(TAG, "Start set wallpaper : %s", config);
+        }
+        if (!showNotification) {
+            return;
         }
         if (!config.isShowNotification()) {
             return;
@@ -56,7 +59,7 @@ public class SetWallpaperServiceHelper {
 
     public void success(Config config, Wallpaper image) {
         L.alog().i(TAG, "set wallpaper success");
-        if (BingWallpaperUtils.isEnableLogProvider(mContext)) {
+        if (Settings.isEnableLogProvider(mContext)) {
             LogDebugFileUtils.get().i(TAG, "Set wallpaper success");
         }
         if (config.isBackground()) {

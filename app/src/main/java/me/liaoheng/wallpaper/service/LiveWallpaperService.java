@@ -190,13 +190,17 @@ public class LiveWallpaperService extends WallpaperService {
     private void timing() {
         postDelayed();
         L.alog().i(TAG, "timing check...");
-        if (BingWallpaperUtils.isEnableLogProvider(this)) {
+        if (Settings.isEnableLogProvider(this)) {
             LogDebugFileUtils.get().i(TAG, "Timing check...");
         }
         if (!BingWallpaperUtils.isTaskUndone(this)) {
             return;
         }
-        updateBingWallpaper();
+        Config config = BingWallpaperUtils.checkRunningToConfig(this, TAG);
+        if (config == null) {
+            return;
+        }
+        updateBingWallpaper(Observable.just(false).compose(load(config)), config);
     }
 
     public void setBingWallpaper(Wallpaper image, Config config) {
@@ -212,15 +216,6 @@ public class LiveWallpaperService extends WallpaperService {
         updateBingWallpaper(observable, config);
     }
 
-    private void updateBingWallpaper() {
-        Config config = new Config.Builder().setBackground(true)
-                .setShowNotification(true)
-                .loadConfig(this)
-                .setWallpaperMode(Settings.getAutoModeValue(this))
-                .build();
-        updateBingWallpaper(Observable.just(false).compose(load(config)), config);
-    }
-
     public void updateBingWallpaper(Observable<DownloadBitmap> observable, Config config) {
         mLoadWallpaperDisposable.add(Utils.addSubscribe(
                 observable.subscribeOn(Schedulers.io()).retryWhen(new RetryWithDelay(3, 5)),
@@ -228,7 +223,7 @@ public class LiveWallpaperService extends WallpaperService {
 
                     @Override
                     public void onPreExecute() {
-                        mServiceHelper.begin(config);
+                        mServiceHelper.begin(config, true);
                     }
 
                     @Override
@@ -249,12 +244,6 @@ public class LiveWallpaperService extends WallpaperService {
 
     private ObservableTransformer<Boolean, DownloadBitmap> load(Config config) {
         return upstream -> upstream.flatMap((Function<Boolean, ObservableSource<DownloadBitmap>>) force -> {
-            if (!force) {
-                boolean isRunning = BingWallpaperUtils.checkRunning(this, TAG);
-                if (!isRunning) {
-                    return Observable.empty();
-                }
-            }
             try {
                 Wallpaper image = BingWallpaperNetworkClient.getWallpaper(this, force);
                 return Observable.just(new DownloadBitmap(image, config));
