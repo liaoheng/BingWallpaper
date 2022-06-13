@@ -37,8 +37,8 @@ public interface Constants {
 
     String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0";
 
-    String DOH_DNSPOD = "https://doh.pub/dns-query";
-    String DOH_CLOUDFLARE = "https://doh.pub/dns-query";
+    String DOH_CHINA = "https://dns.alidns.com/dns-query";
+    String DOH_CLOUDFLARE = "https://cloudflare-dns.com/dns-query";
 
     class WallpaperConfig {
         public static int WALLPAPER_RESOLUTION_WIDTH = 480;

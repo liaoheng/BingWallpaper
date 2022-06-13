@@ -74,7 +74,7 @@ public class NetUtils {
             DnsOverHttps.Builder dns = new DnsOverHttps.Builder()
                     .client(new OkHttpClient.Builder().build());
             if (BingWallpaperUtils.getLocale(context) == Locale.CHINA) {
-                dns.url(HttpUrl.get(Constants.DOH_DNSPOD));
+                dns.url(HttpUrl.get(Constants.DOH_CHINA));
             } else {
                 dns.url(HttpUrl.get(Constants.DOH_CLOUDFLARE));
             }

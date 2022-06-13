@@ -129,7 +129,7 @@ public class LiveWallpaperService extends WallpaperService {
         LogDebugFileUtils.init(this);
         mServiceHelper = new SetWallpaperServiceHelper(this, TAG);
         mLoadWallpaperDisposable = new CompositeDisposable();
-        mCheckHandlerHelper = HandlerHelper.create(TAG, Process.THREAD_PRIORITY_BACKGROUND, null);
+        mCheckHandlerHelper = HandlerHelper.create(TAG, Process.THREAD_PRIORITY_FOREGROUND, null);
         mCheckRunnable = this::timing;
         mSetWallpaper = new MutableLiveData<>();
         mEnableCheck = new EnableLiveData(false);
