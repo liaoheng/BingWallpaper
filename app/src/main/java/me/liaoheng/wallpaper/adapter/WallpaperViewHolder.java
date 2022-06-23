@@ -5,14 +5,15 @@ import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityOptionsCompat;
+
 import com.bumptech.glide.request.target.DrawableThumbnailImageViewTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.github.liaoheng.common.adapter.holder.BaseRecyclerViewHolder;
 import com.github.liaoheng.common.util.UIUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityOptionsCompat;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.databinding.ViewWallpaperListItemBinding;
 import me.liaoheng.wallpaper.model.Wallpaper;
@@ -54,12 +55,12 @@ public class WallpaperViewHolder extends BaseRecyclerViewHolder<Wallpaper> {
             }
         }
 
-        itemView.setOnClickListener(v -> {
+        itemView.setOnClickListener(v -> itemView.postDelayed(() -> {
             ActivityOptionsCompat options =
                     ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) getContext(),
                             mViewBinding.bingWallpaperListItemImage, "bing_wallpaper_detail_image");
             WallpaperDetailActivity.start(getContext(), item, options.toBundle());
-        });
+        }, 500));
         int width = Constants.WallpaperConfig.WALLPAPER_RESOLUTION_WIDTH;
         int height = Constants.WallpaperConfig.WALLPAPER_RESOLUTION_HEIGHT;
         String imageUrl = BingWallpaperUtils.getImageUrl(getContext(),

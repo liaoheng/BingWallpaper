@@ -374,7 +374,7 @@ public class LiveWallpaperService extends WallpaperService {
             mDrawRunnable = this::drawWallpaper;
 
             if (!isPreview()) {
-                mEnableCheck.setValue(true);
+                mEnableCheck.postValue(true);
             }
         }
 
