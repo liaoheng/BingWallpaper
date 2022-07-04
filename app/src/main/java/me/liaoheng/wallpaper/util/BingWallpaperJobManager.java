@@ -36,7 +36,10 @@ public class BingWallpaperJobManager {
         BingWallpaperAlarmManager.disabled(context);
         if (force || Settings.getJobType(context) == Settings.LIVE_WALLPAPER) {
             try {
-                WallpaperManager.getInstance(context).clear();
+                Observable.just("").subscribeOn(Schedulers.io()).map((Function<String, Object>) s -> {
+                    WallpaperManager.getInstance(context).clear();
+                    return "";
+                }).subscribe();
             } catch (Exception ignored) {
             }
         }
@@ -107,7 +110,7 @@ public class BingWallpaperJobManager {
         boolean enabled = WorkerManager.enabled(context, time);
         if (enabled) {
             Settings.setJobType(context, Settings.WORKER);
-            if (BingWallpaperUtils.isEnableLog(context)) {
+            if (Settings.isEnableLog(context)) {
                 LogDebugFileUtils.get()
                         .i(TAG, "Enable scheduler interval time : %s", time);
             }
@@ -121,7 +124,7 @@ public class BingWallpaperJobManager {
         boolean enabled = BingWallpaperAlarmManager.enabled(context, updateTime);
         if (enabled) {
             Settings.setJobType(context, Settings.TIMER);
-            if (BingWallpaperUtils.isEnableLog(context)) {
+            if (Settings.isEnableLog(context)) {
                 LogDebugFileUtils.get()
                         .i(TAG, "Enable timer time : %s", updateTime.toString("HH:mm"));
             }
@@ -158,7 +161,7 @@ public class BingWallpaperJobManager {
         if (requestCode == LIVE_WALLPAPER_REQUEST_CODE) {
             if (Activity.RESULT_OK == resultCode) {
                 Settings.setJobType(context, Settings.LIVE_WALLPAPER);
-                if (BingWallpaperUtils.isEnableLog(context)) {
+                if (Settings.isEnableLog(context)) {
                     LogDebugFileUtils.get()
                             .i(TAG, "Enable live wallpaper");
                 }

@@ -28,6 +28,9 @@ import com.github.liaoheng.common.util.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
@@ -66,8 +69,6 @@ public class LiveWallpaperService extends WallpaperService {
     private LiveWallpaperBroadcastReceiver mReceiver;
     private SetWallpaperServiceHelper mServiceHelper;
     private CompositeDisposable mLoadWallpaperDisposable;
-    private HandlerHelper mCheckHandlerHelper;
-    private Runnable mCheckRunnable;
     private final long mCheckPeriodic = Constants.DEF_LIVE_WALLPAPER_CHECK_PERIODIC;
 
     @Override
@@ -87,7 +88,6 @@ public class LiveWallpaperService extends WallpaperService {
                 LogDebugFileUtils.init(getApplicationContext());
             } else if (ENABLE_LIVE_WALLPAPER.equals(intent.getAction())) {
                 boolean enable = intent.getBooleanExtra(EXTRA_ENABLE_LIVE_WALLPAPER, false);
-                L.alog().d(TAG, "enable :" + enable);
                 disable();
                 if (enable) {
                     enable();
@@ -96,6 +96,14 @@ public class LiveWallpaperService extends WallpaperService {
         }
     }
 
+    private final ScheduledThreadPoolExecutor mPoolExecutor = new ScheduledThreadPoolExecutor(1, r -> {
+        Thread thread = new Thread(r);
+        thread.setPriority(Thread.MIN_PRIORITY);
+        return thread;
+    });
+
+    private final Runnable checkRunnable = this::timing;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -103,19 +111,6 @@ public class LiveWallpaperService extends WallpaperService {
         LogDebugFileUtils.init(this);
         mServiceHelper = new SetWallpaperServiceHelper(this, TAG);
         mLoadWallpaperDisposable = new CompositeDisposable();
-        mCheckHandlerHelper = HandlerHelper.create(TAG, Process.THREAD_PRIORITY_FOREGROUND, msg -> {
-            L.alog().d(TAG, "HandlerHelper");
-            if (msg.what == 1) {
-                Boolean enable = (Boolean) msg.obj;
-                L.alog().d(TAG, "chekc :" + enable);
-                disable();
-                if (enable) {
-                    enable();
-                }
-            }
-            return false;
-        });
-        mCheckRunnable = this::timing;
         mReceiver = new LiveWallpaperBroadcastReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(UPDATE_LIVE_WALLPAPER);
@@ -130,38 +125,28 @@ public class LiveWallpaperService extends WallpaperService {
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);
         }
-        Utils.dispose(mLoadWallpaperDisposable);
         disable();
-        if (mCheckHandlerHelper != null) {
-            mCheckHandlerHelper.release();
-        }
+        //mPoolExecutor.shutdown();
+        Utils.dispose(mLoadWallpaperDisposable);
         super.onDestroy();
     }
 
-    private void postDelayed() {
-        if (mCheckHandlerHelper == null) {
-            return;
-        }
-        mCheckHandlerHelper.postDelayed(mCheckRunnable, mCheckPeriodic);
-    }
+    private ScheduledFuture<?> mScheduledFuture;
 
     public void enable() {
-        if (mCheckHandlerHelper == null) {
-            return;
-        }
         disable();
-        mCheckHandlerHelper.postDelayed(this::timing, 500);
+        mScheduledFuture = mPoolExecutor.scheduleAtFixedRate(checkRunnable, 500, mCheckPeriodic,
+                TimeUnit.MILLISECONDS);
     }
 
     private void disable() {
-        if (mCheckHandlerHelper == null) {
+        if (mScheduledFuture == null) {
             return;
         }
-        mCheckHandlerHelper.removeCallbacks(mCheckRunnable);
+        mScheduledFuture.cancel(true);
     }
 
     private void timing() {
-        postDelayed();
         L.alog().i(TAG, "timing check...");
         if (Settings.isEnableLogProvider(this)) {
             LogDebugFileUtils.get().i(TAG, "Timing check...");
@@ -343,7 +328,7 @@ public class LiveWallpaperService extends WallpaperService {
             TAG += UUID.randomUUID();
             L.alog().d(TAG, "onCreate");
             setOffsetNotificationsEnabled(true);
-            mDrawHandlerHelper = HandlerHelper.create(TAG, Process.THREAD_PRIORITY_FOREGROUND, null);
+            mDrawHandlerHelper = HandlerHelper.create(TAG, Process.THREAD_PRIORITY_DEFAULT, null);
             mActionHandler = new DelayedHandler(Looper.getMainLooper(), msg -> {
                 if (msg.what == DOWNLOAD_DRAW) {
                     downloadWallpaper((DownloadBitmap) msg.obj);

@@ -3,12 +3,16 @@ package me.liaoheng.wallpaper.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.IntDef;
+import androidx.preference.PreferenceManager;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
-import androidx.annotation.IntDef;
-import androidx.preference.PreferenceManager;
+import io.reactivex.Observable;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.ui.SettingsActivity;
 
@@ -257,7 +261,10 @@ public class Settings {
     public static final String BING_WALLPAPER_JOB_TYPE = "bing_wallpaper_job_type";
 
     public static void setJobType(Context context, @JobType int type) {
-        SettingTrayPreferences.get(context).put(BING_WALLPAPER_JOB_TYPE, type);
+        Observable.just(type).subscribeOn(Schedulers.io()).map((Function<Integer, Object>) t -> {
+            SettingTrayPreferences.get(context).put(BING_WALLPAPER_JOB_TYPE, t);
+            return "";
+        }).subscribe();
     }
 
     @JobType

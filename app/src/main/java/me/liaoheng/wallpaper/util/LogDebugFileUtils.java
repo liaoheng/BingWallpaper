@@ -4,7 +4,9 @@ import android.content.Context;
 
 import com.github.liaoheng.common.util.LogFileUtils;
 
-import java.io.IOException;
+import io.reactivex.Observable;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * 不带system log
@@ -24,20 +26,23 @@ public class LogDebugFileUtils {
     public static void init(Context context) {
         if (Settings.isEnableLogProvider(context)) {
             create(context);
-        }else{
+        } else {
             LogFileUtils.get().close();
         }
     }
 
     public static void create(Context context) {
-        try{
+        Observable.just("").subscribeOn(Schedulers.io()).map((Function<String, Object>) s -> {
             LogFileUtils.get().open(context, "log", "");
-        }catch (IOException ignored){
-        }
+            return "";
+        }).subscribe();
     }
 
     public static void destroy() {
-        LogFileUtils.get().close();
-        LogFileUtils.get().clearFile();
+        Observable.just("").subscribeOn(Schedulers.io()).map((Function<String, Object>) s -> {
+            LogFileUtils.get().close();
+            LogFileUtils.get().clearFile();
+            return "";
+        }).subscribe();
     }
 }
