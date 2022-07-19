@@ -54,6 +54,7 @@ public class SetWallpaperServiceHelper {
         if (!config.isShowNotification()) {
             return;
         }
+        NotificationUtils.clearStartNotification(mContext);
         NotificationUtils.showFailureNotification(mContext);
     }
 
@@ -77,6 +78,7 @@ public class SetWallpaperServiceHelper {
     }
 
     private void showSuccessNotification(Wallpaper image, boolean isShow) {
+        NotificationUtils.clearStartNotification(mContext);
         NotificationUtils.clearFailureNotification(mContext);
         if (isShow) {
             NotificationUtils.showSuccessNotification(mContext, image.getTitle());

@@ -59,7 +59,7 @@ public class NotificationUtils {
                 .setContentText(content)
                 .setContentTitle(context.getText(R.string.set_wallpaper_success))
                 .setContentIntent(resultPendingIntent).build();
-        NotificationManagerCompat.from(context).notify(222, notification);
+        NotificationManagerCompat.from(context).notify(0x333, notification);
     }
 
     public static void showFailureNotification(Context context) {
@@ -69,11 +69,11 @@ public class NotificationUtils {
                 .setAutoCancel(true)
                 .setContentText(context.getText(R.string.set_wallpaper_failure))
                 .setContentTitle(context.getText(R.string.app_name)).build();
-        NotificationManagerCompat.from(context).notify(111, notification);
+        NotificationManagerCompat.from(context).notify(0x111, notification);
     }
 
     public static void clearFailureNotification(Context context) {
-        NotificationManagerCompat.from(context).cancel(111);
+        NotificationManagerCompat.from(context).cancel(0x111);
     }
 
     public static Notification getStartNotification(Context context) {
@@ -86,10 +86,14 @@ public class NotificationUtils {
     }
 
     public static void showStartNotification(Service service) {
-        service.startForeground(212, getStartNotification(service.getApplicationContext()));
+        service.startForeground(0x211, getStartNotification(service.getApplicationContext()));
     }
 
     public static void showStartNotification(Context context) {
-        NotificationManagerCompat.from(context).notify(222, getStartNotification(context));
+        NotificationManagerCompat.from(context).notify(0x222, getStartNotification(context));
+    }
+
+    public static void clearStartNotification(Context context) {
+        NotificationManagerCompat.from(context).cancel(0x222);
     }
 }
