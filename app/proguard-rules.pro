@@ -18,3 +18,12 @@
 -keepattributes Signature
 -keepattributes *Annotation*
 -keep class me.liaoheng.wallpaper.model.** { <fields>; }
+
+-dontwarn com.google.android.gms.ads.identifier.AdvertisingIdClient$Info
+-dontwarn com.google.android.gms.ads.identifier.AdvertisingIdClient
+-dontwarn com.orhanobut.logger.AndroidLogAdapter
+-dontwarn com.orhanobut.logger.FormatStrategy
+-dontwarn com.orhanobut.logger.LogAdapter
+-dontwarn com.orhanobut.logger.Logger
+-dontwarn com.orhanobut.logger.PrettyFormatStrategy$Builder
+-dontwarn com.orhanobut.logger.PrettyFormatStrategy

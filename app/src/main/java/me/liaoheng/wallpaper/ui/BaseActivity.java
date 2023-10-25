@@ -7,24 +7,21 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
-import com.github.liaoheng.common.util.DisplayUtils;
-import com.github.liaoheng.common.util.UIUtils;
-import com.trello.rxlifecycle3.LifecycleProvider;
-import com.trello.rxlifecycle3.LifecycleTransformer;
-import com.trello.rxlifecycle3.RxLifecycle;
-import com.trello.rxlifecycle3.android.ActivityEvent;
-import com.trello.rxlifecycle3.android.RxLifecycleAndroid;
-
-import java.util.Objects;
-
 import androidx.annotation.CallSuper;
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import io.reactivex.Observable;
-import io.reactivex.subjects.BehaviorSubject;
+import androidx.lifecycle.Lifecycle;
+
+import com.github.liaoheng.common.util.DisplayUtils;
+import com.github.liaoheng.common.util.UIUtils;
+import com.trello.lifecycle4.android.lifecycle.AndroidLifecycle;
+import com.trello.rxlifecycle4.LifecycleProvider;
+import com.trello.rxlifecycle4.LifecycleTransformer;
+
+import io.reactivex.rxjava3.core.Observable;
 import me.liaoheng.wallpaper.R;
 
 /**
@@ -32,8 +29,9 @@ import me.liaoheng.wallpaper.R;
  *
  * @author liaoheng
  */
-public abstract class BaseActivity extends AppCompatActivity implements LifecycleProvider<ActivityEvent> {
-    private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
+public abstract class BaseActivity extends AppCompatActivity implements LifecycleProvider<Lifecycle.Event> {
+    private final LifecycleProvider<Lifecycle.Event> mLifecycleProvider = AndroidLifecycle.createLifecycleProvider(
+            this);
 
     protected final String TAG = this.getClass().getSimpleName();
 
@@ -74,22 +72,21 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     @Override
     @NonNull
     @CheckResult
-    public final Observable<ActivityEvent> lifecycle() {
-        return lifecycleSubject.hide();
+    public final Observable<Lifecycle.Event> lifecycle() {
+        return mLifecycleProvider.lifecycle();
     }
 
-    @Override
     @NonNull
-    @CheckResult
-    public final <T> LifecycleTransformer<T> bindUntilEvent(@NonNull ActivityEvent event) {
-        return RxLifecycle.bindUntilEvent(lifecycleSubject, event);
+    @Override
+    public <T> LifecycleTransformer<T> bindUntilEvent(@NonNull Lifecycle.Event event) {
+        return mLifecycleProvider.bindUntilEvent(event);
     }
 
     @Override
     @NonNull
     @CheckResult
     public final <T> LifecycleTransformer<T> bindToLifecycle() {
-        return RxLifecycleAndroid.bindActivity(lifecycleSubject);
+        return mLifecycleProvider.bindToLifecycle();
     }
 
     @Override
@@ -99,42 +96,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        lifecycleSubject.onNext(ActivityEvent.CREATE);
-    }
-
-    @Override
-    @CallSuper
-    protected void onStart() {
-        super.onStart();
-        lifecycleSubject.onNext(ActivityEvent.START);
-    }
-
-    @Override
-    @CallSuper
-    protected void onResume() {
-        super.onResume();
-        lifecycleSubject.onNext(ActivityEvent.RESUME);
-    }
-
-    @Override
-    @CallSuper
-    protected void onPause() {
-        lifecycleSubject.onNext(ActivityEvent.PAUSE);
-        super.onPause();
-    }
-
-    @Override
-    @CallSuper
-    protected void onStop() {
-        lifecycleSubject.onNext(ActivityEvent.STOP);
-        super.onStop();
-    }
-
-    @Override
-    @CallSuper
-    protected void onDestroy() {
-        lifecycleSubject.onNext(ActivityEvent.DESTROY);
-        super.onDestroy();
     }
 
     @Override

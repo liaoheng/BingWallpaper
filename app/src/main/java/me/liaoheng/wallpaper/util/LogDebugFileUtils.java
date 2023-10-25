@@ -4,9 +4,9 @@ import android.content.Context;
 
 import com.github.liaoheng.common.util.LogFileUtils;
 
-import io.reactivex.Observable;
-import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * 不带system log

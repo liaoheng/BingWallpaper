@@ -1,4 +1,6 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+}
 
 def isFirebase = rootProject.file('app/google-services.json').exists()
 if (isFirebase) {
@@ -6,14 +8,15 @@ if (isFirebase) {
 }
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdk rootProject.ext.compileSdkVersion
+    namespace 'me.liaoheng.wallpaper'
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 10949
-        versionName "1.9.49"
+        versionCode 10950
+        versionName "1.9.50"
     }
 
     def isSigning = true
@@ -43,26 +46,28 @@ android {
             includeAndroidResources = true
         }
     }
-    android.applicationVariants.all { variant ->
+    android.applicationVariants.configureEach { variant ->
         if (variant.buildType.name == 'release') {
-            variant.outputs.all {
+            variant.outputs.configureEach {
                 outputFileName = "${variant.name}-${variant.versionName}.apk"
             }
         }
     }
-    lintOptions {
-        abortOnError false
-    }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     buildFeatures {
         viewBinding true
+        buildConfig true
+    }
+    lint {
+        abortOnError false
+        disable 'ExtraTranslation'
     }
 }
 
-def firebaseCore = "com.google.firebase:firebase-analytics:21.0.0"
+def firebaseCore = "com.google.firebase:firebase-analytics:21.3.0"
 
 dependencies {
     testImplementation deps.robolectric
@@ -73,9 +78,13 @@ dependencies {
     implementation deps.material
     implementation deps.palette
     implementation deps.browser
-    implementation deps.preference
+    implementation (deps.preference){
+        exclude group: 'androidx.lifecycle', module:'lifecycle-viewmodel-ktx'
+    }
+    implementation deps.swiperefreshlayout
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
 
-    implementation 'androidx.work:work-runtime:2.7.1'
+    implementation 'androidx.work:work-runtime:2.8.1'
     if (isFirebase) {
         implementation(firebaseCore) {
             exclude group: "com.google.android.gms", module: "play-services-ads-identifier"
@@ -85,9 +94,10 @@ dependencies {
         compileOnly firebaseCore
     }
 
-    implementation 'io.sentry:sentry-android-core:6.1.4'
+    implementation 'io.sentry:sentry-android-core:6.32.0'
     implementation 'org.conscrypt:conscrypt-android:2.5.2'
 
+    implementation deps.guava
     implementation deps.gson
     implementation deps.glide
     annotationProcessor deps.glide_compiler
@@ -97,15 +107,15 @@ dependencies {
     implementation deps.okhttp_doh
     implementation deps.retrofit
     implementation deps.retrofit_converter_gson
-    implementation deps.retrofit_adapter_rxjava2
-    implementation deps.rxandroid2
-    implementation deps.rxjava2
-    implementation deps.rxlifecycle3
-    implementation deps.rxlifecycle_android3
+    implementation deps.retrofit_adapter_rxjava3
+    implementation deps.rxandroid3
+    implementation deps.rxjava3
+    implementation deps.rxlifecycle4
+    implementation deps.rxlifecycle_android4
     implementation deps.joda_time_android
 
     //https://github.com/Commit451/NativeStackBlur
-    implementation 'com.github.Commit451:NativeStackBlur:1.0.5'
+    implementation 'com.github.Commit451:NativeStackBlur:1.0.7'
 
     //https://github.com/scottyab/rootbeer
     implementation 'com.github.scottyab:rootbeer:0.1.0'
@@ -113,8 +123,8 @@ dependencies {
     //https://github.com/Clans/FloatingActionButton
     implementation 'com.github.clans:fab:1.6.4'
 
-    //https://github.com/grandcentrix/tray
-    implementation 'net.grandcentrix.tray:tray:0.12.0'
+    //https://github.com/GCX-HCI/tray
+    implementation files('libs/tray-0.12.0.aar')
 
     //https://github.com/apl-devs/AppIntro
     implementation 'com.github.AppIntro:AppIntro:6.2.0'
@@ -124,8 +134,8 @@ dependencies {
 
     //    implementation group: "com.github.liaoheng", name: "common-core", version: "0.1.1-SNAPSHOT", changing: true
     //    implementation group: "com.github.liaoheng", name: "common-adapter", version: "0.1.1-SNAPSHOT", changing: true
-    implementation 'com.github.liaoheng:common-core:0.1.1-SNAPSHOT'
-    implementation 'com.github.liaoheng:common-adapter:0.1.1-SNAPSHOT'
+    implementation 'com.github.liaoheng:common-core:0.1.2-SNAPSHOT'
+    implementation 'com.github.liaoheng:common-adapter:0.1.2-SNAPSHOT'
 }
 //configurations.all {
 //    // check for updates every build

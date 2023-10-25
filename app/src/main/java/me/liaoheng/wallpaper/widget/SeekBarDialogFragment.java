@@ -33,7 +33,7 @@ public class SeekBarDialogFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStyle(STYLE_NORMAL, R.style.Theme_AppCompat_Dialog_Alert);
+        setStyle(STYLE_NORMAL, androidx.appcompat.R.style.Theme_AppCompat_Dialog_Alert);
     }
 
     @NonNull
@@ -62,11 +62,11 @@ public class SeekBarDialogFragment extends DialogFragment {
             }
         });
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setTitle(title);
-        builder.setView(binding.getRoot()).setPositiveButton(R.string.lcm_ok, (dialog, which) -> {
+        builder.setView(binding.getRoot()).setPositiveButton(com.github.liaoheng.common.R.string.lcm_ok, (dialog, which) -> {
             if (mCallback != null) {
                 mCallback.onSeekBarValue(binding.seekbar.getProgress());
             }
-        }).setNegativeButton(R.string.lcm_no, (dialog, which) -> {
+        }).setNegativeButton(com.github.liaoheng.common.R.string.lcm_no, (dialog, which) -> {
         });
 
         return builder.create();

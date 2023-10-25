@@ -7,7 +7,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
@@ -141,11 +144,12 @@
 
         <service
             android:name=".service.LiveWallpaperService"
-            android:configChanges="screenSize|orientation|keyboardHidden"
             android:enabled="true"
             android:exported="true"
+            android:supportsMultipleDisplays="true"
             android:permission="android.permission.BIND_WALLPAPER"
-            android:process=":live_wallpaper">
+            android:process=":live_wallpaper"
+            tools:targetApi="q">
             <intent-filter>
                 <action android:name="android.service.wallpaper.WallpaperService" />
                 <action android:name="me.liaoheng.wallpaper.UPDATE_LIVE_WALLPAPER" />

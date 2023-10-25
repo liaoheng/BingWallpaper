@@ -1,5 +1,6 @@
 package me.liaoheng.wallpaper.service;
 
+import android.app.WallpaperManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -32,13 +33,13 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.ObservableTransformer;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableSource;
+import io.reactivex.rxjava3.core.ObservableTransformer;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
 import me.liaoheng.wallpaper.model.Config;
@@ -308,12 +309,14 @@ public class LiveWallpaperService extends WallpaperService {
     }
 
     private class LiveWallpaperEngine extends LiveWallpaperService.Engine {
+        public static final int SET_LOCK_WALLPAPER = 222;
         public static final int DOWNLOAD_DRAW = 123;
         public static final int DOWNLOAD_DRAW_DELAY = 400;
         public static final int ENABLE = 456;
         private DownloadBitmap mLastFile;
         private HandlerHelper mDrawHandlerHelper;
         private Runnable mDrawRunnable;
+        private Runnable mSelectWallpaperRunnable;
         private DelayedHandler mActionHandler;
         private Disposable mDisplayDisposable;
         private Disposable mPreviewDisposable;
@@ -321,6 +324,7 @@ public class LiveWallpaperService extends WallpaperService {
         private LruCache<String, DownloadBitmap> mImageCache;
         private BitmapCache mBitmapCache;
         private String TAG = "LiveWallpaperEngine:";
+        private boolean isSetLockWallpaper;
 
         @Override
         public void onCreate(SurfaceHolder surfaceHolder) {
@@ -328,7 +332,23 @@ public class LiveWallpaperService extends WallpaperService {
             TAG += UUID.randomUUID();
             L.alog().d(TAG, "onCreate");
             setOffsetNotificationsEnabled(true);
-            mDrawHandlerHelper = HandlerHelper.create(TAG, Process.THREAD_PRIORITY_DEFAULT, null);
+            isSetLockWallpaper =
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && ROM.getROM().isMiui() && "V140".equals(
+                            ROM.getROM().getVersion());
+            mDrawHandlerHelper = HandlerHelper.create(TAG, Process.THREAD_PRIORITY_DEFAULT, msg -> {
+                if (msg.what == SET_LOCK_WALLPAPER) {
+                    try {
+                        Bitmap bitmap = (Bitmap) msg.obj;
+                        if (bitmap == null || bitmap.isRecycled()) {
+                            return true;
+                        }
+                        WallpaperManager.getInstance(getDisplayContext())
+                                .setBitmap(bitmap, null, false, WallpaperManager.FLAG_LOCK);
+                    } catch (Throwable ignored) {
+                    }
+                }
+                return false;
+            });
             mActionHandler = new DelayedHandler(Looper.getMainLooper(), msg -> {
                 if (msg.what == DOWNLOAD_DRAW) {
                     downloadWallpaper((DownloadBitmap) msg.obj);
@@ -340,6 +360,7 @@ public class LiveWallpaperService extends WallpaperService {
                 return true;
             });
             mDrawRunnable = this::drawWallpaper;
+            mSelectWallpaperRunnable = this::selectWallpaper;
 
             mReceiver = new LiveWallpaperEngineBroadcastReceiver();
             mImageCache = new LruCache<>(8);
@@ -371,12 +392,27 @@ public class LiveWallpaperService extends WallpaperService {
             super.onDestroy();
         }
 
+        private void selectWallpaper() {
+            DownloadBitmap image = mImageCache.get(mLastFile.key(getSurfaceHolder()));
+            if (image == null) {
+                mActionHandler.removeMessages(DOWNLOAD_DRAW);
+                mActionHandler.sendDelayed(DOWNLOAD_DRAW, new DownloadBitmap(mLastFile.image, mLastFile.config),
+                        DOWNLOAD_DRAW_DELAY);
+                return;
+            }
+            if (image.eq(mLastFile)) {
+                return;
+            }
+            mLastFile = image;
+            postDraw();
+        }
+
         private void postDraw() {
             if (mDrawHandlerHelper == null) {
                 return;
             }
             mDrawHandlerHelper.removeCallbacks(mDrawRunnable);
-            mDrawHandlerHelper.postDelayed(mDrawRunnable, 200);
+            mDrawHandlerHelper.postDelayed(mDrawRunnable, Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? 50 : 10);
         }
 
         private void drawWallpaper() {
@@ -384,6 +420,10 @@ public class LiveWallpaperService extends WallpaperService {
         }
 
         private synchronized void drawWallpaper(DownloadBitmap wallpaper) {
+            if (getSurfaceHolder() == null) {
+                L.alog().e(TAG, "attempt to draw a frame without a valid surface");
+                return;
+            }
             if (wallpaper == null) {
                 return;
             }
@@ -407,6 +447,11 @@ public class LiveWallpaperService extends WallpaperService {
             WallpaperUtils.drawSurfaceHolder(getSurfaceHolder(),
                     canvas -> draw(canvas, finalBitmap, getSurfaceHolder().getSurfaceFrame().width(),
                             getSurfaceHolder().getSurfaceFrame().height()));
+            if (isSetLockWallpaper && (mLastFile.config.getWallpaperMode() == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK
+                    || mLastFile.config.getWallpaperMode() == Constants.EXTRA_SET_WALLPAPER_MODE_BOTH)) {
+                mDrawHandlerHelper.removeMessages(SET_LOCK_WALLPAPER);
+                mDrawHandlerHelper.sendDelayed(SET_LOCK_WALLPAPER, finalBitmap, 1000);
+            }
         }
 
         private Paint mBitmapPaint;
@@ -468,18 +513,8 @@ public class LiveWallpaperService extends WallpaperService {
             if (mLastFile == null) {
                 return;
             }
-            DownloadBitmap image = mImageCache.get(mLastFile.key(getSurfaceHolder()));
-            if (image == null) {
-                mActionHandler.removeMessages(DOWNLOAD_DRAW);
-                mActionHandler.sendDelayed(DOWNLOAD_DRAW, new DownloadBitmap(mLastFile.image, mLastFile.config),
-                        DOWNLOAD_DRAW_DELAY);
-                return;
-            }
-            if (image.eq(mLastFile)) {
-                return;
-            }
-            mLastFile = image;
-            postDraw();
+            mDrawHandlerHelper.removeCallbacks(mSelectWallpaperRunnable);
+            mDrawHandlerHelper.postDelayed(mSelectWallpaperRunnable, 50);
         }
 
         @Override

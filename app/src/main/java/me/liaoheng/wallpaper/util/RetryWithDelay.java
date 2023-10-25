@@ -1,8 +1,9 @@
 package me.liaoheng.wallpaper.util;
 
-import io.reactivex.Observable;
-import io.reactivex.functions.Function;
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.functions.Function;
 
 /**
  * <a href="https://stackoverflow.com/questions/22066481/rxjava-can-i-use-retry-but-with-delay">rxjava-can-i-use-retry-but-with-delay</a>

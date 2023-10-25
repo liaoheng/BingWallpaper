@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.ConscryptMode;
 
 import me.liaoheng.wallpaper.BaseTest;
 import me.liaoheng.wallpaper.TestApplication;
@@ -16,7 +17,7 @@ import static org.junit.Assert.assertEquals;
  * @version 2018-01-21 17:29
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(application = TestApplication.class, sdk = 28)
+@Config(application = TestApplication.class)
 public class BingWallpaperUtilsTest extends BaseTest {
 
     @Test

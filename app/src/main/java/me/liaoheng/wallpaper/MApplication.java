@@ -12,7 +12,7 @@ import com.github.liaoheng.common.util.LanguageContextWrapper;
 
 import net.danlew.android.joda.JodaTimeInitializer;
 
-import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import me.liaoheng.wallpaper.util.CacheUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;

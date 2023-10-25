@@ -4,9 +4,12 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.work.Configuration;
+import androidx.work.Constraints;
 import androidx.work.Data;
 import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.OutOfQuotaPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
@@ -42,9 +45,14 @@ public class WorkerManager {
             PeriodicWorkRequest.Builder builder = new PeriodicWorkRequest.Builder(BingWallpaperWorker.class, time,
                     TimeUnit.SECONDS)
                     .addTag(WORKER_TAG);
+            Constraints.Builder constraints = new Constraints.Builder();
+            if (Settings.getOnlyWifi(context)) {
+                constraints.setRequiredNetworkType(NetworkType.UNMETERED);
+            }
+            builder.setConstraints(constraints.build());
 
             WorkManager.getInstance(context)
-                    .enqueueUniquePeriodicWork(WORKER_TAG, ExistingPeriodicWorkPolicy.REPLACE, builder.build());
+                    .enqueueUniquePeriodicWork(WORKER_TAG, ExistingPeriodicWorkPolicy.UPDATE, builder.build());
             return true;
         } catch (Throwable e) {
             L.alog().w("WorkerManager", e, "enable work error");

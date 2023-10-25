@@ -13,7 +13,8 @@ import com.github.liaoheng.common.util.ValidateUtils;
 import java.util.List;
 
 import androidx.recyclerview.widget.GridLayoutManager;
-import io.reactivex.Observable;
+
+import io.reactivex.rxjava3.core.Observable;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.adapter.WallpaperAdapter;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;

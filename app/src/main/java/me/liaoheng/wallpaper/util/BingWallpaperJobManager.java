@@ -1,6 +1,7 @@
 package me.liaoheng.wallpaper.util;
 
 import android.app.Activity;
+import android.app.WallpaperInfo;
 import android.app.WallpaperManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,9 +15,9 @@ import org.joda.time.LocalTime;
 
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Observable;
-import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.service.LiveWallpaperService;
 
@@ -182,7 +183,10 @@ public class BingWallpaperJobManager {
         if (jobType == Settings.NONE) {
             return "none";
         } else if (jobType == Settings.LIVE_WALLPAPER) {
-            return "live_wallpaper";
+            if (checkLiveWallpaperService(context)) {
+                return "live_wallpaper";
+            }
+            return "live_wallpaper_error";
         } else if (jobType == Settings.WORKER) {
             if (WorkerManager.isScheduled(context)) {
                 return "worker";
@@ -193,6 +197,12 @@ public class BingWallpaperJobManager {
             return "timer(" + BingWallpaperUtils.getDayUpdateTime(context) + ")";
         }
         return String.valueOf(jobType);
+    }
+
+    public static boolean checkLiveWallpaperService(Context context) {
+        WallpaperInfo wallpaperInfo = WallpaperManager.getInstance(context).getWallpaperInfo();
+        return wallpaperInfo != null && LiveWallpaperService.class.getName()
+                .equals(wallpaperInfo.getServiceInfo().name);
     }
 
 }
