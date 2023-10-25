@@ -7,10 +7,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="QueryAllPackagesPermission" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
@@ -21,6 +20,15 @@
 
     <permission android:name="me.liaoheng.wallpaper.permission.UPDATE_LIVE_WALLPAPER" />
     <uses-permission android:name="me.liaoheng.wallpaper.permission.UPDATE_LIVE_WALLPAPER" />
+
+    <queries>
+        <intent>
+            <action android:name="android.service.wallpaper.CHANGE_LIVE_WALLPAPER" />
+        </intent>
+    </queries>
+    <uses-permission
+        android:name="com.google.android.gms.permission.AD_ID"
+        tools:node="remove" />
 
     <uses-feature
         android:name="android.hardware.touchscreen"
@@ -146,9 +154,9 @@
             android:name=".service.LiveWallpaperService"
             android:enabled="true"
             android:exported="true"
-            android:supportsMultipleDisplays="true"
             android:permission="android.permission.BIND_WALLPAPER"
             android:process=":live_wallpaper"
+            android:supportsMultipleDisplays="true"
             tools:targetApi="q">
             <intent-filter>
                 <action android:name="android.service.wallpaper.WallpaperService" />

@@ -714,7 +714,7 @@ public class BingWallpaperUtils {
     }
 
     public static boolean requestStoragePermissions(Activity activity) {
-        if (checkStoragePermissions(activity)) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P || checkStoragePermissions(activity)) {
             return true;
         }
         ActivityCompat.requestPermissions(activity, getStoragePermissions(), 111);

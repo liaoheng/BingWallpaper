@@ -15,8 +15,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 10950
-        versionName "1.9.50"
+        versionCode 10951
+        versionName "1.9.51"
     }
 
     def isSigning = true
@@ -87,7 +87,7 @@ dependencies {
     implementation 'androidx.work:work-runtime:2.8.1'
     if (isFirebase) {
         implementation(firebaseCore) {
-            exclude group: "com.google.android.gms", module: "play-services-ads-identifier"
+            exclude module: "play-services-ads-identifier"
         }
     } else {
         printf("not exists google-services.json")
