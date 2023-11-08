@@ -1,9 +1,12 @@
 package me.liaoheng.wallpaper.ui;
 
+import static android.Manifest.permission.POST_NOTIFICATIONS;
+
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -40,11 +43,10 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.palette.graphics.Palette;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import me.liaoheng.wallpaper.R;
@@ -205,6 +207,11 @@ public class MainActivity extends BaseActivity
         getBingWallpaper();
 
         BingWallpaperUtils.showMiuiDialog(this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && ActivityCompat.checkSelfPermission(this, POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] { POST_NOTIFICATIONS }, 123);
+        }
     }
 
     @SuppressLint({ "SetTextI18n", "CheckResult" })
@@ -562,7 +569,7 @@ public class MainActivity extends BaseActivity
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
             @NonNull int[] grantResults) {
-        if (mDownloadHelper != null) {
+        if (mDownloadHelper != null && mCurWallpaper != null) {
             mDownloadHelper.onRequestPermissionsResult(requestCode, grantResults, getSaveUrl());
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

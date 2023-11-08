@@ -17,6 +17,7 @@
         android:name="android.permission.WRITE_SETTINGS"
         android:maxSdkVersion="22" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <permission android:name="me.liaoheng.wallpaper.permission.UPDATE_LIVE_WALLPAPER" />
     <uses-permission android:name="me.liaoheng.wallpaper.permission.UPDATE_LIVE_WALLPAPER" />

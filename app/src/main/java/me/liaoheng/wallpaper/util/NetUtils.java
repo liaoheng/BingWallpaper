@@ -11,11 +11,8 @@ import com.github.liaoheng.common.util.FileUtils;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.Utils;
 
-import org.conscrypt.Conscrypt;
-
 import java.io.File;
 import java.io.IOException;
-import java.security.Security;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -83,12 +80,7 @@ public class NetUtils {
         return builder;
     }
 
-    private void ssl() {
-        Security.insertProviderAt(Conscrypt.newProvider(), 1);
-    }
-
     public void init(Context context) {
-        ssl();
         Retrofit.Builder factory = new Retrofit.Builder().baseUrl(Constants.LOCAL_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava3CallAdapterFactory.create());

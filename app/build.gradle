@@ -15,8 +15,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 10951
-        versionName "1.9.51"
+        versionCode 10953
+        versionName "1.9.53"
     }
 
     def isSigning = true
@@ -35,8 +35,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             if (isSigning) signingConfig signingConfigs.config
         }
@@ -95,7 +94,6 @@ dependencies {
     }
 
     implementation 'io.sentry:sentry-android-core:6.32.0'
-    implementation 'org.conscrypt:conscrypt-android:2.5.2'
 
     implementation deps.guava
     implementation deps.gson
