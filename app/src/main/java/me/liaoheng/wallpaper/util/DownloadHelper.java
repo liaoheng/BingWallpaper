@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback5;
+import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
@@ -79,7 +80,10 @@ public class DownloadHelper {
 
             @Override
             public void onError(Throwable e) {
-                CrashReportHandle.saveWallpaper(mContext, TAG, e);
+                L.alog().e(TAG, e, "save wallpaper error");
+                if (Settings.isEnableLogProvider(mContext)) {
+                    LogDebugFileUtils.get().e(TAG, "Save wallpaper error: %s", e);
+                }
                 UIUtils.showToast(mContext, R.string.alert_save_wallpaper_failure);
             }
         });

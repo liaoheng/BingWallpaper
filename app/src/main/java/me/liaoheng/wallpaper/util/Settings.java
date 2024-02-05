@@ -10,9 +10,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.ui.SettingsActivity;
 
@@ -261,10 +258,7 @@ public class Settings {
     public static final String BING_WALLPAPER_JOB_TYPE = "bing_wallpaper_job_type";
 
     public static void setJobType(Context context, @JobType int type) {
-        Observable.just(type).subscribeOn(Schedulers.io()).map((Function<Integer, Object>) t -> {
-            SettingTrayPreferences.get(context).put(BING_WALLPAPER_JOB_TYPE, t);
-            return "";
-        }).subscribe();
+        new Thread(() -> SettingTrayPreferences.get(context).put(BING_WALLPAPER_JOB_TYPE, type)).start();
     }
 
     @JobType

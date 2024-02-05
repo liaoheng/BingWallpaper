@@ -64,7 +64,6 @@ public class SettingsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setTitle(R.string.menu_main_setting);
         setContentView(R.layout.activity_settings);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if (savedInstanceState != null) {
             isChangeLanguage = savedInstanceState.getBoolean("isChangeLanguage");
         }

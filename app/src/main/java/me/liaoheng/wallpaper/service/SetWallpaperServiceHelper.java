@@ -50,7 +50,6 @@ public class SetWallpaperServiceHelper {
             LogDebugFileUtils.get().e(TAG, throwable, "Set wallpaper failure");
         }
         sendSetWallpaperBroadcast(BingWallpaperState.FAIL);
-        CrashReportHandle.collectException(mContext, TAG, config, throwable);
         if (!config.isShowNotification()) {
             return;
         }

@@ -8,15 +8,15 @@ if (isFirebase) {
 }
 
 android {
-    compileSdk rootProject.ext.compileSdkVersion
     namespace 'me.liaoheng.wallpaper'
+    compileSdk rootProject.ext.compileSdkVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 10953
-        versionName "1.9.53"
+        versionCode 10954
+        versionName "1.9.54"
     }
 
     def isSigning = true
@@ -52,10 +52,6 @@ android {
             }
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
-    }
     buildFeatures {
         viewBinding true
         buildConfig true
@@ -81,9 +77,10 @@ dependencies {
         exclude group: 'androidx.lifecycle', module:'lifecycle-viewmodel-ktx'
     }
     implementation deps.swiperefreshlayout
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
+    //https://stackoverflow.com/questions/75263047/duplicate-class-in-kotlin-android
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.10"))
 
-    implementation 'androidx.work:work-runtime:2.8.1'
+    implementation 'androidx.work:work-runtime:2.9.0'
     if (isFirebase) {
         implementation(firebaseCore) {
             exclude module: "play-services-ads-identifier"
@@ -93,7 +90,7 @@ dependencies {
         compileOnly firebaseCore
     }
 
-    implementation 'io.sentry:sentry-android-core:6.32.0'
+    implementation 'io.sentry:sentry-android-core:7.3.0'
 
     implementation deps.guava
     implementation deps.gson

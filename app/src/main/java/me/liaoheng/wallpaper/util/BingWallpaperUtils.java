@@ -73,16 +73,6 @@ import me.liaoheng.wallpaper.service.LiveWallpaperService;
  */
 public class BingWallpaperUtils {
 
-    @Deprecated
-    public static boolean isEnableLog(Context context) {
-        return Settings.isEnableLog(context);
-    }
-
-    @Deprecated
-    public static boolean isEnableLogProvider(Context context) {
-        return Settings.isEnableLogProvider(context);
-    }
-
     public static String getResolutionImageUrl(Context context, String baseUrl) {
         return getImageUrl(context, Settings.getResolution(context), baseUrl);
     }

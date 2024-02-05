@@ -6,6 +6,7 @@ import android.util.MalformedJsonException;
 
 import com.bumptech.glide.load.engine.GlideException;
 import com.github.liaoheng.common.util.L;
+import com.github.liaoheng.common.util.ROM;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.net.ConnectException;
@@ -36,7 +37,15 @@ public class CrashReportHandle {
             disable(context);
         } else {
             enable(context);
-            SentryAndroid.init(context, options -> options.setDebug(BuildConfig.DEBUG));
+            SentryAndroid.init(context, options -> {
+                options.setBeforeSend((event, hint) -> {
+                    event.setExtra("job_ype", BingWallpaperJobManager.check(context));
+                    event.setExtra("rom_type", ROM.getROM().getRom());
+                    event.setExtra("resolution", Settings.getResolution(context));
+                    return event;
+                });
+                options.setDebug(BuildConfig.DEBUG);
+            });
         }
     }
 
@@ -90,17 +99,8 @@ public class CrashReportHandle {
                 }
             }
             L.alog().e(TAG, throwable);
-            collectException(context, TAG, throwable);
         }
         return error;
-    }
-
-    public static void saveWallpaper(Context context, String TAG, Throwable t) {
-        L.alog().e(TAG, t, "save wallpaper error");
-        if (BingWallpaperUtils.isEnableLogProvider(context)) {
-            LogDebugFileUtils.get().e(TAG, "Save wallpaper error: %s", t);
-        }
-        collectException(context, TAG, t);
     }
 
     public static void collectException(Context context, String TAG, Throwable t) {
