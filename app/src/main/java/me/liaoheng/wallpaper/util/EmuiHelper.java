@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 
+import androidx.core.content.ContextCompat;
+
 import com.github.liaoheng.common.util.AppUtils;
 
 import java.io.IOException;
@@ -18,7 +20,7 @@ import me.liaoheng.wallpaper.model.WallpaperImage;
  */
 public class EmuiHelper {
 
-    private BottomViewListener mListener;
+    private final BottomViewListener mListener;
     private BroadcastReceiver mNavigationBarBCR;
     private final String NAVIGATION_BAR_STATUS_CHANGE = "com.huawei.navigationbar.statuschange";
 
@@ -49,7 +51,7 @@ public class EmuiHelper {
         };
         IntentFilter intent = new IntentFilter();
         intent.addAction(NAVIGATION_BAR_STATUS_CHANGE);
-        context.registerReceiver(mNavigationBarBCR, intent);
+        ContextCompat.registerReceiver(context, mNavigationBarBCR, intent, ContextCompat.RECEIVER_EXPORTED);
     }
 
     public void unregister(Context context) {

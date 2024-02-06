@@ -1,3 +1,4 @@
 apply from: 'https://raw.githubusercontent.com/liaoheng/common/v0.1.2/dependencies.gradle'
 
 ext.deps.put("palette","androidx.palette:palette:1.0.0")
+ext.deps.put("robolectric","org.robolectric:robolectric:4.11.1")

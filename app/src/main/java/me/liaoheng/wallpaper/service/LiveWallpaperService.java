@@ -18,6 +18,8 @@ import android.service.wallpaper.WallpaperService;
 import android.view.SurfaceHolder;
 
 import androidx.collection.LruCache;
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback;
@@ -116,7 +118,9 @@ public class LiveWallpaperService extends WallpaperService {
         intentFilter.addAction(UPDATE_LIVE_WALLPAPER);
         intentFilter.addAction(Constants.ACTION_DEBUG_LOG);
         intentFilter.addAction(ENABLE_LIVE_WALLPAPER);
-        registerReceiver(mReceiver, intentFilter, PERMISSION_UPDATE_LIVE_WALLPAPER, new Handler(getMainLooper()));
+        ContextCompat.registerReceiver(this, mReceiver, intentFilter, PERMISSION_UPDATE_LIVE_WALLPAPER,
+                new Handler(getMainLooper()), ContextCompat.RECEIVER_NOT_EXPORTED);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, intentFilter);
     }
 
     @Override
@@ -228,7 +232,7 @@ public class LiveWallpaperService extends WallpaperService {
         Intent intent = new Intent(VIEW_LIVE_WALLPAPER);
         intent.putExtra(Config.EXTRA_SET_WALLPAPER_IMAGE, d.image);
         intent.putExtra(Config.EXTRA_SET_WALLPAPER_CONFIG, d.config);
-        sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
         if (config.getWallpaperMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
             return;
@@ -319,7 +323,6 @@ public class LiveWallpaperService extends WallpaperService {
         private LruCache<String, DownloadBitmap> mImageCache;
         private BitmapCache mBitmapCache;
         private String TAG = "LiveWallpaperEngine:";
-        private boolean isSetLockWallpaper;
 
         @Override
         public void onCreate(SurfaceHolder surfaceHolder) {
@@ -327,9 +330,6 @@ public class LiveWallpaperService extends WallpaperService {
             TAG += UUID.randomUUID();
             L.alog().d(TAG, "onCreate");
             setOffsetNotificationsEnabled(true);
-            isSetLockWallpaper =
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && ROM.getROM().isMiui() && "V140".equals(
-                            ROM.getROM().getVersion());
             mDrawHandlerHelper = HandlerHelper.create(TAG, Process.THREAD_PRIORITY_DEFAULT, null);
             mActionHandler = new DelayedHandler(Looper.getMainLooper(), msg -> {
                 if (msg.what == DOWNLOAD_DRAW) {
@@ -337,7 +337,7 @@ public class LiveWallpaperService extends WallpaperService {
                 } else if (msg.what == ENABLE) {
                     Intent intent = new Intent(ENABLE_LIVE_WALLPAPER);
                     intent.putExtra(EXTRA_ENABLE_LIVE_WALLPAPER, (boolean) msg.obj);
-                    getDisplayContext().sendBroadcast(intent);
+                    LocalBroadcastManager.getInstance(getDisplayContext()).sendBroadcast(intent);
                 }
                 return true;
             });
@@ -502,7 +502,8 @@ public class LiveWallpaperService extends WallpaperService {
             super.onSurfaceCreated(holder);
             L.alog().d(TAG, "onSurfaceCreated");
             if (!isPreview()) {
-                getDisplayContext().registerReceiver(mReceiver, new IntentFilter(VIEW_LIVE_WALLPAPER));
+                LocalBroadcastManager.getInstance(getDisplayContext())
+                        .registerReceiver(mReceiver, new IntentFilter(VIEW_LIVE_WALLPAPER));
             }
             previewBingWallpaper();
         }

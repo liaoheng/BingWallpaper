@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import androidx.core.content.ContextCompat;
+
 import com.github.liaoheng.common.util.Callback4;
 
 import me.liaoheng.wallpaper.model.BingWallpaperState;
@@ -22,8 +24,8 @@ public class SetWallpaperStateBroadcastReceiverHelper {
     }
 
     public void register(Context context) {
-        context.registerReceiver(mBroadcastReceiver,
-                new IntentFilter(Constants.ACTION_GET_WALLPAPER_STATE));
+        ContextCompat.registerReceiver(context, mBroadcastReceiver,
+                new IntentFilter(Constants.ACTION_GET_WALLPAPER_STATE), ContextCompat.RECEIVER_NOT_EXPORTED);
     }
 
     public void unregister(Context context) {
