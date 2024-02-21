@@ -6,10 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -31,6 +32,8 @@ import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 
 import org.joda.time.LocalTime;
+
+import java.util.Objects;
 
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
@@ -150,22 +153,17 @@ public class SettingsActivity extends BaseActivity {
         }
 
         @Override
-        public void onDisplayPreferenceDialog(Preference preference) {
+        public void onDisplayPreferenceDialog(@NonNull Preference preference) {
             if (preference instanceof TimePreference) {
-                FragmentManager fragmentManager = getFragmentManager();
-                if (fragmentManager != null) {
-                    DialogFragment dialogFragment = TimePreferenceDialogFragmentCompat.newInstance(preference.getKey());
-                    dialogFragment.setTargetFragment(this, 0);
-                    dialogFragment.show(fragmentManager, "TimePreference");
-                }
+                FragmentManager fragmentManager = getParentFragmentManager();
+                DialogFragment dialogFragment = TimePreferenceDialogFragmentCompat.newInstance(preference.getKey());
+                dialogFragment.setTargetFragment(this, 0);
+                dialogFragment.show(fragmentManager, "TimePreference");
             } else if (preference instanceof SeekBarDialogPreference) {
-                FragmentManager fragmentManager = getFragmentManager();
-                if (fragmentManager != null) {
-                    DialogFragment dialogFragment = SeekBarPreferenceDialogFragmentCompat.newInstance(
-                            preference.getKey());
-                    dialogFragment.setTargetFragment(this, 1);
-                    dialogFragment.show(fragmentManager, "SeekBarDialogPreference");
-                }
+                FragmentManager fragmentManager = getParentFragmentManager();
+                DialogFragment dialogFragment = SeekBarPreferenceDialogFragmentCompat.newInstance(preference.getKey());
+                dialogFragment.setTargetFragment(this, 1);
+                dialogFragment.show(fragmentManager, "SeekBarDialogPreference");
             } else {
                 super.onDisplayPreferenceDialog(preference);
             }
@@ -184,6 +182,7 @@ public class SettingsActivity extends BaseActivity {
         }
 
         private SettingBroadcastReceiver mReceiver;
+        private ActivityResultLauncher<String[]> mAutoSavePermissions;
 
         @SuppressWarnings("ConstantConditions")
         @Override
@@ -192,6 +191,9 @@ public class SettingsActivity extends BaseActivity {
             mReceiver = new SettingBroadcastReceiver();
             LocalBroadcastManager.getInstance(requireContext())
                     .registerReceiver(mReceiver, new IntentFilter(CLOSE_FULLY_AUTOMATIC_UPDATE));
+            mAutoSavePermissions = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(),
+                    map -> onAutoSaveWallpaperRequestPermissionsResult(
+                            BingWallpaperUtils.checkStoragePermissions(map)));
             mPreferences = SettingTrayPreferences.get(requireContext());
             Preference version = findPreference("pref_version");
             version.setSummary(AppUtils.getVersionInfo(requireContext()).versionName);
@@ -211,40 +213,36 @@ public class SettingsActivity extends BaseActivity {
                 return true;
             });
 
-            findPreference("pref_clear_cache").setOnPreferenceClickListener(
-                    preference -> {
-                        UIUtils.showYNAlertDialog(requireContext(), getString(R.string.pref_clear_cache) + "?",
-                                new Callback5() {
-                                    @Override
-                                    public void onAllow() {
-                                        Utils.addSubscribe(BingWallpaperUtils.clearCache(getActivity()),
-                                                new Callback.EmptyCallback<Object>() {
-                                                    @Override
-                                                    public void onSuccess(Object o) {
-                                                        UIUtils.showToast(requireContext(),
-                                                                R.string.pref_clear_cache_success);
-                                                    }
-                                                });
-                                    }
+            findPreference("pref_clear_cache").setOnPreferenceClickListener(preference -> {
+                UIUtils.showYNAlertDialog(requireContext(), getString(R.string.pref_clear_cache) + "?",
+                        new Callback5() {
+                            @Override
+                            public void onAllow() {
+                                Utils.addSubscribe(BingWallpaperUtils.clearCache(getActivity()),
+                                        new Callback.EmptyCallback<Object>() {
+                                            @Override
+                                            public void onSuccess(Object o) {
+                                                UIUtils.showToast(requireContext(), R.string.pref_clear_cache_success);
+                                            }
+                                        });
+                            }
 
-                                    @Override
-                                    public void onDeny() {
+                            @Override
+                            public void onDeny() {
 
-                                    }
-                                });
-                        return true;
-                    });
+                            }
+                        });
+                return true;
+            });
 
             findPreference("pref_translation").setOnPreferenceClickListener(preference -> {
                 UIUtils.startActivity(requireContext(), TranslatorActivity.class);
                 return true;
             });
 
-            mDailyUpdatePreference = findPreference(
-                    PREF_SET_WALLPAPER_DAILY_UPDATE);
+            mDailyUpdatePreference = findPreference(PREF_SET_WALLPAPER_DAILY_UPDATE);
             mDailyUpdateModeListPreference = findPreference(PREF_SET_WALLPAPER_DAILY_UPDATE_MODE);
-            mDailyUpdateIntervalPreference = findPreference(
-                    PREF_SET_WALLPAPER_DAILY_UPDATE_INTERVAL);
+            mDailyUpdateIntervalPreference = findPreference(PREF_SET_WALLPAPER_DAILY_UPDATE_INTERVAL);
             mDailyUpdateTimePreference = findPreference(PREF_SET_WALLPAPER_DAILY_UPDATE_TIME);
             mDailyUpdateSuccessNotificationPreference = findPreference(
                     PREF_SET_WALLPAPER_DAILY_UPDATE_SUCCESS_NOTIFICATION);
@@ -351,9 +349,8 @@ public class SettingsActivity extends BaseActivity {
         }
 
         @Override
-        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-                String key) {
-            switch (key) {
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            switch (Objects.requireNonNull(key)) {
                 case PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI:
                     mPreferences.put(PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI, mOnlyWifiPreference.isChecked());
                     break;
@@ -453,7 +450,9 @@ public class SettingsActivity extends BaseActivity {
                     break;
                 case PREF_AUTO_SAVE_WALLPAPER_FILE:
                     if (mAutoSaveWallpaperPreference.isChecked()) {
-                        requestPermissions(BingWallpaperUtils.getStoragePermissions(), 111);
+                        if (BingWallpaperUtils.requestStoragePermissions(requireActivity(), mAutoSavePermissions)) {
+                            onAutoSaveWallpaperRequestPermissionsResult(true);
+                        }
                     } else {
                         mPreferences.put(PREF_AUTO_SAVE_WALLPAPER_FILE, false);
                     }
@@ -473,29 +472,25 @@ public class SettingsActivity extends BaseActivity {
             }
         }
 
-        @Override
-        public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                @NonNull int[] grantResults) {
-            if (requestCode == 111) {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mPreferences.put(PREF_AUTO_SAVE_WALLPAPER_FILE, true);
-                } else {
-                    mAutoSaveWallpaperPreference.setChecked(false);
-                }
+        public void onAutoSaveWallpaperRequestPermissionsResult(boolean granted) {
+            if (granted) {
+                mPreferences.put(PREF_AUTO_SAVE_WALLPAPER_FILE, true);
+            } else {
+                mAutoSaveWallpaperPreference.setChecked(false);
             }
         }
 
         @Override
         public void onResume() {
             super.onResume();
-            getPreferenceManager().getSharedPreferences()
+            Objects.requireNonNull(getPreferenceManager().getSharedPreferences())
                     .registerOnSharedPreferenceChangeListener(this);
         }
 
         @Override
         public void onPause() {
             super.onPause();
-            getPreferenceManager().getSharedPreferences()
+            Objects.requireNonNull(getPreferenceManager().getSharedPreferences())
                     .unregisterOnSharedPreferenceChangeListener(this);
         }
 

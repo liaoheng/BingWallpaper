@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
@@ -703,11 +704,25 @@ public class BingWallpaperUtils {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
 
+    public static boolean checkStoragePermissions(Map<String, Boolean> map) {
+        return Boolean.TRUE.equals(map.get(Manifest.permission.READ_EXTERNAL_STORAGE)) && Boolean.TRUE.equals(
+                map.get(Manifest.permission.WRITE_EXTERNAL_STORAGE));
+    }
+
     public static boolean requestStoragePermissions(Activity activity) {
+        return requestStoragePermissions(activity, null);
+    }
+
+    public static boolean requestStoragePermissions(Activity activity,
+            ActivityResultLauncher<String[]> resultLauncher) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P || checkStoragePermissions(activity)) {
             return true;
         }
-        ActivityCompat.requestPermissions(activity, getStoragePermissions(), 111);
+        if (resultLauncher == null) {
+            ActivityCompat.requestPermissions(activity, getStoragePermissions(), 111);
+        } else {
+            resultLauncher.launch(getStoragePermissions());
+        }
         return false;
     }
 
@@ -783,7 +798,9 @@ public class BingWallpaperUtils {
         if (split.length > 1) {
             name = split[1];
         }
-        return DateTimeFormat.forPattern(DateTimeUtils.DATAFORMAT_YYYYMMDD).withLocale(Locale.getDefault()).print(DateTime.now()) + "_"
+        return DateTimeFormat.forPattern(DateTimeUtils.DATAFORMAT_YYYYMMDD)
+                .withLocale(Locale.getDefault())
+                .print(DateTime.now()) + "_"
                 + name;
     }
 
