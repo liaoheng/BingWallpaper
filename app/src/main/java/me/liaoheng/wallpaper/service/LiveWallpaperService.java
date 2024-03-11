@@ -1,5 +1,6 @@
 package me.liaoheng.wallpaper.service;
 
+import android.app.WallpaperManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,9 +11,12 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.YuvImage;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.ParcelFileDescriptor;
 import android.os.Process;
 import android.service.wallpaper.WallpaperService;
 import android.view.SurfaceHolder;
@@ -98,11 +102,7 @@ public class LiveWallpaperService extends WallpaperService {
         }
     }
 
-    private final ScheduledThreadPoolExecutor mPoolExecutor = new ScheduledThreadPoolExecutor(1, r -> {
-        Thread thread = new Thread(r);
-        thread.setPriority(Thread.MIN_PRIORITY);
-        return thread;
-    });
+    private ScheduledThreadPoolExecutor mPoolExecutor;
 
     private final Runnable checkRunnable = this::timing;
 
@@ -112,6 +112,11 @@ public class LiveWallpaperService extends WallpaperService {
         L.alog().d(TAG, "onCreate");
         LogDebugFileUtils.init(this);
         mServiceHelper = new SetWallpaperServiceHelper(this, TAG);
+        mPoolExecutor = new ScheduledThreadPoolExecutor(1, r -> {
+            Thread thread = new Thread(r);
+            thread.setPriority(Thread.MIN_PRIORITY);
+            return thread;
+        });
         mLoadWallpaperDisposable = new CompositeDisposable();
         mReceiver = new LiveWallpaperBroadcastReceiver();
         IntentFilter intentFilter = new IntentFilter();
@@ -129,15 +134,20 @@ public class LiveWallpaperService extends WallpaperService {
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);
         }
-        disable();
-        //mPoolExecutor.shutdown();
         Utils.dispose(mLoadWallpaperDisposable);
+        disable();
+        if (mPoolExecutor != null) {
+            mPoolExecutor.shutdown();
+        }
         super.onDestroy();
     }
 
     private ScheduledFuture<?> mScheduledFuture;
 
     public void enable() {
+        if (mPoolExecutor == null) {
+            return;
+        }
         disable();
         mScheduledFuture = mPoolExecutor.scheduleAtFixedRate(checkRunnable, 500, mCheckPeriodic, TimeUnit.MILLISECONDS);
     }
@@ -423,10 +433,10 @@ public class LiveWallpaperService extends WallpaperService {
                     if (bitmap == null) {
                         return;
                     }
-                    mBitmapCache.put(wallpaper.key(), bitmap);
                 } else {
                     bitmap = BitmapFactory.decodeResource(getDisplayContext().getResources(), R.drawable.background);
                 }
+                mBitmapCache.put(wallpaper.key(), bitmap);
             }
             final Bitmap finalBitmap = bitmap;
             WallpaperUtils.drawSurfaceHolder(getSurfaceHolder(),
@@ -539,9 +549,19 @@ public class LiveWallpaperService extends WallpaperService {
 
                 @Override
                 public void onError(Throwable e) {
+                    setWallpaperDef();
                     mServiceHelper.failure(config, e);
                 }
             });
+        }
+
+        private void setWallpaperDef() {
+            Config config = new Config.Builder().build();
+            Wallpaper wallpaper = new Wallpaper("", "", "", "", "", "", "");
+            DownloadBitmap bitmap = new DownloadBitmap(wallpaper, config);
+            File file = new File("");
+            bitmap.wallpaper = new WallpaperImage("", file, file);
+            drawWallpaper(bitmap);
         }
 
         private void downloadWallpaper(DownloadBitmap wallpaper) {
