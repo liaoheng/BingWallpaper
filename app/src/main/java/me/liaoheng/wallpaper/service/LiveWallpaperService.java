@@ -1,6 +1,6 @@
 package me.liaoheng.wallpaper.service;
 
-import android.app.WallpaperManager;
+import android.app.WallpaperColors;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,16 +11,14 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PointF;
-import android.graphics.YuvImage;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.ParcelFileDescriptor;
 import android.os.Process;
 import android.service.wallpaper.WallpaperService;
 import android.view.SurfaceHolder;
 
+import androidx.annotation.Nullable;
 import androidx.collection.LruCache;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -247,12 +245,10 @@ public class LiveWallpaperService extends WallpaperService {
         if (config.getWallpaperMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
             return;
         }
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
-            return;
-        }
-        if (ROM.getROM().isEmui() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S && ROM.getROM().isEmui()) {
             downloadLockWallpaper(d);
-        } else if (ROM.getROM().isMiui() && Settings.isMiuiLockScreenSupport(getApplicationContext())) {
+        } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R && ROM.getROM().isMiui()
+                && Settings.isMiuiLockScreenSupport(getApplicationContext())) {
             downloadLockWallpaper(d);
         }
     }
@@ -439,9 +435,13 @@ public class LiveWallpaperService extends WallpaperService {
                 mBitmapCache.put(wallpaper.key(), bitmap);
             }
             final Bitmap finalBitmap = bitmap;
-            WallpaperUtils.drawSurfaceHolder(getSurfaceHolder(),
-                    canvas -> draw(canvas, finalBitmap, getSurfaceHolder().getSurfaceFrame().width(),
-                            getSurfaceHolder().getSurfaceFrame().height()));
+            WallpaperUtils.drawSurfaceHolder(getSurfaceHolder(), canvas -> {
+                draw(canvas, finalBitmap, getSurfaceHolder().getSurfaceFrame().width(),
+                        getSurfaceHolder().getSurfaceFrame().height());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 && !isPreview()) {
+                    notifyColorsChanged();
+                }
+            });
         }
 
         private Paint mBitmapPaint;
@@ -516,6 +516,22 @@ public class LiveWallpaperService extends WallpaperService {
                         .registerReceiver(mReceiver, new IntentFilter(VIEW_LIVE_WALLPAPER));
             }
             previewBingWallpaper();
+        }
+
+        @Nullable
+        @Override
+        public WallpaperColors onComputeColors() {
+            if (mLastFile == null) {
+                return null;
+            }
+            Bitmap bitmap = mBitmapCache.get(mLastFile.key());
+            if (bitmap == null) {
+                return null;
+            }
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
+                return WallpaperColors.fromBitmap(bitmap);
+            }
+            return null;
         }
 
         private final class LiveWallpaperEngineBroadcastReceiver extends BroadcastReceiver {
