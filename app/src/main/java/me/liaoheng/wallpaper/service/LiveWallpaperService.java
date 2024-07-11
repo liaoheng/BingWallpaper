@@ -137,6 +137,7 @@ public class LiveWallpaperService extends WallpaperService {
         if (mPoolExecutor != null) {
             mPoolExecutor.shutdown();
         }
+        mPoolExecutor = null;
         super.onDestroy();
     }
 
@@ -147,7 +148,7 @@ public class LiveWallpaperService extends WallpaperService {
             return;
         }
         disable();
-        mScheduledFuture = mPoolExecutor.scheduleAtFixedRate(checkRunnable, 500, mCheckPeriodic, TimeUnit.MILLISECONDS);
+        mScheduledFuture = mPoolExecutor.scheduleWithFixedDelay(checkRunnable, 500, mCheckPeriodic, TimeUnit.MILLISECONDS);
     }
 
     private void disable() {
@@ -366,7 +367,7 @@ public class LiveWallpaperService extends WallpaperService {
             Utils.dispose(mDisplayDisposable);
             Utils.dispose(mPreviewDisposable);
             if (mActionHandler != null) {
-                mActionHandler.removeMessages(DOWNLOAD_DRAW);
+                mActionHandler.removeCallbacksAndMessages(null);
                 mActionHandler = null;
             }
             if (mDrawHandlerHelper != null) {
