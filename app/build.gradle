@@ -15,8 +15,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "me.liaoheng.wallpaper"
-        versionCode 10955
-        versionName "1.9.55"
+        versionCode 10956
+        versionName "1.9.56"
     }
 
     def isSigning = true
@@ -62,7 +62,7 @@ android {
     }
 }
 
-def firebaseCore = "com.google.firebase:firebase-analytics:21.3.0"
+def firebaseCore = "com.google.firebase:firebase-analytics:22.0.2"
 
 dependencies {
     testImplementation deps.robolectric
@@ -90,7 +90,7 @@ dependencies {
         compileOnly firebaseCore
     }
 
-    implementation 'io.sentry:sentry-android-core:7.3.0'
+    implementation 'io.sentry:sentry-android-core:7.11.0'
 
     implementation deps.guava
     implementation deps.gson
@@ -122,7 +122,7 @@ dependencies {
     implementation files('libs/tray-0.12.0.aar')
 
     //https://github.com/apl-devs/AppIntro
-    implementation 'com.github.AppIntro:AppIntro:6.2.0'
+    implementation 'com.github.AppIntro:AppIntro:6.3.1'
 
     //https://github.com/davemorrissey/subsampling-scale-image-view
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0'
