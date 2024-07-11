@@ -246,7 +246,7 @@ public class LiveWallpaperService extends WallpaperService {
         if (config.getWallpaperMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
             return;
         }
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S && ROM.getROM().isEmui()) {
+        if (ROM.getROM().isEmui()) {
             downloadLockWallpaper(d);
         } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R && ROM.getROM().isMiui()
                 && Settings.isMiuiLockScreenSupport(getApplicationContext())) {
