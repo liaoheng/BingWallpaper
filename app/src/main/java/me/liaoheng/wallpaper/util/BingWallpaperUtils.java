@@ -336,7 +336,7 @@ public class BingWallpaperUtils {
             return;
         }
         // use mobile network show alert
-        if (NetworkUtils.isMobileConnected(context)) {
+        if (Settings.getOnlyWifi(context) && NetworkUtils.isMobileConnected(context)) {
             UIUtils.showYNAlertDialog(context, context.getString(R.string.alert_mobile_data),
                     new Callback5() {
                         @Override
