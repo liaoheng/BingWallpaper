@@ -196,7 +196,7 @@
 
         <meta-data
             android:name="io.sentry.dsn"
-            android:value="https://4fb652547c1649f7a9e1b048d70033fa@o423790.ingest.sentry.io/5354623" />
+            android:value="https://d104155e25ff73f56adf9febe2eef910@o423790.ingest.us.sentry.io/4507603651919872" />
 
         <meta-data
             android:name="firebase_analytics_collection_enabled"
