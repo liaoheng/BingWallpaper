@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
 import android.service.wallpaper.WallpaperService;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 import androidx.annotation.Nullable;
@@ -24,6 +25,7 @@ import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.github.liaoheng.common.util.AppUtils;
+import com.github.liaoheng.common.util.BitmapUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.ROM;
@@ -424,16 +426,20 @@ public class LiveWallpaperService extends WallpaperService {
                 return;
             }
             Bitmap bitmap = mBitmapCache.get(wallpaper.key());
-            if (bitmap == null || bitmap.isRecycled()) {
+            if (wallpaper.width == 0 && wallpaper.height == 0) {
+                bitmap = BitmapUtils.drawableToBitmap(
+                        getDisplayContext().getResources().getDrawable(R.drawable.background));
+            } else if (bitmap == null || bitmap.isRecycled()) {
                 if (wallpaper.wallpaper.getHome().exists()) {
                     bitmap = BitmapFactory.decodeFile(wallpaper.wallpaper.getHome().getAbsolutePath());
-                    if (bitmap == null) {
-                        return;
+                    if (bitmap != null) {
+                        mBitmapCache.put(wallpaper.key(), bitmap);
                     }
-                } else {
-                    bitmap = BitmapFactory.decodeResource(getDisplayContext().getResources(), R.drawable.background);
                 }
-                mBitmapCache.put(wallpaper.key(), bitmap);
+            }
+            if (bitmap == null || bitmap.isRecycled()) {
+                L.alog().d(TAG, "drawWallpaper recycled");
+                return;
             }
             final Bitmap finalBitmap = bitmap;
             WallpaperUtils.drawSurfaceHolder(getSurfaceHolder(), canvas -> {
@@ -543,7 +549,7 @@ public class LiveWallpaperService extends WallpaperService {
                     Wallpaper image = intent.getParcelableExtra(Config.EXTRA_SET_WALLPAPER_IMAGE);
                     Config config = intent.getParcelableExtra(Config.EXTRA_SET_WALLPAPER_CONFIG);
                     DownloadBitmap info = new DownloadBitmap(image, config);
-                    if (info.eq(mLastFile) || mActionHandler == null) {
+                    if (mActionHandler == null) {
                         return;
                     }
                     mActionHandler.removeMessages(DOWNLOAD_DRAW);
