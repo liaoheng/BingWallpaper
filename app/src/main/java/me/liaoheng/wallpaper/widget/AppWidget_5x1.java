@@ -1,17 +1,11 @@
 package me.liaoheng.wallpaper.widget;
 
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.widget.RemoteViews;
-
-import androidx.preference.PreferenceManager;
-
-import com.github.liaoheng.common.util.L;
 
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.Wallpaper;
-import me.liaoheng.wallpaper.util.Constants;
 
 /**
  * @author liaoheng
@@ -20,21 +14,13 @@ import me.liaoheng.wallpaper.util.Constants;
 public class AppWidget_5x1 extends BaseAppWidget {
 
     public static void start(Context context, Wallpaper wallpaper) {
-        if (getWidgetActive(context, Constants.PREF_APPWIDGET_5X1_ENABLE)) {
-            return;
-        }
         start(context, AppWidget_5x1.class, wallpaper);
     }
 
-    protected void setWidgetActive(Context context, boolean active) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefs.edit().putBoolean(Constants.PREF_APPWIDGET_5X1_ENABLE, active).apply();
-    }
-
     @Override
-    public void onReceive(final Context context, Intent intent) {
-        L.alog().d(TAG, "onReceive action: %s", intent.getAction());
-        super.onReceive(context, intent);
+    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
+        setText(context, mCurWallpaper);
     }
 
     @Override

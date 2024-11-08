@@ -1,19 +1,13 @@
 package me.liaoheng.wallpaper.widget;
 
 import android.annotation.SuppressLint;
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
 
-import androidx.preference.PreferenceManager;
-
-import com.github.liaoheng.common.util.L;
-
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.Wallpaper;
-import me.liaoheng.wallpaper.util.Constants;
 
 /**
  * @author liaoheng
@@ -22,21 +16,13 @@ import me.liaoheng.wallpaper.util.Constants;
 public class AppWidget_5x2 extends BaseAppWidget {
 
     public static void start(Context context, Wallpaper wallpaper) {
-        if (getWidgetActive(context, Constants.PREF_APPWIDGET_5X2_ENABLE)) {
-            return;
-        }
         start(context, AppWidget_5x2.class, wallpaper);
     }
 
-    protected void setWidgetActive(Context context, boolean active) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefs.edit().putBoolean(Constants.PREF_APPWIDGET_5X2_ENABLE, active).apply();
-    }
-
     @Override
-    public void onReceive(final Context context, Intent intent) {
-        L.alog().d(TAG, "onReceive action: %s", intent.getAction());
-        super.onReceive(context, intent);
+    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
+        setText(context, mCurWallpaper);
     }
 
     @SuppressLint("CheckResult")
@@ -50,33 +36,9 @@ public class AppWidget_5x2 extends BaseAppWidget {
             return;
         }
 
-        //if (BingWallpaperUtils.isChinaLocale(context)) {
-        //    BingWallpaperNetworkClient.getCoverStory()
-        //            .observeOn(AndroidSchedulers.mainThread())
-        //            .subscribe(
-        //                    bingWallpaperCoverStory -> {
-        //                        remoteViews.setTextViewText(R.id.app_widget_title,
-        //                                bingWallpaperCoverStory.getTitle());
-        //                        remoteViews.setTextViewText(R.id.app_widget_content,
-        //                                bingWallpaperCoverStory.getPara1()
-        //                                        + bingWallpaperCoverStory.getPara2());
-        //
-        //                        update(context, AppWidget_5x2.class, remoteViews);
-        //                    }, throwable -> {
-        //                        remoteViews.setTextViewText(R.id.app_widget_title, image.getCopyright());
-        //                        remoteViews.setTextViewText(R.id.app_widget_content, "");
-        //                        update(context, AppWidget_5x2.class, remoteViews);
-        //                    });
-        //} else
-        if (!TextUtils.isEmpty(image.getTitle())) {
-            remoteViews.setTextViewText(R.id.app_widget_title, image.getTitle());
-            remoteViews.setTextViewText(R.id.app_widget_content, image.getDesc());
-            update(context, AppWidget_5x2.class, remoteViews);
-        } else {
-            remoteViews.setTextViewText(R.id.app_widget_title, image.getTitle());
-            remoteViews.setTextViewText(R.id.app_widget_content, "");
-            update(context, AppWidget_5x2.class, remoteViews);
-        }
+        remoteViews.setTextViewText(R.id.app_widget_title, image.getTitle());
+        remoteViews.setTextViewText(R.id.app_widget_content, TextUtils.isEmpty(image.getDesc()) ? "" : image.getDesc());
+        update(context, AppWidget_5x2.class, remoteViews);
     }
 
     @Override

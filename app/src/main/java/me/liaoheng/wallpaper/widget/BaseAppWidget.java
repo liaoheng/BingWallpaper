@@ -6,16 +6,17 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.widget.RemoteViews;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
 
 import com.github.liaoheng.common.util.Callback;
+import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.Utils;
+
+import java.util.Arrays;
 
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
@@ -34,7 +35,7 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
     protected final String CLICK_RETRY = "CLICK_RETRY";
     protected final String TAG = this.getClass().getSimpleName();
 
-    protected static void start(Context context, Class<?> cls, Wallpaper wallpaper) {
+    public static void start(Context context, Class<?> cls, Wallpaper wallpaper) {
         Intent intent = new Intent(context, cls);
         intent.setAction(Constants.ACTION_UPDATE_WALLPAPER_COVER_STORY);
         if (wallpaper != null) {
@@ -59,7 +60,8 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
     private void add(Context context, Class<?> cls, RemoteViews remoteViews, String action, @IdRes int id) {
         Intent intent = new Intent(context, cls);
         intent.setAction(action);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, BingWallpaperUtils.getPendingIntentFlag());
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent,
+                BingWallpaperUtils.getPendingIntentFlag());
 
         remoteViews.setOnClickPendingIntent(id, pendingIntent);
     }
@@ -85,24 +87,19 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
         appWidgetManager.updateAppWidget(componentName, remoteViews);
     }
 
-    public static boolean getWidgetActive(Context context, String key) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return !prefs.getBoolean(key, false);
-    }
-
     @Override
     public void onDisabled(Context context) {
         super.onDisabled(context);
-        setWidgetActive(context, false);
+        L.alog().d(TAG, "onDisabled");
+        mCurWallpaper = null;
     }
 
     @Override
     public void onEnabled(Context context) {
         super.onEnabled(context);
-        setWidgetActive(context, true);
+        L.alog().d(TAG, "onEnabled");
+        getBingWallpaper(context);
     }
-
-    protected abstract void setWidgetActive(Context context, boolean active);
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -111,14 +108,15 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
         } catch (Exception ignored) {
         }
         String action = intent.getAction();
+        L.alog().d(TAG, "onReceive: " + action);
         if (Constants.ACTION_UPDATE_WALLPAPER_COVER_STORY.equals(action)) {
-            Wallpaper image = intent.getParcelableExtra(
-                    Constants.EXTRA_UPDATE_WALLPAPER_COVER_STORY);
+            Wallpaper image = intent.getParcelableExtra(Constants.EXTRA_UPDATE_WALLPAPER_COVER_STORY);
             if (image == null) {
                 getBingWallpaper(context);
             } else {
                 setText(context, image);
             }
+            mCurWallpaper = image;
         } else if (TITLE_CLICK.equals(action) || CONTENT_CLICK.equals(action)) {
             Intent openIntent = new Intent(context, MainActivity.class);
             openIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -131,14 +129,12 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-        getBingWallpaper(context);
+        L.alog().d(TAG, "onUpdate: " + Arrays.toString(appWidgetIds));
     }
 
+    protected static Wallpaper mCurWallpaper;
+
     protected void getBingWallpaper(final Context context) {
-        if (!BingWallpaperUtils.isConnected(context)) {
-            setText(context, null);
-            return;
-        }
         Utils.addSubscribe(BingWallpaperNetworkClient.getBingWallpaper(context),
                 new Callback.EmptyCallback<Wallpaper>() {
                     @Override
@@ -148,11 +144,14 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
 
                     @Override
                     public void onSuccess(Wallpaper image) {
+                        L.alog().d(TAG, "onSuccess: " + image);
+                        mCurWallpaper = image;
                         setText(context, image);
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        L.alog().d(TAG, "onError: " + e);
                         setText(context, null);
                     }
                 });
