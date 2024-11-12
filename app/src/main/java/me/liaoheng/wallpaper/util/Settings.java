@@ -1,7 +1,6 @@
 package me.liaoheng.wallpaper.util;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.annotation.IntDef;
 import androidx.preference.PreferenceManager;
@@ -77,18 +76,6 @@ public class Settings {
                 .getString(SettingsActivity.PREF_SET_WALLPAPER_AUTO_MODE, "0"));
     }
 
-    public static String getAutoMode(Context context) {
-        String[] names = context.getResources()
-                .getStringArray(R.array.pref_set_wallpaper_auto_mode_name);
-        return names[getAutoModeValue(context)];
-    }
-
-    public static String getCountryName(Context context) {
-        String[] names = context.getResources()
-                .getStringArray(R.array.pref_country_names);
-        return names[getCountryValue(context)];
-    }
-
     public static int getCountryValue(Context context) {
         String country = SettingTrayPreferences.get(context)
                 .getString(SettingsActivity.PREF_COUNTRY, "0");
@@ -96,28 +83,11 @@ public class Settings {
     }
 
     public static int getLanguageValue(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        return Integer.parseInt(sharedPreferences.getString(SettingsActivity.PREF_LANGUAGE, "0"));
-    }
-
-    public static String getLanguageName(Context context) {
-        String[] names = context.getResources()
-                .getStringArray(R.array.pref_language_names);
-        return names[getLanguageValue(context)];
-    }
-
-    @Deprecated
-    public static boolean isAlarm(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        return sharedPreferences.getBoolean("pref_set_wallpaper_day_auto_update", false);
+        return Integer.parseInt(SettingTrayPreferences.get(context).getString(SettingsActivity.PREF_LANGUAGE, "0"));
     }
 
     public static String getAlarmTime(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        return sharedPreferences.getString(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_TIME, "");
+        return SettingTrayPreferences.get(context).getString(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_TIME, "");
     }
 
     public static boolean isAutoSave(Context context) {
@@ -125,10 +95,7 @@ public class Settings {
     }
 
     public static boolean isEnableLog(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        return sharedPreferences
-                .getBoolean(SettingsActivity.PREF_SET_WALLPAPER_LOG, false);
+        return isEnableLogProvider(context);
     }
 
     public static boolean isEnableLogProvider(Context context) {
@@ -152,35 +119,9 @@ public class Settings {
 
     @AutomaticUpdateTypeResult
     public static int getAutomaticUpdateType(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        String type = sharedPreferences
+        String type = SettingTrayPreferences.get(context)
                 .getString(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_MODE, "0");
         return Integer.parseInt(Objects.requireNonNull(type));
-    }
-
-    public static String getAutomaticUpdateTypeName(Context context) {
-        int type = getAutomaticUpdateType(context);
-        String[] names = context.getResources()
-                .getStringArray(R.array.pref_set_wallpaper_day_fully_automatic_update_type_names);
-        return names[type];
-    }
-
-    public static void disableDailyUpdate(Context context) {
-        PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .edit()
-                .remove(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE)
-                .remove(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_MODE)
-                .apply();
-    }
-
-    public static void enableDailyUpdate(Context context, @AutomaticUpdateTypeResult int type) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                .edit()
-                .putBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE, true)
-                .putString(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_MODE, String.valueOf(type))
-                .apply();
     }
 
     public static boolean isAutomaticUpdateNotification(Context context) {
@@ -190,9 +131,7 @@ public class Settings {
 
     // hour
     public static int getAutomaticUpdateInterval(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        return Integer.parseInt(Objects.requireNonNull(sharedPreferences
+        return Integer.parseInt(Objects.requireNonNull(SettingTrayPreferences.get(context)
                 .getString(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_INTERVAL,
                         String.valueOf(Constants.DEF_SCHEDULER_PERIODIC))));
     }
@@ -203,25 +142,22 @@ public class Settings {
     }
 
     public static boolean setMiuiLockScreenSupport(Context context, boolean support) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        sharedPreferences.edit().putBoolean(SettingsActivity.PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, support).apply();
         return SettingTrayPreferences.get(context)
                 .put(SettingsActivity.PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER, support);
     }
 
-    public static int getSettingStackBlur(Context context) {
-        return SettingTrayPreferences.get(context).getInt(SettingsActivity.PREF_STACK_BLUR, 0);
+    public static int getSettingStackBlur() {
+        return Integer.parseInt(SettingTrayPreferences.get().getString(SettingsActivity.PREF_STACK_BLUR, "0"));
     }
 
-    public static int getSettingStackBlurMode(Context context) {
-        return SettingTrayPreferences.get(context).getInt(SettingsActivity.PREF_STACK_BLUR_MODE, 0);
+    public static int getSettingStackBlurMode() {
+        return Integer.parseInt(SettingTrayPreferences.get().getString(SettingsActivity.PREF_STACK_BLUR_MODE, "0"));
     }
 
     public static String getSettingStackBlurModeName(Context context) {
         String[] names = context.getResources()
                 .getStringArray(R.array.pref_set_wallpaper_auto_mode_name);
-        return names[getSettingStackBlurMode(context)];
+        return names[getSettingStackBlurMode()];
     }
 
     public static void setLastWallpaperImageUrl(Context context, String url) {
@@ -258,7 +194,7 @@ public class Settings {
     public static final String BING_WALLPAPER_JOB_TYPE = "bing_wallpaper_job_type";
 
     public static void setJobType(Context context, @JobType int type) {
-        new Thread(() -> SettingTrayPreferences.get(context).put(BING_WALLPAPER_JOB_TYPE, type)).start();
+        SettingTrayPreferences.get(context).put(BING_WALLPAPER_JOB_TYPE, type);
     }
 
     @JobType

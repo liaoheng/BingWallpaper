@@ -237,7 +237,14 @@ public class BingWallpaperUtils {
 
     @NonNull
     public static Locale getLanguage(Context context) {
-        switch (Settings.getLanguageValue(context)) {
+        Locale originalLocale = LanguageContextWrapper.getOriginalLocale();
+        return getLanguage(Settings.getLanguageValue(context),
+                originalLocale == null ? LanguageContextWrapper.getCurrentLocale(context) : originalLocale);
+    }
+
+    @NonNull
+    public static Locale getLanguage(int languageValue, Locale def) {
+        switch (languageValue) {
             case 1:
                 return Locale.US;
             case 2:
@@ -271,8 +278,7 @@ public class BingWallpaperUtils {
             case 16:
                 return LocaleList.elLocale();
             default:
-                Locale originalLocale = LanguageContextWrapper.getOriginalLocale();
-                return originalLocale == null ? LanguageContextWrapper.getCurrentLocale(context) : originalLocale;
+                return def;
         }
     }
 

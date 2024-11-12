@@ -45,9 +45,9 @@ public class BingWallpaperJobManager {
 
     public static void clear(Context context) {
         Settings.setJobType(context, Settings.NONE);
+        Settings.setLastWallpaperImageUrl(context, "");
         new Thread(() -> {
             BingWallpaperUtils.clearTaskComplete(context);
-            Settings.setLastWallpaperImageUrl(context, "");
         }).start();
     }
 

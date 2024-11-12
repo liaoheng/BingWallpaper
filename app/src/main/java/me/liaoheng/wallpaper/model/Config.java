@@ -45,8 +45,8 @@ public class Config implements Parcelable {
         private int wallpaperMode = Constants.EXTRA_SET_WALLPAPER_MODE_BOTH;
 
         public Builder loadConfig(Context context) {
-            this.stackBlur = Settings.getSettingStackBlur(context);
-            this.stackBlurMode = Settings.getSettingStackBlurMode(context);
+            this.stackBlur = Settings.getSettingStackBlur();
+            this.stackBlurMode = Settings.getSettingStackBlurMode();
             return this;
         }
 

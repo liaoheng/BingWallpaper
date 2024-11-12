@@ -34,8 +34,12 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
     protected final String CONTENT_CLICK = "CONTENT_CLICK";
     protected final String CLICK_RETRY = "CLICK_RETRY";
     protected final String TAG = this.getClass().getSimpleName();
+    protected static boolean isEnable;
 
     public static void start(Context context, Class<?> cls, Wallpaper wallpaper) {
+        if (!isEnable) {
+            return;
+        }
         Intent intent = new Intent(context, cls);
         intent.setAction(Constants.ACTION_UPDATE_WALLPAPER_COVER_STORY);
         if (wallpaper != null) {
@@ -91,6 +95,7 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
     public void onDisabled(Context context) {
         super.onDisabled(context);
         L.alog().d(TAG, "onDisabled");
+        isEnable = false;
         mCurWallpaper = null;
     }
 
@@ -98,6 +103,7 @@ public abstract class BaseAppWidget extends AppWidgetProvider {
     public void onEnabled(Context context) {
         super.onEnabled(context);
         L.alog().d(TAG, "onEnabled");
+        isEnable = true;
         getBingWallpaper(context);
     }
 

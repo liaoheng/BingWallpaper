@@ -2,9 +2,14 @@ package me.liaoheng.wallpaper.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.text.TextUtils;
 import android.util.AttributeSet;
+
+import androidx.annotation.Nullable;
+import androidx.core.content.res.TypedArrayUtils;
 import androidx.preference.DialogPreference;
 import me.liaoheng.wallpaper.R;
+import me.liaoheng.wallpaper.util.Settings;
 
 /**
  * @author liaoheng
@@ -13,17 +18,25 @@ import me.liaoheng.wallpaper.R;
 public class SeekBarDialogPreference extends DialogPreference {
 
     private int mProgress;
-
+    private String mSummary;
     public SeekBarDialogPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        TypedArray a = context.obtainStyledAttributes(attrs,
+                androidx.preference.R.styleable.Preference, defStyleAttr, defStyleRes);
+
+        mSummary = TypedArrayUtils.getString(a, androidx.preference.R.styleable.Preference_summary,
+                androidx.preference.R.styleable.Preference_android_summary);
+
+        a.recycle();
     }
 
     public SeekBarDialogPreference(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+        this(context, attrs, defStyleAttr, 0);
     }
 
     public SeekBarDialogPreference(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, TypedArrayUtils.getAttr(context, androidx.preference.R.attr.dialogPreferenceStyle,
+                android.R.attr.dialogPreferenceStyle));
     }
 
     public SeekBarDialogPreference(Context context) {
@@ -49,6 +62,30 @@ public class SeekBarDialogPreference extends DialogPreference {
     @Override
     public int getDialogLayoutResource() {
         return R.layout.view_preference_seekbar;
+    }
+
+    @Override
+    public void setSummary(@Nullable CharSequence summary) {
+        super.setSummary(summary);
+        if (summary == null) {
+            mSummary = null;
+        } else {
+            mSummary = summary.toString();
+        }
+    }
+
+    @Nullable
+    @Override
+    public CharSequence getSummary() {
+        CharSequence summary = super.getSummary();
+        if (mSummary == null) {
+            return summary;
+        }
+        String formattedString = String.format(mSummary, mProgress);
+        if (TextUtils.equals(formattedString, summary)) {
+            return summary;
+        }
+        return formattedString;
     }
 
     @Override

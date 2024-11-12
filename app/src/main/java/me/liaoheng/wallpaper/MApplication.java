@@ -19,6 +19,7 @@ import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.NetUtils;
 import me.liaoheng.wallpaper.util.NotificationUtils;
+import me.liaoheng.wallpaper.util.SettingTrayPreferences;
 import me.liaoheng.wallpaper.util.TasksUtils;
 import me.liaoheng.wallpaper.util.WorkerManager;
 
@@ -34,14 +35,17 @@ public class MApplication extends Application implements Configuration.Provider 
         LanguageContextWrapper.init(this);
         Common.init(this, Constants.PROJECT_NAME, BuildConfig.DEBUG);
         AppInitializer.getInstance(this).initializeComponent(JodaTimeInitializer.class);
-        TasksUtils.init(this);
-        LogDebugFileUtils.init(this);
-        CacheUtils.init(this);
+        SettingTrayPreferences.init(getApplicationContext());
+        new Thread(() -> {
+            TasksUtils.init(getApplicationContext());
+            LogDebugFileUtils.init(getApplicationContext());
+            CacheUtils.init(getApplicationContext());
+            NetUtils.get().init(getApplicationContext());
+            CrashReportHandle.init(getApplicationContext());
+        }).start();
         RxJavaPlugins.setErrorHandler(throwable -> L.alog().w("RxJavaPlugins", throwable));
-        NetUtils.get().init(getApplicationContext());
         Constants.Config.isPhone = getString(R.string.screen_type).equals("phone");
 
-        CrashReportHandle.init(this);
 
         NotificationUtils.createNotificationChannels(this);
     }

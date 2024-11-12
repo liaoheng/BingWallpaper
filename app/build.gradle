@@ -9,14 +9,14 @@ if (isFirebase) {
 
 android {
     namespace 'me.liaoheng.wallpaper'
-    compileSdk rootProject.ext.compileSdkVersion
+    compileSdk 35
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        targetSdkVersion 35
         applicationId "me.liaoheng.wallpaper"
-        versionCode 10956
-        versionName "1.9.56"
+        versionCode 10957
+        versionName "1.9.57"
     }
 
     def isSigning = true
@@ -62,7 +62,7 @@ android {
     }
 }
 
-def firebaseCore = "com.google.firebase:firebase-analytics:22.0.2"
+def firebaseCore = "com.google.firebase:firebase-analytics:22.1.2"
 
 dependencies {
     testImplementation deps.robolectric
@@ -80,7 +80,13 @@ dependencies {
     //https://stackoverflow.com/questions/75263047/duplicate-class-in-kotlin-android
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.10"))
 
-    implementation 'androidx.work:work-runtime:2.9.0'
+    implementation 'androidx.work:work-runtime:2.10.0'
+    implementation "androidx.datastore:datastore-android:1.1.1"
+    implementation "androidx.datastore:datastore-preferences-android:1.1.1"
+    implementation ("androidx.datastore:datastore-preferences-rxjava3:1.1.1"){
+        exclude module: "datastore-jvm"
+        exclude module: "datastore-preferences-jvm"
+    }
     if (isFirebase) {
         implementation(firebaseCore) {
             exclude module: "play-services-ads-identifier"
@@ -90,7 +96,7 @@ dependencies {
         compileOnly firebaseCore
     }
 
-    implementation 'io.sentry:sentry-android-core:7.11.0'
+    implementation 'io.sentry:sentry-android-core:7.16.0'
 
     implementation deps.guava
     implementation deps.gson
@@ -117,9 +123,6 @@ dependencies {
 
     //https://github.com/Clans/FloatingActionButton
     implementation 'com.github.clans:fab:1.6.4'
-
-    //https://github.com/GCX-HCI/tray
-    implementation files('libs/tray-0.12.0.aar')
 
     //https://github.com/apl-devs/AppIntro
     implementation 'com.github.AppIntro:AppIntro:6.3.1'

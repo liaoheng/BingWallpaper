@@ -8,7 +8,6 @@ import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
-import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.NotificationUtils;
 import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
@@ -66,7 +65,7 @@ public class SetWallpaperServiceHelper {
             if (!Settings.getLastWallpaperImageUrl(mContext).equals(image.getImageUrl())) {
                 BingWallpaperUtils.taskComplete(mContext, TAG);
                 showSuccessNotification(image, Settings.isAutomaticUpdateNotification(mContext));
-                Settings.setLastWallpaperImageUrl(mContext, image.getImageUrl());
+                new Thread(() -> Settings.setLastWallpaperImageUrl(mContext, image.getImageUrl())).start();
             }
         } else {
             showSuccessNotification(image, config.isShowNotification());
