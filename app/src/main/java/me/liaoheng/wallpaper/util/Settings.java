@@ -147,7 +147,7 @@ public class Settings {
     }
 
     public static int getSettingStackBlur() {
-        return Integer.parseInt(SettingTrayPreferences.get().getString(SettingsActivity.PREF_STACK_BLUR, "0"));
+        return SettingTrayPreferences.get().getInt(SettingsActivity.PREF_STACK_BLUR, 0);
     }
 
     public static int getSettingStackBlurMode() {

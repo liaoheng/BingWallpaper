@@ -274,9 +274,20 @@ public class SettingsActivity extends BaseActivity {
                         mMIuiLockScreenPreference);
             }
 
-            LocalTime time = BingWallpaperUtils.getDayUpdateTime(requireContext());
-            mDailyUpdateTimePreference.setSummary(time.toString("HH:mm"));
-            mDailyUpdateTimePreference.setLocalTime(time);
+            mDailyUpdateTimePreference.setSummaryProvider(new Preference.SummaryProvider<TimePreference>() {
+                @Nullable
+                @Override
+                public CharSequence provideSummary(@NonNull TimePreference preference) {
+                    return preference.getLocalTime().toString("HH:mm");
+                }
+            });
+            findPreference(PREF_STACK_BLUR).setSummaryProvider(new Preference.SummaryProvider<SeekBarDialogPreference>() {
+                @Nullable
+                @Override
+                public CharSequence provideSummary(@NonNull SeekBarDialogPreference preference) {
+                    return String.valueOf(preference.getProgress());
+                }
+            });
 
             mDailyUpdatePreference.setSummary(Settings.getJobTypeString(requireContext()));
 
@@ -308,8 +319,6 @@ public class SettingsActivity extends BaseActivity {
 
         private void initWorkerView() {
             mDailyUpdateIntervalPreference.setEnabled(true);
-            mDailyUpdateIntervalPreference.setSummary(getString(R.string.pref_auto_update_check_time,
-                    String.valueOf(Settings.getAutomaticUpdateInterval(requireContext()))));
             mDailyUpdateTimePreference.setEnabled(false);
         }
 
@@ -319,10 +328,7 @@ public class SettingsActivity extends BaseActivity {
         }
 
         private void initTimerView() {
-            LocalTime localTime = BingWallpaperUtils.getDayUpdateTime(requireContext());
             mDailyUpdateTimePreference.setEnabled(true);
-            mDailyUpdateTimePreference.setSummary(localTime.toString("HH:mm"));
-            mDailyUpdateTimePreference.setLocalTime(localTime);
             mDailyUpdateIntervalPreference.setEnabled(false);
         }
 
@@ -335,7 +341,7 @@ public class SettingsActivity extends BaseActivity {
                 case PREF_LANGUAGE:
                     Locale currentLocale = LanguageContextWrapper.getCurrentLocale(requireContext());
                     Locale newLocale = BingWallpaperUtils.getLanguage(Integer.parseInt(String.valueOf(newValue)),
-                            currentLocale);
+                            LanguageContextWrapper.getOriginalLocale());
                     if (currentLocale.equals(newLocale)) {
                         break;
                     }

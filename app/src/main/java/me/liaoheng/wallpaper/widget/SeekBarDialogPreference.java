@@ -2,14 +2,16 @@ package me.liaoheng.wallpaper.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.text.TextUtils;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.TypedArrayUtils;
 import androidx.preference.DialogPreference;
+
 import me.liaoheng.wallpaper.R;
-import me.liaoheng.wallpaper.util.Settings;
 
 /**
  * @author liaoheng
@@ -18,16 +20,9 @@ import me.liaoheng.wallpaper.util.Settings;
 public class SeekBarDialogPreference extends DialogPreference {
 
     private int mProgress;
-    private String mSummary;
+
     public SeekBarDialogPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        TypedArray a = context.obtainStyledAttributes(attrs,
-                androidx.preference.R.styleable.Preference, defStyleAttr, defStyleRes);
-
-        mSummary = TypedArrayUtils.getString(a, androidx.preference.R.styleable.Preference_summary,
-                androidx.preference.R.styleable.Preference_android_summary);
-
-        a.recycle();
     }
 
     public SeekBarDialogPreference(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -48,10 +43,12 @@ public class SeekBarDialogPreference extends DialogPreference {
     }
 
     public void setProgress(int progress) {
+        if (mProgress == progress) {
+            return;
+        }
         mProgress = progress;
-    }
-    public void save(int progress){
         persistInt(progress);
+        notifyChanged();
     }
 
     @Override
@@ -65,33 +62,66 @@ public class SeekBarDialogPreference extends DialogPreference {
     }
 
     @Override
-    public void setSummary(@Nullable CharSequence summary) {
-        super.setSummary(summary);
-        if (summary == null) {
-            mSummary = null;
-        } else {
-            mSummary = summary.toString();
-        }
+    protected void onSetInitialValue(Object defaultValue) {
+        mProgress = getPersistedInt((Integer) defaultValue);
     }
 
     @Nullable
     @Override
-    public CharSequence getSummary() {
-        CharSequence summary = super.getSummary();
-        if (mSummary == null) {
-            return summary;
+    protected Parcelable onSaveInstanceState() {
+        final Parcelable superState = super.onSaveInstanceState();
+        if (isPersistent()) {
+            // No need to save instance state since it's persistent
+            return superState;
         }
-        String formattedString = String.format(mSummary, mProgress);
-        if (TextUtils.equals(formattedString, summary)) {
-            return summary;
-        }
-        return formattedString;
+
+        final SeekBarDialogPreference.SavedState myState = new SeekBarDialogPreference.SavedState(superState);
+        myState.mProgress = mProgress;
+        return myState;
     }
 
     @Override
-    protected void onSetInitialValue(Object defaultValue) {
-        if (defaultValue != null) {
-            mProgress = (int) defaultValue;
+    protected void onRestoreInstanceState(@Nullable Parcelable state) {
+        if (state == null || !state.getClass().equals(SeekBarDialogPreference.SavedState.class)) {
+            // Didn't save state for us in onSaveInstanceState
+            super.onRestoreInstanceState(state);
+            return;
+        }
+
+        SeekBarDialogPreference.SavedState myState = (SeekBarDialogPreference.SavedState) state;
+        super.onRestoreInstanceState(myState.getSuperState());
+        mProgress = myState.mProgress;
+    }
+
+    private static class SavedState extends BaseSavedState {
+        public static final Parcelable.Creator<SeekBarDialogPreference.SavedState> CREATOR =
+                new Parcelable.Creator<SeekBarDialogPreference.SavedState>() {
+                    @Override
+                    public SeekBarDialogPreference.SavedState createFromParcel(Parcel in) {
+                        return new SeekBarDialogPreference.SavedState(in);
+                    }
+
+                    @Override
+                    public SeekBarDialogPreference.SavedState[] newArray(int size) {
+                        return new SeekBarDialogPreference.SavedState[size];
+                    }
+                };
+
+        int mProgress;
+
+        SavedState(Parcel source) {
+            super(source);
+            mProgress = source.readInt();
+        }
+
+        SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        @Override
+        public void writeToParcel(@NonNull Parcel dest, int flags) {
+            super.writeToParcel(dest, flags);
+            dest.writeInt(mProgress);
         }
     }
 }

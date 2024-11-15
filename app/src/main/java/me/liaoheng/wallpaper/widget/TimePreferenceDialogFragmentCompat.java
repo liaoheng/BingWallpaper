@@ -74,11 +74,9 @@ public class TimePreferenceDialogFragmentCompat extends PreferenceDialogFragment
             if (preference instanceof TimePreference) {
                 TimePreference timePreference = ((TimePreference) preference);
                 LocalTime localTime = new LocalTime(hours, minutes);
-                timePreference.setLocalTime(localTime);
-                if (timePreference.callChangeListener(localTime.toString())) {
-                    timePreference.setTime(localTime.toString());
+                if (timePreference.callChangeListener(localTime)) {
+                    timePreference.setTime(localTime);
                 }
-                timePreference.setSummary(localTime.toString("HH:mm"));
             }
         }
     }

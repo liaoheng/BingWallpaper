@@ -68,11 +68,9 @@ public class SeekBarPreferenceDialogFragmentCompat extends PreferenceDialogFragm
             if (preference instanceof SeekBarDialogPreference) {
                 SeekBarDialogPreference seekBarDialogPreference = ((SeekBarDialogPreference) preference);
                 int progress = mViewBinding.seekbar.getProgress();
-                seekBarDialogPreference.setProgress(progress);
                 if (seekBarDialogPreference.callChangeListener(progress)) {
-                    seekBarDialogPreference.save(progress);
+                    seekBarDialogPreference.setProgress(progress);
                 }
-                seekBarDialogPreference.setSummary(String.valueOf(progress));
             }
         }
     }
