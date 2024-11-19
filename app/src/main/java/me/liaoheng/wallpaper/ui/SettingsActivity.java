@@ -24,14 +24,11 @@ import androidx.preference.SwitchPreferenceCompat;
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.Callback5;
-import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.LanguageContextWrapper;
 import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.ShellUtils;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
-
-import org.joda.time.LocalTime;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -73,7 +70,7 @@ public class SettingsActivity extends BaseActivity {
             isChangeLanguage = savedInstanceState.getBoolean("isChangeLanguage");
             mSettingPreferenceFragment = getSupportFragmentManager().getFragment(savedInstanceState, "Settings");
         } else {
-            mSettingPreferenceFragment = new MyPreferenceFragment();
+            mSettingPreferenceFragment = new SettingsPreferenceFragment();
         }
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.settings_layout, mSettingPreferenceFragment, "SettingsFragment")
@@ -136,13 +133,12 @@ public class SettingsActivity extends BaseActivity {
     public static final String PREF_STACK_BLUR_MODE = "pref_stack_blur_mode";
     public static final String PREF_AUTO_SAVE_WALLPAPER_FILE = "pref_auto_save_wallpaper_file";
 
-    public final static class MyPreferenceFragment extends PreferenceFragmentCompat
+    public final static class SettingsPreferenceFragment extends PreferenceFragmentCompat
             implements Preference.OnPreferenceChangeListener {
 
         private SwitchPreferenceCompat mDailyUpdatePreference;
         private ListPreference mDailyUpdateIntervalPreference;
         private TimePreference mDailyUpdateTimePreference;
-        private SwitchPreferenceCompat mMIuiLockScreenPreference;
         private SwitchPreferenceCompat mAutoSaveWallpaperPreference;
 
         @Override
@@ -260,7 +256,7 @@ public class SettingsActivity extends BaseActivity {
             mLanguageListPreference.setOnPreferenceChangeListener(this);
             Preference mModeTypeListPreference = findPreference(PREF_SET_WALLPAPER_AUTO_MODE);
             mModeTypeListPreference.setOnPreferenceChangeListener(this);
-            mMIuiLockScreenPreference = findPreference(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER);
+            Preference mMIuiLockScreenPreference = findPreference(PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER);
             mMIuiLockScreenPreference.setOnPreferenceChangeListener(this);
             Preference mLogPreference = findPreference(PREF_SET_WALLPAPER_LOG);
             mLogPreference.setOnPreferenceChangeListener(this);
@@ -273,7 +269,7 @@ public class SettingsActivity extends BaseActivity {
                 ((PreferenceCategory) findPreference("pref_wallpaper_group")).removePreference(
                         mMIuiLockScreenPreference);
             }
-
+            mDailyUpdateTimePreference.setDefaultValue(Constants.DEF_TIMER_PERIODIC);
             mDailyUpdateTimePreference.setSummaryProvider(new Preference.SummaryProvider<TimePreference>() {
                 @Nullable
                 @Override
@@ -412,7 +408,6 @@ public class SettingsActivity extends BaseActivity {
                 case PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER:
                     if (Boolean.parseBoolean(String.valueOf(newValue))) {
                         if (!ShellUtils.hasRootPermission()) {
-                            mMIuiLockScreenPreference.setChecked(false);
                             UIUtils.showToast(requireContext(), R.string.unable_root_permission);
                             return false;
                         }
@@ -423,13 +418,7 @@ public class SettingsActivity extends BaseActivity {
         }
 
         public void onAutoSaveWallpaperRequestPermissionsResult(boolean granted) {
-            L.alog().d("TAG", "onAutoSaveWallpaperRequestPermissionsResult : " + granted);
-            if (granted) {
-                Objects.requireNonNull(getPreferenceManager().getPreferenceDataStore())
-                        .putBoolean(PREF_AUTO_SAVE_WALLPAPER_FILE, true);
-            } else {
-                mAutoSaveWallpaperPreference.setChecked(false);
-            }
+            mAutoSaveWallpaperPreference.setChecked(granted);
         }
 
         @Override

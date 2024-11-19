@@ -15,7 +15,7 @@ import java.util.Set;
 
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.internal.schedulers.NewThreadScheduler;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * Use <a href="https://developer.android.com/topic/libraries/architecture/datastore">Preferences DataStore</a>
@@ -31,7 +31,7 @@ public class SettingTrayPreferences extends PreferenceDataStore {
         try {
             mPreferences = new SettingTrayPreferences(
                     new RxPreferenceDataStoreBuilder(context, "setting_preferences").setIoScheduler(
-                            new NewThreadScheduler()).build());
+                            Schedulers.io()).build());
         } catch (Throwable e) {
             mPreferences = new TestPreferenceAccessor(null);
         }

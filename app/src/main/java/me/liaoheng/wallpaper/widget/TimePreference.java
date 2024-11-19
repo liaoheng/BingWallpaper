@@ -13,6 +13,7 @@ import androidx.preference.DialogPreference;
 import org.joda.time.LocalTime;
 
 import me.liaoheng.wallpaper.R;
+import me.liaoheng.wallpaper.util.Constants;
 
 /**
  * A Preference to select a specific Time with a {@link android.widget.TimePicker}.
@@ -41,13 +42,9 @@ public class TimePreference extends DialogPreference {
 
     public LocalTime getLocalTime() {
         if (localTime == null) {
-            localTime = LocalTime.parse("00:00:00.000");
+            localTime = LocalTime.parse(Constants.DEF_TIMER_PERIODIC);
         }
         return localTime;
-    }
-
-    public void setLocalTime(LocalTime localTime) {
-        this.localTime = localTime;
     }
 
     public void setTime(LocalTime time) {
@@ -71,7 +68,10 @@ public class TimePreference extends DialogPreference {
 
     @Override
     protected void onSetInitialValue(Object defaultValue) {
-        localTime = LocalTime.parse(getPersistedString(String.valueOf(defaultValue)));
+        String value = getPersistedString(String.valueOf(defaultValue));
+        if (!"null".equals(value)) {
+            localTime = LocalTime.parse(value);
+        }
     }
 
     @Nullable

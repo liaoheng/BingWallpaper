@@ -7,6 +7,7 @@ import android.view.View;
 
 import org.joda.time.LocalTime;
 
+import androidx.annotation.NonNull;
 import androidx.preference.DialogPreference;
 import androidx.preference.PreferenceDialogFragmentCompat;
 import me.liaoheng.wallpaper.databinding.ViewPreferenceTimeBinding;
@@ -39,7 +40,7 @@ public class TimePreferenceDialogFragmentCompat extends PreferenceDialogFragment
      * {@inheritDoc}
      */
     @Override
-    protected void onBindDialogView(View view) {
+    protected void onBindDialogView(@NonNull View view) {
         super.onBindDialogView(view);
         mViewBinding = ViewPreferenceTimeBinding.bind(view);
 
@@ -47,8 +48,8 @@ public class TimePreferenceDialogFragmentCompat extends PreferenceDialogFragment
         if (preference instanceof TimePreference) {
             TimePreference timePreference = ((TimePreference) preference);
             mViewBinding.time.setIs24HourView(DateFormat.is24HourFormat(getContext()));
-            mViewBinding.time.setCurrentHour(timePreference.getLocalTime().getHourOfDay());
-            mViewBinding.time.setCurrentMinute(timePreference.getLocalTime().getMinuteOfHour());
+            mViewBinding.time.setHour(timePreference.getLocalTime().getHourOfDay());
+            mViewBinding.time.setMinute(timePreference.getLocalTime().getMinuteOfHour());
         }
     }
 
