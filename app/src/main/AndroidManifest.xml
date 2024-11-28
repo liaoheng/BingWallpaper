@@ -82,6 +82,7 @@
             android:screenOrientation="behind"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:excludeFromRecents="true"
             android:name=".ui.IntroActivity"
             android:configChanges="screenSize|orientation|keyboardHidden"
             android:theme="@style/AppTheme.Intro" />

@@ -89,7 +89,7 @@ public class LiveWallpaperService extends WallpaperService {
             if (UPDATE_LIVE_WALLPAPER.equals(intent.getAction())) {
                 Wallpaper image = intent.getParcelableExtra(Config.EXTRA_SET_WALLPAPER_IMAGE);
                 Config config = intent.getParcelableExtra(Config.EXTRA_SET_WALLPAPER_CONFIG);
-                setBingWallpaper(image, config);
+                new Thread(() -> setBingWallpaper(image, config)).start();
             } else if (Constants.ACTION_DEBUG_LOG.equals(intent.getAction())) {
                 LogDebugFileUtils.init(getApplicationContext());
             } else if (ENABLE_LIVE_WALLPAPER.equals(intent.getAction())) {
@@ -522,7 +522,7 @@ public class LiveWallpaperService extends WallpaperService {
                 LocalBroadcastManager.getInstance(getDisplayContext())
                         .registerReceiver(mReceiver, new IntentFilter(VIEW_LIVE_WALLPAPER));
             }
-            previewBingWallpaper();
+            new Thread(this::previewBingWallpaper).start();
         }
 
         @Nullable

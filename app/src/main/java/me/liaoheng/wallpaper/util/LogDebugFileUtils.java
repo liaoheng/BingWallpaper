@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.github.liaoheng.common.util.LogFileUtils;
 
+import java.io.IOException;
+
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -32,17 +34,18 @@ public class LogDebugFileUtils {
     }
 
     public static void create(Context context) {
-        Observable.just("").subscribeOn(Schedulers.io()).map((Function<String, Object>) s -> {
-            LogFileUtils.get().open(context, "log", "");
-            return "";
-        }).subscribe();
+        new Thread(() -> {
+            try {
+                LogFileUtils.get().open(context, "log", "");
+            } catch (IOException ignored) {
+            }
+        }).start();
     }
 
     public static void destroy() {
-        Observable.just("").subscribeOn(Schedulers.io()).map((Function<String, Object>) s -> {
+        new Thread(() -> {
             LogFileUtils.get().close();
             LogFileUtils.get().clearFile();
-            return "";
-        }).subscribe();
+        }).start();
     }
 }

@@ -36,9 +36,9 @@ public class MApplication extends Application implements Configuration.Provider 
         Common.init(this, Constants.PROJECT_NAME, BuildConfig.DEBUG);
         AppInitializer.getInstance(this).initializeComponent(JodaTimeInitializer.class);
         SettingTrayPreferences.init(getApplicationContext());
+        LogDebugFileUtils.init(getApplicationContext());
         new Thread(() -> {
             TasksUtils.init(getApplicationContext());
-            LogDebugFileUtils.init(getApplicationContext());
             CacheUtils.init(getApplicationContext());
             NetUtils.get().init(getApplicationContext());
             CrashReportHandle.init(getApplicationContext());

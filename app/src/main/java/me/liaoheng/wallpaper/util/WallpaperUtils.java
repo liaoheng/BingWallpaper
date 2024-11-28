@@ -98,9 +98,11 @@ public class WallpaperUtils {
                     @Override
                     public void onError(Throwable e) {
                         L.alog().e(tag, e, "auto download wallpaper failure");
-                        if (Settings.isEnableLogProvider(context)) {
-                            LogDebugFileUtils.get().e(tag, e, "Auto download wallpaper failure");
-                        }
+                        new Thread(() -> {
+                            if (Settings.isEnableLogProvider(context)) {
+                                LogDebugFileUtils.get().e(tag, e, "Auto download wallpaper failure");
+                            }
+                        }).start();
                     }
                 });
     }
@@ -132,17 +134,19 @@ public class WallpaperUtils {
     }
 
     private static void saveWallpaper(Context context, String tag, String imageUrl, File file) {
-        try {
-            saveToFile(context, imageUrl, file);
-            L.alog().i(tag, "auto download wallpaper url: %s", imageUrl);
-            if (Settings.isEnableLogProvider(context)) {
-                LogDebugFileUtils.get().d(tag, "Auto download wallpaper url: %s", imageUrl);
+        new Thread(() -> {
+            try {
+                L.alog().i(tag, "auto download wallpaper url: %s", imageUrl);
+                saveToFile(context, imageUrl, file);
+                if (Settings.isEnableLogProvider(context)) {
+                    LogDebugFileUtils.get().d(tag, "Auto download wallpaper url: %s", imageUrl);
+                }
+            } catch (IOException e) {
+                if (Settings.isEnableLogProvider(context)) {
+                    LogDebugFileUtils.get().e(tag, e, "Auto download wallpaper save failure");
+                }
             }
-        } catch (IOException e) {
-            if (Settings.isEnableLogProvider(context)) {
-                LogDebugFileUtils.get().e(tag, e, "Auto download wallpaper save failure");
-            }
-        }
+        }).start();
     }
 
     public static Uri saveToFile(Context context, String url, File from) throws IOException {

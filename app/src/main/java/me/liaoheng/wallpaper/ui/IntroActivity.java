@@ -85,11 +85,11 @@ public class IntroActivity extends AppIntro {
 
     @Override
     public void onSkipPressed(Fragment currentFragment) {
+        finishAndRemoveTask();
         if (TasksUtils.isOne()) {
             BingWallpaperUtils.initResolution(this);
             UIUtils.startActivity(this, MainActivity.class);
         }
         TasksUtils.markOne();
-        finish();
     }
 }
