@@ -7,8 +7,6 @@ import android.content.IntentFilter;
 
 import androidx.core.content.ContextCompat;
 
-import com.github.liaoheng.common.util.Callback4;
-
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.service.SetWallpaperStateBroadcastReceiver;
 

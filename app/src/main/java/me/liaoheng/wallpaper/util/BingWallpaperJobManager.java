@@ -8,8 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
-import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.L;
+import com.github.liaoheng.common.util.YNCallback;
 
 import org.joda.time.LocalTime;
 
@@ -154,7 +154,7 @@ public class BingWallpaperJobManager {
         }
     }
 
-    public static void onActivityResult(Context context, int requestCode, int resultCode, Callback5 callback) {
+    public static void onActivityResult(Context context, int requestCode, int resultCode, YNCallback callback) {
         if (requestCode == LIVE_WALLPAPER_REQUEST_CODE) {
             if (Activity.RESULT_OK == resultCode) {
                 Settings.setJobType(context, Settings.LIVE_WALLPAPER);

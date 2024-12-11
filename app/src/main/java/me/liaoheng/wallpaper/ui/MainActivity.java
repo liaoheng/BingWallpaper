@@ -28,13 +28,12 @@ import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.Callback4;
-import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.LanguageContextWrapper;
 import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.SystemDataException;
 import com.github.liaoheng.common.util.UIUtils;
+import com.github.liaoheng.common.util.YNCallback;
 import com.google.android.material.navigation.NavigationView;
 
 import java.io.File;
@@ -57,6 +56,7 @@ import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.BottomViewListener;
+import me.liaoheng.wallpaper.util.Callback4;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.DownloadHelper;
@@ -263,9 +263,9 @@ public class MainActivity extends BaseActivity
         String url = getUrl();
         BingWallpaperUtils.setWallpaperDialog(this, mCurWallpaper.copy(url),
                 mConfig.setWallpaperMode(type).loadConfig(this).build(),
-                new Callback4.EmptyCallback<Boolean>() {
+                new YNCallback.EmptyCallback() {
                     @Override
-                    public void onYes(Boolean aBoolean) {
+                    public void onAllow() {
                         isRun = true;
                         mViewBinding.bingWallpaperSwipeRefresh.post(
                                 () -> mViewBinding.bingWallpaperSwipeRefresh.setRefreshing(true));
@@ -486,7 +486,7 @@ public class MainActivity extends BaseActivity
                     if (mCurWallpaper == null) {
                         return;
                     }
-                    BingWallpaperUtils.showSaveWallpaperDialog(this, new Callback5() {
+                    BingWallpaperUtils.showSaveWallpaperDialog(this, new YNCallback() {
                         @Override
                         public void onAllow() {
                             mViewBinding.bingWallpaperSetMenu.close(true);

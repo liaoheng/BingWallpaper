@@ -23,12 +23,12 @@ import androidx.preference.SwitchPreferenceCompat;
 
 import com.github.liaoheng.common.util.AppUtils;
 import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.LanguageContextWrapper;
 import com.github.liaoheng.common.util.ROM;
 import com.github.liaoheng.common.util.ShellUtils;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
+import com.github.liaoheng.common.util.YNCallback;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -89,7 +89,7 @@ public class SettingsActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        BingWallpaperJobManager.onActivityResult(this, requestCode, resultCode, new Callback5() {
+        BingWallpaperJobManager.onActivityResult(this, requestCode, resultCode, new YNCallback() {
             final Intent intent = new Intent(CLOSE_FULLY_AUTOMATIC_UPDATE);
 
             @Override
@@ -212,7 +212,7 @@ public class SettingsActivity extends BaseActivity {
 
             findPreference("pref_clear_cache").setOnPreferenceClickListener(preference -> {
                 UIUtils.showYNAlertDialog(requireContext(), getString(R.string.pref_clear_cache) + "?",
-                        new Callback5() {
+                        new YNCallback() {
                             @Override
                             public void onAllow() {
                                 Utils.addSubscribe(BingWallpaperUtils.clearCache(getActivity()),

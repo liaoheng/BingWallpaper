@@ -31,8 +31,6 @@ import androidx.core.content.FileProvider;
 import androidx.preference.PreferenceManager;
 
 import com.github.liaoheng.common.util.AppUtils;
-import com.github.liaoheng.common.util.Callback4;
-import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.DateTimeUtils;
 import com.github.liaoheng.common.util.DisplayUtils;
 import com.github.liaoheng.common.util.FileUtils;
@@ -45,6 +43,7 @@ import com.github.liaoheng.common.util.ShellUtils;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
 import com.github.liaoheng.common.util.ValidateUtils;
+import com.github.liaoheng.common.util.YNCallback;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import com.scottyab.rootbeer.RootBeer;
@@ -306,13 +305,13 @@ public class BingWallpaperUtils {
         return DateTimeUtils.checkTimeToNextDay(time);
     }
 
-    public static void showSaveWallpaperDialog(Context context, Callback5 callback) {
+    public static void showSaveWallpaperDialog(Context context, YNCallback callback) {
         UIUtils.showYNAlertDialog(context, context.getString(R.string.menu_save_wallpaper) + "?",
                 callback);
     }
 
     public static void showWallpaperDialog(Context context, @Nullable Wallpaper image, @NonNull Config config,
-            @Nullable Callback4<Boolean> callback) {
+            @Nullable YNCallback callback) {
         String message = context.getString(R.string.menu_set_wallpaper_mode_both);
         if (config.getWallpaperMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
             message = context.getString(R.string.menu_set_wallpaper_mode_home);
@@ -320,7 +319,7 @@ public class BingWallpaperUtils {
             message = context.getString(R.string.menu_set_wallpaper_mode_lock);
         }
 
-        UIUtils.showYNAlertDialog(context, message + "?", new Callback5() {
+        UIUtils.showYNAlertDialog(context, message + "?", new YNCallback() {
             @Override
             public void onAllow() {
                 setWallpaperDialog(context, image, config,
@@ -336,7 +335,7 @@ public class BingWallpaperUtils {
 
     public static void setWallpaperDialog(final Context context, final @Nullable Wallpaper image,
             @NonNull Config config,
-            @Nullable final Callback4<Boolean> callback) {
+            @Nullable final YNCallback callback) {
         if (!BingWallpaperUtils.isConnected(context)) {
             UIUtils.showToast(context, R.string.network_unavailable);
             return;
@@ -344,7 +343,7 @@ public class BingWallpaperUtils {
         // use mobile network show alert
         if (Settings.getOnlyWifi(context) && NetworkUtils.isMobileConnected(context)) {
             UIUtils.showYNAlertDialog(context, context.getString(R.string.alert_mobile_data),
-                    new Callback5() {
+                    new YNCallback() {
                         @Override
                         public void onAllow() {
                             setWallpaperAction(context, image, config, callback);
@@ -361,9 +360,9 @@ public class BingWallpaperUtils {
     }
 
     private static void setWallpaperAction(Context context, @Nullable Wallpaper image, @NonNull Config config,
-            @Nullable Callback4<Boolean> callback) {
+            @Nullable YNCallback callback) {
         if (callback != null) {
-            callback.onYes(true);
+            callback.onAllow();
         }
         startSetWallpaper(context, image, config);
     }
@@ -385,14 +384,14 @@ public class BingWallpaperUtils {
     }
 
     public static void setWallpaper(Context context, @Nullable Wallpaper image, @NonNull Config config,
-            @Nullable Callback4<Boolean> callback) {
+            @Nullable YNCallback callback) {
         if (!BingWallpaperUtils.isConnected(context)) {
             Toast.makeText(context, R.string.network_unavailable, Toast.LENGTH_SHORT)
                     .show();
             return;
         }
         if (callback != null) {
-            callback.onYes(true);
+            callback.onAllow();
         }
         startSetWallpaper(context, image, config);
     }

@@ -6,9 +6,9 @@ import android.view.View;
 import com.github.liaoheng.common.adapter.core.HandleView;
 import com.github.liaoheng.common.adapter.core.RecyclerViewHelper;
 import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.Utils;
 import com.github.liaoheng.common.util.ValidateUtils;
+import com.github.liaoheng.common.util.YNCallback;
 
 import java.util.List;
 
@@ -56,10 +56,10 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         mRecyclerViewHelper = builder.setMergedIntoLineSpanSizeLookup().build();
 
         mRecyclerViewHelper.changeToLoadMoreLoading();
-        getBingWallpaperList(new Callback5.EmptyCallback() {
+        getBingWallpaperList(new YNCallback.EmptyCallback() {
             @Override
             public void onAllow() {
-                getBingWallpaperList(new Callback5.EmptyCallback() {
+                getBingWallpaperList(new YNCallback.EmptyCallback() {
                     @Override
                     public void onAllow() {
                         mWallpaperAdapter.notifyDataSetChanged();
@@ -69,7 +69,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         });
     }
 
-    private void getBingWallpaperList(final Callback5 callback) {
+    private void getBingWallpaperList(final YNCallback callback) {
         Observable<List<Wallpaper>> listObservable = BingWallpaperNetworkClient.getBingWallpaper(this, index,
                 count).compose(this.bindToLifecycle());
         Utils.addSubscribe(listObservable, new Callback.EmptyCallback<List<Wallpaper>>() {

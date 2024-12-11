@@ -3,9 +3,10 @@ package me.liaoheng.wallpaper.widget;
 import android.content.Context;
 import android.widget.ArrayAdapter;
 
-import com.github.liaoheng.common.util.Callback4;
-
 import androidx.appcompat.app.AlertDialog;
+
+import java.util.function.Consumer;
+
 import me.liaoheng.wallpaper.R;
 
 /**
@@ -23,7 +24,7 @@ public class ResolutionDialog {
 
     private AlertDialog mResolutionDialog;
 
-    public static ResolutionDialog with(Context context, Callback4<String> callback) {
+    public static ResolutionDialog with(Context context, Consumer<String> callback) {
         String[] mResolutions = context.getResources().getStringArray(R.array.pref_set_wallpaper_resolution_name);
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
@@ -33,7 +34,7 @@ public class ResolutionDialog {
                 new AlertDialog.Builder(context).setTitle(R.string.detail_wallpaper_resolution_influences)
                         .setSingleChoiceItems(arrayAdapter, 2, (dialog, which) -> {
                             dialog.dismiss();
-                            callback.onYes(mResolutions[which]);
+                            callback.accept(mResolutions[which]);
                         })
                         .create());
     }

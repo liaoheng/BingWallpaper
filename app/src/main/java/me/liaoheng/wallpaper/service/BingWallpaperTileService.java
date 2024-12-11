@@ -7,12 +7,13 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
-import com.github.liaoheng.common.util.Callback4;
+import com.github.liaoheng.common.util.YNCallback;
 
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.Callback4;
 import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
 import me.liaoheng.wallpaper.util.Settings;
 
@@ -53,9 +54,9 @@ public class BingWallpaperTileService extends TileService {
                 new Config.Builder().setWallpaperMode(Settings.getAutoModeValue(this))
                         .setBackground(false)
                         .setShowNotification(true)
-                        .build(), new Callback4.EmptyCallback<Boolean>() {
+                        .build(), new YNCallback.EmptyCallback() {
                     @Override
-                    public void onYes(Boolean aBoolean) {
+                    public void onAllow() {
                         updateState(Tile.STATE_ACTIVE);
                         if (Settings.getJobType(getApplicationContext()) == Settings.LIVE_WALLPAPER) {
                             return;

@@ -9,11 +9,11 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 
 import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.L;
 import com.github.liaoheng.common.util.NetworkUtils;
 import com.github.liaoheng.common.util.UIUtils;
 import com.github.liaoheng.common.util.Utils;
+import com.github.liaoheng.common.util.YNCallback;
 
 import io.reactivex.rxjava3.disposables.Disposable;
 import me.liaoheng.wallpaper.R;
@@ -45,7 +45,7 @@ public class DownloadHelper {
     private void saveWallpaper(String url) {
         if (NetworkUtils.isMobileConnected(mContext)) {
             UIUtils.showYNAlertDialog(mContext, mContext.getString(R.string.alert_mobile_data),
-                    new Callback5() {
+                    new YNCallback() {
                         @Override
                         public void onAllow() {
                             downloadSaveWallpaper(url);

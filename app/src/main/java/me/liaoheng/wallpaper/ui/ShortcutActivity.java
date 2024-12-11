@@ -8,7 +8,9 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.github.liaoheng.common.util.Callback4;
+import com.github.liaoheng.common.util.YNCallback;
+
+import java.util.function.Function;
 
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.Config;
@@ -30,9 +32,9 @@ public class ShortcutActivity extends Activity {
         String shortcutId = getIntent().getStringExtra("shortcutId");
         BingWallpaperUtils.setWallpaper(getApplicationContext(), null,
                 new Config.Builder().setWallpaperMode(mode).setBackground(false).setShowNotification(true).build(),
-                new Callback4.EmptyCallback<Boolean>() {
+                new YNCallback.EmptyCallback() {
                     @Override
-                    public void onYes(Boolean aBoolean) {
+                    public void onAllow() {
                         if (Settings.getJobType(getApplicationContext()) == Settings.LIVE_WALLPAPER) {
                             return;
                         }

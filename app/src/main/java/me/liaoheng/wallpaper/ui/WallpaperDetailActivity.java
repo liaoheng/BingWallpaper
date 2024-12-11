@@ -23,9 +23,8 @@ import com.bumptech.glide.request.target.Target;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.Callback4;
-import com.github.liaoheng.common.util.Callback5;
 import com.github.liaoheng.common.util.UIUtils;
+import com.github.liaoheng.common.util.YNCallback;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +35,7 @@ import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.model.Config;
 import me.liaoheng.wallpaper.model.Wallpaper;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
+import me.liaoheng.wallpaper.util.Callback4;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
 import me.liaoheng.wallpaper.util.DownloadHelper;
@@ -152,12 +152,9 @@ public class WallpaperDetailActivity extends BaseActivity implements
                 mViewBinding.bingWallpaperDetailBottom.getPaddingRight(),
                 BingWallpaperUtils.getNavigationBarPadding(this));
 
-        mResolutionDialog = ResolutionDialog.with(this, new Callback4.EmptyCallback<String>() {
-            @Override
-            public void onYes(String resolution) {
-                mSelectedResolution = resolution;
-                loadImage();
-            }
+        mResolutionDialog = ResolutionDialog.with(this, resolution -> {
+            mSelectedResolution = resolution;
+            loadImage();
         });
 
         mSetWallpaperProgressDialog = UIUtils.createProgressDialog(this, getString(R.string.set_wallpaper_running));
@@ -295,7 +292,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
         } else if (item.getItemId() == R.id.menu_wallpaper_both) {
             setWallpaper(0);
         } else if (item.getItemId() == R.id.menu_wallpaper_save) {
-            BingWallpaperUtils.showSaveWallpaperDialog(this, new Callback5.EmptyCallback() {
+            BingWallpaperUtils.showSaveWallpaperDialog(this, new YNCallback.EmptyCallback() {
                 @Override
                 public void onAllow() {
                     mDownloadHelper.saveWallpaper(getActivity(), getSaveUrl());
@@ -313,7 +310,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
             SeekBarDialogFragment.newInstance(getString(R.string.pref_stack_blur), mConfig.getStackBlur(), this)
                     .show(getSupportFragmentManager(), "SeekBarDialogFragment");
         } else if (item.getItemId() == R.id.menu_wallpaper_copyright) {
-            UIUtils.showInfoAlertDialog(this, mWallpaper.getCopyrightInfo(), new Callback5.EmptyCallback());
+            UIUtils.showInfoAlertDialog(this, mWallpaper.getCopyrightInfo(), new YNCallback.EmptyCallback());
         }
         return super.onOptionsItemSelected(item);
     }
@@ -338,9 +335,9 @@ public class WallpaperDetailActivity extends BaseActivity implements
         String url = getUrl(Settings.getResolution(this));
         mConfig.setWallpaperMode(type);
         BingWallpaperUtils.showWallpaperDialog(this, mWallpaper.copy(url), mConfig,
-                new Callback4.EmptyCallback<Boolean>() {
+                new YNCallback.EmptyCallback() {
                     @Override
-                    public void onYes(Boolean aBoolean) {
+                    public void onAllow() {
                         showProgressDialog();
                     }
                 });

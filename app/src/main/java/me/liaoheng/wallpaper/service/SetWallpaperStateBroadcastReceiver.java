@@ -4,9 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.github.liaoheng.common.util.Callback4;
-
 import me.liaoheng.wallpaper.model.BingWallpaperState;
+import me.liaoheng.wallpaper.util.Callback4;
 import me.liaoheng.wallpaper.util.Constants;
 
 /**
