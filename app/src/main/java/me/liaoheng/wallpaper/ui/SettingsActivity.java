@@ -129,6 +129,7 @@ public class SettingsActivity extends BaseActivity {
     public static final String PREF_SET_WALLPAPER_LOG = "pref_set_wallpaper_debug_log";
     public static final String PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER = "pref_set_miui_lock_screen_wallpaper";
     public static final String PREF_CRASH_REPORT = "pref_crash_report";
+    public static final String PREF_DOH = "pref_doh";
     public static final String PREF_STACK_BLUR = "pref_stack_blur";
     public static final String PREF_STACK_BLUR_MODE = "pref_stack_blur_mode";
     public static final String PREF_AUTO_SAVE_WALLPAPER_FILE = "pref_auto_save_wallpaper_file";

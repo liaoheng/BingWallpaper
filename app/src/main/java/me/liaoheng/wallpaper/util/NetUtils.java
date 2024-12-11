@@ -3,8 +3,6 @@ package me.liaoheng.wallpaper.util;
 import android.content.Context;
 import android.net.Uri;
 
-import androidx.preference.PreferenceManager;
-
 import com.bumptech.glide.request.target.Target;
 import com.github.liaoheng.common.util.Callback;
 import com.github.liaoheng.common.util.FileUtils;
@@ -21,6 +19,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import me.liaoheng.wallpaper.BuildConfig;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkService;
+import me.liaoheng.wallpaper.ui.SettingsActivity;
 import okhttp3.Cache;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -66,8 +65,7 @@ public class NetUtils {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.readTimeout(readTimeout, TimeUnit.SECONDS)
                 .connectTimeout(connectTimeout, TimeUnit.SECONDS);
-        if (PreferenceManager
-                .getDefaultSharedPreferences(context).getBoolean("pref_doh", false)) {
+        if (SettingTrayPreferences.get().getBoolean(SettingsActivity.PREF_DOH, false)) {
             DnsOverHttps.Builder dns = new DnsOverHttps.Builder()
                     .client(new OkHttpClient.Builder().build());
             if (BingWallpaperUtils.getLocale(context) == Locale.CHINA) {

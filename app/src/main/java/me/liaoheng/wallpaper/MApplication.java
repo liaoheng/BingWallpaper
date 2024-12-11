@@ -13,6 +13,7 @@ import com.github.liaoheng.common.util.LanguageContextWrapper;
 import net.danlew.android.joda.JodaTimeInitializer;
 
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+import me.liaoheng.wallpaper.data.db.DBHelper;
 import me.liaoheng.wallpaper.util.CacheUtils;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
@@ -42,10 +43,10 @@ public class MApplication extends Application implements Configuration.Provider 
             CacheUtils.init(getApplicationContext());
             NetUtils.get().init(getApplicationContext());
             CrashReportHandle.init(getApplicationContext());
+            DBHelper.toChangeDataStore(getApplicationContext());
         }).start();
         RxJavaPlugins.setErrorHandler(throwable -> L.alog().w("RxJavaPlugins", throwable));
         Constants.Config.isPhone = getString(R.string.screen_type).equals("phone");
-
 
         NotificationUtils.createNotificationChannels(this);
     }

@@ -3,7 +3,6 @@ package me.liaoheng.wallpaper.util;
 import android.content.Context;
 
 import androidx.annotation.IntDef;
-import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -43,21 +42,11 @@ public class Settings {
     }
 
     public static void putResolution(Context context, String resolution) {
-        PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .edit()
-                .putString(SettingsActivity.PREF_SET_WALLPAPER_RESOLUTION, resolution)
-                .apply();
         SettingTrayPreferences.get(context)
                 .put(SettingsActivity.PREF_SET_WALLPAPER_RESOLUTION, resolution);
     }
 
     public static void putSaveResolution(Context context, String resolution) {
-        PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .edit()
-                .putString(SettingsActivity.PREF_SAVE_WALLPAPER_RESOLUTION, resolution)
-                .apply();
         SettingTrayPreferences.get(context)
                 .put(SettingsActivity.PREF_SAVE_WALLPAPER_RESOLUTION, resolution);
     }
