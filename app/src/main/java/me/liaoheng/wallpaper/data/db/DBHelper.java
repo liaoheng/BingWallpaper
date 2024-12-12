@@ -1,6 +1,7 @@
 package me.liaoheng.wallpaper.data.db;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -51,9 +52,17 @@ public class DBHelper extends SQLiteOpenHelper {
         File tray = context.getDatabasePath(DBHelper.TrayDBHelper.DATABASE_NAME);
         if (tray != null && tray.exists()) {
             new Thread(() -> {
-                boolean doh = PreferenceManager.getDefaultSharedPreferences(context)
-                        .getBoolean(SettingsActivity.PREF_DOH, false);
-                SettingTrayPreferences.get().putBoolean(SettingsActivity.PREF_DOH, doh);
+                SettingTrayPreferences trayPreferences = SettingTrayPreferences.get();
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+                trayPreferences.putBoolean(SettingsActivity.PREF_DOH,
+                        preferences.getBoolean(SettingsActivity.PREF_DOH, false));
+                trayPreferences.putBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE,
+                        preferences.getBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE, false));
+                trayPreferences.putInt(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_MODE, Integer.parseInt(
+                        preferences.getString(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_MODE, "0")));
+                trayPreferences.putInt(SettingsActivity.PREF_LANGUAGE, Integer.parseInt(
+                        preferences.getString(SettingsActivity.PREF_LANGUAGE, "0")));
+
                 try (TrayDBHelper dbHelper = new TrayDBHelper(context)) {
                     try (Cursor query = dbHelper.getReadableDatabase()
                             .query(TrayDBHelper.TABLE_NAME, null, null, null, null, null, null)) {
@@ -65,7 +74,7 @@ public class DBHelper extends SQLiteOpenHelper {
                                 switch (key) {
                                     case SettingsActivity.PREF_STACK_BLUR:
                                     case Settings.BING_WALLPAPER_JOB_TYPE:
-                                        SettingTrayPreferences.get().putInt(key, Integer.parseInt(value));
+                                        trayPreferences.putInt(key, Integer.parseInt(value));
                                         break;
                                     case SettingsActivity.PREF_SET_WALLPAPER_LOG:
                                     case SettingsActivity.PREF_CRASH_REPORT:
@@ -73,19 +82,17 @@ public class DBHelper extends SQLiteOpenHelper {
                                     case SettingsActivity.PREF_SET_WALLPAPER_DAY_AUTO_UPDATE_ONLY_WIFI:
                                     case SettingsActivity.PREF_SET_MIUI_LOCK_SCREEN_WALLPAPER:
                                     case SettingsActivity.PREF_AUTO_SAVE_WALLPAPER_FILE:
-                                    case SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE:
-                                        SettingTrayPreferences.get().putBoolean(key, Boolean.parseBoolean(value));
+                                        trayPreferences.putBoolean(key, Boolean.parseBoolean(value));
                                         break;
                                     case SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_INTERVAL:
                                     case SettingsActivity.PREF_STACK_BLUR_MODE:
                                     case SettingsActivity.PREF_COUNTRY:
-                                    case SettingsActivity.PREF_LANGUAGE:
                                     case SettingsActivity.PREF_SET_WALLPAPER_RESOLUTION:
                                     case SettingsActivity.PREF_SAVE_WALLPAPER_RESOLUTION:
                                     case SettingsActivity.PREF_SET_WALLPAPER_AUTO_MODE:
                                     case SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_TIME:
                                     case Constants.PREF_LAST_WALLPAPER_IMAGE_URL:
-                                        SettingTrayPreferences.get().putString(key, value);
+                                        trayPreferences.putString(key, value);
                                         break;
                                 }
                             } catch (Throwable ignored) {
