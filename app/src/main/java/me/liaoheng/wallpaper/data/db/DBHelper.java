@@ -58,10 +58,10 @@ public class DBHelper extends SQLiteOpenHelper {
                         preferences.getBoolean(SettingsActivity.PREF_DOH, false));
                 trayPreferences.putBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE,
                         preferences.getBoolean(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE, false));
-                trayPreferences.putInt(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_MODE, Integer.parseInt(
-                        preferences.getString(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_MODE, "0")));
-                trayPreferences.putInt(SettingsActivity.PREF_LANGUAGE, Integer.parseInt(
-                        preferences.getString(SettingsActivity.PREF_LANGUAGE, "0")));
+                trayPreferences.putString(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_MODE,
+                        preferences.getString(SettingsActivity.PREF_SET_WALLPAPER_DAILY_UPDATE_MODE, "0"));
+                trayPreferences.putString(SettingsActivity.PREF_LANGUAGE,
+                        preferences.getString(SettingsActivity.PREF_LANGUAGE, "0"));
 
                 try (TrayDBHelper dbHelper = new TrayDBHelper(context)) {
                     try (Cursor query = dbHelper.getReadableDatabase()
