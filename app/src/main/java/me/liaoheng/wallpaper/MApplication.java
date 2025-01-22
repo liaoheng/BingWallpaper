@@ -38,12 +38,12 @@ public class MApplication extends Application implements Configuration.Provider 
         AppInitializer.getInstance(this).initializeComponent(JodaTimeInitializer.class);
         SettingTrayPreferences.init(getApplicationContext());
         LogDebugFileUtils.init(getApplicationContext());
+        TasksUtils.init(getApplicationContext());
         new Thread(() -> {
-            TasksUtils.init(getApplicationContext());
-            CacheUtils.init(getApplicationContext());
             NetUtils.get().init(getApplicationContext());
-            CrashReportHandle.init(getApplicationContext());
+            CacheUtils.init(getApplicationContext());
             DBHelper.toChangeDataStore(getApplicationContext());
+            CrashReportHandle.init(getApplicationContext());
         }).start();
         RxJavaPlugins.setErrorHandler(throwable -> L.alog().w("RxJavaPlugins", throwable));
         Constants.Config.isPhone = getString(R.string.screen_type).equals("phone");

@@ -27,6 +27,11 @@
             android:title="@string/pref_stack_blur"
             app:showAsAction="ifRoom" />
     <item
+        android:icon="@drawable/ic_blur_circular_24"
+        android:id="@+id/menu_wallpaper_brightness"
+        android:title="@string/pref_brightness"
+        app:showAsAction="ifRoom" />
+    <item
             android:id="@+id/menu_wallpaper_home"
             android:icon="@drawable/ic_home_white_24dp"
             android:title="@string/menu_set_wallpaper_mode_home"

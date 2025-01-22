@@ -57,6 +57,8 @@
     <string name="pref_auto_save_wallpaper_summary">Save wallpaper to photos</string>
     <string name="pref_stack_blur">Wallpaper blur</string>
     <string name="pref_stack_blur_mode">Blur wallpaper type</string>
+    <string name="pref_brightness">Wallpaper brightness</string>
+    <string name="pref_brightness_mode">Brightness type</string>
     <string name="pref_set_miui_lock_screen_wallpaper">MIUI lock screen support</string>
     <string name="pref_set_miui_lock_screen_wallpaper_note">Need root permission, please use cautious</string>
     <string name="pref_other">Other Setting</string>

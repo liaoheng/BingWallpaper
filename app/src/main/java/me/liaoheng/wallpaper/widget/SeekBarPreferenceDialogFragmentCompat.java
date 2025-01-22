@@ -14,16 +14,22 @@ import me.liaoheng.wallpaper.databinding.ViewPreferenceSeekbarBinding;
  */
 public class SeekBarPreferenceDialogFragmentCompat extends PreferenceDialogFragmentCompat {
 
-    public static SeekBarPreferenceDialogFragmentCompat newInstance(String key) {
+    public static SeekBarPreferenceDialogFragmentCompat newInstance(String key, int max, int min) {
         final SeekBarPreferenceDialogFragmentCompat
                 fragment = new SeekBarPreferenceDialogFragmentCompat();
         final Bundle b = new Bundle(1);
         b.putString(ARG_KEY, key);
+        b.putInt("min", min);
+        b.putInt("max", max);
         fragment.setArguments(b);
         return fragment;
     }
 
     private ViewPreferenceSeekbarBinding mViewBinding;
+
+    private SeekBarDialogHelper mSeekBarDialogHelper;
+
+    int min;
 
     /**
      * {@inheritDoc}
@@ -32,16 +38,18 @@ public class SeekBarPreferenceDialogFragmentCompat extends PreferenceDialogFragm
     protected void onBindDialogView(View view) {
         super.onBindDialogView(view);
         mViewBinding = ViewPreferenceSeekbarBinding.bind(view);
+        mSeekBarDialogHelper = new SeekBarDialogHelper();
         DialogPreference preference = getPreference();
         if (preference instanceof SeekBarDialogPreference) {
             SeekBarDialogPreference seekBarDialogPreference = (SeekBarDialogPreference) preference;
-            mViewBinding.seekbar.setProgress(seekBarDialogPreference.getProgress());
-            mViewBinding.seekbarValue.setText(String.valueOf(seekBarDialogPreference.getProgress()));
+            min = getArguments().getInt("min");
+            mSeekBarDialogHelper.create(mViewBinding.seekbar, mViewBinding.seekbarValue,
+                    seekBarDialogPreference.getProgress(), getArguments().getInt("max"), min);
         }
         mViewBinding.seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                mViewBinding.seekbarValue.setText(String.valueOf(progress));
+                mViewBinding.seekbarValue.setText(String.valueOf(mSeekBarDialogHelper.getProgress(progress, min)));
             }
 
             @Override
@@ -67,7 +75,7 @@ public class SeekBarPreferenceDialogFragmentCompat extends PreferenceDialogFragm
             DialogPreference preference = getPreference();
             if (preference instanceof SeekBarDialogPreference) {
                 SeekBarDialogPreference seekBarDialogPreference = ((SeekBarDialogPreference) preference);
-                int progress = mViewBinding.seekbar.getProgress();
+                int progress = mSeekBarDialogHelper.getProgress(mViewBinding.seekbar.getProgress(), min);
                 if (seekBarDialogPreference.callChangeListener(progress)) {
                     seekBarDialogPreference.setProgress(progress);
                 }

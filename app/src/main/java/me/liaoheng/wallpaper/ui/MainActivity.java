@@ -12,6 +12,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +22,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.lifecycle.MutableLiveData;
+import androidx.palette.graphics.Palette;
 
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -38,15 +51,6 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.io.File;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.lifecycle.MutableLiveData;
-import androidx.palette.graphics.Palette;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.data.BingWallpaperNetworkClient;
@@ -59,6 +63,7 @@ import me.liaoheng.wallpaper.util.BottomViewListener;
 import me.liaoheng.wallpaper.util.Callback4;
 import me.liaoheng.wallpaper.util.Constants;
 import me.liaoheng.wallpaper.util.CrashReportHandle;
+import me.liaoheng.wallpaper.util.DelayedHandler;
 import me.liaoheng.wallpaper.util.DownloadHelper;
 import me.liaoheng.wallpaper.util.GlideApp;
 import me.liaoheng.wallpaper.util.SetWallpaperStateBroadcastReceiverHelper;
@@ -98,6 +103,18 @@ public class MainActivity extends BaseActivity
     private DownloadHelper mDownloadHelper;
     private Config.Builder mConfig;
     private final MutableLiveData<Configuration> mConfigurationChangedHandler = new MutableLiveData<>();
+
+    final int MSG_GET_BING_WALLPAPER = 1;
+    final DelayedHandler mHandler = new DelayedHandler(Looper.getMainLooper(), new Handler.Callback() {
+        @Override
+        public boolean handleMessage(@NonNull Message msg) {
+            if (msg.what == MSG_GET_BING_WALLPAPER) {
+                getBingWallpaper();
+                return true;
+            }
+            return false;
+        }
+    });
 
     @Override
     public void showBottomView() {
@@ -143,7 +160,7 @@ public class MainActivity extends BaseActivity
         initStatusBarAddToolbar();
         mConfigurationChangedHandler.observe(this, configuration -> {
             if (mCurWallpaper == null) {
-                getBingWallpaper();
+                mHandler.sendDelayed(MSG_GET_BING_WALLPAPER, 200);
                 return;
             }
             loadImage(new Callback.EmptyCallback<File>() {
@@ -195,7 +212,7 @@ public class MainActivity extends BaseActivity
             if (isRun) {
                 UIUtils.showToast(getApplicationContext(), R.string.set_wallpaper_running);
             } else {
-                getBingWallpaper();
+                mHandler.sendDelayed(MSG_GET_BING_WALLPAPER, 200);
             }
         });
         mNavigationHeaderImage = mViewBinding.navigationDrawer.getHeaderView(0)
@@ -204,7 +221,7 @@ public class MainActivity extends BaseActivity
                 .findViewById(R.id.navigation_header_cover_story_title);
         mDownloadHelper = new DownloadHelper(this, TAG);
 
-        getBingWallpaper();
+        mHandler.sendDelayed(MSG_GET_BING_WALLPAPER, 1000);
 
         BingWallpaperUtils.showMiuiDialog(this);
 

@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -153,7 +155,6 @@ public class WallpaperUtils {
         return FileUtils.saveFileToPictureCompat(context, BingWallpaperUtils.getWallpaperName(url), from);
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     public static File getLocalWallpaperFile(Context context, File file) {
         try {
             File wallpaper = FileUtils.createFile(FileUtils.getProjectSpaceCacheDirectory(context, "wallpaper"),
@@ -165,12 +166,54 @@ public class WallpaperUtils {
         }
     }
 
+    /**
+     * download original wallpaper file
+     */
     public static File getImageFile(Context context, String url) throws Exception {
         return getLocalWallpaperFile(context, GlideApp.with(context).downloadOnly().load(url).submit().get());
     }
 
-    public static File getImageFile(Context context, @NonNull Config config, @NonNull String url) throws Exception {
-        return getImageStackBlurFile(config.getStackBlur(), getImageFile(context, url), url);
+    public static File getWallpaperFile(Context context, @NonNull Config config, @NonNull String url) throws Exception {
+        return getWallpaperFile(config, getImageFile(context, url), url);
+    }
+
+    public static File getWallpaperFile(@NonNull Config config, File wallpaper, @NonNull String url) {
+        File blurFile = wallpaper;
+        if (config.getStackBlur() > 0) {
+            blurFile = WallpaperUtils.getImageStackBlurFile(config.getStackBlur(), blurFile, url);
+        }
+        if (config.getBrightness() != 0) {
+            blurFile = WallpaperUtils.getImageBrightnessFile(config.getStackBlur(), blurFile, url);
+        }
+        return blurFile;
+    }
+
+    public static WallpaperImage getWallpaperImage(@NonNull Config config, File wallpaper, @NonNull String url) {
+        WallpaperImage pair = new WallpaperImage(url, new File(wallpaper.toURI()), new File(wallpaper.toURI()));
+        File blurFile = wallpaper;
+        if (config.getStackBlur() > 0) {
+            blurFile = WallpaperUtils.getImageStackBlurFile(config.getStackBlur(), blurFile, url);
+            if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_BOTH) {
+                pair.setHome(blurFile);
+                pair.setLock(blurFile);
+            } else if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
+                pair.setHome(blurFile);
+            } else if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
+                pair.setLock(blurFile);
+            }
+        }
+        if (config.getBrightness() != 0) {
+            blurFile = WallpaperUtils.getImageBrightnessFile(config.getBrightness(), blurFile, url);
+            if (config.getBrightnessMode() == Constants.EXTRA_SET_WALLPAPER_MODE_BOTH) {
+                pair.setHome(blurFile);
+                pair.setLock(blurFile);
+            } else if (config.getBrightnessMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
+                pair.setHome(blurFile);
+            } else if (config.getBrightnessMode() == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
+                pair.setLock(blurFile);
+            }
+        }
+        return pair;
     }
 
     public static File getImageStackBlurFile(int stackBlur, File wallpaper, @NonNull String url) {
@@ -194,20 +237,25 @@ public class WallpaperUtils {
         return wallpaper;
     }
 
-    public static WallpaperImage getImageStackBlurFile(@NonNull Config config, File wallpaper, @NonNull String url) {
-        WallpaperImage pair = new WallpaperImage(url, new File(wallpaper.toURI()), new File(wallpaper.toURI()));
-        if (config.getStackBlur() > 0) {
-            File blurFile = WallpaperUtils.getImageStackBlurFile(config.getStackBlur(), wallpaper, url);
-            if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_BOTH) {
-                pair.setHome(blurFile);
-                pair.setLock(blurFile);
-            } else if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
-                pair.setHome(blurFile);
-            } else if (config.getStackBlurMode() == Constants.EXTRA_SET_WALLPAPER_MODE_LOCK) {
-                pair.setLock(blurFile);
+    public static File getImageBrightnessFile(int brightness, File wallpaper, @NonNull String url) {
+        if (brightness != 0) {
+            String key = BingWallpaperUtils.createKey(url + "_brightness_" + brightness);
+            File brightnessFile = CacheUtils.get().get(key);
+            if (brightnessFile == null) {
+                Bitmap bitmap = BitmapFactory.decodeFile(wallpaper.getAbsolutePath());
+                if (bitmap == null) {
+                    return wallpaper;
+                }
+                bitmap = reduceBrightness(bitmap, brightness);
+                brightnessFile = CacheUtils.get().put(key, BitmapUtils.bitmapToStream(bitmap,
+                        Bitmap.CompressFormat.JPEG));
+                bitmap.recycle();
+            }
+            if (brightnessFile != null && brightnessFile.exists()) {
+                return brightnessFile;
             }
         }
-        return pair;
+        return wallpaper;
     }
 
     public static File getImageWaterMarkFile(@NonNull Context context, File wallpaper, String str, String url) {
@@ -246,7 +294,7 @@ public class WallpaperUtils {
         ProgressDialog dialog = UIUtils.showProgressDialog(context, context.getString(R.string.share) + "...");
         Observable<File> fileObservable = Observable.just("")
                 .subscribeOn(Schedulers.io())
-                .map(s -> getImageFile(context, config, url))
+                .map(s -> getImageFile(context, url))
                 .flatMap(file -> Observable.just(getImageWaterMarkFile(context, file, title, url)))
                 .map(file -> getShareFile(context, file));
         Utils.addSubscribe(fileObservable, new Callback.EmptyCallback<File>() {
@@ -388,6 +436,24 @@ public class WallpaperUtils {
         textPaint.setColor(Color.WHITE);
 
         canvas.drawText(text, width / 2F - textPaint.measureText(text) / 2, height / 2F, textPaint);
+    }
+
+    //https://juejin.cn/post/7352075697094180901
+    public static Bitmap reduceBrightness(Bitmap bitmap, float brightness) {
+        if (brightness == 0) {
+            return bitmap;
+        }
+        Bitmap result = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
+        Canvas canvas = new Canvas(result);
+        Paint paint = new Paint();
+        paint.setFilterBitmap(true);
+        paint.setDither(true);
+        final float[] a = new float[20];
+        a[0] = a[6] = a[12] = a[18] = 1;
+        a[4] = a[9] = a[14] = brightness;  // red \ green \ blue + brightness
+        paint.setColorFilter(new ColorMatrixColorFilter(new ColorMatrix(a)));
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+        return result;
     }
 
 }

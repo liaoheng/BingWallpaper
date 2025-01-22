@@ -16,7 +16,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
 import android.service.wallpaper.WallpaperService;
-import android.util.Log;
 import android.view.SurfaceHolder;
 
 import androidx.annotation.Nullable;
@@ -150,7 +149,8 @@ public class LiveWallpaperService extends WallpaperService {
             return;
         }
         disable();
-        mScheduledFuture = mPoolExecutor.scheduleWithFixedDelay(checkRunnable, 500, mCheckPeriodic, TimeUnit.MILLISECONDS);
+        mScheduledFuture = mPoolExecutor.scheduleWithFixedDelay(checkRunnable, 500, mCheckPeriodic,
+                TimeUnit.MILLISECONDS);
     }
 
     private void disable() {
@@ -228,9 +228,9 @@ public class LiveWallpaperService extends WallpaperService {
     private ObservableTransformer<DownloadBitmap, DownloadBitmap> download() {
         return upstream -> upstream.flatMap((Function<DownloadBitmap, ObservableSource<DownloadBitmap>>) image -> {
             try {
-                File original = WallpaperUtils.getImageFile(this,
-                        BingWallpaperUtils.generateUrl(this, image.image).getImageUrl());
-                image.wallpaper = WallpaperUtils.getImageStackBlurFile(image.config, original,
+                image.image.setResolutionImageUrl(this);
+                File original = WallpaperUtils.getImageFile(this, image.image.getImageUrl());
+                image.wallpaper = WallpaperUtils.getWallpaperImage(image.config, original,
                         image.image.getImageUrl());
             } catch (Exception e) {
                 return Observable.error(e);
@@ -306,7 +306,7 @@ public class LiveWallpaperService extends WallpaperService {
 
         private String key(int width, int height) {
             return image.getBaseUrl() + "_" + width + "_" + height + "_" + config.getStackBlurMode() + "_"
-                    + config.getStackBlur();
+                    + config.getStackBlur() + "_" + config.getBrightness() + "_" + config.getBrightnessMode();
         }
 
         public boolean eq(DownloadBitmap b) {
@@ -321,6 +321,7 @@ public class LiveWallpaperService extends WallpaperService {
         public static final int DOWNLOAD_DRAW = 123;
         public static final int DOWNLOAD_DRAW_DELAY = 400;
         public static final int ENABLE = 456;
+        public static final int PREVIEW = 789;
         private DownloadBitmap mLastFile;
         private HandlerHelper mDrawHandlerHelper;
         private Runnable mDrawRunnable;
@@ -347,6 +348,8 @@ public class LiveWallpaperService extends WallpaperService {
                     Intent intent = new Intent(ENABLE_LIVE_WALLPAPER);
                     intent.putExtra(EXTRA_ENABLE_LIVE_WALLPAPER, (boolean) msg.obj);
                     LocalBroadcastManager.getInstance(getDisplayContext()).sendBroadcast(intent);
+                } else if (msg.what == PREVIEW) {
+                    new Thread(this::previewBingWallpaper).start();
                 }
                 return true;
             });
@@ -359,7 +362,7 @@ public class LiveWallpaperService extends WallpaperService {
 
             if (!isPreview()) {
                 mActionHandler.removeMessages(ENABLE);
-                mActionHandler.sendDelayed(ENABLE, true, 1000);
+                mActionHandler.sendDelayed(ENABLE, true, 2000);
             }
         }
 
@@ -518,11 +521,7 @@ public class LiveWallpaperService extends WallpaperService {
         public void onSurfaceCreated(SurfaceHolder holder) {
             super.onSurfaceCreated(holder);
             L.alog().d(TAG, "onSurfaceCreated");
-            if (!isPreview()) {
-                LocalBroadcastManager.getInstance(getDisplayContext())
-                        .registerReceiver(mReceiver, new IntentFilter(VIEW_LIVE_WALLPAPER));
-            }
-            new Thread(this::previewBingWallpaper).start();
+            mActionHandler.sendDelayed(PREVIEW, 1000);
         }
 
         @Nullable
@@ -612,6 +611,7 @@ public class LiveWallpaperService extends WallpaperService {
                 getDisplayContext().unregisterReceiver(mReceiver);
             } catch (Throwable ignored) {
             }
+            mActionHandler.removeMessages(PREVIEW);
             mBitmapPaint = null;
             mMatrix = null;
             mTranslate = null;

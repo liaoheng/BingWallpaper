@@ -52,8 +52,7 @@ import me.liaoheng.wallpaper.widget.SeekBarDialogFragment;
  * @author liaoheng
  * @version 2018-01-31 14:14
  */
-public class WallpaperDetailActivity extends BaseActivity implements
-        SeekBarDialogFragment.SeekBarDialogFragmentCallback {
+public class WallpaperDetailActivity extends BaseActivity {
 
     private ActivityWallpaperDetailBinding mViewBinding;
 
@@ -240,6 +239,7 @@ public class WallpaperDetailActivity extends BaseActivity implements
                                     return;
                                 }
                                 bitmap = WallpaperUtils.transformStackBlur(bitmap, mConfig.getStackBlur());
+                                bitmap = WallpaperUtils.reduceBrightness(bitmap, mConfig.getBrightness());
                                 mViewBinding.bingWallpaperDetailSubscaleView.setVisibility(View.GONE);
                                 mViewBinding.bingWallpaperDetailSubscaleView.recycle();
                                 mViewBinding.bingWallpaperDetailImage.setVisibility(View.VISIBLE);
@@ -307,13 +307,34 @@ public class WallpaperDetailActivity extends BaseActivity implements
                     getUrl(Settings.getResolution(this)),
                     mWallpaper.getTitle());
         } else if (item.getItemId() == R.id.menu_wallpaper_stack_blur) {
-            SeekBarDialogFragment.newInstance(getString(R.string.pref_stack_blur), mConfig.getStackBlur(), this)
-                    .show(getSupportFragmentManager(), "SeekBarDialogFragment");
+            SeekBarDialogFragment.newInstance(getString(R.string.pref_stack_blur), mConfig.getStackBlur(),
+                            mStackBlurCallback)
+                    .show(getSupportFragmentManager(), "StackBlurSeekBarDialogFragment");
+        } else if (item.getItemId() == R.id.menu_wallpaper_brightness) {
+            SeekBarDialogFragment.newInstance(getString(R.string.pref_brightness), mConfig.getBrightness(), 100, -100,
+                            mBrightnessCallback)
+                    .show(getSupportFragmentManager(), "BrightnessSeekBarDialogFragment");
         } else if (item.getItemId() == R.id.menu_wallpaper_copyright) {
             UIUtils.showInfoAlertDialog(this, mWallpaper.getCopyrightInfo(), new YNCallback.EmptyCallback());
         }
         return super.onOptionsItemSelected(item);
     }
+
+    final SeekBarDialogFragment.SeekBarDialogFragmentCallback mBrightnessCallback = new SeekBarDialogFragment.SeekBarDialogFragmentCallback() {
+        @Override
+        public void onSeekBarValue(int value) {
+            mConfig.setBrightness(value);
+            loadImage();
+        }
+    };
+
+    final SeekBarDialogFragment.SeekBarDialogFragmentCallback mStackBlurCallback = new SeekBarDialogFragment.SeekBarDialogFragmentCallback() {
+        @Override
+        public void onSeekBarValue(int value) {
+            mConfig.setStackBlur(value);
+            loadImage();
+        }
+    };
 
     private String getSaveUrl() {
         return getUrl(Settings.getSaveResolution(this));
@@ -365,11 +386,5 @@ public class WallpaperDetailActivity extends BaseActivity implements
             mDownloadHelper.destroy();
         }
         super.onDestroy();
-    }
-
-    @Override
-    public void onSeekBarValue(int value) {
-        mConfig.setStackBlur(value);
-        loadImage();
     }
 }

@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-import me.liaoheng.wallpaper.R;
+
 import me.liaoheng.wallpaper.databinding.ViewPreferenceSeekbarBinding;
 
 /**
@@ -19,13 +19,21 @@ import me.liaoheng.wallpaper.databinding.ViewPreferenceSeekbarBinding;
 public class SeekBarDialogFragment extends DialogFragment {
 
     private SeekBarDialogFragmentCallback mCallback;
+    private SeekBarDialogHelper mSeekBarDialogHelper;
 
     public static SeekBarDialogFragment newInstance(String title, int value, SeekBarDialogFragmentCallback callback) {
+        return newInstance(title, value, 100, 0, callback);
+    }
+
+    public static SeekBarDialogFragment newInstance(String title, int value, int max, int min,
+            SeekBarDialogFragmentCallback callback) {
         SeekBarDialogFragment fragment = new SeekBarDialogFragment();
         fragment.setCallback(callback);
         Bundle b = new Bundle();
         b.putString("title", title);
         b.putInt("value", value);
+        b.putInt("max", max);
+        b.putInt("min", min);
         fragment.setArguments(b);
         return fragment;
     }
@@ -41,14 +49,17 @@ public class SeekBarDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         ViewPreferenceSeekbarBinding binding = ViewPreferenceSeekbarBinding.inflate(
                 LayoutInflater.from(requireContext()));
+        mSeekBarDialogHelper = new SeekBarDialogHelper();
         int value = getArguments().getInt("value");
         String title = getArguments().getString("title");
-        binding.seekbar.setProgress(value);
-        binding.seekbarValue.setText(String.valueOf(binding.seekbar.getProgress()));
+        int min = getArguments().getInt("min");
+        int max = getArguments().getInt("max");
+
+        mSeekBarDialogHelper.create(binding.seekbar, binding.seekbarValue, value, max, min);
         binding.seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                binding.seekbarValue.setText(String.valueOf(progress));
+                binding.seekbarValue.setText(String.valueOf(mSeekBarDialogHelper.getProgress(progress, min)));
             }
 
             @Override
@@ -62,12 +73,14 @@ public class SeekBarDialogFragment extends DialogFragment {
             }
         });
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setTitle(title);
-        builder.setView(binding.getRoot()).setPositiveButton(com.github.liaoheng.common.R.string.lcm_ok, (dialog, which) -> {
-            if (mCallback != null) {
-                mCallback.onSeekBarValue(binding.seekbar.getProgress());
-            }
-        }).setNegativeButton(com.github.liaoheng.common.R.string.lcm_no, (dialog, which) -> {
-        });
+        builder.setView(binding.getRoot())
+                .setPositiveButton(com.github.liaoheng.common.R.string.lcm_ok, (dialog, which) -> {
+                    if (mCallback != null) {
+                        mCallback.onSeekBarValue(mSeekBarDialogHelper.getProgress(binding.seekbar.getProgress(), min));
+                    }
+                })
+                .setNegativeButton(com.github.liaoheng.common.R.string.lcm_no, (dialog, which) -> {
+                });
 
         return builder.create();
     }

@@ -32,7 +32,7 @@ public class UIHelper implements IUIHelper {
         //if (WallpaperUtils.isNotSupportedWallpaper(context)) {
         //    throw new IOException("This device not support wallpaper");
         //}
-        WallpaperImage image = WallpaperUtils.getImageStackBlurFile(config, wallpaper, url);
+        WallpaperImage image = WallpaperUtils.getWallpaperImage(config, wallpaper, url);
         int mode = config.getWallpaperMode();
         if (ROM.getROM().isMiui()) {
             MiuiHelper.setWallpaper(context, mode, image);

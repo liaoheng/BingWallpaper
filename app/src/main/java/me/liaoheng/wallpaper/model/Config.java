@@ -4,6 +4,9 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.IntRange;
+import androidx.annotation.Size;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +30,9 @@ public class Config implements Parcelable {
     private int stackBlur;
     @Constants.setWallpaperMode
     private int stackBlurMode;
+    private int brightness;
+    @Constants.setWallpaperMode
+    private int brightnessMode;
     private boolean showNotification;
     private boolean background;
     /**
@@ -39,14 +45,19 @@ public class Config implements Parcelable {
         private int stackBlur;
         @Constants.setWallpaperMode
         private int stackBlurMode = Constants.EXTRA_SET_WALLPAPER_MODE_BOTH;
+        private int brightness;
+        @Constants.setWallpaperMode
+        private int brightnessMode = Constants.EXTRA_SET_WALLPAPER_MODE_BOTH;
         private boolean showNotification;
         private boolean background;
         @Constants.setWallpaperMode
         private int wallpaperMode = Constants.EXTRA_SET_WALLPAPER_MODE_BOTH;
 
         public Builder loadConfig(Context context) {
-            this.stackBlur = Settings.getSettingStackBlur();
-            this.stackBlurMode = Settings.getSettingStackBlurMode();
+            stackBlur = Settings.getSettingStackBlur();
+            stackBlurMode = Settings.getSettingStackBlurMode();
+            brightness = Settings.getSettingBrightness();
+            brightnessMode = Settings.getSettingBrightnessMode();
             return this;
         }
 
@@ -65,17 +76,29 @@ public class Config implements Parcelable {
             return this;
         }
 
+        public void setBrightness(int brightness) {
+            this.brightness = brightness;
+        }
+
+        public void setBrightnessMode(int brightnessMode) {
+            this.brightnessMode = brightnessMode;
+        }
+
         public Config build() {
-            return new Config(stackBlur, stackBlurMode, showNotification, background, wallpaperMode);
+            return new Config(stackBlur, stackBlurMode, brightness, brightnessMode, showNotification, background,
+                    wallpaperMode);
         }
     }
 
     private Config() {
     }
 
-    private Config(int stackBlur, int stackBlurMode, boolean showNotification, boolean background, int wallpaperMode) {
+    private Config(int stackBlur, int stackBlurMode, int brightness, int brightnessMode, boolean showNotification,
+            boolean background, int wallpaperMode) {
         this.stackBlur = stackBlur;
         this.stackBlurMode = stackBlurMode;
+        this.brightness = brightness;
+        this.brightnessMode = brightnessMode;
         this.showNotification = showNotification;
         this.background = background;
         this.wallpaperMode = wallpaperMode;
@@ -90,8 +113,21 @@ public class Config implements Parcelable {
         return stackBlurMode;
     }
 
-    public void setStackBlur(@Constants.setWallpaperMode int stackBlur) {
+    public void setStackBlur(@Size(min = 0, max = 100) int stackBlur) {
         this.stackBlur = stackBlur;
+    }
+
+    public int getBrightness() {
+        return brightness;
+    }
+
+    public void setBrightness(@IntRange(from = -100, to = 100) int brightness) {
+        this.brightness = brightness;
+    }
+
+    @Constants.setWallpaperMode
+    public int getBrightnessMode() {
+        return brightnessMode;
     }
 
     public boolean isShowNotification() {
@@ -116,6 +152,8 @@ public class Config implements Parcelable {
         return "Config{" +
                 "stackBlur=" + stackBlur +
                 ", stackBlurMode=" + stackBlurMode +
+                ", brightness=" + brightness +
+                ", brightnessMode=" + brightnessMode +
                 ", showNotification=" + showNotification +
                 ", background=" + background +
                 ", wallpaperMode=" + wallpaperMode +
@@ -125,6 +163,8 @@ public class Config implements Parcelable {
     protected Config(Parcel in) {
         stackBlur = in.readInt();
         stackBlurMode = in.readInt();
+        brightness = in.readInt();
+        brightnessMode = in.readInt();
         showNotification = in.readInt() == 1;
         background = in.readInt() == 1;
         wallpaperMode = in.readInt();
@@ -151,6 +191,8 @@ public class Config implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(stackBlur);
         dest.writeInt(stackBlurMode);
+        dest.writeInt(brightness);
+        dest.writeInt(brightnessMode);
         dest.writeInt(showNotification ? 1 : 0);
         dest.writeInt(background ? 1 : 0);
         dest.writeInt(wallpaperMode);
@@ -161,6 +203,8 @@ public class Config implements Parcelable {
         map.put("Config", true);
         map.put("Config_stackBlur", stackBlur);
         map.put("Config_stackBlurMode", stackBlurMode);
+        map.put("Config_brightness", brightness);
+        map.put("Config_brightnessMode", brightnessMode);
         map.put("Config_showNotification", showNotification);
         map.put("Config_background", background);
         map.put("Config_wallpaperMode", wallpaperMode);
@@ -178,6 +222,8 @@ public class Config implements Parcelable {
     public Config(Map<String, Object> map) {
         stackBlur = BingWallpaperUtils.getOrDefault(map, "Config_stackBlur", 0);
         stackBlurMode = BingWallpaperUtils.getOrDefault(map, "Config_stackBlurMode", 0);
+        brightness = BingWallpaperUtils.getOrDefault(map, "Config_brightness", 0);
+        brightnessMode = BingWallpaperUtils.getOrDefault(map, "Config_brightnessMode", 0);
         showNotification = BingWallpaperUtils.getOrDefault(map, "Config_showNotification", false);
         background = BingWallpaperUtils.getOrDefault(map, "Config_background", false);
         wallpaperMode = BingWallpaperUtils.getOrDefault(map, "Config_wallpaperMode", 0);

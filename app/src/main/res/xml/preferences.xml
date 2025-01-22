@@ -104,6 +104,22 @@
                 android:key="pref_stack_blur_mode"
                 android:title="@string/pref_stack_blur_mode" />
 
+        <me.liaoheng.wallpaper.widget.SeekBarDialogPreference
+            android:contentDescription="@string/pref_brightness"
+            android:defaultValue="0"
+            app:useSimpleSummaryProvider="true"
+            android:key="pref_brightness"
+            android:title="@string/pref_brightness" />
+
+        <ListPreference
+            android:contentDescription="@string/pref_brightness_mode"
+            android:defaultValue="0"
+            app:useSimpleSummaryProvider="true"
+            android:entries="@array/pref_set_wallpaper_auto_mode_name"
+            android:entryValues="@array/pref_set_wallpaper_auto_mode_value"
+            android:key="pref_brightness_mode"
+            android:title="@string/pref_brightness_mode" />
+
         <SwitchPreferenceCompat
                 android:contentDescription="@string/pref_set_miui_lock_screen_wallpaper"
                 android:defaultValue="false"

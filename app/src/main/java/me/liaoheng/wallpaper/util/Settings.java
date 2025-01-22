@@ -143,6 +143,14 @@ public class Settings {
         return Integer.parseInt(SettingTrayPreferences.get().getString(SettingsActivity.PREF_STACK_BLUR_MODE, "0"));
     }
 
+    public static int getSettingBrightness() {
+        return SettingTrayPreferences.get().getInt(SettingsActivity.PREF_BRIGHTNESS, 0);
+    }
+
+    public static int getSettingBrightnessMode() {
+        return Integer.parseInt(SettingTrayPreferences.get().getString(SettingsActivity.PREF_BRIGHTNESS_MODE, "0"));
+    }
+
     public static String getSettingStackBlurModeName(Context context) {
         String[] names = context.getResources()
                 .getStringArray(R.array.pref_set_wallpaper_auto_mode_name);

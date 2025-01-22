@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
 }
 
 def isFirebase = rootProject.file('app/google-services.json').exists()
@@ -15,8 +16,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion 35
         applicationId "me.liaoheng.wallpaper"
-        versionCode 11002
-        versionName "1.10.02"
+        versionCode 11003
+        versionName "1.10.03"
     }
 
     def isSigning = true
@@ -56,6 +57,13 @@ android {
         viewBinding true
         buildConfig true
     }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = "11"
+    }
     lint {
         abortOnError false
         disable 'ExtraTranslation'
@@ -69,6 +77,7 @@ dependencies {
     testImplementation deps.junit
     testImplementation 'joda-time:joda-time:2.10.13'
     //android system
+    implementation kdeps.core
     implementation deps.annotations
     implementation deps.material
     implementation deps.palette
@@ -78,15 +87,13 @@ dependencies {
     }
     implementation deps.swiperefreshlayout
     //https://stackoverflow.com/questions/75263047/duplicate-class-in-kotlin-android
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.10"))
+//    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.10"))
 
     implementation 'androidx.work:work-runtime:2.10.0'
-    implementation "androidx.datastore:datastore-android:1.1.1"
-    implementation "androidx.datastore:datastore-preferences-android:1.1.1"
-    implementation ("androidx.datastore:datastore-preferences-rxjava3:1.1.1"){
-        exclude module: "datastore-jvm"
-        exclude module: "datastore-preferences-jvm"
-    }
+    implementation "androidx.datastore:datastore-preferences:1.1.2"
+    implementation "androidx.datastore:datastore-preferences-rxjava3:1.1.2"
+    implementation "androidx.datastore:datastore-preferences-proto:1.1.2"
+    compileOnly 'org.jetbrains.kotlinx:kotlinx-coroutines-rx3:1.7.3'
     if (isFirebase) {
         implementation(firebaseCore) {
             exclude module: "play-services-ads-identifier"

@@ -132,6 +132,8 @@ public class SettingsActivity extends BaseActivity {
     public static final String PREF_DOH = "pref_doh";
     public static final String PREF_STACK_BLUR = "pref_stack_blur";
     public static final String PREF_STACK_BLUR_MODE = "pref_stack_blur_mode";
+    public static final String PREF_BRIGHTNESS = "pref_brightness";
+    public static final String PREF_BRIGHTNESS_MODE = "pref_brightness_mode";
     public static final String PREF_AUTO_SAVE_WALLPAPER_FILE = "pref_auto_save_wallpaper_file";
 
     public final static class SettingsPreferenceFragment extends PreferenceFragmentCompat
@@ -157,7 +159,13 @@ public class SettingsActivity extends BaseActivity {
                 dialogFragment.show(fragmentManager, "TimePreference");
             } else if (preference instanceof SeekBarDialogPreference) {
                 FragmentManager fragmentManager = getParentFragmentManager();
-                DialogFragment dialogFragment = SeekBarPreferenceDialogFragmentCompat.newInstance(preference.getKey());
+                int max = 100;
+                int min = 0;
+                if (Objects.equals(preference.getKey(), PREF_BRIGHTNESS)) {
+                    min = -100;
+                }
+                DialogFragment dialogFragment = SeekBarPreferenceDialogFragmentCompat.newInstance(preference.getKey(),
+                        max, min);
                 dialogFragment.setTargetFragment(this, 1);
                 dialogFragment.show(fragmentManager, "SeekBarDialogPreference");
             } else {
@@ -279,6 +287,13 @@ public class SettingsActivity extends BaseActivity {
                 }
             });
             findPreference(PREF_STACK_BLUR).setSummaryProvider(new Preference.SummaryProvider<SeekBarDialogPreference>() {
+                @Nullable
+                @Override
+                public CharSequence provideSummary(@NonNull SeekBarDialogPreference preference) {
+                    return String.valueOf(preference.getProgress());
+                }
+            });
+            findPreference(PREF_BRIGHTNESS).setSummaryProvider(new Preference.SummaryProvider<SeekBarDialogPreference>() {
                 @Nullable
                 @Override
                 public CharSequence provideSummary(@NonNull SeekBarDialogPreference preference) {
