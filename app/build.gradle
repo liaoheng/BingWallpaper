@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id "io.sentry.android.gradle" version "4.14.1"
 }
 
 def isFirebase = rootProject.file('app/google-services.json').exists()
@@ -70,7 +71,7 @@ android {
     }
 }
 
-def firebaseCore = "com.google.firebase:firebase-analytics:22.1.2"
+def firebaseCore = "com.google.firebase:firebase-analytics:22.2.0"
 
 dependencies {
     testImplementation deps.robolectric
@@ -86,8 +87,6 @@ dependencies {
         exclude group: 'androidx.lifecycle', module:'lifecycle-viewmodel-ktx'
     }
     implementation deps.swiperefreshlayout
-    //https://stackoverflow.com/questions/75263047/duplicate-class-in-kotlin-android
-//    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.10"))
 
     implementation 'androidx.work:work-runtime:2.10.0'
     implementation "androidx.datastore:datastore-preferences:1.1.2"
@@ -103,7 +102,7 @@ dependencies {
         compileOnly firebaseCore
     }
 
-    implementation 'io.sentry:sentry-android-core:7.16.0'
+    implementation 'io.sentry:sentry-android-core:8.0.0'
 
     implementation deps.guava
     implementation deps.gson

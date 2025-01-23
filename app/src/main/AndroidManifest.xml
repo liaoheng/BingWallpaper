@@ -195,6 +195,8 @@
             android:name="io.sentry.auto-init"
             android:value="false" />
 
+        <meta-data android:name="io.sentry.anr.enable" android:value="false" />
+
         <meta-data
             android:name="io.sentry.dsn"
             android:value="https://d104155e25ff73f56adf9febe2eef910@o423790.ingest.us.sentry.io/4507603651919872" />
