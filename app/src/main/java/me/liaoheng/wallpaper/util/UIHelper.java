@@ -36,13 +36,24 @@ public class UIHelper implements IUIHelper {
         int mode = config.getWallpaperMode();
         if (ROM.getROM().isMiui()) {
             MiuiHelper.setWallpaper(context, mode, image);
-        } else if (ROM.getROM().isEmui()) {
+        } else if (ROM.getROM().isEmui() || isNewMagicUI()) {
             EmuiHelper.setWallpaper(context, mode, image);
         } else if (ROM.getROM().isOneUi()) {
             OneUiHelper.setWallpaper(context, mode, image);
         } else {
             systemSetWallpaper(context, mode, image);
         }
+    }
+
+    public static boolean isNewMagicUI(){
+        if (Build.VERSION.SDK_INT >= 31){
+            try {
+                Class.forName("com.hihonor.android.os.Build");
+                return true;
+            } catch (ClassNotFoundException ignored) {
+            }
+        }
+        return false;
     }
 
     private void systemSetWallpaper(Context context, @Constants.setWallpaperMode int mode, WallpaperImage image)

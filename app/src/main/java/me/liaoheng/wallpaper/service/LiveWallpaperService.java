@@ -58,6 +58,7 @@ import me.liaoheng.wallpaper.util.LogDebugFileUtils;
 import me.liaoheng.wallpaper.util.MiuiHelper;
 import me.liaoheng.wallpaper.util.RetryWithDelay;
 import me.liaoheng.wallpaper.util.Settings;
+import me.liaoheng.wallpaper.util.UIHelper;
 import me.liaoheng.wallpaper.util.WallpaperUtils;
 
 /**
@@ -248,7 +249,7 @@ public class LiveWallpaperService extends WallpaperService {
         if (config.getWallpaperMode() == Constants.EXTRA_SET_WALLPAPER_MODE_HOME) {
             return;
         }
-        if (ROM.getROM().isEmui()) {
+        if (ROM.getROM().isEmui() || UIHelper.isNewMagicUI()) {
             downloadLockWallpaper(d);
         } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R && ROM.getROM().isMiui()
                 && Settings.isMiuiLockScreenSupport(getApplicationContext())) {
