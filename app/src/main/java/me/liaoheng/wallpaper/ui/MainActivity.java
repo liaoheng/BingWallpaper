@@ -221,7 +221,12 @@ public class MainActivity extends BaseActivity
                 .findViewById(R.id.navigation_header_cover_story_title);
         mDownloadHelper = new DownloadHelper(this, TAG);
 
-        mHandler.sendDelayed(MSG_GET_BING_WALLPAPER, 1000);
+        if (BingWallpaperUtils.isConnected(getApplicationContext())) {
+            showSwipeRefreshLayout();
+            mHandler.sendDelayed(MSG_GET_BING_WALLPAPER, 1000);
+        } else {
+            mViewBinding.bingWallpaperError.setText(getString(R.string.network_unavailable));
+        }
 
         BingWallpaperUtils.showMiuiDialog(this);
 

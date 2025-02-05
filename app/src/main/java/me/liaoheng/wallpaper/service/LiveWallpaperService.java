@@ -133,6 +133,7 @@ public class LiveWallpaperService extends WallpaperService {
         L.alog().d(TAG, "onDestroy");
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
         }
         Utils.dispose(mLoadWallpaperDisposable);
         disable();
@@ -358,6 +359,8 @@ public class LiveWallpaperService extends WallpaperService {
             mSelectWallpaperRunnable = this::selectWallpaper;
 
             mReceiver = new LiveWallpaperEngineBroadcastReceiver();
+            LocalBroadcastManager.getInstance(getDisplayContext())
+                    .registerReceiver(mReceiver, new IntentFilter(VIEW_LIVE_WALLPAPER));
             mImageCache = new LruCache<>(8);
             mBitmapCache = new BitmapCache();
 
@@ -372,6 +375,9 @@ public class LiveWallpaperService extends WallpaperService {
             L.alog().d(TAG, "onDestroy");
             Utils.dispose(mDisplayDisposable);
             Utils.dispose(mPreviewDisposable);
+            if (mReceiver != null) {
+                LocalBroadcastManager.getInstance(getDisplayContext()).unregisterReceiver(mReceiver);
+            }
             if (mActionHandler != null) {
                 mActionHandler.removeCallbacksAndMessages(null);
                 mActionHandler = null;
@@ -608,10 +614,6 @@ public class LiveWallpaperService extends WallpaperService {
         public void onSurfaceDestroyed(SurfaceHolder holder) {
             super.onSurfaceDestroyed(holder);
             L.alog().d(TAG, "onSurfaceDestroyed");
-            try {
-                getDisplayContext().unregisterReceiver(mReceiver);
-            } catch (Throwable ignored) {
-            }
             mActionHandler.removeMessages(PREVIEW);
             mBitmapPaint = null;
             mMatrix = null;
