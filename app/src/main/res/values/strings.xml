@@ -37,7 +37,6 @@
     <string name="pref_set_wallpaper_daily_update">Enable daily update</string>
     <string name="pref_set_wallpaper_daily_update_mode">Daily update mode</string>
     <string name="pref_set_wallpaper_daily_update_interval">Scheduler check interval</string>
-    <!--pref_set_wallpaper_daily_update_interval_summary-->
     <string name="pref_auto_update_check_time">Check every %1$d hours</string>
     <string name="pref_set_wallpaper_daily_update_time">Timer trigger time</string>
     <string name="pref_set_wallpaper_daily_update_success_notification">Success notification</string>

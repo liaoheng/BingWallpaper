@@ -189,6 +189,7 @@ public class Settings {
     public final static int TIMER = 5;
 
     public static final String BING_WALLPAPER_JOB_TYPE = "bing_wallpaper_job_type";
+    public static final String LIVE_WALLPAPER_HEART_BEAT = "live_wallpaper_heart_beat";
 
     public static void setJobType(Context context, @JobType int type) {
         SettingTrayPreferences.get(context).put(BING_WALLPAPER_JOB_TYPE, type);
@@ -202,6 +203,14 @@ public class Settings {
     public static String getJobTypeString(Context context) {
         String[] jts = context.getResources().getStringArray(R.array.job_type);
         return jts[getJobType(context) + 1];
+    }
+
+    public static void updateLiveWallpaperHeartbeat(long time) {
+        SettingTrayPreferences.get().put(LIVE_WALLPAPER_HEART_BEAT, String.valueOf(time));
+    }
+
+    public static long getLiveWallpaperHeartbeat() {
+        return Long.parseLong(SettingTrayPreferences.get().getString(LIVE_WALLPAPER_HEART_BEAT, "0"));
     }
 
 }

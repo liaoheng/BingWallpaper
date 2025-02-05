@@ -1,7 +1,6 @@
 package me.liaoheng.wallpaper.util;
 
 import android.app.Activity;
-import android.app.WallpaperInfo;
 import android.app.WallpaperManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -180,7 +179,7 @@ public class BingWallpaperJobManager {
         if (jobType == Settings.NONE) {
             return "none";
         } else if (jobType == Settings.LIVE_WALLPAPER) {
-            if (checkLiveWallpaperService(context)) {
+            if (checkLiveWallpaperService()) {
                 return "live_wallpaper";
             }
             return "live_wallpaper_error";
@@ -196,10 +195,9 @@ public class BingWallpaperJobManager {
         return String.valueOf(jobType);
     }
 
-    public static boolean checkLiveWallpaperService(Context context) {
-        WallpaperInfo wallpaperInfo = WallpaperManager.getInstance(context).getWallpaperInfo();
-        return wallpaperInfo != null && LiveWallpaperService.class.getName()
-                .equals(wallpaperInfo.getServiceInfo().name);
+    public static boolean checkLiveWallpaperService() {
+        long heartbeat = Settings.getLiveWallpaperHeartbeat();
+        return heartbeat > 0 && (System.currentTimeMillis() - heartbeat <= Constants.DEF_LIVE_WALLPAPER_CHECK_PERIODIC);
     }
 
 }

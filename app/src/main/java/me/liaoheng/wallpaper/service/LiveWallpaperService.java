@@ -164,6 +164,7 @@ public class LiveWallpaperService extends WallpaperService {
 
     private void timing() {
         L.alog().i(TAG, "timing check...");
+        Settings.updateLiveWallpaperHeartbeat(System.currentTimeMillis());
         if (Settings.isEnableLogProvider(this)) {
             LogDebugFileUtils.get().i(TAG, "Timing check...");
         }
