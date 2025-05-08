@@ -1,5 +1,6 @@
 package me.liaoheng.wallpaper.service;
 
+import android.annotation.SuppressLint;
 import android.app.WallpaperColors;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -348,6 +349,7 @@ public class LiveWallpaperService extends WallpaperService {
                 if (msg.what == DOWNLOAD_DRAW) {
                     downloadWallpaper((DownloadBitmap) msg.obj);
                 } else if (msg.what == ENABLE) {
+                    @SuppressLint("UnsafeImplicitIntentLaunch")
                     Intent intent = new Intent(ENABLE_LIVE_WALLPAPER);
                     intent.putExtra(EXTRA_ENABLE_LIVE_WALLPAPER, (boolean) msg.obj);
                     LocalBroadcastManager.getInstance(getDisplayContext()).sendBroadcast(intent);
@@ -462,28 +464,17 @@ public class LiveWallpaperService extends WallpaperService {
             });
         }
 
-        private Paint mBitmapPaint;
-        private Matrix mMatrix;
-        private PointF mTranslate;
-        private PointF mPendingCenter;
-
+        private final Paint mBitmapPaint = new Paint();
+        private final Matrix mMatrix = new Matrix();
+        private final PointF mTranslate = new PointF();
+        private final PointF mPendingCenter = new PointF();
+        {
+            mBitmapPaint.setAntiAlias(true);
+            mBitmapPaint.setFilterBitmap(true);
+            mBitmapPaint.setDither(true);
+        }
         private void draw(Canvas canvas, Bitmap bitmap, int width, int height) {
-            if (mBitmapPaint == null) {
-                mBitmapPaint = new Paint();
-                mBitmapPaint.setAntiAlias(true);
-                mBitmapPaint.setFilterBitmap(true);
-                mBitmapPaint.setDither(true);
-            }
-            if (mMatrix == null) {
-                mMatrix = new Matrix();
-            }
             mMatrix.reset();
-            if (mPendingCenter == null) {
-                mPendingCenter = new PointF();
-            }
-            if (mTranslate == null) {
-                mTranslate = new PointF();
-            }
 
             float scale = Math.max(width / (float) sWidth(bitmap), height / (float) sHeight(bitmap));
 
@@ -616,10 +607,6 @@ public class LiveWallpaperService extends WallpaperService {
             super.onSurfaceDestroyed(holder);
             L.alog().d(TAG, "onSurfaceDestroyed");
             mActionHandler.removeMessages(PREVIEW);
-            mBitmapPaint = null;
-            mMatrix = null;
-            mTranslate = null;
-            mPendingCenter = null;
         }
     }
 }

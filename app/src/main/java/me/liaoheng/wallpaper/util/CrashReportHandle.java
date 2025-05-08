@@ -2,6 +2,7 @@ package me.liaoheng.wallpaper.util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.MalformedJsonException;
 
 import com.bumptech.glide.load.engine.GlideException;
@@ -38,13 +39,16 @@ public class CrashReportHandle {
         } else {
             enable(context);
             SentryAndroid.init(context, options -> {
+                if (TextUtils.isEmpty(options.getDsn())){
+                    options.setEnabled(false);
+                    return;
+                }
                 options.setBeforeSend((event, hint) -> {
                     event.setExtra("job_ype", BingWallpaperJobManager.check(context));
                     event.setExtra("rom_type", ROM.getROM().getRom());
                     event.setExtra("resolution", Settings.getResolution(context));
                     return event;
                 });
-                options.setDebug(BuildConfig.DEBUG);
             });
         }
     }

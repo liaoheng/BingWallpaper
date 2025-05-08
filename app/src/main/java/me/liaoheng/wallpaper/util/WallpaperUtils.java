@@ -143,7 +143,8 @@ public class WallpaperUtils {
                 if (Settings.isEnableLogProvider(context)) {
                     LogDebugFileUtils.get().d(tag, "Auto download wallpaper url: %s", imageUrl);
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
+                L.alog().e(tag, e,"auto download wallpaper save failure");
                 if (Settings.isEnableLogProvider(context)) {
                     LogDebugFileUtils.get().e(tag, e, "Auto download wallpaper save failure");
                 }
