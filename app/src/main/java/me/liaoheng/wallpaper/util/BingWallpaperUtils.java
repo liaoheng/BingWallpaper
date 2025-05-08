@@ -520,6 +520,9 @@ public class BingWallpaperUtils {
     }
 
     public static boolean isROMSystem() {
+        if (UIHelper.isSamsungFoldableDevice()) {
+            return false;
+        }
         return ROM.getROM().isMiui() || ROM.getROM().isEmui() || ROM.getROM().isOneUi() || ROM.getROM().isOppo()
                 || ROM.getROM().isVivo() || ROM.getROM().isColorOS() || ROM.getROM().isFuntouchOS() || ROM.getROM()
                 .isFlyme();

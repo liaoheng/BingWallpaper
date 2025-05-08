@@ -56,6 +56,12 @@ public class UIHelper implements IUIHelper {
         return false;
     }
 
+    public static boolean isSamsungFoldableDevice(){
+        String model = Build.MODEL.toLowerCase();
+        String device = Build.DEVICE.toLowerCase();
+        return model.contains("fold") || model.contains("zflip") || device.contains("fold") || device.contains("zflip");
+    }
+
     private void systemSetWallpaper(Context context, @Constants.setWallpaperMode int mode, WallpaperImage image)
             throws IOException {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
