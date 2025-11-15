@@ -2,7 +2,7 @@ package me.liaoheng.wallpaper.service;
 
 import android.content.Context;
 
-import com.github.liaoheng.common.util.L;
+import com.github.liaoheng.util.L;
 
 import me.liaoheng.wallpaper.model.BingWallpaperState;
 import me.liaoheng.wallpaper.model.Config;

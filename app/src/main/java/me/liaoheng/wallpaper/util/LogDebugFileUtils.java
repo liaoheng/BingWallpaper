@@ -2,13 +2,9 @@ package me.liaoheng.wallpaper.util;
 
 import android.content.Context;
 
-import com.github.liaoheng.common.util.LogFileUtils;
+import com.github.liaoheng.util.LogFileUtils;
 
 import java.io.IOException;
-
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * 不带system log
@@ -36,7 +32,7 @@ public class LogDebugFileUtils {
     public static void create(Context context) {
         new Thread(() -> {
             try {
-                LogFileUtils.get().open(context, "log", "");
+                LogFileUtils.get().init(context, "log", "");
             } catch (IOException ignored) {
             }
         }).start();

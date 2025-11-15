@@ -3,13 +3,14 @@ package me.liaoheng.wallpaper.ui;
 import android.os.Bundle;
 import android.text.Html;
 
-import com.github.liaoheng.common.adapter.model.Group;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.github.liaoheng.adapter.model.Group;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import me.liaoheng.wallpaper.adapter.TranslatorAdapter;
 import me.liaoheng.wallpaper.databinding.ActivityTranslatorBinding;
 import me.liaoheng.wallpaper.model.Translator;
@@ -24,6 +25,7 @@ public class TranslatorActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityTranslatorBinding binding = ActivityTranslatorBinding.inflate(getLayoutInflater());
+        setStatusBarColor(binding.getRoot());
         setContentView(binding.getRoot());
         String text = "if you want to help translation the app, "
                 + "please click: https://crowdin.com/project/starth-bing-wallpaper";

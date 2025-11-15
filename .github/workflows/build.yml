@@ -1,0 +1,40 @@
+name: Build
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: "Get sdkVersion from versions.toml"
+        id: read_version
+        shell: bash
+        run: |
+          version=`perl -nlE 'say if s/compileSdkVersion \= \"(.*)\"/$1/g' gradle/libs.versions.toml`
+          echo "sdkVersion=$version" >> $GITHUB_OUTPUT
+
+      - name: Setup Android SDK
+        uses: amyu/setup-android@v5
+        with:
+          sdk-version: ${{ steps.read_version.outputs.sdkVersion }}
+
+      - name: Build
+        run: |
+          ./gradlew --no-daemon assembleDebug

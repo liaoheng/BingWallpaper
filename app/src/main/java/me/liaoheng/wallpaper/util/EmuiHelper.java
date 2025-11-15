@@ -8,7 +8,7 @@ import android.os.Build;
 
 import androidx.core.content.ContextCompat;
 
-import com.github.liaoheng.common.util.AppUtils;
+import com.github.liaoheng.util.AppUtils;
 
 import java.io.IOException;
 

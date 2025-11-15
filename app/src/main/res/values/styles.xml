@@ -8,6 +8,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
+        <item name="actionBarStyle">@style/AppTheme.actionBarStyle</item>
     </style>
 
     <style name="AppTheme.Transparent.Toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -36,6 +37,7 @@
 
     <!-- To follow the guidelines http://www.google.com/design/spec/layout/structure.html#structure-toolbars -->
     <style name="AppTheme.actionBarStyle" parent="Widget.AppCompat.ActionBar">
+        <item name="elevation">0dp</item>
         <item name="background">?attr/colorPrimary</item>
         <!--<item name="contentInsetStart">72dp</item>-->
         <!--<item name="contentInsetLeft">72dp</item>-->

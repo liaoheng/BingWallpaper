@@ -9,9 +9,9 @@ import android.util.DisplayMetrics;
 
 import androidx.annotation.NonNull;
 
-import com.github.liaoheng.common.util.AppUtils;
-import com.github.liaoheng.common.util.BitmapUtils;
-import com.github.liaoheng.common.util.ROM;
+import com.github.liaoheng.util.AppUtils;
+import com.github.liaoheng.util.BitmapUtils;
+import com.github.liaoheng.util.ROM;
 
 import java.io.File;
 import java.io.IOException;

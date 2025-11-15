@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
@@ -15,8 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Lifecycle;
 
-import com.github.liaoheng.common.util.DisplayUtils;
-import com.github.liaoheng.common.util.UIUtils;
+import com.github.liaoheng.util.DisplayUtils;
+import com.github.liaoheng.util.UIUtils;
 import com.trello.lifecycle4.android.lifecycle.AndroidLifecycle;
 import com.trello.rxlifecycle4.LifecycleProvider;
 import com.trello.rxlifecycle4.LifecycleTransformer;
@@ -67,6 +68,10 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                             | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
+    }
+
+    protected void setStatusBarColor(View rootView) {
+        UIUtils.setStatusBarColor(this, rootView, R.color.colorPrimary);
     }
 
     @Override

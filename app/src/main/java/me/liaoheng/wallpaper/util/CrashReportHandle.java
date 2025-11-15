@@ -6,8 +6,8 @@ import android.text.TextUtils;
 import android.util.MalformedJsonException;
 
 import com.bumptech.glide.load.engine.GlideException;
-import com.github.liaoheng.common.util.L;
-import com.github.liaoheng.common.util.ROM;
+import com.github.liaoheng.util.L;
+import com.github.liaoheng.util.ROM;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.net.ConnectException;

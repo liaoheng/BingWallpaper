@@ -6,9 +6,9 @@ import androidx.annotation.NonNull;
 import androidx.startup.AppInitializer;
 import androidx.work.Configuration;
 
-import com.github.liaoheng.common.Common;
-import com.github.liaoheng.common.util.L;
-import com.github.liaoheng.common.util.LanguageContextWrapper;
+import com.github.liaoheng.Common;
+import com.github.liaoheng.util.L;
+import com.github.liaoheng.util.LanguageContextWrapper;
 
 import net.danlew.android.joda.JodaTimeInitializer;
 

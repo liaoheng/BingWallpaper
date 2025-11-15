@@ -1,7 +1,7 @@
 package me.liaoheng.wallpaper.adapter;
 
-import com.github.liaoheng.common.adapter.holder.BaseRecyclerViewHolder;
-import com.github.liaoheng.common.adapter.model.Group;
+import com.github.liaoheng.adapter.holder.BaseRecyclerViewHolder;
+import com.github.liaoheng.adapter.model.Group;
 
 import androidx.annotation.Nullable;
 import me.liaoheng.wallpaper.databinding.ViewTranslatorListItemHeadBinding;

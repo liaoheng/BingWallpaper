@@ -7,7 +7,7 @@ import android.content.Context;
 
 import androidx.appcompat.app.AlertDialog;
 
-import com.github.liaoheng.common.util.UIUtils;
+import com.github.liaoheng.util.UIUtils;
 
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;

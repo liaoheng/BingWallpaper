@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.preference.PreferenceManager;
 
-import com.github.liaoheng.common.util.L;
+import com.github.liaoheng.util.L;
 
 import java.io.File;
 

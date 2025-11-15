@@ -22,9 +22,9 @@ import androidx.core.app.ActivityCompat;
 import com.bumptech.glide.request.target.Target;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
-import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.UIUtils;
-import com.github.liaoheng.common.util.YNCallback;
+import com.github.liaoheng.util.Callback;
+import com.github.liaoheng.util.UIUtils;
+import com.github.liaoheng.util.Callback5;
 
 import java.io.File;
 import java.io.IOException;
@@ -292,7 +292,7 @@ public class WallpaperDetailActivity extends BaseActivity {
         } else if (item.getItemId() == R.id.menu_wallpaper_both) {
             setWallpaper(0);
         } else if (item.getItemId() == R.id.menu_wallpaper_save) {
-            BingWallpaperUtils.showSaveWallpaperDialog(this, new YNCallback.EmptyCallback() {
+            BingWallpaperUtils.showSaveWallpaperDialog(this, new Callback5.EmptyCallback() {
                 @Override
                 public void onAllow() {
                     mDownloadHelper.saveWallpaper(getActivity(), getSaveUrl());
@@ -315,7 +315,7 @@ public class WallpaperDetailActivity extends BaseActivity {
                             mBrightnessCallback)
                     .show(getSupportFragmentManager(), "BrightnessSeekBarDialogFragment");
         } else if (item.getItemId() == R.id.menu_wallpaper_copyright) {
-            UIUtils.showInfoAlertDialog(this, mWallpaper.getCopyrightInfo(), new YNCallback.EmptyCallback());
+            UIUtils.showInfoAlertDialog(this, mWallpaper.getCopyrightInfo(), new Callback5.EmptyCallback());
         }
         return super.onOptionsItemSelected(item);
     }
@@ -356,7 +356,7 @@ public class WallpaperDetailActivity extends BaseActivity {
         String url = getUrl(Settings.getResolution(this));
         mConfig.setWallpaperMode(type);
         BingWallpaperUtils.showWallpaperDialog(this, mWallpaper.copy(url), mConfig,
-                new YNCallback.EmptyCallback() {
+                new Callback5.EmptyCallback() {
                     @Override
                     public void onAllow() {
                         showProgressDialog();

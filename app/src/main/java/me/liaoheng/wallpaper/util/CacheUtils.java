@@ -1,7 +1,7 @@
 package me.liaoheng.wallpaper.util;
 
 import android.content.Context;
-import com.github.liaoheng.common.util.FileUtils;
+import com.github.liaoheng.util.FileUtils;
 import java.io.File;
 import java.io.IOException;
 
@@ -12,8 +12,8 @@ import java.io.IOException;
 public class CacheUtils {
     private CacheUtils() {}
 
-    public static com.github.liaoheng.common.util.CacheUtils get() {
-        return com.github.liaoheng.common.util.CacheUtils.get();
+    public static com.github.liaoheng.util.CacheUtils get() {
+        return com.github.liaoheng.util.CacheUtils.get();
     }
 
     public static void init(Context context) {

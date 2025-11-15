@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.github.appintro.AppIntro;
-import com.github.liaoheng.common.util.ROM;
-import com.github.liaoheng.common.util.UIUtils;
+import com.github.liaoheng.util.ROM;
+import com.github.liaoheng.util.UIUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

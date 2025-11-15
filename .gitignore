@@ -5,6 +5,7 @@ build/
 .gradle/
 local.properties
 google-services.json
+sentry.properties
 
 ### Windows template
 # Windows image file caches

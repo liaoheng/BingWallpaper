@@ -2,7 +2,7 @@ package me.liaoheng.wallpaper.data;
 
 import android.content.Context;
 
-import com.github.liaoheng.common.util.ValidateUtils;
+import com.github.liaoheng.util.ValidateUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;

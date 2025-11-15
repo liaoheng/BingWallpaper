@@ -11,8 +11,8 @@ import androidx.core.app.ActivityOptionsCompat;
 
 import com.bumptech.glide.request.target.DrawableThumbnailImageViewTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.github.liaoheng.common.adapter.holder.BaseRecyclerViewHolder;
-import com.github.liaoheng.common.util.UIUtils;
+import com.github.liaoheng.adapter.holder.BaseRecyclerViewHolder;
+import com.github.liaoheng.util.UIUtils;
 
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.databinding.ViewWallpaperListItemBinding;

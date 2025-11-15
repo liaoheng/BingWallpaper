@@ -4,9 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
-import com.github.liaoheng.common.util.PreferencesUtils;
-import com.github.liaoheng.common.util.SystemDataException;
-import com.github.liaoheng.common.util.SystemRuntimeException;
+import com.github.liaoheng.util.PreferencesUtils;
+import com.github.liaoheng.util.SystemDataException;
+import com.github.liaoheng.util.SystemRuntimeException;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;

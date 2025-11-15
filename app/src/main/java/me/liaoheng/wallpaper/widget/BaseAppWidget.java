@@ -12,9 +12,9 @@ import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 
-import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.L;
-import com.github.liaoheng.common.util.Utils;
+import com.github.liaoheng.util.Callback;
+import com.github.liaoheng.util.L;
+import com.github.liaoheng.util.Utils;
 
 import java.util.Arrays;
 

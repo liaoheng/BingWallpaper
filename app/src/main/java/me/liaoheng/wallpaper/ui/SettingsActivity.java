@@ -21,19 +21,20 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreferenceCompat;
 
-import com.github.liaoheng.common.util.AppUtils;
-import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.LanguageContextWrapper;
-import com.github.liaoheng.common.util.ROM;
-import com.github.liaoheng.common.util.ShellUtils;
-import com.github.liaoheng.common.util.UIUtils;
-import com.github.liaoheng.common.util.Utils;
-import com.github.liaoheng.common.util.YNCallback;
+import com.github.liaoheng.util.AppUtils;
+import com.github.liaoheng.util.Callback;
+import com.github.liaoheng.util.Callback5;
+import com.github.liaoheng.util.LanguageContextWrapper;
+import com.github.liaoheng.util.ROM;
+import com.github.liaoheng.util.ShellUtils;
+import com.github.liaoheng.util.UIUtils;
+import com.github.liaoheng.util.Utils;
 
 import java.util.Locale;
 import java.util.Objects;
 
 import me.liaoheng.wallpaper.R;
+import me.liaoheng.wallpaper.databinding.ActivitySettingsBinding;
 import me.liaoheng.wallpaper.util.BingWallpaperJobManager;
 import me.liaoheng.wallpaper.util.BingWallpaperUtils;
 import me.liaoheng.wallpaper.util.Constants;
@@ -65,7 +66,9 @@ public class SettingsActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.menu_main_setting);
-        setContentView(R.layout.activity_settings);
+        ActivitySettingsBinding viewBinding = ActivitySettingsBinding.inflate(getLayoutInflater());
+        setStatusBarColor(viewBinding.getRoot());
+        setContentView(viewBinding.getRoot());
         if (savedInstanceState != null) {
             isChangeLanguage = savedInstanceState.getBoolean("isChangeLanguage");
             mSettingPreferenceFragment = getSupportFragmentManager().getFragment(savedInstanceState, "Settings");
@@ -89,7 +92,7 @@ public class SettingsActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        BingWallpaperJobManager.onActivityResult(this, requestCode, resultCode, new YNCallback() {
+        BingWallpaperJobManager.onActivityResult(this, requestCode, resultCode, new Callback5() {
             final Intent intent = new Intent(CLOSE_FULLY_AUTOMATIC_UPDATE);
 
             @Override
@@ -220,11 +223,11 @@ public class SettingsActivity extends BaseActivity {
 
             findPreference("pref_clear_cache").setOnPreferenceClickListener(preference -> {
                 UIUtils.showYNAlertDialog(requireContext(), getString(R.string.pref_clear_cache) + "?",
-                        new YNCallback() {
+                        new Callback5() {
                             @Override
                             public void onAllow() {
                                 Utils.addSubscribe(BingWallpaperUtils.clearCache(getActivity()),
-                                        new Callback.EmptyCallback<Object>() {
+                                        new Callback.EmptyCallback<>() {
                                             @Override
                                             public void onSuccess(Object o) {
                                                 UIUtils.showToast(requireContext(), R.string.pref_clear_cache_success);
@@ -250,14 +253,10 @@ public class SettingsActivity extends BaseActivity {
             Preference mDailyUpdateModeListPreference = findPreference(PREF_SET_WALLPAPER_DAILY_UPDATE_MODE);
             mDailyUpdateModeListPreference.setOnPreferenceChangeListener(this);
             mDailyUpdateIntervalPreference = findPreference(PREF_SET_WALLPAPER_DAILY_UPDATE_INTERVAL);
-            mDailyUpdateIntervalPreference.setSummaryProvider(new Preference.SummaryProvider<ListPreference>() {
-                @Nullable
-                @Override
-                public CharSequence provideSummary(@NonNull ListPreference preference) {
-                    return requireContext().getString(R.string.pref_auto_update_check_time,
-                            Integer.parseInt(preference.getEntry().toString()));
-                }
-            });
+            mDailyUpdateIntervalPreference.setSummaryProvider(
+                    (Preference.SummaryProvider<ListPreference>) preference -> requireContext().getString(
+                            R.string.pref_auto_update_check_time,
+                            Integer.parseInt(preference.getEntry().toString())));
             mDailyUpdateTimePreference = findPreference(PREF_SET_WALLPAPER_DAILY_UPDATE_TIME);
             Preference mCountryListPreference = findPreference(PREF_COUNTRY);
             mCountryListPreference.setOnPreferenceChangeListener(this);
@@ -279,27 +278,15 @@ public class SettingsActivity extends BaseActivity {
                         mMIuiLockScreenPreference);
             }
             mDailyUpdateTimePreference.setDefaultValue(Constants.DEF_TIMER_PERIODIC);
-            mDailyUpdateTimePreference.setSummaryProvider(new Preference.SummaryProvider<TimePreference>() {
-                @Nullable
-                @Override
-                public CharSequence provideSummary(@NonNull TimePreference preference) {
-                    return preference.getLocalTime().toString("HH:mm");
-                }
-            });
-            findPreference(PREF_STACK_BLUR).setSummaryProvider(new Preference.SummaryProvider<SeekBarDialogPreference>() {
-                @Nullable
-                @Override
-                public CharSequence provideSummary(@NonNull SeekBarDialogPreference preference) {
-                    return String.valueOf(preference.getProgress());
-                }
-            });
-            findPreference(PREF_BRIGHTNESS).setSummaryProvider(new Preference.SummaryProvider<SeekBarDialogPreference>() {
-                @Nullable
-                @Override
-                public CharSequence provideSummary(@NonNull SeekBarDialogPreference preference) {
-                    return String.valueOf(preference.getProgress());
-                }
-            });
+            mDailyUpdateTimePreference.setSummaryProvider(
+                    (Preference.SummaryProvider<TimePreference>) preference -> preference.getLocalTime()
+                            .toString("HH:mm"));
+            findPreference(PREF_STACK_BLUR).setSummaryProvider(
+                    (Preference.SummaryProvider<SeekBarDialogPreference>) preference -> String.valueOf(
+                            preference.getProgress()));
+            findPreference(PREF_BRIGHTNESS).setSummaryProvider(
+                    (Preference.SummaryProvider<SeekBarDialogPreference>) preference -> String.valueOf(
+                            preference.getProgress()));
 
             mDailyUpdatePreference.setSummary(Settings.getJobTypeString(requireContext()));
 

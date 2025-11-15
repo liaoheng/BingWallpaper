@@ -1,6 +1,6 @@
 package me.liaoheng.wallpaper.adapter;
 
-import com.github.liaoheng.common.adapter.holder.BaseRecyclerViewHolder;
+import com.github.liaoheng.adapter.holder.BaseRecyclerViewHolder;
 
 import androidx.annotation.Nullable;
 import me.liaoheng.wallpaper.databinding.ViewLicenseListItemBinding;

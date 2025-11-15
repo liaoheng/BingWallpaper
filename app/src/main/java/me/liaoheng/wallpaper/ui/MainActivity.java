@@ -12,9 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,13 +38,13 @@ import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.github.clans.fab.FloatingActionButton;
-import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.DisplayUtils;
-import com.github.liaoheng.common.util.LanguageContextWrapper;
-import com.github.liaoheng.common.util.ROM;
-import com.github.liaoheng.common.util.SystemDataException;
-import com.github.liaoheng.common.util.UIUtils;
-import com.github.liaoheng.common.util.YNCallback;
+import com.github.liaoheng.util.Callback;
+import com.github.liaoheng.util.Callback5;
+import com.github.liaoheng.util.DisplayUtils;
+import com.github.liaoheng.util.LanguageContextWrapper;
+import com.github.liaoheng.util.ROM;
+import com.github.liaoheng.util.SystemDataException;
+import com.github.liaoheng.util.UIUtils;
 import com.google.android.material.navigation.NavigationView;
 
 import java.io.File;
@@ -105,15 +103,12 @@ public class MainActivity extends BaseActivity
     private final MutableLiveData<Configuration> mConfigurationChangedHandler = new MutableLiveData<>();
 
     final int MSG_GET_BING_WALLPAPER = 1;
-    final DelayedHandler mHandler = new DelayedHandler(Looper.getMainLooper(), new Handler.Callback() {
-        @Override
-        public boolean handleMessage(@NonNull Message msg) {
-            if (msg.what == MSG_GET_BING_WALLPAPER) {
-                getBingWallpaper();
-                return true;
-            }
-            return false;
+    final DelayedHandler mHandler = new DelayedHandler(Looper.getMainLooper(), msg -> {
+        if (msg.what == MSG_GET_BING_WALLPAPER) {
+            getBingWallpaper();
+            return true;
         }
+        return false;
     });
 
     @Override
@@ -163,7 +158,7 @@ public class MainActivity extends BaseActivity
                 mHandler.sendDelayed(MSG_GET_BING_WALLPAPER, 200);
                 return;
             }
-            loadImage(new Callback.EmptyCallback<File>() {
+            loadImage(new Callback.EmptyCallback<>() {
                 @Override
                 public void onSuccess(File file) {
                     mViewBinding.bingWallpaperView.setImageBitmap(
@@ -189,7 +184,7 @@ public class MainActivity extends BaseActivity
             }
         });
         mSetWallpaperStateBroadcastReceiverHelper = new SetWallpaperStateBroadcastReceiverHelper(
-                new Callback4.EmptyCallback<BingWallpaperState>() {
+                new Callback4.EmptyCallback<>() {
                     @Override
                     public void onYes(BingWallpaperState bingWallpaperState) {
                         Toast.makeText(getApplicationContext(), R.string.set_wallpaper_success, Toast.LENGTH_LONG)
@@ -285,7 +280,7 @@ public class MainActivity extends BaseActivity
         String url = getUrl();
         BingWallpaperUtils.setWallpaperDialog(this, mCurWallpaper.copy(url),
                 mConfig.setWallpaperMode(type).loadConfig(this).build(),
-                new YNCallback.EmptyCallback() {
+                new Callback5.EmptyCallback() {
                     @Override
                     public void onAllow() {
                         isRun = true;
@@ -394,7 +389,7 @@ public class MainActivity extends BaseActivity
                 .load(getUrl(Constants.WallpaperConfig.MAIN_WALLPAPER_RESOLUTION))
                 .dontAnimate()
                 .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-                .addListener(new RequestListener<Bitmap>() {
+                .addListener(new RequestListener<>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e,
                             Object model, Target<Bitmap> target, boolean isFirstResource) {
@@ -415,7 +410,7 @@ public class MainActivity extends BaseActivity
                             @Nullable Transition<? super Bitmap> transition) {
                         super.onResourceReady(resource, transition);
                         parseWallpaper(resource, mCurWallpaper);
-                        loadImage(new Callback.EmptyCallback<File>() {
+                        loadImage(new Callback.EmptyCallback<>() {
                             @Override
                             public void onPreExecute() {
                                 showSwipeRefreshLayout();
@@ -508,7 +503,7 @@ public class MainActivity extends BaseActivity
                     if (mCurWallpaper == null) {
                         return;
                     }
-                    BingWallpaperUtils.showSaveWallpaperDialog(this, new YNCallback() {
+                    BingWallpaperUtils.showSaveWallpaperDialog(this, new Callback5() {
                         @Override
                         public void onAllow() {
                             mViewBinding.bingWallpaperSetMenu.close(true);

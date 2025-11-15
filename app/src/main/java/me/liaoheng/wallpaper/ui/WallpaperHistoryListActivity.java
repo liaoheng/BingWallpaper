@@ -3,16 +3,16 @@ package me.liaoheng.wallpaper.ui;
 import android.os.Bundle;
 import android.view.View;
 
-import com.github.liaoheng.common.adapter.core.HandleView;
-import com.github.liaoheng.common.adapter.core.RecyclerViewHelper;
-import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.Utils;
-import com.github.liaoheng.common.util.ValidateUtils;
-import com.github.liaoheng.common.util.YNCallback;
+import androidx.recyclerview.widget.GridLayoutManager;
+
+import com.github.liaoheng.adapter.core.HandleView;
+import com.github.liaoheng.adapter.core.RecyclerViewHelper;
+import com.github.liaoheng.util.Callback;
+import com.github.liaoheng.util.Callback5;
+import com.github.liaoheng.util.Utils;
+import com.github.liaoheng.util.ValidateUtils;
 
 import java.util.List;
-
-import androidx.recyclerview.widget.GridLayoutManager;
 
 import io.reactivex.rxjava3.core.Observable;
 import me.liaoheng.wallpaper.R;
@@ -41,6 +41,7 @@ public class WallpaperHistoryListActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mViewBinding = ActivityWallpaperHistoryListBinding.inflate(getLayoutInflater());
+        setStatusBarColor(mViewBinding.getRoot());
         setContentView(mViewBinding.getRoot());
         setTitle(R.string.menu_main_wallpaper_history_list);
 
@@ -56,10 +57,10 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         mRecyclerViewHelper = builder.setMergedIntoLineSpanSizeLookup().build();
 
         mRecyclerViewHelper.changeToLoadMoreLoading();
-        getBingWallpaperList(new YNCallback.EmptyCallback() {
+        getBingWallpaperList(new Callback5.EmptyCallback() {
             @Override
             public void onAllow() {
-                getBingWallpaperList(new YNCallback.EmptyCallback() {
+                getBingWallpaperList(new Callback5.EmptyCallback() {
                     @Override
                     public void onAllow() {
                         mWallpaperAdapter.notifyDataSetChanged();
@@ -69,10 +70,10 @@ public class WallpaperHistoryListActivity extends BaseActivity {
         });
     }
 
-    private void getBingWallpaperList(final YNCallback callback) {
+    private void getBingWallpaperList(final Callback5 callback) {
         Observable<List<Wallpaper>> listObservable = BingWallpaperNetworkClient.getBingWallpaper(this, index,
                 count).compose(this.bindToLifecycle());
-        Utils.addSubscribe(listObservable, new Callback.EmptyCallback<List<Wallpaper>>() {
+        Utils.addSubscribe(listObservable, new Callback.EmptyCallback<>() {
             @Override
             public void onPreExecute() {
                 mRecyclerViewHelper.setLoadMoreLoading(true);

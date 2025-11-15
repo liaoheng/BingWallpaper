@@ -24,12 +24,12 @@ import androidx.collection.LruCache;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.github.liaoheng.common.util.AppUtils;
-import com.github.liaoheng.common.util.BitmapUtils;
-import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.L;
-import com.github.liaoheng.common.util.ROM;
-import com.github.liaoheng.common.util.Utils;
+import com.github.liaoheng.util.AppUtils;
+import com.github.liaoheng.util.BitmapUtils;
+import com.github.liaoheng.util.Callback;
+import com.github.liaoheng.util.L;
+import com.github.liaoheng.util.ROM;
+import com.github.liaoheng.util.Utils;
 
 import java.io.File;
 import java.io.IOException;

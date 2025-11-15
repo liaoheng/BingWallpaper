@@ -1,0 +1,88 @@
+name: Build && Push Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build-and-push-release:
+    runs-on: ubuntu-latest
+    if: github.ref_type == 'tag'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Convert and set version env
+        id: process-version
+        run: |
+          VERSION_TAG=${{ github.ref_name }}
+          VERSION_TAG=${VERSION_TAG#v}                              # remove the 'v' prefix
+          IFS='.' read -ra VERSION_PARTS <<< "$VERSION_TAG"         # split into array
+          VERSION_CODE=$(printf "%1d%02d%03d" "${VERSION_PARTS[0]}" "${VERSION_PARTS[1]}" "${VERSION_PARTS[2]}")
+          echo "versionName=$VERSION_TAG" >> $GITHUB_OUTPUT          # "1.2.3"
+          echo "versionCode=$VERSION_CODE" >> $GITHUB_OUTPUT         # "102003"
+
+      - name: Re-write version
+        uses: chkfung/android-version-actions@v1.2.2
+        with:
+          gradlePath: app/build.gradle
+          versionCode: ${{ steps.process-version.outputs.versionCode }}
+          versionName: ${{ steps.process-version.outputs.versionName }}
+
+      - name: "Get sdkVersion from versions.toml"
+        id: read_version
+        shell: bash
+        run: |
+          version=`perl -nlE 'say if s/compileSdkVersion \= \"(.*)\"/$1/g' gradle/libs.versions.toml`
+          echo "sdkVersion=$version" >> $GITHUB_OUTPUT
+
+      - name: Setup Android SDK
+        uses: amyu/setup-android@v5
+        with:
+          sdk-version: ${{ steps.read_version.outputs.sdkVersion }}
+
+      - name: Write jks
+        id: write_jks
+        uses: timheuer/base64-to-file@v1.2
+        with:
+          fileName: 'liaoheng.jks'
+          encodedString: ${{ secrets.JKS_STORE_FILE }}
+
+      - name: Write google-services
+        id: write_google-services
+        uses: timheuer/base64-to-file@v1.2
+        with:
+          fileName: 'google-services.json'
+          fileDir: './app/'
+          encodedString: ${{ secrets.GOOGLE_SERVICES }}
+
+      - name: Build Release
+        env:
+          KEY_ALIAS: ${{ secrets.JKS_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.JKS_KEY_PASSWORD }}
+          STORE_FILE: ${{ steps.write_jks.outputs.filePath }}
+          STORE_PASSWORD: ${{ secrets.JKS_STORE_PASSWORD }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
+        run: |
+          chmod +x ./gradlew
+          ./gradlew --no-daemon build
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          files: app/build/outputs/apk/release/StarthBingWallpaper-${{ steps.process-version.outputs.versionName }}.apk

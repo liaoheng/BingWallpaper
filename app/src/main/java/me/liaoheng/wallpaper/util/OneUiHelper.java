@@ -5,7 +5,7 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import com.github.liaoheng.common.util.AppUtils;
+import com.github.liaoheng.util.AppUtils;
 
 import java.io.File;
 import java.io.IOException;

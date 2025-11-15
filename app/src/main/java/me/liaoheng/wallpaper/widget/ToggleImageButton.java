@@ -6,7 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.Checkable;
 
-import com.github.liaoheng.common.core.OnCheckedChangeListener;
+import com.github.liaoheng.core.OnCheckedChangeListener;
 
 import androidx.appcompat.widget.AppCompatImageButton;
 import me.liaoheng.wallpaper.R;

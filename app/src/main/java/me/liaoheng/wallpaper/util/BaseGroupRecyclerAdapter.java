@@ -3,9 +3,9 @@ package me.liaoheng.wallpaper.util;
 import android.content.Context;
 import android.view.ViewGroup;
 
-import com.github.liaoheng.common.adapter.base.BaseRecyclerAdapter;
-import com.github.liaoheng.common.adapter.holder.BaseRecyclerViewHolder;
-import com.github.liaoheng.common.adapter.model.Group;
+import com.github.liaoheng.adapter.base.BaseRecyclerAdapter;
+import com.github.liaoheng.adapter.holder.BaseRecyclerViewHolder;
+import com.github.liaoheng.adapter.model.Group;
 
 import java.util.List;
 

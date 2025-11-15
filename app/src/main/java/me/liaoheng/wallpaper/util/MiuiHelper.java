@@ -3,8 +3,8 @@ package me.liaoheng.wallpaper.util;
 import android.content.Context;
 import android.os.Build;
 
-import com.github.liaoheng.common.util.AppUtils;
-import com.github.liaoheng.common.util.ShellUtils;
+import com.github.liaoheng.util.AppUtils;
+import com.github.liaoheng.util.ShellUtils;
 
 import java.io.File;
 import java.io.IOException;

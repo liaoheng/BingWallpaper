@@ -4,10 +4,10 @@ import android.content.Context;
 import android.net.Uri;
 
 import com.bumptech.glide.request.target.Target;
-import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.FileUtils;
-import com.github.liaoheng.common.util.L;
-import com.github.liaoheng.common.util.Utils;
+import com.github.liaoheng.util.Callback;
+import com.github.liaoheng.util.FileUtils;
+import com.github.liaoheng.util.L;
+import com.github.liaoheng.util.Utils;
 
 import java.io.File;
 import java.io.IOException;

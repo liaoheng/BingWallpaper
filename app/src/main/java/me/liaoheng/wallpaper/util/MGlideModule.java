@@ -13,7 +13,7 @@ import com.bumptech.glide.integration.okhttp3.OkHttpUrlLoader;
 import com.bumptech.glide.load.engine.cache.DiskLruCacheFactory;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.module.AppGlideModule;
-import com.github.liaoheng.common.util.FileUtils;
+import com.github.liaoheng.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;

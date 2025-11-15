@@ -7,7 +7,7 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
-import com.github.liaoheng.common.util.YNCallback;
+import com.github.liaoheng.util.Callback5;
 
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.model.BingWallpaperState;
@@ -30,7 +30,7 @@ public class BingWallpaperTileService extends TileService {
     public void onCreate() {
         super.onCreate();
         mReceiverHelper = new SetWallpaperStateBroadcastReceiverHelper(
-                new Callback4.EmptyCallback<BingWallpaperState>() {
+                new Callback4.EmptyCallback<>() {
 
                     @Override
                     public void onFinish(BingWallpaperState bingWallpaperState) {
@@ -54,7 +54,7 @@ public class BingWallpaperTileService extends TileService {
                 new Config.Builder().setWallpaperMode(Settings.getAutoModeValue(this))
                         .setBackground(false)
                         .setShowNotification(true)
-                        .build(), new YNCallback.EmptyCallback() {
+                        .build(), new Callback5.EmptyCallback() {
                     @Override
                     public void onAllow() {
                         updateState(Tile.STATE_ACTIVE);

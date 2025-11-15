@@ -74,12 +74,12 @@ public class SeekBarDialogFragment extends DialogFragment {
         });
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setTitle(title);
         builder.setView(binding.getRoot())
-                .setPositiveButton(com.github.liaoheng.common.R.string.lcm_ok, (dialog, which) -> {
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                     if (mCallback != null) {
                         mCallback.onSeekBarValue(mSeekBarDialogHelper.getProgress(binding.seekbar.getProgress(), min));
                     }
                 })
-                .setNegativeButton(com.github.liaoheng.common.R.string.lcm_no, (dialog, which) -> {
+                .setNegativeButton(android.R.string.no, (dialog, which) -> {
                 });
 
         return builder.create();

@@ -8,6 +8,9 @@ import java.util.List;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.github.liaoheng.util.UIUtils;
+
 import me.liaoheng.wallpaper.R;
 import me.liaoheng.wallpaper.adapter.LicenseAdapter;
 import me.liaoheng.wallpaper.databinding.ActivityLicenseBinding;
@@ -24,6 +27,7 @@ public class LicenseActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityLicenseBinding binding = ActivityLicenseBinding.inflate(getLayoutInflater());
+        setStatusBarColor(binding.getRoot());
         setContentView(binding.getRoot());
         setTitle(R.string.open_source_license);
         String gpl = "<p> This program is free software: you can redistribute it and or modify"

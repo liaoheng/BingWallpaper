@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import com.github.liaoheng.common.util.Callback;
-import com.github.liaoheng.common.util.L;
+import com.github.liaoheng.util.Callback;
+import com.github.liaoheng.util.L;
 
 import java.io.File;
 import java.io.IOException;

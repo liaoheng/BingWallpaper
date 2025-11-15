@@ -1,34 +1,38 @@
 plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-    id "io.sentry.android.gradle" version "5.5.0"
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.sentry.gradle)
 }
 
 def isFirebase = rootProject.file('app/google-services.json').exists()
 if (isFirebase) {
+    println("exists google-services.json")
     apply plugin: 'com.google.gms.google-services'
 }
 
 android {
     namespace 'me.liaoheng.wallpaper'
-    compileSdk 35
+    compileSdkVersion libs.versions.compileSdkVersion.get() as int
 
     defaultConfig {
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion 35
+        minSdkVersion libs.versions.minSdkVersion.get() as int
+        targetSdkVersion libs.versions.targetSdkVersion.get() as int
         applicationId "me.liaoheng.wallpaper"
-        versionCode 11005
-        versionName "1.10.05"
+        versionCode 1
+        versionName "1"
     }
 
     def isSigning = true
     signingConfigs {
         config {
             try {
-                keyAlias KEY_ALIAS
-                keyPassword KEY_PASSWORD
-                storeFile file(STORE_FILE)
-                storePassword STORE_PASSWORD
+                keyAlias project.findProperty('KEY_ALIAS') ?: System.getenv('KEY_ALIAS') ?: ""
+                keyPassword project.findProperty('KEY_PASSWORD') ?: System.getenv('KEY_PASSWORD') ?: ""
+                storeFile file(project.findProperty('STORE_FILE') ?: System.getenv('STORE_FILE') ?: "")
+                storePassword project.findProperty('STORE_PASSWORD') ?: System.getenv('STORE_PASSWORD') ?: ""
+                if (keyAlias.isEmpty()) {
+                    throw new GradleException("keyAlias is empty")
+                }
             } catch (Exception ignored) {
                 isSigning = false
                 printf("not signingConfigs")
@@ -38,10 +42,11 @@ android {
     //https://github.com/getsentry/sentry-android-gradle-plugin/issues/782
     buildTypes {
         release {
-            def sentryDsn = project.findProperty('SENTRY_DSN') ?: ""
+            def sentryDsn = project.findProperty('SENTRY_DSN') ?: System.getenv('SENTRY_DSN') ?: ""
             addManifestPlaceholders([sentryDsn: sentryDsn])
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             if (isSigning) signingConfig signingConfigs.config
         }
         debug {
@@ -56,7 +61,7 @@ android {
     android.applicationVariants.configureEach { variant ->
         if (variant.buildType.name == 'release') {
             variant.outputs.configureEach {
-                outputFileName = "${variant.name}-${variant.versionName}.apk"
+                outputFileName = "StarthBingWallpaper-${variant.versionName}.apk"
             }
         }
     }
@@ -65,11 +70,11 @@ android {
         buildConfig true
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "21"
     }
     lint {
         abortOnError false
@@ -77,75 +82,73 @@ android {
     }
 }
 
-def firebaseCore = "com.google.firebase:firebase-analytics:22.4.0"
-
 dependencies {
-    testImplementation deps.robolectric
-    testImplementation deps.junit
-    testImplementation 'joda-time:joda-time:2.10.13'
+    testImplementation libs.robolectric
+    testImplementation libs.junit
+    testImplementation libs.joda.time
     //android system
-    implementation kdeps.core
-    implementation deps.annotations
-    implementation deps.material
-    implementation deps.palette
-    implementation deps.browser
-    implementation(deps.preference) {
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.annotation
+    implementation libs.google.material
+    implementation libs.androidx.palette
+    implementation libs.androidx.browser
+    implementation(libs.androidx.preference) {
         exclude group: 'androidx.lifecycle', module: 'lifecycle-viewmodel-ktx'
     }
-    implementation deps.swiperefreshlayout
+    implementation libs.androidx.swiperefreshlayout
 
-    implementation 'androidx.work:work-runtime:2.10.1'
-    implementation "androidx.datastore:datastore-preferences:1.1.2"
-    implementation "androidx.datastore:datastore-preferences-rxjava3:1.1.2"
-    implementation "androidx.datastore:datastore-preferences-proto:1.1.2"
-    compileOnly 'org.jetbrains.kotlinx:kotlinx-coroutines-rx3:1.7.3'
+    implementation libs.androidx.work.runtime
+    implementation libs.androidx.datastore.preferences
+    implementation libs.androidx.datastore.preferences.rxjava3
+    implementation libs.androidx.datastore.preferences.proto
+    compileOnly libs.kotlinx.coroutines.rx3
     if (isFirebase) {
-        implementation(firebaseCore) {
+        implementation(libs.google.firebase) {
             exclude module: "play-services-ads-identifier"
         }
     } else {
         printf("not exists google-services.json")
-        compileOnly firebaseCore
+        compileOnly libs.google.firebase
     }
 
-    implementation 'io.sentry:sentry-android-core:8.11.1'
+    implementation libs.sentry.android.core
 
-    implementation deps.guava
-    implementation deps.gson
-    implementation deps.glide
-    annotationProcessor deps.glide_compiler
-    implementation deps.glide_okhttp3_integration
-    implementation deps.okhttp
-    implementation deps.okhttp_logging
-    implementation deps.okhttp_doh
-    implementation deps.retrofit
-    implementation deps.retrofit_converter_gson
-    implementation deps.retrofit_adapter_rxjava3
-    implementation deps.rxandroid3
-    implementation deps.rxjava3
-    implementation deps.rxlifecycle4
-    implementation deps.rxlifecycle_android4
-    implementation deps.joda_time_android
+    implementation libs.joda.time.android
+    implementation libs.google.guava
+    implementation libs.google.gson
+    implementation libs.glide
+    annotationProcessor libs.glide.compiler
+    implementation libs.glide.okhttp3.integration
+    implementation libs.okhttp
+    implementation libs.okhttp.logging
+    implementation libs.okhttp.doh
+    implementation libs.retrofit
+    implementation libs.retrofit.converter.gson
+    implementation libs.retrofit.adapter.rxjava3
+    implementation libs.rxandroid3
+    implementation libs.rxjava3
+    implementation libs.rxlifecycle4
+    implementation libs.rxlifecycle4.android
 
     //https://github.com/Commit451/NativeStackBlur
-    implementation 'com.github.Commit451:NativeStackBlur:1.0.7'
+    implementation libs.native.stack.blur
 
     //https://github.com/scottyab/rootbeer
-    implementation 'com.github.scottyab:rootbeer:0.1.0'
+    implementation libs.rootbeer
 
     //https://github.com/Clans/FloatingActionButton
-    implementation 'com.github.clans:fab:1.6.4'
+    implementation libs.fab
 
     //https://github.com/apl-devs/AppIntro
-    implementation 'com.github.AppIntro:AppIntro:6.3.1'
+    implementation libs.app.intro
 
     //https://github.com/davemorrissey/subsampling-scale-image-view
-    implementation 'com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0'
+    implementation libs.subsampling.scale.image.view
 
     //    implementation group: "com.github.liaoheng", name: "common-core", version: "0.1.1-SNAPSHOT", changing: true
     //    implementation group: "com.github.liaoheng", name: "common-adapter", version: "0.1.1-SNAPSHOT", changing: true
-    implementation 'com.github.liaoheng:common-core:0.1.2-SNAPSHOT'
-    implementation 'com.github.liaoheng:common-adapter:0.1.2-SNAPSHOT'
+    implementation libs.common.core
+    implementation libs.common.adapter
 }
 //configurations.all {
 //    // check for updates every build

@@ -4,8 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.github.liaoheng.common.adapter.holder.BaseRecyclerViewHolder;
-import com.github.liaoheng.common.adapter.model.Group;
+import com.github.liaoheng.adapter.holder.BaseRecyclerViewHolder;
+import com.github.liaoheng.adapter.model.Group;
 
 import java.util.List;
 
