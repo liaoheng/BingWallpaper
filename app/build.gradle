@@ -40,7 +40,10 @@ android {
         release {
             def sentryDsn = project.findProperty('SENTRY_DSN') ?: ""
             addManifestPlaceholders([sentryDsn: sentryDsn])
-            minifyEnabled false
+            // R8 + resource shrinking are on now: run a release build through the
+            // fetch/set wallpaper/live wallpaper/widget smoke path before shipping.
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             if (isSigning) signingConfig signingConfigs.config
         }
