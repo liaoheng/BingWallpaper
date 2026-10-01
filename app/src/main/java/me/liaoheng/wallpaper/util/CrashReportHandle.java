@@ -44,7 +44,7 @@ public class CrashReportHandle {
                     return;
                 }
                 options.setBeforeSend((event, hint) -> {
-                    event.setExtra("job_ype", BingWallpaperJobManager.check(context));
+                    event.setExtra("job_type", BingWallpaperJobManager.check(context));
                     event.setExtra("rom_type", ROM.getROM().getRom());
                     event.setExtra("resolution", Settings.getResolution(context));
                     return event;
