@@ -1,6 +1,7 @@
 package me.liaoheng.wallpaper.util;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.functions.Function;
@@ -13,21 +14,21 @@ import io.reactivex.rxjava3.functions.Function;
  */
 public class RetryWithDelay implements Function<Observable<? extends Throwable>, Observable<?>> {
     private final int maxRetries;
-    private final int retryDelayMillis;
-    private int retryCount;
+    private final int retryDelaySeconds;
 
-    public RetryWithDelay(final int maxRetries, final int retryDelayMillis) {
+    public RetryWithDelay(final int maxRetries, final int retryDelaySeconds) {
         this.maxRetries = maxRetries;
-        this.retryDelayMillis = retryDelayMillis;
-        this.retryCount = 0;
+        this.retryDelaySeconds = retryDelaySeconds;
     }
 
     @Override
     public Observable<?> apply(final Observable<? extends Throwable> attempts) {
+        // local to apply() so each subscription gets its own count
+        final AtomicInteger retryCount = new AtomicInteger();
         return attempts
                 .flatMap((Function<Throwable, Observable<?>>) throwable -> {
-                    if (++retryCount < maxRetries) {
-                        return Observable.timer(retryDelayMillis,
+                    if (retryCount.getAndIncrement() < maxRetries) {
+                        return Observable.timer(retryDelaySeconds,
                                 TimeUnit.SECONDS);
                     }
                     return Observable.error(throwable);
