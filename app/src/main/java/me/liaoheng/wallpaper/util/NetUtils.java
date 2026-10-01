@@ -38,13 +38,12 @@ public class NetUtils {
     private NetUtils() {
     }
 
-    private static NetUtils retrofitUtils;
+    private static final class Holder {
+        private static final NetUtils INSTANCE = new NetUtils();
+    }
 
     public static NetUtils get() {
-        if (retrofitUtils == null) {
-            retrofitUtils = new NetUtils();
-        }
-        return retrofitUtils;
+        return Holder.INSTANCE;
     }
 
     private Retrofit mRetrofit;
@@ -52,7 +51,7 @@ public class NetUtils {
     private OkHttpClient client;
 
     public void clearCache() {
-        if (client.cache() == null) {
+        if (client == null || client.cache() == null) {
             return;
         }
         try {
@@ -67,7 +66,10 @@ public class NetUtils {
                 .connectTimeout(connectTimeout, TimeUnit.SECONDS);
         if (SettingTrayPreferences.get().getBoolean(SettingsActivity.PREF_DOH, false)) {
             DnsOverHttps.Builder dns = new DnsOverHttps.Builder()
-                    .client(new OkHttpClient.Builder().build());
+                    .client(new OkHttpClient.Builder()
+                            .connectTimeout(10, TimeUnit.SECONDS)
+                            .readTimeout(10, TimeUnit.SECONDS)
+                            .build());
             if (BingWallpaperUtils.getLocale(context) == Locale.CHINA) {
                 dns.url(HttpUrl.get(Constants.DOH_CHINA));
             } else {
@@ -91,7 +93,8 @@ public class NetUtils {
         try {
             File cacheFile = FileUtils.getProjectSpaceCacheDirectory(context, Constants.HTTP_CACHE_DIR);
             simpleBuilder.cache(new Cache(cacheFile, Constants.HTTP_DISK_CACHE_SIZE));
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            L.alog().w("NetUtils", e, "create http cache failure");
         }
         client = simpleBuilder.build();
         mRetrofit = factory.client(client).build();
@@ -99,7 +102,7 @@ public class NetUtils {
 
     private BingWallpaperNetworkService mBingWallpaperNetworkService;
 
-    public BingWallpaperNetworkService getBingWallpaperNetworkService() {
+    public synchronized BingWallpaperNetworkService getBingWallpaperNetworkService() {
         if (mBingWallpaperNetworkService == null) {
             mBingWallpaperNetworkService = mRetrofit.create(BingWallpaperNetworkService.class);
         }
@@ -117,6 +120,9 @@ public class NetUtils {
                                 .get(2, TimeUnit.MINUTES);
                         L.alog().i("NetUtils", "wallpaper download url: %s", u);
                         return Observable.just(WallpaperUtils.saveToFile(context, u, temp));
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return Observable.error(e);
                     } catch (Throwable e) {
                         return Observable.error(e);
                     }

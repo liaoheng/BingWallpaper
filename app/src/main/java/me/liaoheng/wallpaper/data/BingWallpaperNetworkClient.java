@@ -76,7 +76,8 @@ public class BingWallpaperNetworkClient {
             }
             return bingWallpaper.getImages().get(0).to(bingWallpaper.getTooltips());
         } else {
-            throw new IOException("bing server response failure");
+            throw new IOException(
+                    "bing server response failure: HTTP " + execute.code() + ", url=" + url);
         }
     }
 
