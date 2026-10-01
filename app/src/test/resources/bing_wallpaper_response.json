@@ -1,0 +1,53 @@
+{
+  "images": [
+    {
+      "startdate": "20240115",
+      "fullstartdate": "202401151600",
+      "enddate": "20240116",
+      "url": "/th?id=OHR.AtacamaTorres_ROW1234567890_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp",
+      "urlbase": "/th?id=OHR.AtacamaTorres_ROW1234567890",
+      "copyright": "Torres del Paine, Patagonia, Chile (© Carlos Arriagada/Getty Images)",
+      "copyrightlink": "https://www.bing.com/search?q=Torres+del+Paine&form=hpcapt",
+      "title": "",
+      "quiz": "",
+      "wp": true,
+      "hsh": "0f9e9c8e1c1a1b1c1d1e1f2021222324",
+      "drk": 1,
+      "top": 1,
+      "bot": 1,
+      "caption": "Torres del Paine, Patagonia, Chile",
+      "copyrightonly": "© Carlos Arriagada/Getty Images",
+      "desc": "Torres del Paine, Patagonia, Chile (© Carlos Arriagada/Getty Images)",
+      "ad": ""
+    },
+    {
+      "startdate": "20240114",
+      "fullstartdate": "202401141600",
+      "enddate": "20240115",
+      "url": "/th?id=OHR.LakeTahoe_ROW0987654321_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp",
+      "urlbase": "/th?id=OHR.LakeTahoe_ROW0987654321",
+      "copyright": "Lake Tahoe, California, USA (© Myk Crawford/Getty Images)",
+      "copyrightlink": "https://www.bing.com/search?q=Lake+Tahoe&form=hpcapt",
+      "title": "",
+      "quiz": "",
+      "wp": false,
+      "hsh": "abcdef0123456789abcdef0123456789",
+      "drk": 0,
+      "top": 0,
+      "bot": 0,
+      "caption": "",
+      "copyrightonly": "© Myk Crawford/Getty Images",
+      "desc": "Lake Tahoe, California, USA (© Myk Crawford/Getty Images)",
+      "ad": ""
+    }
+  ],
+  "tooltips": {
+    "loading": "Loading...",
+    "previous": "Previous image",
+    "next": "Next image",
+    "walle": "Download this image. Use this option for the background that will only be displayed on your desktop.",
+    "walls": "Download this image. Use it to customize both your desktop background and your lock screen.",
+    "play": "Play",
+    "pause": "Pause"
+  }
+}

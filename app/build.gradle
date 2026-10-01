@@ -83,6 +83,7 @@ dependencies {
     testImplementation deps.robolectric
     testImplementation deps.junit
     testImplementation 'joda-time:joda-time:2.10.13'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
     //android system
     implementation kdeps.core
     implementation deps.annotations
